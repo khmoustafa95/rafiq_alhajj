@@ -1,0 +1,35 @@
+---
+description: Read and update the Memory Bank for cross-session project context
+alwaysApply: true
+---
+
+# Memory Bank Protocol
+
+This project uses a **Memory Bank** in `memory-bank/` for persistent context across sessions.
+
+## Session start (required)
+Before planning or implementing non-trivial work:
+1. Read `memory-bank/activeContext.md` and `memory-bank/progress.md`.
+2. If touching architecture or dependencies, also read `memory-bank/systemPatterns.md` and `memory-bank/techContext.md`.
+
+## After completing a task (required)
+Update the Memory Bank before ending your turn:
+1. **`activeContext.md`** — current focus, what changed this session, concrete next steps.
+2. **`progress.md`** — mark completed items, add blockers/issues, append a dated changelog entry.
+3. **`systemPatterns.md`** — only if folder structure, patterns, or conventions changed.
+4. **`techContext.md`** — only if packages, tooling, or dev setup changed.
+5. **`projectbrief.md`** / **`productContext.md`** — only if scope, goals, or UX/product decisions changed.
+
+Keep entries factual and concise. Use checkboxes in `progress.md`. Do not duplicate `.cursorrules` — reference it for coding standards.
+
+## File map
+| File | Role |
+|------|------|
+| `projectbrief.md` | Scope, goals, constraints |
+| `productContext.md` | Users, UX, product rationale |
+| `systemPatterns.md` | Architecture and code patterns |
+| `techContext.md` | Stack and environment |
+| `activeContext.md` | Now / next (highest churn) |
+| `progress.md` | Done / backlog / issues |
+
+See `memory-bank/README.md` for the full workflow.

@@ -1,0 +1,51 @@
+# Tech Context
+
+## Stack
+
+| Area | Package / tool | Version (resolved) |
+|------|----------------|-------------------|
+| Framework | Flutter SDK | Dart ^3.11.4 |
+| State | `flutter_riverpod` | ^3.3.1 |
+| State codegen | `riverpod_annotation` / `riverpod_generator` | ^4.0.2 / ^4.0.3 |
+| Routing | `go_router` | ^17.2.3 |
+| Backend | `supabase_flutter` | ^2.12.4 |
+| Models | `freezed` / `freezed_annotation` | ^3.2.5 / ^3.1.0 |
+| JSON | `json_serializable` / `json_annotation` | ^6.9.5 / ^4.11.0 |
+| L10n | `flutter_localizations` + `intl` | SDK / ^0.20.2 |
+| Responsiveness | `flutter_screenutil` | ^5.9.3 |
+| Codegen runner | `build_runner` | ^2.15.0 |
+| Lints | `flutter_lints` | ^6.0.0 |
+
+## Dev environment
+- **OS:** Windows 10
+- **Supabase local:** CLI v2.90.0 via Docker (not set up in repo)
+- **Android emulator localhost:** `10.0.2.2` for Supabase/API
+
+## Linting (`analysis_options.yaml`)
+- Base: `package:flutter_lints/flutter.yaml`
+- Strict analyzer: `strict-casts`, `strict-inference`, `strict-raw-types`
+- Excludes: `*.g.dart`, `*.freezed.dart`
+- Extended rules: style, imports (`always_use_package_imports`), safety (`discarded_futures`, `use_build_context_synchronously`), etc.
+
+## Localization
+- `pubspec.yaml`: `flutter: generate: true`
+- **TODO:** `l10n.yaml`, `lib/l10n/*.arb`
+
+## Commands
+```bash
+flutter pub get
+dart run build_runner build --delete-conflicting-outputs
+flutter run
+dart analyze
+```
+
+## Version notes
+- `json_annotation` pinned to **^4.11.0** (not 4.12) so `riverpod_generator` + `json_serializable` resolve with Flutter SDK `meta` pin.
+- `riverpod_lint` / `custom_lint` **not** added due to dependency conflicts.
+
+## Project layout
+```
+lib/main.dart          # Default counter (broken syntax)
+memory-bank/
+.cursor/rules/
+```

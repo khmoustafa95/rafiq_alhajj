@@ -1,0 +1,12 @@
+{
+  "@@locale": "ar",
+  "appTitle": "رفيق الحج",
+  "homeTitle": "الرئيسية",
+  "homeWelcome": "مرحباً بك في رفيق الحج",
+  "routeNotFoundTitle": "الصفحة غير موجودة",
+  "routeNotFoundMessage": "تعذر العثور على الصفحة المطلوبة.",
+  "goHome": "العودة للرئيسية",
+  "bootstrapErrorTitle": "تعذر تشغيل التطبيق",
+  "bootstrapErrorMessage": "حدث خطأ أثناء بدء تشغيل رفيق الحج. يرجى المحاولة مرة أخرى.",
+  "retry": "إعادة المحاولة"
+}

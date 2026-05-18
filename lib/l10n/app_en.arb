@@ -1,0 +1,39 @@
+{
+  "@@locale": "en",
+  "appTitle": "Rafiq Al-Hajj",
+  "@appTitle": {
+    "description": "Application title"
+  },
+  "homeTitle": "Home",
+  "@homeTitle": {
+    "description": "Home screen app bar title"
+  },
+  "homeWelcome": "Welcome to your Hajj companion",
+  "@homeWelcome": {
+    "description": "Home screen welcome message"
+  },
+  "routeNotFoundTitle": "Page not found",
+  "@routeNotFoundTitle": {
+    "description": "Shown when navigation target does not exist"
+  },
+  "routeNotFoundMessage": "The page you requested could not be found.",
+  "@routeNotFoundMessage": {
+    "description": "Route not found body text"
+  },
+  "goHome": "Go home",
+  "@goHome": {
+    "description": "Navigate back to home"
+  },
+  "bootstrapErrorTitle": "Unable to start the app",
+  "@bootstrapErrorTitle": {
+    "description": "Title when application bootstrap fails"
+  },
+  "bootstrapErrorMessage": "Something went wrong while starting Rafiq Al-Hajj. Please try again.",
+  "@bootstrapErrorMessage": {
+    "description": "Message when application bootstrap fails"
+  },
+  "retry": "Try again",
+  "@retry": {
+    "description": "Retry bootstrap action"
+  }
+}
