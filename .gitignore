@@ -27,6 +27,7 @@ migrate_working_dir/
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
+.flutter-plugins
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
@@ -43,3 +44,21 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+**/android/local.properties
+**/android/key.properties
+*.jks
+
+# Environment / secrets
+.env
+.env.*
+
+# iOS/Xcode generated
+**/ios/**/Pods/
+**/ios/**/xcuserdata/
+**/ios/Flutter/ephemeral/
+
+# Desktop generated plugin registrants
+**/windows/flutter/generated_plugin_registrant.*
+**/linux/flutter/generated_plugin_registrant.*
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+**/macos/Flutter/ephemeral/
