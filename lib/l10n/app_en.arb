@@ -35,5 +35,276 @@
   "retry": "Try again",
   "@retry": {
     "description": "Retry bootstrap action"
-  }
+  },
+  "homeSignInAsPilgrim": "Sign in as pilgrim",
+  "@homeSignInAsPilgrim": {
+    "description": "Navigate to pilgrim login from guest home"
+  },
+  "homePilgrimWelcome": "You are signed in. Browse public and exclusive content below.",
+  "@homePilgrimWelcome": {
+    "description": "Welcome message when logged in as pilgrim"
+  },
+  "contentVideosSection": "Awareness videos",
+  "@contentVideosSection": {
+    "description": "US-01 public videos section title"
+  },
+  "contentNewsSection": "News & announcements",
+  "@contentNewsSection": {
+    "description": "US-01 news section title"
+  },
+  "contentVideosEmpty": "No public videos available yet.",
+  "@contentVideosEmpty": {
+    "description": "Empty state for videos"
+  },
+  "contentNewsEmpty": "No news or announcements yet.",
+  "@contentNewsEmpty": {
+    "description": "Empty state for news"
+  },
+  "contentLoadError": "Could not load content. Pull to refresh.",
+  "@contentLoadError": {
+    "description": "Content fetch failed"
+  },
+  "contentSupabaseRequired": "Connect Supabase to load videos and news from the server.",
+  "@contentSupabaseRequired": {
+    "description": "Shown when dart-defines are missing"
+  },
+  "contentDetailTitle": "Content",
+  "@contentDetailTitle": {
+    "description": "Content detail app bar"
+  },
+  "contentNotFound": "This content is no longer available.",
+  "@contentNotFound": {
+    "description": "Missing content item"
+  },
+  "contentOpenMedia": "Open video or link",
+  "@contentOpenMedia": {
+    "description": "Open external media URL"
+  },
+  "contentOpenMediaFailed": "Could not open the link.",
+  "@contentOpenMediaFailed": {
+    "description": "url_launcher failure"
+  },
+  "homePilgrimGreeting": "Welcome, {name}",
+  "@homePilgrimGreeting": {
+    "description": "Personalized greeting for signed-in pilgrim",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "signOut": "Sign out",
+  "@signOut": {
+    "description": "Sign out action"
+  },
+  "loginTitle": "Pilgrim sign in",
+  "@loginTitle": {
+    "description": "Login screen app bar title"
+  },
+  "loginSubtitle": "Use the account credentials provided by your center",
+  "@loginSubtitle": {
+    "description": "Login screen instructions"
+  },
+  "loginEmailLabel": "Account email",
+  "@loginEmailLabel": {
+    "description": "Email field label on login"
+  },
+  "loginPasswordLabel": "Password",
+  "@loginPasswordLabel": {
+    "description": "Password field label on login"
+  },
+  "loginEmailRequired": "Enter your account email",
+  "@loginEmailRequired": {
+    "description": "Validation when email is empty"
+  },
+  "loginEmailInvalid": "Enter a valid email address",
+  "@loginEmailInvalid": {
+    "description": "Validation when email format is invalid"
+  },
+  "loginPasswordRequired": "Enter your password",
+  "@loginPasswordRequired": {
+    "description": "Validation when password is empty"
+  },
+  "loginSubmit": "Sign in",
+  "@loginSubmit": {
+    "description": "Submit login form"
+  },
+  "authErrorInvalidCredentials": "Email or password is incorrect",
+  "@authErrorInvalidCredentials": {
+    "description": "Supabase invalid login credentials"
+  },
+  "authErrorEmailNotConfirmed": "Confirm your email before signing in",
+  "@authErrorEmailNotConfirmed": {
+    "description": "Supabase email not confirmed"
+  },
+  "authErrorNotPilgrimRole": "This account is not a pilgrim account. Use the web dashboard instead.",
+  "@authErrorNotPilgrimRole": {
+    "description": "Signed-in user is operator or admin"
+  },
+  "authErrorProfileNotFound": "Your profile was not found. Contact your center.",
+  "@authErrorProfileNotFound": {
+    "description": "Auth user exists but profiles row is missing"
+  },
+  "authErrorSupabaseUnavailable": "Sign-in requires Supabase. Run with local dart-defines or contact support.",
+  "@authErrorSupabaseUnavailable": {
+    "description": "Supabase not configured or unreachable"
+  },
+  "authErrorUnknown": "Sign-in failed. Please try again.",
+  "@authErrorUnknown": {
+    "description": "Generic auth error"
+  },
+  "homeIslamicTools": "Islamic tools",
+  "@homeIslamicTools": {
+    "description": "Open offline Islamic tools hub from home"
+  },
+  "toolsHubTitle": "Islamic tools",
+  "@toolsHubTitle": {
+    "description": "US-02 tools hub screen title"
+  },
+  "toolsPrayerTimesTitle": "Prayer times",
+  "toolsPrayerTimesSubtitle": "Calculated from your GPS — works offline after first load",
+  "toolsQiblaTitle": "Qibla",
+  "toolsQiblaSubtitle": "Compass direction to the Kaaba",
+  "toolsQuranTitle": "Quran",
+  "toolsQuranSubtitle": "Full mushaf offline in the app",
+  "toolsAdhkarTitle": "Adhkar",
+  "toolsAdhkarSubtitle": "Morning and evening remembrances",
+  "toolsRefreshLocation": "Refresh location",
+  "toolsUsingCachedLocation": "Using last known location (offline). Tap refresh for GPS.",
+  "toolsCoordinates": "Location: {lat}, {lng}",
+  "@toolsCoordinates": {
+    "placeholders": {
+      "lat": {"type": "String"},
+      "lng": {"type": "String"}
+    }
+  },
+  "prayerFajr": "Fajr",
+  "prayerSunrise": "Sunrise",
+  "prayerDhuhr": "Dhuhr",
+  "prayerAsr": "Asr",
+  "prayerMaghrib": "Maghrib",
+  "prayerIsha": "Isha",
+  "toolsQiblaBearing": "Qibla bearing: {degrees}°",
+  "@toolsQiblaBearing": {
+    "placeholders": {"degrees": {"type": "String"}}
+  },
+  "toolsCompassHeading": "Device heading: {degrees}°",
+  "@toolsCompassHeading": {
+    "placeholders": {"degrees": {"type": "String"}}
+  },
+  "toolsQiblaHint": "Rotate your device until the arrow points up for Qibla.",
+  "toolsQiblaCompassUnavailable": "Compass sensor unavailable on this device.",
+  "toolsQuranAyahs": "ayahs",
+  "toolsQuranSurahMeta": "{count} ayahs",
+  "@toolsQuranSurahMeta": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "toolsQuranOfflineNote": "Text loaded from offline package — no internet required.",
+  "toolsAdhkarMorning": "Morning",
+  "toolsAdhkarEvening": "Evening",
+  "toolsAdhkarRepeat": "Repeat",
+  "locationErrorServiceDisabled": "Turn on location services to calculate prayer times and Qibla.",
+  "locationErrorPermissionDenied": "Location permission is required for accurate prayer times and Qibla.",
+  "locationErrorPermissionDeniedForever": "Enable location permission in system settings.",
+  "locationErrorUnavailable": "Could not determine your location.",
+  "homeMyHajjJourney": "My Hajj journey",
+  "@homeMyHajjJourney": {
+    "description": "US-04 pilgrim dashboard entry"
+  },
+  "pilgrimDashboardTitle": "My Hajj journey",
+  "pilgrimRitualsProgress": "{completed} of {total} rituals completed",
+  "@pilgrimRitualsProgress": {
+    "placeholders": {
+      "completed": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "pilgrimRitualPendingSync": "Pending sync when online",
+  "pilgrimRitualCompletedAt": "Completed on {date}",
+  "@pilgrimRitualCompletedAt": {
+    "placeholders": {"date": {"type": "String"}}
+  },
+  "pilgrimSyncPending": "Some ritual updates will sync when you are back online.",
+  "pilgrimLogisticsTitle": "Travel & accommodation",
+  "pilgrimLogisticsEmpty": "Your center has not published logistics details yet.",
+  "pilgrimMedicalStatus": "Medical test",
+  "pilgrimTravelDate": "Travel date",
+  "pilgrimHotel": "Hotel",
+  "pilgrimOpenHotelMap": "Open hotel on map",
+  "pilgrimTransport": "Transportation",
+  "pilgrimSignInRequired": "Sign in as a pilgrim to track rituals and view your file.",
+  "pilgrimLoadError": "Could not load your Hajj dashboard. Pull to refresh.",
+  "authErrorNotStaffRole": "This account is not authorized for the operator dashboard.",
+  "authErrorNotAdminRole": "This account is not authorized for the admin dashboard.",
+  "operatorLoginTitle": "Operator sign in",
+  "operatorLoginSubtitle": "Center technician — pilgrim registration (US-05)",
+  "operatorIntakeTitle": "Register pilgrim",
+  "operatorIntakeSubtitle": "Enter pilgrim data, upload documents, and create a mobile account.",
+  "operatorGenerateCredentials": "Generate email & password",
+  "operatorGeneratedPasswordPreview": "Preview password (final password is set on submit): {password}",
+  "@operatorGeneratedPasswordPreview": {
+    "placeholders": {"password": {"type": "String"}}
+  },
+  "operatorDocumentsSection": "Documents",
+  "operatorPickDocuments": "Pick files ({count})",
+  "@operatorPickDocuments": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "operatorFullName": "Full name",
+  "operatorRequired": "Required",
+  "operatorPassport": "Passport number",
+  "operatorTravelPermit": "Travel permit",
+  "operatorHotelMapUrl": "Hotel map URL",
+  "operatorPickDate": "Select date",
+  "operatorSubmitPilgrim": "Create pilgrim account",
+  "operatorAccountCreatedTitle": "Pilgrim account created",
+  "operatorCloseDialog": "Close",
+  "homeFieldOperatorSignIn": "Field operator sign in",
+  "fieldOperatorLoginTitle": "Field operator",
+  "fieldOperatorLoginSubtitle": "Search pilgrims and update logistics in the field (US-06)",
+  "fieldOperatorHomeTitle": "Pilgrims in the field",
+  "fieldOperatorSearchHint": "Search by name, passport, or permit number",
+  "fieldOperatorLoadError": "Could not load pilgrims. Pull to refresh.",
+  "fieldOperatorNoResults": "No pilgrims match your search.",
+  "fieldOperatorPilgrimTitle": "Update pilgrim",
+  "fieldOperatorStatusSection": "Field status",
+  "fieldOperatorMedicalLabel": "Medical test status",
+  "fieldOperatorHotelLabel": "Hotel",
+  "fieldOperatorTransportLabel": "Transportation",
+  "fieldOperatorSave": "Save updates",
+  "fieldOperatorSaveSuccess": "Pilgrim record updated.",
+  "fieldOperatorSaveError": "Could not save changes.",
+  "fieldOperatorShare": "Copy summary to share",
+  "fieldOperatorCopied": "Summary copied to clipboard.",
+  "fieldOperatorNotFound": "Pilgrim not found.",
+  "fieldOperatorShareSummary": "{name}\nStatus: {status}\nMedical: {medical}\nHotel: {hotel}",
+  "@fieldOperatorShareSummary": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "status": {"type": "String"},
+      "medical": {"type": "String"},
+      "hotel": {"type": "String"}
+    }
+  },
+  "fieldStatusNotSet": "Not set",
+  "fieldStatusPending": "Pending",
+  "fieldStatusMedicalDone": "Medical check completed",
+  "fieldStatusArrivedHotel": "Arrived at hotel",
+  "fieldStatusInTransit": "In transit",
+  "fieldStatusCompleted": "Completed",
+  "operatorGoAdminLogin": "Admin analytics sign in",
+  "adminLoginTitle": "Admin sign in",
+  "adminLoginSubtitle": "Consortium analytics and reporting (US-07)",
+  "adminDashboardTitle": "Analytics dashboard",
+  "adminDashboardSubtitle": "Live metrics from Supabase — pilgrims, groups, and field status.",
+  "adminDashboardLoadError": "Could not load dashboard metrics.",
+  "adminStatPilgrims": "Pilgrims",
+  "adminStatOperators": "Field operators",
+  "adminStatRitualProgress": "Ritual completion",
+  "adminChartPilgrimsByGroup": "Pilgrims by group",
+  "adminChartFieldStatus": "Field status distribution",
+  "adminChartOperatorUploads": "Documents uploaded by operator",
+  "adminChartEmpty": "No data yet.",
+  "adminUnassignedGroup": "Unassigned",
+  "adminUnknownOperator": "Unknown operator"
 }

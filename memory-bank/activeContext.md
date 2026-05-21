@@ -3,34 +3,33 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
-**App shell complete** — bootstrap, Riverpod, go_router, theme, l10n, and error handling are wired. Ready for feature development.
+**US-07 shipped** — admin web analytics dashboard with live charts from Supabase.
 
-## Recent changes (2026-05-18)
-- Replaced counter demo with production app shell.
-- Added l10n (`l10n.yaml`, `app_en.arb`, `app_ar.arb`).
-- Added `AppBootstrap` with Supabase optional init, zone error handling, retry UI.
-- Added `AppRoot` (Riverpod + ScreenUtil + MaterialApp.router + themes + l10n).
-- Added `@riverpod` `appRouter` with home route and 404 screen.
-- Added `HomeScreen` feature widget.
+## Recent changes (2026-05-21)
+- Field operator pilgrim screen: `RadioListTile` group migrated to `RadioGroup` (Flutter 3.32+ radio API).
+- Migration `20260521170000_admin_analytics.sql` (`groups` table, admin read policies).
+- `admin_analytics` feature: KPI cards + bar/pie charts (`fl_chart`).
+- `AppAccessMode.admin`, `signInAdmin`, routes `/admin/login` + `/admin/dashboard`.
+- Web routing: operators → intake, admins → dashboard; link from operator login.
 
 ## Next steps
-1. Add Supabase dart-defines for local dev (`SUPABASE_URL`, `SUPABASE_ANON_KEY`).
-2. Initialize `supabase/` CLI project and migrations.
-3. Implement first real feature (auth or onboarding).
-4. Add `ProviderObserver` / crash reporting in release bootstrap.
+1. `supabase db reset` + demo admin/operator/pilgrim users.
+2. Test Chrome: `/admin/login` → dashboard charts refresh from DB.
+3. Product backlog beyond MVP user stories (content CMS, competitions, etc.).
 
 ## Key paths
 | Concern | Location |
 |---------|----------|
-| Entry | `lib/main.dart` |
-| Bootstrap | `lib/core/bootstrap/app_bootstrap.dart` |
-| Router | `lib/core/routing/app_router.dart` |
-| Theme | `lib/core/theme/app_theme.dart` |
-| Strings | `lib/l10n/*.arb` |
+| Admin dashboard | `lib/features/admin_analytics/presentation/widgets/admin_dashboard_screen.dart` |
+| Analytics repo | `lib/features/admin_analytics/data/repositories/admin_analytics_repository.dart` |
+| Migration | `supabase/migrations/20260521170000_admin_analytics.sql` |
 
-## Run
+## Run (admin web)
 ```bash
-flutter run
-# With Supabase:
-flutter run --dart-define=SUPABASE_URL=http://10.0.2.2:54321 --dart-define=SUPABASE_ANON_KEY=your-key
+supabase db reset
+supabase auth users create admin@demo.local --password demo123456 --email-confirm --user-metadata "{\"role\":\"admin\",\"full_name\":\"خالد المسؤول\"}"
+flutter run -d chrome --dart-define-from-file=dart_defines.local.json
 ```
+
+Open `/admin/login` or use **Admin analytics sign in** from operator login page.  
+Demo: `admin@demo.local` / `demo123456`

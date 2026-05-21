@@ -51,6 +51,8 @@ app.*.map.json
 # Environment / secrets
 .env
 .env.*
+dart_defines.local.json
+dart_defines.android.local.json
 
 # iOS/Xcode generated
 **/ios/**/Pods/

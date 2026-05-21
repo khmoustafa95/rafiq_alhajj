@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "rafiq_alhajj (local Supabase)",
+      "request": "launch",
+      "type": "dart",
+      "toolArgs": ["--dart-define-from-file=dart_defines.local.json"]
+    },
+    {
+      "name": "rafiq_alhajj (Android emulator + local Supabase)",
+      "request": "launch",
+      "type": "dart",
+      "toolArgs": ["--dart-define-from-file=dart_defines.android.local.json"]
+    },
+    {
+      "name": "rafiq_alhajj (Chrome web + local Supabase)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "chrome",
+      "toolArgs": ["--dart-define-from-file=dart_defines.local.json"]
+    }
+  ]
+}
