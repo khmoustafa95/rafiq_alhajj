@@ -6,6 +6,8 @@
 **US-07 shipped** — admin web analytics dashboard with live charts from Supabase.
 
 ## Recent changes (2026-05-21)
+- Arabic runbook: `docs/runbook-ar.md` (commands, demo accounts, platforms, routes).
+- `dart_defines.android.local.example.json` + README link to runbook.
 - Field operator pilgrim screen: `RadioListTile` group migrated to `RadioGroup` (Flutter 3.32+ radio API).
 - Migration `20260521170000_admin_analytics.sql` (`groups` table, admin read policies).
 - `admin_analytics` feature: KPI cards + bar/pie charts (`fl_chart`).

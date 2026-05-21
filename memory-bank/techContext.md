@@ -39,6 +39,10 @@ flutter run
 dart analyze
 ```
 
+## Local run documentation
+- **Arabic runbook:** `docs/runbook-ar.md` — Supabase setup, `dart_defines.*.json`, demo accounts (`demo123456`), Chrome vs mobile flows.
+- **Templates:** `dart_defines.local.example.json`, `dart_defines.android.local.example.json` (Android host `10.0.2.2`).
+
 ## Version notes
 - `json_annotation` pinned to **^4.11.0** (not 4.12) so `riverpod_generator` + `json_serializable` resolve with Flutter SDK `meta` pin.
 - `riverpod_lint` / `custom_lint` **not** added due to dependency conflicts.

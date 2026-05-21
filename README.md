@@ -1,17 +1,15 @@
 # rafiq_alhajj
 
-A new Flutter project.
+تطبيق Flutter لرفيق الحج — حاج، مشغل مكتب (ويب)، تقني ميداني (موبايل)، ومسؤول (لوحة تحليلات ويب).
 
-## Getting Started
+## دليل التشغيل
 
-This project is a starting point for a Flutter application.
+**[دليل التشغيل بالعربية](docs/runbook-ar.md)** — أوامر التشغيل، حسابات التجربة (`demo123456`)، إعداد Supabase المحلي، والمسارات لكل دور.
 
-A few resources to get you started if this is your first Flutter project:
+### بداية سريعة
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+supabase start && supabase db reset
+# أنشئ dart_defines.local.json من dart_defines.local.example.json (انظر الدليل)
+flutter run -d chrome --dart-define-from-file=dart_defines.local.json
+```
