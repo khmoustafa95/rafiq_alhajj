@@ -404,5 +404,26 @@
   "notificationsOpenInbox": "Notifications",
   "notificationsEmpty": "No notifications yet.",
   "notificationsLoadError": "Could not load notifications.",
-  "notificationsMarkAllRead": "Mark all read"
+  "notificationsMarkAllRead": "Mark all read",
+  "adminSendNotification": "Send notification",
+  "adminNotificationSendTitle": "Broadcast notification",
+  "adminNotificationAudienceLabel": "Audience",
+  "adminNotificationAudienceAllPilgrims": "All pilgrims",
+  "adminNotificationAudienceGroup": "Group",
+  "adminNotificationAudienceOperators": "All operators",
+  "adminNotificationGroupLabel": "Group",
+  "adminNotificationGroupRequired": "Select a group.",
+  "adminNotificationGroupsLoadError": "Could not load groups.",
+  "adminNotificationGroupsEmpty": "No groups defined yet.",
+  "adminNotificationTitleAr": "Title (Arabic)",
+  "adminNotificationTitleEn": "Title (English)",
+  "adminNotificationTitleRequired": "Title is required.",
+  "adminNotificationBodyAr": "Message (Arabic, optional)",
+  "adminNotificationBodyEn": "Message (English, optional)",
+  "adminNotificationSendButton": "Send",
+  "adminNotificationSendSuccess": "Sent to {count} recipients.",
+  "@adminNotificationSendSuccess": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "adminNotificationSendError": "Could not send notification."
 }

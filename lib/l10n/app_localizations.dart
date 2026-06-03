@@ -1482,6 +1482,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Mark all read'**
   String get notificationsMarkAllRead;
+
+  /// No description provided for @adminSendNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'Send notification'**
+  String get adminSendNotification;
+
+  /// No description provided for @adminNotificationSendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Broadcast notification'**
+  String get adminNotificationSendTitle;
+
+  /// No description provided for @adminNotificationAudienceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Audience'**
+  String get adminNotificationAudienceLabel;
+
+  /// No description provided for @adminNotificationAudienceAllPilgrims.
+  ///
+  /// In en, this message translates to:
+  /// **'All pilgrims'**
+  String get adminNotificationAudienceAllPilgrims;
+
+  /// No description provided for @adminNotificationAudienceGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get adminNotificationAudienceGroup;
+
+  /// No description provided for @adminNotificationAudienceOperators.
+  ///
+  /// In en, this message translates to:
+  /// **'All operators'**
+  String get adminNotificationAudienceOperators;
+
+  /// No description provided for @adminNotificationGroupLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get adminNotificationGroupLabel;
+
+  /// No description provided for @adminNotificationGroupRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a group.'**
+  String get adminNotificationGroupRequired;
+
+  /// No description provided for @adminNotificationGroupsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load groups.'**
+  String get adminNotificationGroupsLoadError;
+
+  /// No description provided for @adminNotificationGroupsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No groups defined yet.'**
+  String get adminNotificationGroupsEmpty;
+
+  /// No description provided for @adminNotificationTitleAr.
+  ///
+  /// In en, this message translates to:
+  /// **'Title (Arabic)'**
+  String get adminNotificationTitleAr;
+
+  /// No description provided for @adminNotificationTitleEn.
+  ///
+  /// In en, this message translates to:
+  /// **'Title (English)'**
+  String get adminNotificationTitleEn;
+
+  /// No description provided for @adminNotificationTitleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Title is required.'**
+  String get adminNotificationTitleRequired;
+
+  /// No description provided for @adminNotificationBodyAr.
+  ///
+  /// In en, this message translates to:
+  /// **'Message (Arabic, optional)'**
+  String get adminNotificationBodyAr;
+
+  /// No description provided for @adminNotificationBodyEn.
+  ///
+  /// In en, this message translates to:
+  /// **'Message (English, optional)'**
+  String get adminNotificationBodyEn;
+
+  /// No description provided for @adminNotificationSendButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get adminNotificationSendButton;
+
+  /// No description provided for @adminNotificationSendSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent to {count} recipients.'**
+  String adminNotificationSendSuccess(int count);
+
+  /// No description provided for @adminNotificationSendError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send notification.'**
+  String get adminNotificationSendError;
 }
 
 class _AppLocalizationsDelegate

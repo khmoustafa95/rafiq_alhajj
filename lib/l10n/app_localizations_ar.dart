@@ -753,4 +753,60 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get notificationsMarkAllRead => 'تعليم الكل كمقروء';
+
+  @override
+  String get adminSendNotification => 'إرسال إشعار';
+
+  @override
+  String get adminNotificationSendTitle => 'بث إشعار';
+
+  @override
+  String get adminNotificationAudienceLabel => 'الجمهور';
+
+  @override
+  String get adminNotificationAudienceAllPilgrims => 'كل الحجاج';
+
+  @override
+  String get adminNotificationAudienceGroup => 'مجموعة';
+
+  @override
+  String get adminNotificationAudienceOperators => 'كل المشغّلين';
+
+  @override
+  String get adminNotificationGroupLabel => 'المجموعة';
+
+  @override
+  String get adminNotificationGroupRequired => 'اختر مجموعة.';
+
+  @override
+  String get adminNotificationGroupsLoadError => 'تعذر تحميل المجموعات.';
+
+  @override
+  String get adminNotificationGroupsEmpty => 'لا توجد مجموعات بعد.';
+
+  @override
+  String get adminNotificationTitleAr => 'العنوان (عربي)';
+
+  @override
+  String get adminNotificationTitleEn => 'العنوان (إنجليزي)';
+
+  @override
+  String get adminNotificationTitleRequired => 'العنوان مطلوب.';
+
+  @override
+  String get adminNotificationBodyAr => 'النص (عربي، اختياري)';
+
+  @override
+  String get adminNotificationBodyEn => 'النص (إنجليزي، اختياري)';
+
+  @override
+  String get adminNotificationSendButton => 'إرسال';
+
+  @override
+  String adminNotificationSendSuccess(int count) {
+    return 'تم الإرسال إلى $count مستلم.';
+  }
+
+  @override
+  String get adminNotificationSendError => 'تعذر إرسال الإشعار.';
 }

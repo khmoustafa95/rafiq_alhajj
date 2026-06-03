@@ -763,4 +763,60 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationsMarkAllRead => 'Mark all read';
+
+  @override
+  String get adminSendNotification => 'Send notification';
+
+  @override
+  String get adminNotificationSendTitle => 'Broadcast notification';
+
+  @override
+  String get adminNotificationAudienceLabel => 'Audience';
+
+  @override
+  String get adminNotificationAudienceAllPilgrims => 'All pilgrims';
+
+  @override
+  String get adminNotificationAudienceGroup => 'Group';
+
+  @override
+  String get adminNotificationAudienceOperators => 'All operators';
+
+  @override
+  String get adminNotificationGroupLabel => 'Group';
+
+  @override
+  String get adminNotificationGroupRequired => 'Select a group.';
+
+  @override
+  String get adminNotificationGroupsLoadError => 'Could not load groups.';
+
+  @override
+  String get adminNotificationGroupsEmpty => 'No groups defined yet.';
+
+  @override
+  String get adminNotificationTitleAr => 'Title (Arabic)';
+
+  @override
+  String get adminNotificationTitleEn => 'Title (English)';
+
+  @override
+  String get adminNotificationTitleRequired => 'Title is required.';
+
+  @override
+  String get adminNotificationBodyAr => 'Message (Arabic, optional)';
+
+  @override
+  String get adminNotificationBodyEn => 'Message (English, optional)';
+
+  @override
+  String get adminNotificationSendButton => 'Send';
+
+  @override
+  String adminNotificationSendSuccess(int count) {
+    return 'Sent to $count recipients.';
+  }
+
+  @override
+  String get adminNotificationSendError => 'Could not send notification.';
 }

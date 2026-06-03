@@ -117,6 +117,12 @@ class AdminDashboardScreen extends ConsumerWidget {
               ),
               SizedBox(height: 16.h),
               OutlinedButton.icon(
+                onPressed: () => context.push(AppRoutes.adminNotificationSend),
+                icon: const Icon(Icons.campaign_outlined),
+                label: Text(l10n.adminSendNotification),
+              ),
+              SizedBox(height: 12.h),
+              OutlinedButton.icon(
                 onPressed: () => context.push(AppRoutes.adminContent),
                 icon: const Icon(Icons.article_outlined),
                 label: Text(l10n.adminManageContent),

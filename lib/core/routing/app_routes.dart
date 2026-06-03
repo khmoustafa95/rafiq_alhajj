@@ -33,6 +33,7 @@ abstract final class AppRoutes {
   static const String fieldOperatorPilgrim = '/operator/field/:profileId';
   static const String adminLogin = '/admin/login';
   static const String adminDashboard = '/admin/dashboard';
+  static const String adminNotificationSend = '/admin/notifications/send';
   static const String adminContent = '/admin/content';
   static const String adminContentNew = '/admin/content/new';
   static const String adminContentEdit = '/admin/content/:id/edit';

@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/routing/app_router.dart';
 import 'package:rafiq_alhajj/core/theme/app_theme.dart';
+import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_toast_host.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 /// Root widget: Riverpod, ScreenUtil, theme, l10n, and [GoRouter].
@@ -47,6 +48,9 @@ class AppRoot extends ConsumerWidget {
           ],
           supportedLocales: AppLocalizations.supportedLocales,
           routerConfig: router,
+          builder: (context, routerChild) {
+            return NotificationToastHost(child: routerChild);
+          },
         );
       },
     );

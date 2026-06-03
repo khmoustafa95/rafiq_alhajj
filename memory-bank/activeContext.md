@@ -3,13 +3,17 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
-**In-app notifications MVP** — Supabase `notifications` table, inbox UI, bell badge + Realtime unread count.
+**Notifications phase 2** — admin broadcast, auto triggers, in-session SnackBar.
 
-## Recent changes (2026-06-03)
+## Recent changes (2026-06-03, phase 2)
+- Migration `20260603110000_notifications_phase2.sql` — RPC `send_notification_broadcast`, triggers on `content_library` / `competitions`.
+- Admin screen `/admin/notifications/send` (audience: all pilgrims, group, operators).
+- `NotificationToastHost` — SnackBar on new Realtime notification.
+- Dashboard link **Send notification**.
+
+## Recent changes (2026-06-03, phase 1)
 - Migration `20260603100000_notifications.sql` (RLS, Realtime, demo welcome rows for pilgrims).
-- Feature `lib/features/notifications/` — repository, Riverpod providers, list screen, deep links.
-- Route `/notifications`; bell on home (signed-in), pilgrim dashboard, admin/operator dashboards.
-- l10n keys `notifications*` (AR/EN).
+- Feature `lib/features/notifications/` — inbox, bell badge, deep links.
 
 ## Recent changes (2026-05-21 session 2)
 - `CrashReporter` + `CRASH_REPORTING_ENABLED` for release telemetry wiring.
@@ -32,10 +36,10 @@
 - Web routing: operators → intake, admins → dashboard; link from operator login.
 
 ## Next steps
-1. `supabase db reset` then `npm run setup` — apply notifications migration + demo users.
-2. Sign in as `pilgrim@demo.local` — open bell → welcome notification → mark read.
-3. Phase 2: admin broadcast UI, content/competition triggers, FCM push.
-4. Production: hosted Supabase, Play Store signing, plug Sentry/Crashlytics into `ConfiguredCrashReporter`.
+1. `supabase db reset` + `npm run setup` — apply phase 2 migration.
+2. Admin: **Send notification** → all pilgrims; pilgrim device shows SnackBar + badge.
+3. Admin: add CMS content or active competition → pilgrims get auto notifications.
+4. Phase 3 (optional): FCM push + `device_tokens` table.
 
 ## Key paths
 | Concern | Location |

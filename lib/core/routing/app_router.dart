@@ -26,6 +26,7 @@ import 'package:rafiq_alhajj/features/islamic_tools/presentation/widgets/prayer_
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/widgets/qibla_screen.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/widgets/quran_surah_detail_screen.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/widgets/quran_surah_list_screen.dart';
+import 'package:rafiq_alhajj/features/notifications/presentation/widgets/admin_notification_broadcast_screen.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_list_screen.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_intake_screen.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_login_screen.dart';
@@ -206,6 +207,12 @@ GoRouter appRouter(Ref ref) {
         path: AppRoutes.adminDashboard,
         name: 'adminDashboard',
         builder: (context, state) => const AdminDashboardScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminNotificationSend,
+        name: 'adminNotificationSend',
+        builder: (context, state) =>
+            const AdminNotificationBroadcastScreen(),
       ),
       GoRoute(
         path: AppRoutes.adminContent,
