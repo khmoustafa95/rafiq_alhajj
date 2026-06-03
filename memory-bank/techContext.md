@@ -37,11 +37,18 @@ flutter pub get
 dart run build_runner build --delete-conflicting-outputs
 flutter run
 dart analyze
+npm run setup          # db reset + demo Auth users
+npm run dev            # Chrome
+npm run dev:android    # Android emulator/device
 ```
+
+## CI
+- `.github/workflows/flutter_ci.yml` — `flutter analyze` + `flutter test` on push/PR to `main`/`master`.
 
 ## Local run documentation
 - **Arabic runbook:** `docs/runbook-ar.md` — Supabase setup, `dart_defines.*.json`, demo accounts (`demo123456`), Chrome vs mobile flows.
-- **Templates:** `dart_defines.local.example.json`, `dart_defines.android.local.example.json` (Android host `10.0.2.2`).
+- **Templates:** `dart_defines.local.example.json`, `dart_defines.android.local.example.json`, `dart_defines.staging.example.json`, `dart_defines.production.example.json`.
+- **Crash reporting:** `CRASH_REPORTING_ENABLED=true` in release dart-defines; wire Sentry/Crashlytics in `ConfiguredCrashReporter`.
 
 ## Version notes
 - `json_annotation` pinned to **^4.11.0** (not 4.12) so `riverpod_generator` + `json_serializable` resolve with Flutter SDK `meta` pin.

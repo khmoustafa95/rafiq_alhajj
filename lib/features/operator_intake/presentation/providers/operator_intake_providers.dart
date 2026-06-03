@@ -6,6 +6,7 @@ import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_p
 import 'package:rafiq_alhajj/features/operator_intake/application/services/pilgrim_intake_service.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/created_pilgrim_account.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/pilgrim_intake_form.dart';
+import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/operator_registry_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -76,6 +77,7 @@ class OperatorIntakeController extends _$OperatorIntakeController {
       }
       _lastCreated = created;
       _pickedFiles = [];
+      ref.invalidate(operatorPilgrimRegistryProvider);
     });
 
     return state.hasError ? null : created;

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rafiq_alhajj/core/bootstrap/app_bootstrap.dart';
+import 'package:rafiq_alhajj/core/telemetry/crash_reporter.dart';
 import 'package:rafiq_alhajj/core/widgets/app_root.dart';
 import 'package:rafiq_alhajj/core/widgets/bootstrap_failure_app.dart';
 
@@ -12,6 +13,7 @@ Future<void> main() async {
       await _launchApp();
     },
     (error, stackTrace) {
+      unawaited(CrashReporter.instance.recordError(error, stackTrace));
       _runBootstrapFailureApp(error, onRetry: _launchApp);
     },
   );

@@ -19,6 +19,13 @@
 | Operator intake (US-05) | ✅ Web login, form, storage, create-pilgrim |
 | Field operator (US-06) | ✅ Mobile search, status updates, share copy |
 | Admin analytics (US-07) | ✅ Web dashboard, charts, groups, live Supabase |
+| Admin content CMS (US-08) | ✅ Web `/admin/content` CRUD on `content_library` |
+| Operator pilgrim registry (US-09) | ✅ Web `/operator/pilgrims` list + logistics edit |
+| Competitions (US-10) | ✅ Pilgrim join/leaderboard + admin CRUD |
+| Dev one-command scripts | ✅ `npm run dev` / `scripts/*.ps1` |
+| Android build stability | ✅ Gradle AGP + JVM tuning (re-verify APK on your machine) |
+| Crash reporting hook | ✅ `CrashReporter` + `CRASH_REPORTING_ENABLED` dart-define |
+| CI (analyze + test) | ✅ `.github/workflows/flutter_ci.yml` |
 | Auth (US-03) | ✅ Login, pilgrim session, guest/pilgrim home |
 | Supabase migrations | ✅ profiles + RLS (local) |
 
@@ -34,6 +41,7 @@
 - [x] Local Supabase dart-define JSON + `.vscode/launch.json`
 
 ## Backlog
+- [x] Crash reporting hook in bootstrap
 - [x] Auth feature (US-03 pilgrim login)
 - [x] US-01 public content (videos, news on home)
 - [x] US-02 Islamic tools (offline prayer, qibla, quran, adhkar)
@@ -41,11 +49,18 @@
 - [x] US-05 operator web intake (pilgrim registration + documents + credentials)
 - [x] US-06 field operator mobile (search pilgrims, update field status)
 - [x] US-07 admin analytics web (charts, pilgrim/group/operator metrics)
-- [ ] Crash reporting hook in bootstrap
-
 ## Changelog
 
+### 2026-05-21 (session 2)
+- Crash reporting: `lib/core/telemetry/crash_reporter.dart`, wired in bootstrap + `main.dart`.
+- CI: GitHub Actions `flutter_ci.yml` (analyze + test).
+- `scripts/seed-demo-users.ps1` + `npm run setup:users`; `dev-setup` seeds Auth automatically.
+- Staging/production `dart_defines.*.example.json`; Gradle JVM limits for Android daemon stability.
+
 ### 2026-05-21
+- **US-10:** Competitions feature + migration + dev scripts + Android Gradle hardening.
+- **US-09:** Operator pilgrim registry — search list, detail logistics update on web.
+- **US-08:** Admin content CMS — list/create/edit/delete, RLS for admins, routes under `/admin/content`.
 - Added `docs/runbook-ar.md` (Arabic ops guide: Supabase, demo users, launch configs, routes per role).
 - Fixed deprecated `RadioListTile.onChanged` / `groupValue` in field operator pilgrim screen via `RadioGroup`.
 - **US-07:** Admin web `/admin/dashboard`, `groups` table, `fl_chart` analytics (pilgrims by group, field status, operator uploads, ritual %).

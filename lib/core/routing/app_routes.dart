@@ -9,14 +9,34 @@ abstract final class AppRoutes {
   static const String quran = '/tools/quran';
   static const String quranSurah = '/tools/quran/:surahNumber';
   static const String adhkar = '/tools/adhkar';
+  static const String competitions = '/competitions';
+  static const String competitionDetail = '/competitions/:id';
+  static const String adminCompetitions = '/admin/competitions';
+  static const String adminCompetitionNew = '/admin/competitions/new';
+  static const String adminCompetitionEdit = '/admin/competitions/:id/edit';
+
+  static String competitionDetailPath(String id) => '/competitions/$id';
+
+  static String adminCompetitionEditPath(String id) =>
+      '/admin/competitions/$id/edit';
   static const String pilgrimDashboard = '/pilgrim';
   static const String operatorLogin = '/operator/login';
   static const String operatorIntake = '/operator/intake';
+  static const String operatorPilgrims = '/operator/pilgrims';
+  static const String operatorPilgrimDetail = '/operator/pilgrims/:profileId';
+
+  static String operatorPilgrimDetailPath(String profileId) =>
+      '/operator/pilgrims/$profileId';
   static const String fieldOperatorLogin = '/operator/field/login';
   static const String fieldOperatorHome = '/operator/field';
   static const String fieldOperatorPilgrim = '/operator/field/:profileId';
   static const String adminLogin = '/admin/login';
   static const String adminDashboard = '/admin/dashboard';
+  static const String adminContent = '/admin/content';
+  static const String adminContentNew = '/admin/content/new';
+  static const String adminContentEdit = '/admin/content/:id/edit';
+
+  static String adminContentEditPath(String id) => '/admin/content/$id/edit';
 
   static String contentDetailPath(String id) => '/content/$id';
 

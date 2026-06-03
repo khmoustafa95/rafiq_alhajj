@@ -51,9 +51,11 @@ supabase db reset
 
 ```powershell
 supabase status
+supabase status -o env
 ```
 
-انسخ **anon key** من المخرجات إلى ملفات `dart_defines` (الخطوة التالية).
+من `status -o env` انسخ `ANON_KEY` و`API_URL` إلى ملفات `dart_defines` (الخطوة التالية).  
+(في الواجهة الجديدة قد يظهر **Publishable key** — التطبيق يحتاج قيمة `ANON_KEY` من الأمر أعلاه.)
 
 إيقاف / إعادة تشغيل:
 
@@ -113,14 +115,23 @@ Copy-Item dart_defines.local.example.json dart_defines.android.local.json
 
 ### `demo123456`
 
-نفّذ بعد `supabase db reset` (PowerShell — سطر واحد لكل مستخدم):
+**الطريقة أ — Supabase Studio (موصى بها مع CLI 2.90):**  
+افتح `http://127.0.0.1:54323` → **Authentication** → **Users** → **Add user** → أدخل البريد وكلمة المرور `demo123456` وفعّل **Auto Confirm User**.  
+للمشغل والمسؤول أضف في **User Metadata** (JSON):
+
+```json
+{"role":"operator","full_name":"محمد التقني"}
+```
+
+```json
+{"role":"admin","full_name":"خالد المسؤول"}
+```
+
+**الطريقة ب — CLI (إن وُجدت في إصدارك):**
 
 ```powershell
 supabase auth users create pilgrim@demo.local --password demo123456 --email-confirm
-
-supabase auth users create operator@demo.local --password demo123456 --email-confirm --user-metadata "{\"role\":\"operator\",\"full_name\":\"محمد التقني\"}"
-
-supabase auth users create admin@demo.local --password demo123456 --email-confirm --user-metadata "{\"role\":\"admin\",\"full_name\":\"خالد المسؤول\"}"
+# ... (قد لا تكون متاحة في CLI 2.90 — استخدم Studio)
 ```
 
 | البريد | كلمة المرور | الدور في `profiles` | المنصة المناسبة |
@@ -139,6 +150,17 @@ supabase auth users create admin@demo.local --password demo123456 --email-confir
 ---
 
 ## 5. تشغيل التطبيق
+
+### أمر واحد (موصى به)
+
+```powershell
+npm run setup    # supabase db reset + seed + إنشاء حسابات التجربة تلقائياً
+npm run setup:users   # إعادة إنشاء الحسابات فقط (بعد reset)
+npm run dev      # Supabase + Flutter Chrome (مشغل/مسؤول)
+npm run dev:android   # Supabase + Flutter Android (حاج/ميداني)
+```
+
+أو: `.\scripts\dev-chrome.ps1` / `.\scripts\dev-android.ps1`
 
 ### تثبيت الحزم وتوليد الكود (مرة أو بعد تغيير `@riverpod` / `freezed`)
 
@@ -180,7 +202,11 @@ flutter test
 | الهدف | الدخول | المسار بعد تسجيل الدخول |
 |-------|--------|-------------------------|
 | تسجيل حاج (US-05) | `operator@demo.local` | `/operator/intake` |
+| قائمة الحجاج (US-09) | `operator@demo.local` | `/operator/pilgrims` (أيقونة المجموعة في شريط التسجيل) |
 | لوحة تحليلات (US-07) | `admin@demo.local` | `/admin/dashboard` |
+| إدارة المحتوى (US-08) | `admin@demo.local` | `/admin/content` (من زر «إدارة مكتبة المحتوى» في اللوحة) |
+| إدارة المسابقات (US-10) | `admin@demo.local` | `/admin/competitions` |
+| المسابقات (US-10) | `pilgrim@demo.local` (موبايل) | `/competitions` من الرئيسية |
 | رابط المسؤول من صفحة المشغل | — | زر **تسجيل دخول المسؤول** → `/admin/login` |
 
 > مسارات التقني الميداني (`/operator/field/*`) **غير متاحة على الويب** — التوجيه يعيدك لصفحة المشغل.
@@ -216,11 +242,19 @@ flutter test
 | `/content/:id` | تفاصيل محتوى |
 | `/operator/login` | دخول مشغل المكتب (ويب) |
 | `/operator/intake` | استمارة تسجيل حاج |
+| `/operator/pilgrims` | قائمة الحجاج المسجّلين |
+| `/operator/pilgrims/:profileId` | عرض/تعديل لوجستيات حاج |
 | `/operator/field/login` | دخول التقني الميداني (موبايل) |
 | `/operator/field` | قائمة بحث الحجاج |
 | `/operator/field/:profileId` | تحديث حالة حاج |
 | `/admin/login` | دخول المسؤول |
 | `/admin/dashboard` | لوحة التحليلات |
+| `/admin/content` | إدارة مكتبة المحتوى (CMS) |
+| `/admin/content/new` | إضافة محتوى |
+| `/admin/content/:id/edit` | تعديل محتوى |
+| `/admin/competitions` | إدارة المسابقات |
+| `/competitions` | قائمة المسابقات (حاج/ضيف) |
+| `/competitions/:id` | تفاصيل + لوحة المتصدرين |
 
 ---
 
@@ -241,6 +275,8 @@ flutter test
 | المشكلة | الحل |
 |---------|------|
 | `supabase status` يفشل / Docker pipe | شغّل **Docker Desktop** ثم `supabase start` |
+| `No such container: supabase_db_rafiq_alhajj` | لم يُشغَّل مشروع هذا المجلد — نفّذ `supabase start` من جذر `rafiq_alhajj` |
+| `port is already allocated` (مثلاً 54322) | مشروع Supabase آخر يعمل (مثل `Khalid_Haj_Mustafa`) — أوقفه: `supabase stop --project-id Khalid_Haj_Mustafa` ثم `supabase start` هنا |
 | التطبيق بدون محتوى/دخول | أنشئ `dart_defines.local.json` ومرّر `--dart-define-from-file=...` |
 | Android لا يتصل بـ Supabase | استخدم `10.0.2.2` في `dart_defines.android.local.json` |
 | بريد أو كلمة مرور غير صحيحة | أعد إنشاء المستخدمين (الخطوة 4) بعد `db reset` |

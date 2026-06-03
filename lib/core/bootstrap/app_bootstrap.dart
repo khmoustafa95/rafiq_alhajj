@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/telemetry/crash_reporter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Thrown when application startup fails.
@@ -22,6 +23,8 @@ abstract final class AppBootstrap {
   static Future<ProviderContainer> initialize() async {
     WidgetsFlutterBinding.ensureInitialized();
 
+    CrashReporter.install(CrashReporter.createDefault());
+
     _configureErrorHandlers();
 
     await _initializeSupabase();
@@ -33,15 +36,11 @@ abstract final class AppBootstrap {
   static void _configureErrorHandlers() {
     FlutterError.onError = (details) {
       FlutterError.presentError(details);
-      if (kReleaseMode) {
-        // Hook crash reporting (e.g. Firebase Crashlytics) here.
-      }
+      CrashReporter.instance.recordFlutterError(details);
     };
 
     PlatformDispatcher.instance.onError = (error, stack) {
-      if (kReleaseMode) {
-        // Hook crash reporting here.
-      }
+      unawaited(CrashReporter.instance.recordError(error, stack));
       return true;
     };
   }

@@ -1,0 +1,11 @@
+{
+  "name": "rafiq_alhajj",
+  "private": true,
+  "scripts": {
+    "dev": "powershell -ExecutionPolicy Bypass -File ./scripts/dev-chrome.ps1",
+    "dev:chrome": "powershell -ExecutionPolicy Bypass -File ./scripts/dev-chrome.ps1",
+    "dev:android": "powershell -ExecutionPolicy Bypass -File ./scripts/dev-android.ps1",
+    "setup": "powershell -ExecutionPolicy Bypass -File ./scripts/dev-setup.ps1",
+    "setup:users": "powershell -ExecutionPolicy Bypass -File ./scripts/seed-demo-users.ps1"
+  }
+}

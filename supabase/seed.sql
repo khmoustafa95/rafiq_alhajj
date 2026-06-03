@@ -85,3 +85,21 @@ on conflict (profile_id) do update set
   hotel_name = excluded.hotel_name,
   hotel_location_url = excluded.hotel_location_url,
   transportation_details = excluded.transportation_details;
+
+-- US-10: Demo competitions
+insert into public.competitions (title, description, starts_at, ends_at, is_active)
+values
+  (
+    'Hajj awareness quiz',
+    'Answer daily awareness questions and climb the leaderboard.',
+    now() - interval '1 day',
+    now() + interval '90 days',
+    true
+  ),
+  (
+    'Ritual progress challenge',
+    'Log your ritual checklist progress — top pilgrims earn recognition.',
+    now() - interval '1 day',
+    now() + interval '60 days',
+    true
+  );

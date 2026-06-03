@@ -129,6 +129,13 @@ class _HomeBody extends ConsumerWidget {
                           icon: const Icon(Icons.mosque),
                           label: Text(l10n.homeIslamicTools),
                         ),
+                        SizedBox(height: 12.h),
+                        OutlinedButton.icon(
+                          onPressed: () =>
+                              unawaited(context.push(AppRoutes.competitions)),
+                          icon: const Icon(Icons.emoji_events_outlined),
+                          label: Text(l10n.homeCompetitions),
+                        ),
                         if (!isPilgrim) ...[
                           SizedBox(height: 12.h),
                           FilledButton.icon(

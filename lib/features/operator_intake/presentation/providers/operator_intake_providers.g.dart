@@ -123,7 +123,7 @@ final class OperatorIntakeControllerProvider
 }
 
 String _$operatorIntakeControllerHash() =>
-    r'4f719e63b124c43962ad1b8207088d285fa6f492';
+    r'99f3288304e3885fc1b27786dc3405b969898eb1';
 
 abstract class _$OperatorIntakeController extends $AsyncNotifier<void> {
   FutureOr<void> build();

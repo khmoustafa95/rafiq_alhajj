@@ -6,9 +6,15 @@ import 'package:rafiq_alhajj/core/routing/router_refresh_notifier.dart';
 import 'package:rafiq_alhajj/core/routing/widgets/route_not_found_screen.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/presentation/widgets/admin_dashboard_screen.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/presentation/widgets/admin_login_screen.dart';
+import 'package:rafiq_alhajj/features/admin_content/presentation/widgets/admin_content_edit_screen.dart';
+import 'package:rafiq_alhajj/features/admin_content/presentation/widgets/admin_content_list_screen.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/widgets/login_screen.dart';
+import 'package:rafiq_alhajj/features/competitions/presentation/widgets/admin_competition_edit_screen.dart';
+import 'package:rafiq_alhajj/features/competitions/presentation/widgets/admin_competitions_list_screen.dart';
+import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competition_detail_screen.dart';
+import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competitions_list_screen.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_detail_screen.dart';
 import 'package:rafiq_alhajj/features/field_operator/presentation/widgets/field_operator_home_screen.dart';
 import 'package:rafiq_alhajj/features/field_operator/presentation/widgets/field_operator_login_screen.dart';
@@ -22,6 +28,8 @@ import 'package:rafiq_alhajj/features/islamic_tools/presentation/widgets/quran_s
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/widgets/quran_surah_list_screen.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_intake_screen.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_login_screen.dart';
+import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_pilgrim_detail_screen.dart';
+import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_pilgrim_list_screen.dart';
 import 'package:rafiq_alhajj/features/pilgrim/presentation/widgets/pilgrim_dashboard_screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -58,6 +66,10 @@ GoRouter appRouter(Ref ref) {
       if (AppPlatform.isWeb) {
         if (isFieldOperatorRoute) {
           return AppRoutes.operatorLogin;
+        }
+
+        if (location.startsWith('/competitions')) {
+          return null;
         }
 
         if (isAdmin) {
@@ -157,6 +169,19 @@ GoRouter appRouter(Ref ref) {
         builder: (context, state) => const OperatorIntakeScreen(),
       ),
       GoRoute(
+        path: AppRoutes.operatorPilgrims,
+        name: 'operatorPilgrims',
+        builder: (context, state) => const OperatorPilgrimListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.operatorPilgrimDetail,
+        name: 'operatorPilgrimDetail',
+        builder: (context, state) {
+          final profileId = state.pathParameters['profileId']!;
+          return OperatorPilgrimDetailScreen(profileId: profileId);
+        },
+      ),
+      GoRoute(
         path: AppRoutes.adminLogin,
         name: 'adminLogin',
         builder: (context, state) => const AdminLoginScreen(),
@@ -165,6 +190,55 @@ GoRouter appRouter(Ref ref) {
         path: AppRoutes.adminDashboard,
         name: 'adminDashboard',
         builder: (context, state) => const AdminDashboardScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminContent,
+        name: 'adminContent',
+        builder: (context, state) => const AdminContentListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminContentNew,
+        name: 'adminContentNew',
+        builder: (context, state) => const AdminContentEditScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminContentEdit,
+        name: 'adminContentEdit',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return AdminContentEditScreen(contentId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.adminCompetitions,
+        name: 'adminCompetitions',
+        builder: (context, state) => const AdminCompetitionsListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminCompetitionNew,
+        name: 'adminCompetitionNew',
+        builder: (context, state) => const AdminCompetitionEditScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminCompetitionEdit,
+        name: 'adminCompetitionEdit',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return AdminCompetitionEditScreen(competitionId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.competitions,
+        name: 'competitions',
+        builder: (context, state) => const CompetitionsListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.competitionDetail,
+        name: 'competitionDetail',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return CompetitionDetailScreen(competitionId: id);
+        },
       ),
       GoRoute(
         path: AppRoutes.fieldOperatorLogin,

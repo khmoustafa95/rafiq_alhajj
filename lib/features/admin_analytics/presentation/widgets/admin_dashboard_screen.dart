@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/presentation/providers/admin_analytics_providers.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/presentation/widgets/admin_bar_chart_card.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/presentation/widgets/admin_pie_chart_card.dart';
@@ -110,6 +112,18 @@ class AdminDashboardScreen extends ConsumerWidget {
                 title: l10n.adminChartOperatorUploads,
                 slices: stats.operatorDocumentUploads,
                 l10n: l10n,
+              ),
+              SizedBox(height: 16.h),
+              OutlinedButton.icon(
+                onPressed: () => context.push(AppRoutes.adminContent),
+                icon: const Icon(Icons.article_outlined),
+                label: Text(l10n.adminManageContent),
+              ),
+              SizedBox(height: 12.h),
+              OutlinedButton.icon(
+                onPressed: () => context.push(AppRoutes.adminCompetitions),
+                icon: const Icon(Icons.emoji_events_outlined),
+                label: Text(l10n.adminManageCompetitions),
               ),
               SizedBox(height: 24.h),
             ],

@@ -966,6 +966,492 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unknown operator'**
   String get adminUnknownOperator;
+
+  /// No description provided for @adminManageContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage content library'**
+  String get adminManageContent;
+
+  /// No description provided for @adminContentListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Content library'**
+  String get adminContentListTitle;
+
+  /// No description provided for @adminContentAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add content'**
+  String get adminContentAdd;
+
+  /// No description provided for @adminContentEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get adminContentEdit;
+
+  /// No description provided for @adminContentNewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New content'**
+  String get adminContentNewTitle;
+
+  /// No description provided for @adminContentEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit content'**
+  String get adminContentEditTitle;
+
+  /// No description provided for @adminContentLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load content.'**
+  String get adminContentLoadError;
+
+  /// No description provided for @adminContentEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No content yet. Add your first item.'**
+  String get adminContentEmpty;
+
+  /// No description provided for @adminContentNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Content item not found.'**
+  String get adminContentNotFound;
+
+  /// No description provided for @adminContentTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get adminContentTitleLabel;
+
+  /// No description provided for @adminContentTitleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a title'**
+  String get adminContentTitleRequired;
+
+  /// No description provided for @adminContentDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get adminContentDescriptionLabel;
+
+  /// No description provided for @adminContentMediaUrlLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Media URL (optional)'**
+  String get adminContentMediaUrlLabel;
+
+  /// No description provided for @adminContentTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get adminContentTypeLabel;
+
+  /// No description provided for @adminContentVisibilityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Visibility'**
+  String get adminContentVisibilityLabel;
+
+  /// No description provided for @adminContentTypeVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get adminContentTypeVideo;
+
+  /// No description provided for @adminContentTypeNews.
+  ///
+  /// In en, this message translates to:
+  /// **'News'**
+  String get adminContentTypeNews;
+
+  /// No description provided for @adminContentTypeAnnouncement.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcement'**
+  String get adminContentTypeAnnouncement;
+
+  /// No description provided for @adminContentVisibilityPublic.
+  ///
+  /// In en, this message translates to:
+  /// **'Public (everyone)'**
+  String get adminContentVisibilityPublic;
+
+  /// No description provided for @adminContentVisibilityPilgrimOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Pilgrims only'**
+  String get adminContentVisibilityPilgrimOnly;
+
+  /// No description provided for @adminContentSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get adminContentSave;
+
+  /// No description provided for @adminContentSaveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Content updated.'**
+  String get adminContentSaveSuccess;
+
+  /// No description provided for @adminContentCreateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Content published.'**
+  String get adminContentCreateSuccess;
+
+  /// No description provided for @adminContentSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save content.'**
+  String get adminContentSaveError;
+
+  /// No description provided for @adminContentDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete content?'**
+  String get adminContentDeleteTitle;
+
+  /// No description provided for @adminContentDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{title}\"? This cannot be undone.'**
+  String adminContentDeleteMessage(String title);
+
+  /// No description provided for @adminContentDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get adminContentDeleteConfirm;
+
+  /// No description provided for @adminContentDeleteSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Content deleted.'**
+  String get adminContentDeleteSuccess;
+
+  /// No description provided for @adminContentDeleteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete content.'**
+  String get adminContentDeleteError;
+
+  /// No description provided for @dialogCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get dialogCancel;
+
+  /// No description provided for @operatorPilgrimListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Registered pilgrims'**
+  String get operatorPilgrimListTitle;
+
+  /// No description provided for @operatorPilgrimSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name, passport, or permit number'**
+  String get operatorPilgrimSearchHint;
+
+  /// No description provided for @operatorPilgrimListLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load pilgrim list.'**
+  String get operatorPilgrimListLoadError;
+
+  /// No description provided for @operatorPilgrimListEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No pilgrims registered yet.'**
+  String get operatorPilgrimListEmpty;
+
+  /// No description provided for @operatorPilgrimNoLogisticsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No logistics on file'**
+  String get operatorPilgrimNoLogisticsYet;
+
+  /// No description provided for @operatorPilgrimDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pilgrim record'**
+  String get operatorPilgrimDetailTitle;
+
+  /// No description provided for @operatorPilgrimDetailSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update travel and accommodation details (desk operator).'**
+  String get operatorPilgrimDetailSubtitle;
+
+  /// No description provided for @operatorPilgrimNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Pilgrim not found.'**
+  String get operatorPilgrimNotFound;
+
+  /// No description provided for @operatorPilgrimTravelDateUnset.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get operatorPilgrimTravelDateUnset;
+
+  /// No description provided for @operatorPilgrimSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get operatorPilgrimSave;
+
+  /// No description provided for @operatorPilgrimSaveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Pilgrim record updated.'**
+  String get operatorPilgrimSaveSuccess;
+
+  /// No description provided for @operatorPilgrimSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save changes.'**
+  String get operatorPilgrimSaveError;
+
+  /// No description provided for @homeCompetitions.
+  ///
+  /// In en, this message translates to:
+  /// **'Competitions'**
+  String get homeCompetitions;
+
+  /// No description provided for @competitionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Competitions'**
+  String get competitionsTitle;
+
+  /// No description provided for @competitionsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load competitions.'**
+  String get competitionsLoadError;
+
+  /// No description provided for @competitionsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No active competitions right now.'**
+  String get competitionsEmpty;
+
+  /// No description provided for @competitionsNoDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'No description'**
+  String get competitionsNoDescription;
+
+  /// No description provided for @competitionDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Competition'**
+  String get competitionDetailTitle;
+
+  /// No description provided for @competitionNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Competition not found.'**
+  String get competitionNotFound;
+
+  /// No description provided for @competitionSignInRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in as a pilgrim to join and earn points.'**
+  String get competitionSignInRequired;
+
+  /// No description provided for @competitionClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'This competition is not open for entries.'**
+  String get competitionClosed;
+
+  /// No description provided for @competitionJoin.
+  ///
+  /// In en, this message translates to:
+  /// **'Join competition'**
+  String get competitionJoin;
+
+  /// No description provided for @competitionJoinSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'You joined the competition.'**
+  String get competitionJoinSuccess;
+
+  /// No description provided for @competitionJoinError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not join. Sign in as a pilgrim or try again.'**
+  String get competitionJoinError;
+
+  /// No description provided for @competitionYourScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Your score: {score} points'**
+  String competitionYourScore(int score);
+
+  /// No description provided for @competitionRecordProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Record progress (+10)'**
+  String get competitionRecordProgress;
+
+  /// No description provided for @competitionProgressRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress recorded.'**
+  String get competitionProgressRecorded;
+
+  /// No description provided for @competitionProgressError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update score.'**
+  String get competitionProgressError;
+
+  /// No description provided for @competitionLeaderboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Leaderboard'**
+  String get competitionLeaderboard;
+
+  /// No description provided for @competitionLeaderboardEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No participants yet.'**
+  String get competitionLeaderboardEmpty;
+
+  /// No description provided for @competitionAnonymous.
+  ///
+  /// In en, this message translates to:
+  /// **'Pilgrim'**
+  String get competitionAnonymous;
+
+  /// No description provided for @competitionPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'{score} pts'**
+  String competitionPoints(int score);
+
+  /// No description provided for @adminManageCompetitions.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage competitions'**
+  String get adminManageCompetitions;
+
+  /// No description provided for @adminCompetitionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Competitions'**
+  String get adminCompetitionsTitle;
+
+  /// No description provided for @adminCompetitionAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add competition'**
+  String get adminCompetitionAdd;
+
+  /// No description provided for @adminCompetitionsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load competitions.'**
+  String get adminCompetitionsLoadError;
+
+  /// No description provided for @adminCompetitionsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No competitions yet.'**
+  String get adminCompetitionsEmpty;
+
+  /// No description provided for @adminCompetitionNewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New competition'**
+  String get adminCompetitionNewTitle;
+
+  /// No description provided for @adminCompetitionEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit competition'**
+  String get adminCompetitionEditTitle;
+
+  /// No description provided for @adminCompetitionStartsAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts'**
+  String get adminCompetitionStartsAt;
+
+  /// No description provided for @adminCompetitionEndsAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends'**
+  String get adminCompetitionEndsAt;
+
+  /// No description provided for @adminCompetitionActiveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get adminCompetitionActiveLabel;
+
+  /// No description provided for @adminCompetitionInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get adminCompetitionInactive;
+
+  /// No description provided for @adminCompetitionActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Published'**
+  String get adminCompetitionActive;
+
+  /// No description provided for @adminCompetitionSaveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Competition saved.'**
+  String get adminCompetitionSaveSuccess;
+
+  /// No description provided for @adminCompetitionSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save competition.'**
+  String get adminCompetitionSaveError;
+
+  /// No description provided for @adminCompetitionDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete competition?'**
+  String get adminCompetitionDeleteTitle;
+
+  /// No description provided for @adminCompetitionDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{title}\"?'**
+  String adminCompetitionDeleteMessage(String title);
+
+  /// No description provided for @adminCompetitionDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get adminCompetitionDeleteConfirm;
+
+  /// No description provided for @adminCompetitionDeleteSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Competition deleted.'**
+  String get adminCompetitionDeleteSuccess;
+
+  /// No description provided for @adminCompetitionDeleteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete competition.'**
+  String get adminCompetitionDeleteError;
 }
 
 class _AppLocalizationsDelegate

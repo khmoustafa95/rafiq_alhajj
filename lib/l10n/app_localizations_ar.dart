@@ -483,4 +483,259 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminUnknownOperator => 'تقني غير معروف';
+
+  @override
+  String get adminManageContent => 'إدارة مكتبة المحتوى';
+
+  @override
+  String get adminContentListTitle => 'مكتبة المحتوى';
+
+  @override
+  String get adminContentAdd => 'إضافة محتوى';
+
+  @override
+  String get adminContentEdit => 'تعديل';
+
+  @override
+  String get adminContentNewTitle => 'محتوى جديد';
+
+  @override
+  String get adminContentEditTitle => 'تعديل المحتوى';
+
+  @override
+  String get adminContentLoadError => 'تعذر تحميل المحتوى.';
+
+  @override
+  String get adminContentEmpty => 'لا يوجد محتوى بعد. أضف أول عنصر.';
+
+  @override
+  String get adminContentNotFound => 'لم يُعثر على العنصر.';
+
+  @override
+  String get adminContentTitleLabel => 'العنوان';
+
+  @override
+  String get adminContentTitleRequired => 'أدخل العنوان';
+
+  @override
+  String get adminContentDescriptionLabel => 'الوصف';
+
+  @override
+  String get adminContentMediaUrlLabel => 'رابط الوسائط (اختياري)';
+
+  @override
+  String get adminContentTypeLabel => 'النوع';
+
+  @override
+  String get adminContentVisibilityLabel => 'الظهور';
+
+  @override
+  String get adminContentTypeVideo => 'فيديو';
+
+  @override
+  String get adminContentTypeNews => 'خبر';
+
+  @override
+  String get adminContentTypeAnnouncement => 'إعلان';
+
+  @override
+  String get adminContentVisibilityPublic => 'عام (للجميع)';
+
+  @override
+  String get adminContentVisibilityPilgrimOnly => 'للحجاج فقط';
+
+  @override
+  String get adminContentSave => 'حفظ';
+
+  @override
+  String get adminContentSaveSuccess => 'تم تحديث المحتوى.';
+
+  @override
+  String get adminContentCreateSuccess => 'تم نشر المحتوى.';
+
+  @override
+  String get adminContentSaveError => 'تعذر حفظ المحتوى.';
+
+  @override
+  String get adminContentDeleteTitle => 'حذف المحتوى؟';
+
+  @override
+  String adminContentDeleteMessage(String title) {
+    return 'حذف \"$title\"؟ لا يمكن التراجع.';
+  }
+
+  @override
+  String get adminContentDeleteConfirm => 'حذف';
+
+  @override
+  String get adminContentDeleteSuccess => 'تم حذف المحتوى.';
+
+  @override
+  String get adminContentDeleteError => 'تعذر حذف المحتوى.';
+
+  @override
+  String get dialogCancel => 'إلغاء';
+
+  @override
+  String get operatorPilgrimListTitle => 'الحجاج المسجّلون';
+
+  @override
+  String get operatorPilgrimSearchHint =>
+      'ابحث بالاسم أو رقم الجواز أو إذن السفر';
+
+  @override
+  String get operatorPilgrimListLoadError => 'تعذر تحميل قائمة الحجاج.';
+
+  @override
+  String get operatorPilgrimListEmpty => 'لا يوجد حجاج مسجّلون بعد.';
+
+  @override
+  String get operatorPilgrimNoLogisticsYet => 'لا توجد بيانات لوجستية';
+
+  @override
+  String get operatorPilgrimDetailTitle => 'سجل الحاج';
+
+  @override
+  String get operatorPilgrimDetailSubtitle =>
+      'تحديث بيانات السفر والإقامة (مكتب التسجيل).';
+
+  @override
+  String get operatorPilgrimNotFound => 'لم يُعثر على الحاج.';
+
+  @override
+  String get operatorPilgrimTravelDateUnset => 'غير محدد';
+
+  @override
+  String get operatorPilgrimSave => 'حفظ التغييرات';
+
+  @override
+  String get operatorPilgrimSaveSuccess => 'تم تحديث سجل الحاج.';
+
+  @override
+  String get operatorPilgrimSaveError => 'تعذر حفظ التغييرات.';
+
+  @override
+  String get homeCompetitions => 'المسابقات';
+
+  @override
+  String get competitionsTitle => 'المسابقات';
+
+  @override
+  String get competitionsLoadError => 'تعذر تحميل المسابقات.';
+
+  @override
+  String get competitionsEmpty => 'لا توجد مسابقات نشطة حالياً.';
+
+  @override
+  String get competitionsNoDescription => 'بدون وصف';
+
+  @override
+  String get competitionDetailTitle => 'المسابقة';
+
+  @override
+  String get competitionNotFound => 'لم تُعثر على المسابقة.';
+
+  @override
+  String get competitionSignInRequired =>
+      'سجّل الدخول كحاج للمشاركة وكسب النقاط.';
+
+  @override
+  String get competitionClosed => 'هذه المسابقة غير مفتوحة للمشاركة.';
+
+  @override
+  String get competitionJoin => 'انضم للمسابقة';
+
+  @override
+  String get competitionJoinSuccess => 'تم انضمامك للمسابقة.';
+
+  @override
+  String get competitionJoinError =>
+      'تعذر الانضمام. سجّل كحاج أو أعد المحاولة.';
+
+  @override
+  String competitionYourScore(int score) {
+    return 'نقاطك: $score';
+  }
+
+  @override
+  String get competitionRecordProgress => 'تسجيل تقدم (+10)';
+
+  @override
+  String get competitionProgressRecorded => 'تم تسجيل التقدم.';
+
+  @override
+  String get competitionProgressError => 'تعذر تحديث النقاط.';
+
+  @override
+  String get competitionLeaderboard => 'لوحة المتصدرين';
+
+  @override
+  String get competitionLeaderboardEmpty => 'لا يوجد مشاركون بعد.';
+
+  @override
+  String get competitionAnonymous => 'حاج';
+
+  @override
+  String competitionPoints(int score) {
+    return '$score نقطة';
+  }
+
+  @override
+  String get adminManageCompetitions => 'إدارة المسابقات';
+
+  @override
+  String get adminCompetitionsTitle => 'المسابقات';
+
+  @override
+  String get adminCompetitionAdd => 'إضافة مسابقة';
+
+  @override
+  String get adminCompetitionsLoadError => 'تعذر تحميل المسابقات.';
+
+  @override
+  String get adminCompetitionsEmpty => 'لا توجد مسابقات بعد.';
+
+  @override
+  String get adminCompetitionNewTitle => 'مسابقة جديدة';
+
+  @override
+  String get adminCompetitionEditTitle => 'تعديل المسابقة';
+
+  @override
+  String get adminCompetitionStartsAt => 'تبدأ';
+
+  @override
+  String get adminCompetitionEndsAt => 'تنتهي';
+
+  @override
+  String get adminCompetitionActiveLabel => 'نشطة';
+
+  @override
+  String get adminCompetitionInactive => 'غير نشطة';
+
+  @override
+  String get adminCompetitionActive => 'منشورة';
+
+  @override
+  String get adminCompetitionSaveSuccess => 'تم حفظ المسابقة.';
+
+  @override
+  String get adminCompetitionSaveError => 'تعذر حفظ المسابقة.';
+
+  @override
+  String get adminCompetitionDeleteTitle => 'حذف المسابقة؟';
+
+  @override
+  String adminCompetitionDeleteMessage(String title) {
+    return 'حذف \"$title\"؟';
+  }
+
+  @override
+  String get adminCompetitionDeleteConfirm => 'حذف';
+
+  @override
+  String get adminCompetitionDeleteSuccess => 'تم حذف المسابقة.';
+
+  @override
+  String get adminCompetitionDeleteError => 'تعذر حذف المسابقة.';
 }

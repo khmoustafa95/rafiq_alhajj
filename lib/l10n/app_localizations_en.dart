@@ -493,4 +493,259 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminUnknownOperator => 'Unknown operator';
+
+  @override
+  String get adminManageContent => 'Manage content library';
+
+  @override
+  String get adminContentListTitle => 'Content library';
+
+  @override
+  String get adminContentAdd => 'Add content';
+
+  @override
+  String get adminContentEdit => 'Edit';
+
+  @override
+  String get adminContentNewTitle => 'New content';
+
+  @override
+  String get adminContentEditTitle => 'Edit content';
+
+  @override
+  String get adminContentLoadError => 'Could not load content.';
+
+  @override
+  String get adminContentEmpty => 'No content yet. Add your first item.';
+
+  @override
+  String get adminContentNotFound => 'Content item not found.';
+
+  @override
+  String get adminContentTitleLabel => 'Title';
+
+  @override
+  String get adminContentTitleRequired => 'Enter a title';
+
+  @override
+  String get adminContentDescriptionLabel => 'Description';
+
+  @override
+  String get adminContentMediaUrlLabel => 'Media URL (optional)';
+
+  @override
+  String get adminContentTypeLabel => 'Type';
+
+  @override
+  String get adminContentVisibilityLabel => 'Visibility';
+
+  @override
+  String get adminContentTypeVideo => 'Video';
+
+  @override
+  String get adminContentTypeNews => 'News';
+
+  @override
+  String get adminContentTypeAnnouncement => 'Announcement';
+
+  @override
+  String get adminContentVisibilityPublic => 'Public (everyone)';
+
+  @override
+  String get adminContentVisibilityPilgrimOnly => 'Pilgrims only';
+
+  @override
+  String get adminContentSave => 'Save';
+
+  @override
+  String get adminContentSaveSuccess => 'Content updated.';
+
+  @override
+  String get adminContentCreateSuccess => 'Content published.';
+
+  @override
+  String get adminContentSaveError => 'Could not save content.';
+
+  @override
+  String get adminContentDeleteTitle => 'Delete content?';
+
+  @override
+  String adminContentDeleteMessage(String title) {
+    return 'Delete \"$title\"? This cannot be undone.';
+  }
+
+  @override
+  String get adminContentDeleteConfirm => 'Delete';
+
+  @override
+  String get adminContentDeleteSuccess => 'Content deleted.';
+
+  @override
+  String get adminContentDeleteError => 'Could not delete content.';
+
+  @override
+  String get dialogCancel => 'Cancel';
+
+  @override
+  String get operatorPilgrimListTitle => 'Registered pilgrims';
+
+  @override
+  String get operatorPilgrimSearchHint =>
+      'Search by name, passport, or permit number';
+
+  @override
+  String get operatorPilgrimListLoadError => 'Could not load pilgrim list.';
+
+  @override
+  String get operatorPilgrimListEmpty => 'No pilgrims registered yet.';
+
+  @override
+  String get operatorPilgrimNoLogisticsYet => 'No logistics on file';
+
+  @override
+  String get operatorPilgrimDetailTitle => 'Pilgrim record';
+
+  @override
+  String get operatorPilgrimDetailSubtitle =>
+      'Update travel and accommodation details (desk operator).';
+
+  @override
+  String get operatorPilgrimNotFound => 'Pilgrim not found.';
+
+  @override
+  String get operatorPilgrimTravelDateUnset => 'Not set';
+
+  @override
+  String get operatorPilgrimSave => 'Save changes';
+
+  @override
+  String get operatorPilgrimSaveSuccess => 'Pilgrim record updated.';
+
+  @override
+  String get operatorPilgrimSaveError => 'Could not save changes.';
+
+  @override
+  String get homeCompetitions => 'Competitions';
+
+  @override
+  String get competitionsTitle => 'Competitions';
+
+  @override
+  String get competitionsLoadError => 'Could not load competitions.';
+
+  @override
+  String get competitionsEmpty => 'No active competitions right now.';
+
+  @override
+  String get competitionsNoDescription => 'No description';
+
+  @override
+  String get competitionDetailTitle => 'Competition';
+
+  @override
+  String get competitionNotFound => 'Competition not found.';
+
+  @override
+  String get competitionSignInRequired =>
+      'Sign in as a pilgrim to join and earn points.';
+
+  @override
+  String get competitionClosed => 'This competition is not open for entries.';
+
+  @override
+  String get competitionJoin => 'Join competition';
+
+  @override
+  String get competitionJoinSuccess => 'You joined the competition.';
+
+  @override
+  String get competitionJoinError =>
+      'Could not join. Sign in as a pilgrim or try again.';
+
+  @override
+  String competitionYourScore(int score) {
+    return 'Your score: $score points';
+  }
+
+  @override
+  String get competitionRecordProgress => 'Record progress (+10)';
+
+  @override
+  String get competitionProgressRecorded => 'Progress recorded.';
+
+  @override
+  String get competitionProgressError => 'Could not update score.';
+
+  @override
+  String get competitionLeaderboard => 'Leaderboard';
+
+  @override
+  String get competitionLeaderboardEmpty => 'No participants yet.';
+
+  @override
+  String get competitionAnonymous => 'Pilgrim';
+
+  @override
+  String competitionPoints(int score) {
+    return '$score pts';
+  }
+
+  @override
+  String get adminManageCompetitions => 'Manage competitions';
+
+  @override
+  String get adminCompetitionsTitle => 'Competitions';
+
+  @override
+  String get adminCompetitionAdd => 'Add competition';
+
+  @override
+  String get adminCompetitionsLoadError => 'Could not load competitions.';
+
+  @override
+  String get adminCompetitionsEmpty => 'No competitions yet.';
+
+  @override
+  String get adminCompetitionNewTitle => 'New competition';
+
+  @override
+  String get adminCompetitionEditTitle => 'Edit competition';
+
+  @override
+  String get adminCompetitionStartsAt => 'Starts';
+
+  @override
+  String get adminCompetitionEndsAt => 'Ends';
+
+  @override
+  String get adminCompetitionActiveLabel => 'Active';
+
+  @override
+  String get adminCompetitionInactive => 'Inactive';
+
+  @override
+  String get adminCompetitionActive => 'Published';
+
+  @override
+  String get adminCompetitionSaveSuccess => 'Competition saved.';
+
+  @override
+  String get adminCompetitionSaveError => 'Could not save competition.';
+
+  @override
+  String get adminCompetitionDeleteTitle => 'Delete competition?';
+
+  @override
+  String adminCompetitionDeleteMessage(String title) {
+    return 'Delete \"$title\"?';
+  }
+
+  @override
+  String get adminCompetitionDeleteConfirm => 'Delete';
+
+  @override
+  String get adminCompetitionDeleteSuccess => 'Competition deleted.';
+
+  @override
+  String get adminCompetitionDeleteError => 'Could not delete competition.';
 }
