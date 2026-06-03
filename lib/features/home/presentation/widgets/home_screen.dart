@@ -13,6 +13,7 @@ import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_p
 import 'package:rafiq_alhajj/features/content/domain/models/content_item.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/public_content_feed_provider.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_section.dart';
+import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_bell_button.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 /// Home — US-01 public content + US-03 guest/pilgrim header.
@@ -67,6 +68,7 @@ class _HomeBody extends ConsumerWidget {
       appBar: AppBar(
         title: Text(l10n.homeTitle),
         actions: [
+          const NotificationBellButton(),
           if (isPilgrim)
             IconButton(
               onPressed: ref.read(signOutControllerProvider.notifier).signOut,

@@ -26,6 +26,7 @@ import 'package:rafiq_alhajj/features/islamic_tools/presentation/widgets/prayer_
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/widgets/qibla_screen.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/widgets/quran_surah_detail_screen.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/widgets/quran_surah_list_screen.dart';
+import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_list_screen.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_intake_screen.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_login_screen.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_pilgrim_detail_screen.dart';
@@ -62,6 +63,16 @@ GoRouter appRouter(Ref ref) {
       final isFieldOperatorRoute = location.startsWith('/operator/field');
       final isOperatorWebRoute =
           location.startsWith('/operator') && !isFieldOperatorRoute;
+
+      if (location == AppRoutes.notifications) {
+        if (accessMode == AppAccessMode.guest) {
+          if (AppPlatform.isWeb) {
+            return AppRoutes.operatorLogin;
+          }
+          return AppRoutes.login;
+        }
+        return null;
+      }
 
       if (AppPlatform.isWeb) {
         if (isFieldOperatorRoute) {
@@ -144,6 +155,11 @@ GoRouter appRouter(Ref ref) {
         path: AppRoutes.login,
         name: 'login',
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.notifications,
+        name: 'notifications',
+        builder: (context, state) => const NotificationListScreen(),
       ),
       GoRoute(
         path: AppRoutes.contentDetail,

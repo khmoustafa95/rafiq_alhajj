@@ -224,5 +224,10 @@
   "adminCompetitionDeleteMessage": "حذف \"{title}\"؟",
   "adminCompetitionDeleteConfirm": "حذف",
   "adminCompetitionDeleteSuccess": "تم حذف المسابقة.",
-  "adminCompetitionDeleteError": "تعذر حذف المسابقة."
+  "adminCompetitionDeleteError": "تعذر حذف المسابقة.",
+  "notificationsTitle": "الإشعارات",
+  "notificationsOpenInbox": "الإشعارات",
+  "notificationsEmpty": "لا توجد إشعارات بعد.",
+  "notificationsLoadError": "تعذر تحميل الإشعارات.",
+  "notificationsMarkAllRead": "تعليم الكل كمقروء"
 }

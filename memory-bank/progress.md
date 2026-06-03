@@ -28,6 +28,7 @@
 | CI (analyze + test) | ✅ `.github/workflows/flutter_ci.yml` |
 | Auth (US-03) | ✅ Login, pilgrim session, guest/pilgrim home |
 | Supabase migrations | ✅ profiles + RLS (local) |
+| In-app notifications (inbox) | ✅ MVP — table, inbox UI, badge, Realtime |
 
 ## Completed
 - [x] Memory Bank + linting + dependencies
@@ -49,7 +50,15 @@
 - [x] US-05 operator web intake (pilgrim registration + documents + credentials)
 - [x] US-06 field operator mobile (search pilgrims, update field status)
 - [x] US-07 admin analytics web (charts, pilgrim/group/operator metrics)
+## Backlog (notifications)
+- [ ] Admin broadcast compose UI
+- [ ] DB triggers (content published, competition created)
+- [ ] FCM push (device tokens + Edge Function)
+
 ## Changelog
+
+### 2026-06-03
+- **Notifications MVP:** `notifications` table + RLS + Realtime; `lib/features/notifications/`; route `/notifications`; bell + unread badge on pilgrim/operator/admin shells; AR/EN l10n.
 
 ### 2026-05-21 (session 2)
 - Crash reporting: `lib/core/telemetry/crash_reporter.dart`, wired in bootstrap + `main.dart`.

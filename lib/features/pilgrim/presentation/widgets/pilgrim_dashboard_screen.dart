@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_bell_button.dart';
 import 'package:rafiq_alhajj/features/pilgrim/presentation/providers/pilgrim_providers.dart';
 import 'package:rafiq_alhajj/features/pilgrim/presentation/widgets/pilgrim_logistics_card.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
@@ -21,6 +22,7 @@ class PilgrimDashboardScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.pilgrimDashboardTitle),
+        actions: const [NotificationBellButton()],
       ),
       body: dashboardAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),

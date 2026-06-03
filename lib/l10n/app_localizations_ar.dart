@@ -738,4 +738,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminCompetitionDeleteError => 'تعذر حذف المسابقة.';
+
+  @override
+  String get notificationsTitle => 'الإشعارات';
+
+  @override
+  String get notificationsOpenInbox => 'الإشعارات';
+
+  @override
+  String get notificationsEmpty => 'لا توجد إشعارات بعد.';
+
+  @override
+  String get notificationsLoadError => 'تعذر تحميل الإشعارات.';
+
+  @override
+  String get notificationsMarkAllRead => 'تعليم الكل كمقروء';
 }

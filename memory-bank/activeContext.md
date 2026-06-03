@@ -3,7 +3,13 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
-**Ops hardening complete** — crash reporting hook, CI, demo user seed script, Gradle JVM tuning.
+**In-app notifications MVP** — Supabase `notifications` table, inbox UI, bell badge + Realtime unread count.
+
+## Recent changes (2026-06-03)
+- Migration `20260603100000_notifications.sql` (RLS, Realtime, demo welcome rows for pilgrims).
+- Feature `lib/features/notifications/` — repository, Riverpod providers, list screen, deep links.
+- Route `/notifications`; bell on home (signed-in), pilgrim dashboard, admin/operator dashboards.
+- l10n keys `notifications*` (AR/EN).
 
 ## Recent changes (2026-05-21 session 2)
 - `CrashReporter` + `CRASH_REPORTING_ENABLED` for release telemetry wiring.
@@ -26,9 +32,9 @@
 - Web routing: operators → intake, admins → dashboard; link from operator login.
 
 ## Next steps
-1. `npm run setup` — reset DB + demo users (auto).
-2. `npm run dev` / `dev:android` — full feature smoke test.
-3. Confirm `flutter build apk --debug` on your PC (Gradle daemon may need RAM).
+1. `supabase db reset` then `npm run setup` — apply notifications migration + demo users.
+2. Sign in as `pilgrim@demo.local` — open bell → welcome notification → mark read.
+3. Phase 2: admin broadcast UI, content/competition triggers, FCM push.
 4. Production: hosted Supabase, Play Store signing, plug Sentry/Crashlytics into `ConfiguredCrashReporter`.
 
 ## Key paths

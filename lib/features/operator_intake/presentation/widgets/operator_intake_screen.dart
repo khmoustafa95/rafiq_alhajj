@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/controllers/sign_out_controller.dart';
+import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_bell_button.dart';
 import 'package:rafiq_alhajj/features/operator_intake/application/utils/credential_generator.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/pilgrim_intake_form.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/operator_intake_providers.dart';
@@ -144,6 +145,7 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
       appBar: AppBar(
         title: Text(l10n.operatorIntakeTitle),
         actions: [
+          const NotificationBellButton(),
           IconButton(
             onPressed: () => unawaited(context.push(AppRoutes.operatorPilgrims)),
             icon: const Icon(Icons.groups_outlined),

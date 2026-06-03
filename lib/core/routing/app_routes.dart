@@ -1,6 +1,7 @@
 /// Central route path constants for [GoRouter].
 abstract final class AppRoutes {
   static const String home = '/';
+  static const String notifications = '/notifications';
   static const String login = '/login';
   static const String contentDetail = '/content/:id';
   static const String tools = '/tools';

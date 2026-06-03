@@ -1452,6 +1452,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not delete competition.'**
   String get adminCompetitionDeleteError;
+
+  /// No description provided for @notificationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notificationsTitle;
+
+  /// No description provided for @notificationsOpenInbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notificationsOpenInbox;
+
+  /// No description provided for @notificationsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications yet.'**
+  String get notificationsEmpty;
+
+  /// No description provided for @notificationsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load notifications.'**
+  String get notificationsLoadError;
+
+  /// No description provided for @notificationsMarkAllRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all read'**
+  String get notificationsMarkAllRead;
 }
 
 class _AppLocalizationsDelegate

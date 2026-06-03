@@ -399,5 +399,10 @@
   },
   "adminCompetitionDeleteConfirm": "Delete",
   "adminCompetitionDeleteSuccess": "Competition deleted.",
-  "adminCompetitionDeleteError": "Could not delete competition."
+  "adminCompetitionDeleteError": "Could not delete competition.",
+  "notificationsTitle": "Notifications",
+  "notificationsOpenInbox": "Notifications",
+  "notificationsEmpty": "No notifications yet.",
+  "notificationsLoadError": "Could not load notifications.",
+  "notificationsMarkAllRead": "Mark all read"
 }

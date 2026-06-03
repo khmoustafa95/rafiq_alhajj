@@ -9,6 +9,7 @@ import 'package:rafiq_alhajj/features/admin_analytics/presentation/providers/adm
 import 'package:rafiq_alhajj/features/admin_analytics/presentation/widgets/admin_bar_chart_card.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/presentation/widgets/admin_pie_chart_card.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/controllers/sign_out_controller.dart';
+import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_bell_button.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 class AdminDashboardScreen extends ConsumerWidget {
@@ -24,6 +25,7 @@ class AdminDashboardScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(l10n.adminDashboardTitle),
         actions: [
+          const NotificationBellButton(),
           IconButton(
             onPressed: () {
               unawaited(

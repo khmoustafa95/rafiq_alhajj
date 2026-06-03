@@ -748,4 +748,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminCompetitionDeleteError => 'Could not delete competition.';
+
+  @override
+  String get notificationsTitle => 'Notifications';
+
+  @override
+  String get notificationsOpenInbox => 'Notifications';
+
+  @override
+  String get notificationsEmpty => 'No notifications yet.';
+
+  @override
+  String get notificationsLoadError => 'Could not load notifications.';
+
+  @override
+  String get notificationsMarkAllRead => 'Mark all read';
 }
