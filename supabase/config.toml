@@ -372,6 +372,8 @@ inspector_port = 8083
 # The Deno major version to use.
 deno_version = 2
 
+# Edge Function secrets for push (set via `supabase secrets set` or supabase/.env):
+# FIREBASE_SERVICE_ACCOUNT_JSON, PUSH_WEBHOOK_SECRET — see docs/push-notifications-setup.md
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
 

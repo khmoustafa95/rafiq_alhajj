@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/routing/root_navigator_key.dart';
 import 'package:rafiq_alhajj/core/routing/router_refresh_notifier.dart';
 import 'package:rafiq_alhajj/core/routing/widgets/route_not_found_screen.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/presentation/widgets/admin_dashboard_screen.dart';
@@ -39,7 +40,6 @@ part 'app_router.g.dart';
 
 @Riverpod(keepAlive: true)
 GoRouter appRouter(Ref ref) {
-  final rootNavigatorKey = GlobalKey<NavigatorState>();
   final refresh = ref.watch(appRouterRefreshProvider);
 
   return GoRouter(

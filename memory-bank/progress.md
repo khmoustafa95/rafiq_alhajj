@@ -29,6 +29,7 @@
 | Auth (US-03) | ✅ Login, pilgrim session, guest/pilgrim home |
 | Supabase migrations | ✅ profiles + RLS (local) |
 | In-app notifications (inbox) | ✅ Inbox, badge, Realtime, broadcast, triggers, SnackBar |
+| FCM push (phase 3) | ✅ device_tokens, Edge Function, Flutter registration (needs Firebase project) |
 
 ## Completed
 - [x] Memory Bank + linting + dependencies
@@ -54,9 +55,12 @@
 - [x] Admin broadcast compose UI
 - [x] DB triggers (content published, competition activated)
 - [x] In-session SnackBar on new notification
-- [ ] FCM push (device tokens + Edge Function)
+- [x] FCM push (device tokens + Edge Function)
 
 ## Changelog
+
+### 2026-06-03 (phase 3)
+- **FCM push:** `device_tokens`, Edge `send-push-notification`, pg_net trigger, Flutter FCM bind/unbind, `docs/push-notifications-setup.md`.
 
 ### 2026-06-03 (phase 2)
 - **Notifications:** RPC broadcast, content/competition triggers, `/admin/notifications/send`, `NotificationToastHost` SnackBar.

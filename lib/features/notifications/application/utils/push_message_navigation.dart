@@ -1,0 +1,37 @@
+import 'dart:async';
+
+import 'package:go_router/go_router.dart';
+import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/routing/root_navigator_key.dart';
+
+/// Navigates from FCM [data] payload (`route`, `id`).
+void navigateFromPushData(Map<String, dynamic> data) {
+  final context = rootNavigatorKey.currentContext;
+  if (context == null) {
+    return;
+  }
+
+  final route = data['route'] as String?;
+  final id = data['id'] as String?;
+
+  switch (route) {
+    case 'content':
+      if (id != null && id.isNotEmpty) {
+        unawaited(context.push(AppRoutes.contentDetailPath(id)));
+      }
+    case 'competition':
+      if (id != null && id.isNotEmpty) {
+        unawaited(context.push(AppRoutes.competitionDetailPath(id)));
+      }
+    case 'pilgrim':
+      unawaited(context.push(AppRoutes.pilgrimDashboard));
+    case 'competitions':
+      unawaited(context.push(AppRoutes.competitions));
+    case 'home':
+      context.go(AppRoutes.home);
+    case 'notifications':
+      unawaited(context.push(AppRoutes.notifications));
+    default:
+      unawaited(context.push(AppRoutes.notifications));
+  }
+}

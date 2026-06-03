@@ -10,9 +10,31 @@ abstract final class AppConfig {
     'CRASH_REPORTING_ENABLED',
   );
 
+  static const String firebaseProjectId =
+      String.fromEnvironment('FIREBASE_PROJECT_ID');
+
+  static const String firebaseApiKey =
+      String.fromEnvironment('FIREBASE_API_KEY');
+
+  static const String firebaseAppId = String.fromEnvironment('FIREBASE_APP_ID');
+
+  static const String firebaseMessagingSenderId =
+      String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID');
+
+  static const String firebaseIosBundleId = String.fromEnvironment(
+    'FIREBASE_IOS_BUNDLE_ID',
+    defaultValue: 'com.example.rafiqAlhajj',
+  );
+
   static const double designWidth = 375;
   static const double designHeight = 812;
 
   static bool get hasSupabase =>
       supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
+
+  static bool get hasFirebase =>
+      firebaseProjectId.isNotEmpty &&
+      firebaseApiKey.isNotEmpty &&
+      firebaseAppId.isNotEmpty &&
+      firebaseMessagingSenderId.isNotEmpty;
 }

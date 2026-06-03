@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/routing/app_router.dart';
 import 'package:rafiq_alhajj/core/theme/app_theme.dart';
+import 'package:rafiq_alhajj/features/notifications/presentation/providers/push_notification_providers.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_toast_host.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
@@ -15,6 +16,7 @@ class AppRoot extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
+    ref.watch(pushNotificationBindingProvider);
 
     return ScreenUtilInit(
       designSize: const Size(

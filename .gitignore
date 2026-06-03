@@ -53,6 +53,9 @@ app.*.map.json
 .env.*
 dart_defines.local.json
 dart_defines.android.local.json
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+supabase/.env
 
 # iOS/Xcode generated
 **/ios/**/Pods/

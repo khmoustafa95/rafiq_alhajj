@@ -3,7 +3,13 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
-**Notifications phase 2** — admin broadcast, auto triggers, in-session SnackBar.
+**Notifications phase 3 (FCM)** — device tokens, Edge Function push, mobile registration.
+
+## Recent changes (2026-06-03, phase 3)
+- `device_tokens` table + `send-push-notification` Edge Function (firebase-admin).
+- pg_net trigger on `notifications` INSERT → Edge Function.
+- Flutter: `firebase_core` / `firebase_messaging`, token sync on auth, tap → route.
+- Docs: `docs/push-notifications-setup.md`, runbook §11.
 
 ## Recent changes (2026-06-03, phase 2)
 - Migration `20260603110000_notifications_phase2.sql` — RPC `send_notification_broadcast`, triggers on `content_library` / `competitions`.
@@ -39,7 +45,7 @@
 1. `supabase db reset` + `npm run setup` — apply phase 2 migration.
 2. Admin: **Send notification** → all pilgrims; pilgrim device shows SnackBar + badge.
 3. Admin: add CMS content or active competition → pilgrims get auto notifications.
-4. Phase 3 (optional): FCM push + `device_tokens` table.
+4. Configure Firebase + `google-services.json` + Edge secrets; test push on Android.
 
 ## Key paths
 | Concern | Location |

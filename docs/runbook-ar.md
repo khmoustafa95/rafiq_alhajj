@@ -303,11 +303,25 @@ flutter run -d chrome --dart-define-from-file=dart_defines.local.json
 
 ---
 
-## 11. ملفات مرتبطة في المستودع
+## 11. إشعارات Push (FCM) — المرحلة 3
+
+1. أنشئ مشروع Firebase وأضف تطبيق Android/iOS.
+2. ضع `google-services.json` في `android/app/` (انظر `google-services.json.example`).
+3. أضف مفاتيح `FIREBASE_*` إلى `dart_defines.android.local.json` (انظر `dart_defines.android.local.example.json`).
+4. عيّن أسرار Edge Function: `FIREBASE_SERVICE_ACCOUNT_JSON` و `PUSH_WEBHOOK_SECRET` (انظر `supabase/.env.example`).
+5. `supabase db reset` ثم سجّل دخول حاج على الموبايل — يُحفظ الرمز في `device_tokens`.
+6. من لوحة المسؤول: **إرسال إشعار** — يصل Push خارج التطبيق.
+
+التفاصيل بالإنجليزية: [push-notifications-setup.md](./push-notifications-setup.md).
+
+---
+
+## 12. ملفات مرتبطة في المستودع
 
 | الملف | الغرض |
 |-------|--------|
 | `dart_defines.local.example.json` | قالب تكوين Supabase |
+| `docs/push-notifications-setup.md` | إعداد FCM و Edge Function |
 | `.vscode/launch.json` | إعدادات التشغيل في المحرر |
 | `supabase/seed.sql` | بيانات تجريبية + تعليقات حسابات Auth |
 | `lib/core/routing/app_routes.dart` | ثوابت المسارات |
@@ -315,4 +329,4 @@ flutter run -d chrome --dart-define-from-file=dart_defines.local.json
 
 ---
 
-*آخر تحديث: 2026-05-21 — يغطي US-01 إلى US-07.*
+*آخر تحديث: 2026-06-03 — يشمل إشعارات Push (FCM).*

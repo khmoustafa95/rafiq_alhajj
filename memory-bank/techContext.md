@@ -15,6 +15,7 @@
 | Responsiveness | `flutter_screenutil` | ^5.9.3 |
 | Codegen runner | `build_runner` | ^2.15.0 |
 | Lints | `flutter_lints` | ^6.0.0 |
+| Push (FCM) | `firebase_core` / `firebase_messaging` | ^3.15 / ^15.2 |
 
 ## Dev environment
 - **OS:** Windows 10
@@ -49,6 +50,7 @@ npm run dev:android    # Android emulator/device
 - **Arabic runbook:** `docs/runbook-ar.md` — Supabase setup, `dart_defines.*.json`, demo accounts (`demo123456`), Chrome vs mobile flows.
 - **Templates:** `dart_defines.local.example.json`, `dart_defines.android.local.example.json`, `dart_defines.staging.example.json`, `dart_defines.production.example.json`.
 - **Crash reporting:** `CRASH_REPORTING_ENABLED=true` in release dart-defines; wire Sentry/Crashlytics in `ConfiguredCrashReporter`.
+- **Push (FCM):** `docs/push-notifications-setup.md`; `FIREBASE_*` dart-defines; Edge secrets `FIREBASE_SERVICE_ACCOUNT_JSON`, `PUSH_WEBHOOK_SECRET`.
 
 ## Version notes
 - `json_annotation` pinned to **^4.11.0** (not 4.12) so `riverpod_generator` + `json_serializable` resolve with Flutter SDK `meta` pin.

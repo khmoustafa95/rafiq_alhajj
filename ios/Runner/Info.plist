@@ -61,6 +61,10 @@
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Rafiq Al-Hajj uses your location to calculate prayer times and Qibla direction.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
