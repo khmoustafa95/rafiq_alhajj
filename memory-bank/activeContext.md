@@ -5,6 +5,27 @@
 ## Current focus
 **Notifications phase 3 (FCM)** — device tokens, Edge Function push, mobile registration.
 
+## Recent changes (2026-06-05, performance / rebuild optimization)
+- Derived auth providers: `authAccessModeProvider`, `authProfileIdProvider`, `authProfileFullNameProvider` — dependents rebuild only when value changes.
+- Router refresh listens to `authAccessModeProvider` only (not every Supabase token refresh).
+- `PushNotificationStarter` moved below `MaterialApp` so FCM init does not rebuild the whole app tree.
+- Widget splits / `select`: Qibla compass, notification bell, competition actions, mark-all-read, login submit buttons.
+- Pilgrim ritual toggle: optimistic update (no full-screen loading flash).
+
+## Recent changes (2026-06-05, Android emulator OOM)
+- Diagnosed `Lost connection to device`: Android **lowmemorykiller** kills app (~460 MB RSS) when emulator RAM/swap low.
+- Runbook §3b + §9: increase AVD RAM to 4 GB+, prefer `gphone64` over `gphone16k`, logcat check.
+- GoRouter `debugLogDiagnostics` via `AppConfig.routerDebugLogDiagnostics` (opt-in `--dart-define=ROUTER_DEBUG_LOG=true`); avoids `avoid_redundant_argument_values` lint when off.
+
+## Recent changes (2026-06-05, Supabase sign-in fix)
+- Android Gradle auto-loads `dart_defines.android.local.json` when Supabase keys missing from CLI.
+- Debug manifest: `usesCleartextTraffic=true` for local HTTP Supabase.
+- Auth errors split: missing config vs network connection (`authErrorNetworkConnection`).
+
+## Recent changes (2026-06-03, zone fix)
+- **`main.dart`:** `WidgetsFlutterBinding.ensureInitialized()` and FCM background handler moved **inside** `runZonedGuarded` so `runApp` and binding init share the same Zone (fixes Zone mismatch warning).
+- Removed duplicate `ensureInitialized` from `AppBootstrap.initialize()`.
+
 ## Recent changes (2026-06-03, phase 3)
 - `device_tokens` table + `send-push-notification` Edge Function (firebase-admin).
 - pg_net trigger on `notifications` INSERT → Edge Function.
@@ -42,10 +63,10 @@
 - Web routing: operators → intake, admins → dashboard; link from operator login.
 
 ## Next steps
-1. `supabase db reset` + `npm run setup` — apply phase 2 migration.
-2. Admin: **Send notification** → all pilgrims; pilgrim device shows SnackBar + badge.
-3. Admin: add CMS content or active competition → pilgrims get auto notifications.
-4. Configure Firebase + `google-services.json` + Edge secrets; test push on Android.
+1. Run app with dart-defines: `flutter run --dart-define-from-file=dart_defines.android.local.json`
+2. If sign-in fails: use JWT `ANON_KEY` from `supabase status -o env` (not Publishable key); confirm Supabase running; try without VPN.
+3. `supabase db reset` + `npm run setup` if needed for notification migrations.
+4. Configure Firebase when ready for push (see `docs/push-notifications-setup.md`).
 
 ## Key paths
 | Concern | Location |

@@ -126,6 +126,10 @@ class AppLocalizationsAr extends AppLocalizations {
       'تسجيل الدخول يتطلب Supabase. شغّل التطبيق بإعدادات التطوير المحلية.';
 
   @override
+  String get authErrorNetworkConnection =>
+      'تعذّر الاتصال بـ Supabase. تأكد أن Supabase يعمل محلياً وجرب بدون VPN.';
+
+  @override
   String get authErrorUnknown => 'فشل تسجيل الدخول. حاول مرة أخرى.';
 
   @override

@@ -1,32 +1,65 @@
 # Creates local demo Auth users via Supabase Admin API (after db reset).
+# User data (incl. Arabic names) lives in seed-demo-users.json (UTF-8) to avoid PS encoding issues.
 $ErrorActionPreference = "Stop"
-Set-Location $PSScriptRoot\..
+Set-Location (Join-Path $PSScriptRoot "..")
 
 function Get-ServiceRoleKey {
-    $envFile = Join-Path (Get-Location) ".env.local"
-    if (Test-Path $envFile) {
-        foreach ($line in Get-Content $envFile) {
-            if ($line -match '^SERVICE_ROLE_KEY=(.+)$') {
-                return $Matches[1].Trim().Trim('"')
+    $candidates = @(
+        (Join-Path (Get-Location) ".env.local"),
+        (Join-Path (Get-Location) "supabase\.env")
+    )
+
+    foreach ($envFile in $candidates) {
+        if (-not (Test-Path $envFile)) {
+            continue
+        }
+        foreach ($line in Get-Content $envFile -Encoding UTF8) {
+            if ($line -match '^(SERVICE_ROLE_KEY|SUPABASE_SERVICE_ROLE_KEY)=(.+)$') {
+                return $Matches[2].Trim().Trim('"').Trim("'")
             }
         }
     }
 
-    $status = supabase status -o env 2>&1 | Out-String
-    if ($status -match 'SERVICE_ROLE_KEY="?([^"\r\n]+)"?') {
-        return $Matches[1]
+    $prevEap = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        $status = (supabase status -o env 2>&1) | Out-String
+    } finally {
+        $ErrorActionPreference = $prevEap
     }
-    if ($status -match "SERVICE_ROLE_KEY='([^']+)'") {
-        return $Matches[1]
+    $patterns = @(
+        'SERVICE_ROLE_KEY="([^"]+)"',
+        "SERVICE_ROLE_KEY='([^']+)'",
+        'SERVICE_ROLE_KEY=([^\s\r\n]+)',
+        'SUPABASE_SERVICE_ROLE_KEY="([^"]+)"',
+        "SUPABASE_SERVICE_ROLE_KEY='([^']+)'",
+        'SECRET_KEY="([^"]+)"',
+        "SECRET_KEY='([^']+)'"
+    )
+
+    foreach ($pattern in $patterns) {
+        if ($status -match $pattern) {
+            return $Matches[1]
+        }
     }
+
     return $null
 }
 
 $key = Get-ServiceRoleKey
 if (-not $key) {
-    Write-Warning "Could not read SERVICE_ROLE_KEY. Create users manually in Studio."
-    exit 0
+    Write-Warning "Could not read SERVICE_ROLE_KEY. Run: supabase status -o env"
+    Write-Warning "Or add SERVICE_ROLE_KEY=... to .env.local (see supabase/.env.example). Create users in Studio if needed."
+    exit 1
 }
+
+$usersFile = Join-Path $PSScriptRoot "seed-demo-users.json"
+if (-not (Test-Path $usersFile)) {
+    Write-Error "Missing $usersFile"
+}
+
+$usersJson = Get-Content $usersFile -Raw -Encoding UTF8
+$users = $usersJson | ConvertFrom-Json
 
 $baseUrl = "http://127.0.0.1:54321"
 $headers = @{
@@ -35,30 +68,12 @@ $headers = @{
     "Content-Type" = "application/json"
 }
 
-$users = @(
-    @{
-        email    = "pilgrim@demo.local"
-        password = "demo123456"
-        metadata = @{ role = "pilgrim"; full_name = "أحمد الحاج" }
-    },
-    @{
-        email    = "operator@demo.local"
-        password = "demo123456"
-        metadata = @{ role = "operator"; full_name = "محمد التقني" }
-    },
-    @{
-        email    = "admin@demo.local"
-        password = "demo123456"
-        metadata = @{ role = "admin"; full_name = "خالد المسؤول" }
-    }
-)
-
 foreach ($u in $users) {
     $body = @{
-        email          = $u.email
-        password       = $u.password
-        email_confirm  = $true
-        user_metadata  = $u.metadata
+        email         = $u.email
+        password      = $u.password
+        email_confirm = $true
+        user_metadata = $u.metadata
     } | ConvertTo-Json -Depth 5 -Compress
 
     try {
@@ -67,6 +82,7 @@ foreach ($u in $users) {
             -Method Post `
             -Headers $headers `
             -Body $body
+
         Write-Host "Created $($u.email)" -ForegroundColor Green
     } catch {
         $msg = $_.Exception.Message
@@ -77,3 +93,6 @@ foreach ($u in $users) {
         }
     }
 }
+
+Write-Host ""
+Write-Host "Demo password for all accounts: demo123456" -ForegroundColor Yellow

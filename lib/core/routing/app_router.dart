@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/routing/root_navigator_key.dart';
@@ -44,10 +44,11 @@ GoRouter appRouter(Ref ref) {
 
   return GoRouter(
     navigatorKey: rootNavigatorKey,
-    initialLocation:
-        AppPlatform.isWeb ? AppRoutes.operatorLogin : AppRoutes.home,
+    initialLocation: AppPlatform.isWeb
+        ? AppRoutes.operatorLogin
+        : AppRoutes.home,
     refreshListenable: refresh,
-    debugLogDiagnostics: true,
+    debugLogDiagnostics: AppConfig.routerDebugLogDiagnostics,
     redirect: (context, state) {
       final sessionAsync = ref.read(authSessionProvider);
       final location = state.matchedLocation;
@@ -120,8 +121,7 @@ GoRouter appRouter(Ref ref) {
       }
 
       if (isOperator) {
-        if (!isFieldOperatorRoute ||
-            location == AppRoutes.fieldOperatorLogin) {
+        if (!isFieldOperatorRoute || location == AppRoutes.fieldOperatorLogin) {
           return AppRoutes.fieldOperatorHome;
         }
         return null;
@@ -131,8 +131,7 @@ GoRouter appRouter(Ref ref) {
         return AppRoutes.adminLogin;
       }
 
-      if (isFieldOperatorRoute &&
-          location != AppRoutes.fieldOperatorLogin) {
+      if (isFieldOperatorRoute && location != AppRoutes.fieldOperatorLogin) {
         return AppRoutes.fieldOperatorLogin;
       }
 
@@ -211,8 +210,7 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: AppRoutes.adminNotificationSend,
         name: 'adminNotificationSend',
-        builder: (context, state) =>
-            const AdminNotificationBroadcastScreen(),
+        builder: (context, state) => const AdminNotificationBroadcastScreen(),
       ),
       GoRoute(
         path: AppRoutes.adminContent,
@@ -305,8 +303,9 @@ GoRouter appRouter(Ref ref) {
                 path: ':surahNumber',
                 name: 'quranSurah',
                 builder: (context, state) {
-                  final surahNumber =
-                      int.parse(state.pathParameters['surahNumber']!);
+                  final surahNumber = int.parse(
+                    state.pathParameters['surahNumber']!,
+                  );
                   return QuranSurahDetailScreen(surahNumber: surahNumber);
                 },
               ),
@@ -320,8 +319,7 @@ GoRouter appRouter(Ref ref) {
         ],
       ),
     ],
-    errorBuilder: (context, state) => RouteNotFoundScreen(
-      location: state.uri.toString(),
-    ),
+    errorBuilder: (context, state) =>
+        RouteNotFoundScreen(location: state.uri.toString()),
   );
 }

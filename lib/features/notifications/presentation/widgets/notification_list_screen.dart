@@ -22,23 +22,7 @@ class NotificationListScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.notificationsTitle),
-        actions: [
-          inboxAsync.maybeWhen(
-            data: (items) {
-              final hasUnread = items.any((item) => !item.isRead);
-              if (!hasUnread) {
-                return const SizedBox.shrink();
-              }
-              return TextButton(
-                onPressed: () => unawaited(
-                  ref.read(notificationInboxProvider.notifier).markAllAsRead(),
-                ),
-                child: Text(l10n.notificationsMarkAllRead),
-              );
-            },
-            orElse: () => const SizedBox.shrink(),
-          ),
-        ],
+        actions: const [_MarkAllReadAction()],
       ),
       body: inboxAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -93,6 +77,31 @@ class NotificationListScreen extends ConsumerWidget {
       return;
     }
     navigateFromNotification(context, notification);
+  }
+}
+
+class _MarkAllReadAction extends ConsumerWidget {
+  const _MarkAllReadAction();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final hasUnread = ref.watch(
+      notificationInboxProvider.select(
+        (async) => async.value?.any((item) => !item.isRead) ?? false,
+      ),
+    );
+
+    if (!hasUnread) {
+      return const SizedBox.shrink();
+    }
+
+    return TextButton(
+      onPressed: () => unawaited(
+        ref.read(notificationInboxProvider.notifier).markAllAsRead(),
+      ),
+      child: Text(l10n.notificationsMarkAllRead),
+    );
   }
 }
 

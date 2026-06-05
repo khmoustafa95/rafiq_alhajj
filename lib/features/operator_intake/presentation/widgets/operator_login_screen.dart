@@ -43,7 +43,9 @@ class _OperatorLoginScreenState extends ConsumerState<OperatorLoginScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final loginState = ref.watch(operatorLoginControllerProvider);
+    final isLoading = ref.watch(
+      operatorLoginControllerProvider.select((state) => state.isLoading),
+    );
 
     ref.listen(operatorLoginControllerProvider, (previous, next) {
       if (next.hasError && !next.isLoading) {
@@ -102,8 +104,8 @@ class _OperatorLoginScreenState extends ConsumerState<OperatorLoginScreen> {
                   ),
                   SizedBox(height: 24.h),
                   FilledButton(
-                    onPressed: loginState.isLoading ? null : _submit,
-                    child: loginState.isLoading
+                    onPressed: isLoading ? null : _submit,
+                    child: isLoading
                         ? const CircularProgressIndicator()
                         : Text(l10n.loginSubmit),
                   ),

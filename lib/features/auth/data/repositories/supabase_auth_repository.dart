@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:rafiq_alhajj/features/auth/data/dtos/profile_dto.dart';
 import 'package:rafiq_alhajj/features/auth/data/repositories/auth_repository.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
@@ -22,6 +24,7 @@ enum PilgrimAuthErrorCode {
   notAdminRole,
   profileNotFound,
   network,
+  configMissing,
   unknown,
 }
 
@@ -85,6 +88,8 @@ class SupabaseAuthRepository implements AuthRepository {
       throw PilgrimAuthException(_mapAuthException(e));
     } on PostgrestException {
       throw const PilgrimAuthException(PilgrimAuthErrorCode.network);
+    } on SocketException {
+      throw const PilgrimAuthException(PilgrimAuthErrorCode.network);
     }
   }
 
@@ -119,6 +124,8 @@ class SupabaseAuthRepository implements AuthRepository {
     } on AuthException catch (e) {
       throw PilgrimAuthException(_mapAuthException(e));
     } on PostgrestException {
+      throw const PilgrimAuthException(PilgrimAuthErrorCode.network);
+    } on SocketException {
       throw const PilgrimAuthException(PilgrimAuthErrorCode.network);
     }
   }
@@ -155,6 +162,8 @@ class SupabaseAuthRepository implements AuthRepository {
       throw PilgrimAuthException(_mapAuthException(e));
     } on PostgrestException {
       throw const PilgrimAuthException(PilgrimAuthErrorCode.network);
+    } on SocketException {
+      throw const PilgrimAuthException(PilgrimAuthErrorCode.network);
     }
   }
 
@@ -184,6 +193,12 @@ class SupabaseAuthRepository implements AuthRepository {
     }
     if (message.contains('confirm') || message.contains('verified')) {
       return PilgrimAuthErrorCode.emailNotConfirmed;
+    }
+    if (message.contains('network') ||
+        message.contains('connection') ||
+        message.contains('socket') ||
+        message.contains('failed host lookup')) {
+      return PilgrimAuthErrorCode.network;
     }
     return PilgrimAuthErrorCode.unknown;
   }

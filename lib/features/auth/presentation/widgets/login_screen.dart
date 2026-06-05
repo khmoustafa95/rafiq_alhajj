@@ -51,7 +51,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final colorScheme = Theme.of(context).colorScheme;
-    final loginState = ref.watch(loginControllerProvider);
+    final isLoading = ref.watch(
+      loginControllerProvider.select((state) => state.isLoading),
+    );
 
     ref.listen(loginControllerProvider, (previous, next) {
       if (next.hasError && !next.isLoading) {
@@ -152,10 +154,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 SizedBox(height: 32.h),
                 FilledButton(
-                  onPressed: loginState.isLoading || !AppConfig.hasSupabase
+                  onPressed: isLoading || !AppConfig.hasSupabase
                       ? null
                       : _submit,
-                  child: loginState.isLoading
+                  child: isLoading
                       ? SizedBox(
                           height: 24.h,
                           width: 24.w,

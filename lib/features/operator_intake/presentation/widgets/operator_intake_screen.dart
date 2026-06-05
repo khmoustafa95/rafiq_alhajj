@@ -137,7 +137,9 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final intakeState = ref.watch(operatorIntakeControllerProvider);
+    final isSubmitting = ref.watch(
+      operatorIntakeControllerProvider.select((state) => state.isLoading),
+    );
     final controller = ref.read(operatorIntakeControllerProvider.notifier);
     final pickedCount = controller.pickedFiles.length;
 
@@ -260,8 +262,8 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
             ),
             SizedBox(height: 32.h),
             FilledButton(
-              onPressed: intakeState.isLoading ? null : _submit,
-              child: intakeState.isLoading
+              onPressed: isSubmitting ? null : _submit,
+              child: isSubmitting
                   ? const CircularProgressIndicator()
                   : Text(l10n.operatorSubmitPilgrim),
             ),

@@ -189,7 +189,7 @@ final class CompetitionDetailProvider
   }
 }
 
-String _$competitionDetailHash() => r'94caf520e2812f28b4095b0f4f47d798ef40e57a';
+String _$competitionDetailHash() => r'eaeb475861dd8da0654657bbd7714ccd2fdd5d42';
 
 final class CompetitionDetailFamily extends $Family
     with

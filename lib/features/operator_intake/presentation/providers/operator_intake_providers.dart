@@ -1,7 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
-import 'package:rafiq_alhajj/features/auth/domain/models/auth_session_state.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/features/operator_intake/application/services/pilgrim_intake_service.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/created_pilgrim_account.dart';
@@ -21,14 +20,10 @@ PilgrimIntakeService pilgrimIntakeService(Ref ref) {
 
 @riverpod
 String? operatorUserId(Ref ref) {
-  final session = ref.watch(authSessionProvider).value;
-  if (session is! AuthenticatedAuthSession) {
+  if (ref.watch(authAccessModeProvider) != AppAccessMode.operator) {
     return null;
   }
-  if (session.accessMode != AppAccessMode.operator) {
-    return null;
-  }
-  return session.profile.id;
+  return ref.watch(authProfileIdProvider);
 }
 
 @riverpod

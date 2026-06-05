@@ -14,8 +14,13 @@ Arabic summary is in [runbook-ar.md](./runbook-ar.md#push-fcm) (add anchor secti
 2. Add an **Android** app (`com.example.rafiq_alhajj` or your applicationId).
 3. Add an **iOS** app (bundle id must match `FIREBASE_IOS_BUNDLE_ID`).
 4. Download `google-services.json` → `android/app/google-services.json` (gitignored).
-5. Download `GoogleService-Info.plist` → `ios/Runner/GoogleService-Info.plist` (gitignored).
-6. Enable **Cloud Messaging**; create a **Service account** key (JSON) for the Edge Function.
+5. Enable the Gradle plugin (required for Android FCM build):
+   - In `android/settings.gradle.kts` add:
+     `id("com.google.gms.google-services") version "4.4.2" apply false`
+   - In `android/app/build.gradle.kts` at the bottom add:
+     `apply(plugin = "com.google.gms.google-services")`
+6. Download `GoogleService-Info.plist` → `ios/Runner/GoogleService-Info.plist` (gitignored).
+7. Enable **Cloud Messaging**; create a **Service account** key (JSON) for the Edge Function.
 
 ## 2. Dart defines (mobile)
 

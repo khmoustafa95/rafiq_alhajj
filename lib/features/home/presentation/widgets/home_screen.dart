@@ -28,19 +28,26 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final sessionAsync = ref.watch(authSessionProvider);
+    final isPilgrim =
+        ref.watch(authAccessModeProvider) == AppAccessMode.pilgrim;
+    final pilgrimName = ref.watch(authProfileFullNameProvider);
 
-    return sessionAsync.when(
-      loading: () => const Scaffold(
+    if (sessionAsync.isLoading && !sessionAsync.hasValue) {
+      return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
-      ),
-      error: (_, _) => Scaffold(
+      );
+    }
+
+    if (sessionAsync.hasError && !sessionAsync.hasValue) {
+      return Scaffold(
         body: Center(child: Text(l10n.authErrorUnknown)),
-      ),
-      data: (session) => _HomeBody(
-        isPilgrim: session.accessMode == AppAccessMode.pilgrim,
-        pilgrimName: session.profileOrNull?.fullName,
-        onContentTap: (item) => _openContent(context, item),
-      ),
+      );
+    }
+
+    return _HomeBody(
+      isPilgrim: isPilgrim,
+      pilgrimName: pilgrimName,
+      onContentTap: (item) => _openContent(context, item),
     );
   }
 }

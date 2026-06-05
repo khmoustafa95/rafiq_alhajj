@@ -1,6 +1,5 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
-import 'package:rafiq_alhajj/features/auth/domain/models/auth_session_state.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/features/pilgrim/application/services/pilgrim_dashboard_service.dart';
 import 'package:rafiq_alhajj/features/pilgrim/data/repositories/pilgrim_remote_repository.dart';
@@ -24,14 +23,10 @@ PilgrimDashboardService pilgrimDashboardService(Ref ref) {
 
 @riverpod
 String? pilgrimUserId(Ref ref) {
-  final session = ref.watch(authSessionProvider).value;
-  if (session is! AuthenticatedAuthSession) {
+  if (ref.watch(authAccessModeProvider) != AppAccessMode.pilgrim) {
     return null;
   }
-  if (session.accessMode != AppAccessMode.pilgrim) {
-    return null;
-  }
-  return session.profile.id;
+  return ref.watch(authProfileIdProvider);
 }
 
 @riverpod
@@ -61,7 +56,10 @@ class PilgrimDashboardState extends _$PilgrimDashboardState {
     }
 
     final previous = state.value;
-    state = const AsyncLoading();
+    if (previous != null) {
+      state = AsyncData(_withRitualUpdated(previous, ritualKey, completed));
+    }
+
     state = await AsyncValue.guard(() async {
       return ref.read(pilgrimDashboardServiceProvider).toggleRitual(
             pilgrimId: pilgrimId,
@@ -73,6 +71,27 @@ class PilgrimDashboardState extends _$PilgrimDashboardState {
       state = AsyncData(previous);
     }
   }
+}
+
+PilgrimDashboard _withRitualUpdated(
+  PilgrimDashboard dashboard,
+  String ritualKey,
+  bool completed,
+) {
+  return dashboard.copyWith(
+    hasPendingSync: true,
+    rituals: dashboard.rituals
+        .map(
+          (ritual) => ritual.definition.key != ritualKey
+              ? ritual
+              : ritual.copyWith(
+                  isCompleted: completed,
+                  completedAt: completed ? DateTime.now() : null,
+                  pendingSync: true,
+                ),
+        )
+        .toList(),
+  );
 }
 
 class PilgrimAccessDeniedException implements Exception {

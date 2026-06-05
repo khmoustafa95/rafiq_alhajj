@@ -12,14 +12,16 @@ import 'package:rafiq_alhajj/core/widgets/bootstrap_failure_app.dart';
 import 'package:rafiq_alhajj/features/notifications/application/services/push_background_handler.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  if (AppConfig.hasFirebase && !kIsWeb) {
-    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-  }
-
   await runZonedGuarded(
     () async {
+      WidgetsFlutterBinding.ensureInitialized();
+
+      if (AppConfig.hasFirebase && !kIsWeb) {
+        FirebaseMessaging.onBackgroundMessage(
+          firebaseMessagingBackgroundHandler,
+        );
+      }
+
       await _launchApp();
     },
     (error, stackTrace) {
@@ -50,8 +52,6 @@ void _runBootstrapFailureApp(
   Object error, {
   Future<void> Function()? onRetry,
 }) {
-  WidgetsFlutterBinding.ensureInitialized();
-
   runApp(
     BootstrapFailureApp(
       error: error,

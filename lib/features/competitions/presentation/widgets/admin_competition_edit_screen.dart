@@ -106,8 +106,9 @@ class _AdminCompetitionEditScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final saveState = ref.watch(adminCompetitionSaveProvider);
-    final isSaving = saveState.isLoading;
+    final isSaving = ref.watch(
+      adminCompetitionSaveProvider.select((state) => state.isLoading),
+    );
 
     if (_isEditing) {
       final listAsync = ref.watch(adminCompetitionListProvider);

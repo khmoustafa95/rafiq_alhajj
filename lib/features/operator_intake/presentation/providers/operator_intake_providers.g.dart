@@ -96,7 +96,7 @@ final class OperatorUserIdProvider
   }
 }
 
-String _$operatorUserIdHash() => r'140d40441c00f168823ce99b1954bb01cebf8d8a';
+String _$operatorUserIdHash() => r'0bd903def3f5075cd88b1b7338f0921614221c1d';
 
 @ProviderFor(OperatorIntakeController)
 final operatorIntakeControllerProvider = OperatorIntakeControllerProvider._();

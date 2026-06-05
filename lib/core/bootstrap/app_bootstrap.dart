@@ -21,8 +21,6 @@ class BootstrapException implements Exception {
 /// Configures global handlers and initializes services before [runApp].
 abstract final class AppBootstrap {
   static Future<ProviderContainer> initialize() async {
-    WidgetsFlutterBinding.ensureInitialized();
-
     CrashReporter.install(CrashReporter.createDefault());
 
     _configureErrorHandlers();
@@ -50,10 +48,15 @@ abstract final class AppBootstrap {
       if (kDebugMode) {
         debugPrint(
           'Supabase skipped: set SUPABASE_URL and SUPABASE_ANON_KEY '
-          'via --dart-define to enable.',
+          'via --dart-define-from-file=dart_defines.android.local.json '
+          '(Android) or dart_defines.local.json (web), then full restart.',
         );
       }
       return;
+    }
+
+    if (kDebugMode) {
+      debugPrint('Supabase configured: ${AppConfig.supabaseUrl}');
     }
 
     try {

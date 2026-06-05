@@ -94,6 +94,8 @@ Copy-Item dart_defines.local.example.json dart_defines.local.json
 
 المحاكي لا يصل إلى `127.0.0.1` على الجهاز المضيف؛ استخدم `10.0.2.2`:
 
+**ذاكرة المحاكي:** في وضع Debug يستهلك Flutter ~400–500 MB. إذا كان RAM المحاكي 2 GB أو أقل، قد يقتل Android العملية ويظهر في الطرفية `Lost connection to device`. يُفضَّل **4096 MB RAM** على الأقل (Device Manager → Edit AVD → Show Advanced Settings → RAM). أغلق تطبيقات ثقيلة على Windows (Chrome، Docker غير مستخدم) قبل التشغيل. محاكي **16 KB page size** (`gphone16k`) أثقل — استخدم `Pixel`/`gphone64` إن أمكن.
+
 ```powershell
 Copy-Item dart_defines.local.example.json dart_defines.android.local.json
 ```
@@ -115,7 +117,15 @@ Copy-Item dart_defines.local.example.json dart_defines.android.local.json
 
 ### `demo123456`
 
-**الطريقة أ — Supabase Studio (موصى بها مع CLI 2.90):**  
+**الطريقة أ — سكربت (موصى بها):**
+
+```powershell
+npm run setup:users
+```
+
+يقرأ الحسابات من `scripts/seed-demo-users.json` (UTF-8) لتفادي مشاكل العربية في PowerShell.
+
+**الطريقة ب — Supabase Studio (يدوي):**  
 افتح `http://127.0.0.1:54323` → **Authentication** → **Users** → **Add user** → أدخل البريد وكلمة المرور `demo123456` وفعّل **Auto Confirm User**.  
 للمشغل والمسؤول أضف في **User Metadata** (JSON):
 
@@ -127,7 +137,7 @@ Copy-Item dart_defines.local.example.json dart_defines.android.local.json
 {"role":"admin","full_name":"خالد المسؤول"}
 ```
 
-**الطريقة ب — CLI (إن وُجدت في إصدارك):**
+**الطريقة ج — CLI (إن وُجدت في إصدارك):**
 
 ```powershell
 supabase auth users create pilgrim@demo.local --password demo123456 --email-confirm
@@ -283,6 +293,7 @@ flutter test
 | المسؤول يُوجَّه لصفحة المشغل | تأكد من `user-metadata` فيه `"role":"admin"` |
 | التقني الميداني على الويب | استخدم **موبايل/محاكي** — المسارات الميدانية للموبايل فقط |
 | أخطاء بعد تعديل Riverpod | `dart run build_runner build --delete-conflicting-outputs` |
+| `Lost connection to device` بعد التشغيل | المحاكي قتل التطبيق لنفاد الذاكرة (OOM). زِد RAM المحاكي إلى 4 GB+، أو شغّل على جهاز حقيقي. تحقق: `adb logcat -d \| Select-String lowmemorykiller,rafiq_alhajj` — إن ظهر `Kill 'com.example.rafiq_alhajj'` فالسبب OOM وليس خطأ في الكود |
 
 ---
 

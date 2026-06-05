@@ -10,7 +10,8 @@ String authErrorMessage(AppLocalizations l10n, Object error) {
       PilgrimAuthErrorCode.notStaffRole => l10n.authErrorNotStaffRole,
       PilgrimAuthErrorCode.notAdminRole => l10n.authErrorNotAdminRole,
       PilgrimAuthErrorCode.profileNotFound => l10n.authErrorProfileNotFound,
-      PilgrimAuthErrorCode.network => l10n.authErrorSupabaseUnavailable,
+      PilgrimAuthErrorCode.network => l10n.authErrorNetworkConnection,
+      PilgrimAuthErrorCode.configMissing => l10n.authErrorSupabaseUnavailable,
       PilgrimAuthErrorCode.unknown => l10n.authErrorUnknown,
     };
   }

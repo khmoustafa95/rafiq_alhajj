@@ -1,0 +1,26 @@
+[
+  {
+    "email": "pilgrim@demo.local",
+    "password": "demo123456",
+    "metadata": {
+      "role": "pilgrim",
+      "full_name": "أحمد الحاج"
+    }
+  },
+  {
+    "email": "operator@demo.local",
+    "password": "demo123456",
+    "metadata": {
+      "role": "operator",
+      "full_name": "محمد التقني"
+    }
+  },
+  {
+    "email": "admin@demo.local",
+    "password": "demo123456",
+    "metadata": {
+      "role": "admin",
+      "full_name": "خالد المسؤول"
+    }
+  }
+]

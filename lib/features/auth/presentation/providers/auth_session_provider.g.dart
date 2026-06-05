@@ -47,3 +47,142 @@ final class AuthSessionProvider
 }
 
 String _$authSessionHash() => r'400f813f7826789f9be3b82b26bcc08f93a8bbd0';
+
+/// Redirect-relevant access mode; downstream rebuilds only when the value changes.
+
+@ProviderFor(authAccessMode)
+final authAccessModeProvider = AuthAccessModeProvider._();
+
+/// Redirect-relevant access mode; downstream rebuilds only when the value changes.
+
+final class AuthAccessModeProvider
+    extends $FunctionalProvider<AppAccessMode, AppAccessMode, AppAccessMode>
+    with $Provider<AppAccessMode> {
+  /// Redirect-relevant access mode; downstream rebuilds only when the value changes.
+  AuthAccessModeProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'authAccessModeProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$authAccessModeHash();
+
+  @$internal
+  @override
+  $ProviderElement<AppAccessMode> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  AppAccessMode create(Ref ref) {
+    return authAccessMode(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AppAccessMode value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AppAccessMode>(value),
+    );
+  }
+}
+
+String _$authAccessModeHash() => r'735b188d20ca65e3f98dfedf91b4d44d69a84948';
+
+/// Signed-in profile id; downstream rebuilds only when sign-in/out changes id.
+
+@ProviderFor(authProfileId)
+final authProfileIdProvider = AuthProfileIdProvider._();
+
+/// Signed-in profile id; downstream rebuilds only when sign-in/out changes id.
+
+final class AuthProfileIdProvider
+    extends $FunctionalProvider<String?, String?, String?>
+    with $Provider<String?> {
+  /// Signed-in profile id; downstream rebuilds only when sign-in/out changes id.
+  AuthProfileIdProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'authProfileIdProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$authProfileIdHash();
+
+  @$internal
+  @override
+  $ProviderElement<String?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  String? create(Ref ref) {
+    return authProfileId(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(String? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<String?>(value),
+    );
+  }
+}
+
+String _$authProfileIdHash() => r'628b4a5606d19bc8365ca3e515d07c0103695937';
+
+/// Pilgrim display name; isolated from unrelated auth token refreshes when unchanged.
+
+@ProviderFor(authProfileFullName)
+final authProfileFullNameProvider = AuthProfileFullNameProvider._();
+
+/// Pilgrim display name; isolated from unrelated auth token refreshes when unchanged.
+
+final class AuthProfileFullNameProvider
+    extends $FunctionalProvider<String?, String?, String?>
+    with $Provider<String?> {
+  /// Pilgrim display name; isolated from unrelated auth token refreshes when unchanged.
+  AuthProfileFullNameProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'authProfileFullNameProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$authProfileFullNameHash();
+
+  @$internal
+  @override
+  $ProviderElement<String?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  String? create(Ref ref) {
+    return authProfileFullName(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(String? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<String?>(value),
+    );
+  }
+}
+
+String _$authProfileFullNameHash() =>
+    r'7c0973b722df5dfc7761e6424bd9fac5bd0f9088';

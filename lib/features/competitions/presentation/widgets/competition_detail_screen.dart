@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:rafiq_alhajj/features/competitions/domain/models/competition.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/providers/competitions_providers.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
@@ -16,8 +17,6 @@ class CompetitionDetailScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final detailAsync =
         ref.watch(competitionDetailProvider(competitionId));
-    final isPilgrim = ref.watch(authSessionProvider).value?.accessMode ==
-        AppAccessMode.pilgrim;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.competitionDetailTitle)),
@@ -44,31 +43,12 @@ class CompetitionDetailScreen extends ConsumerWidget {
                 Text(comp.description!),
               ],
               SizedBox(height: 16.h),
-              if (!isPilgrim)
-                Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.w),
-                    child: Text(l10n.competitionSignInRequired),
-                  ),
-                )
-              else if (!comp.isOpen)
-                Text(l10n.competitionClosed)
-              else if (myEntry == null)
-                FilledButton(
-                  onPressed: () => _join(context, ref, l10n),
-                  child: Text(l10n.competitionJoin),
-                )
-              else ...[
-                Text(
-                  l10n.competitionYourScore(myEntry.score),
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                SizedBox(height: 8.h),
-                OutlinedButton(
-                  onPressed: () => _recordProgress(context, ref, l10n),
-                  child: Text(l10n.competitionRecordProgress),
-                ),
-              ],
+              _CompetitionActions(
+                competitionId: competitionId,
+                isOpen: comp.isOpen,
+                myEntry: myEntry,
+                l10n: l10n,
+              ),
               SizedBox(height: 24.h),
               Text(
                 l10n.competitionLeaderboard,
@@ -97,12 +77,63 @@ class CompetitionDetailScreen extends ConsumerWidget {
       ),
     );
   }
+}
 
-  Future<void> _join(
-    BuildContext context,
-    WidgetRef ref,
-    AppLocalizations l10n,
-  ) async {
+class _CompetitionActions extends ConsumerWidget {
+  const _CompetitionActions({
+    required this.competitionId,
+    required this.isOpen,
+    required this.myEntry,
+    required this.l10n,
+  });
+
+  final String competitionId;
+  final bool isOpen;
+  final CompetitionEntry? myEntry;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isPilgrim =
+        ref.watch(authAccessModeProvider) == AppAccessMode.pilgrim;
+
+    if (!isOpen) {
+      return Text(l10n.competitionClosed);
+    }
+
+    if (!isPilgrim) {
+      return Card(
+        child: Padding(
+          padding: EdgeInsets.all(16.w),
+          child: Text(l10n.competitionSignInRequired),
+        ),
+      );
+    }
+
+    if (myEntry == null) {
+      return FilledButton(
+        onPressed: () => _join(context, ref),
+        child: Text(l10n.competitionJoin),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          l10n.competitionYourScore(myEntry!.score),
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        SizedBox(height: 8.h),
+        OutlinedButton(
+          onPressed: () => _recordProgress(context, ref),
+          child: Text(l10n.competitionRecordProgress),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _join(BuildContext context, WidgetRef ref) async {
     final ok = await ref
         .read(competitionDetailProvider(competitionId).notifier)
         .join();
@@ -120,11 +151,7 @@ class CompetitionDetailScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _recordProgress(
-    BuildContext context,
-    WidgetRef ref,
-    AppLocalizations l10n,
-  ) async {
+  Future<void> _recordProgress(BuildContext context, WidgetRef ref) async {
     final ok = await ref
         .read(competitionDetailProvider(competitionId).notifier)
         .recordProgress();

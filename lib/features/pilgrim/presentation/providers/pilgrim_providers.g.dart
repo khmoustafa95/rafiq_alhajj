@@ -144,7 +144,7 @@ final class PilgrimUserIdProvider
   }
 }
 
-String _$pilgrimUserIdHash() => r'e0b7390acce46411d3dda4539c9d5fe1700b2e1b';
+String _$pilgrimUserIdHash() => r'ee0abd31bcf582155450881d51cdabbc7059d06d';
 
 @ProviderFor(PilgrimDashboardState)
 final pilgrimDashboardStateProvider = PilgrimDashboardStateProvider._();
@@ -171,7 +171,7 @@ final class PilgrimDashboardStateProvider
 }
 
 String _$pilgrimDashboardStateHash() =>
-    r'90f5b97baef11be84a66e488112c75f1b475968a';
+    r'd3e16b40c23fdc3d32e5c5216ee771cc7a0da205';
 
 abstract class _$PilgrimDashboardState
     extends $AsyncNotifier<PilgrimDashboard> {

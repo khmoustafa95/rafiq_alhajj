@@ -8,7 +8,11 @@ part 'router_refresh_notifier.g.dart';
 @Riverpod(keepAlive: true)
 AppRouterRefresh appRouterRefresh(Ref ref) {
   final notifier = AppRouterRefresh();
-  ref.listen(authSessionProvider, (_, _) => notifier.refresh());
+  ref.listen(authAccessModeProvider, (previous, next) {
+    if (previous != next) {
+      notifier.refresh();
+    }
+  });
   ref.onDispose(notifier.dispose);
   return notifier;
 }

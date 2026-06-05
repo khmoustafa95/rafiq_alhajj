@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// Application environment configuration via `--dart-define`.
 abstract final class AppConfig {
   static const String supabaseUrl = String.fromEnvironment('SUPABASE_URL');
@@ -9,6 +11,12 @@ abstract final class AppConfig {
   static const bool crashReportingEnabled = bool.fromEnvironment(
     'CRASH_REPORTING_ENABLED',
   );
+
+  /// Opt-in GoRouter logs: `--dart-define=ROUTER_DEBUG_LOG=true` (debug builds only).
+  static const bool routerDebugLog = bool.fromEnvironment('ROUTER_DEBUG_LOG');
+
+  static bool get routerDebugLogDiagnostics =>
+      kDebugMode && routerDebugLog;
 
   static const String firebaseProjectId =
       String.fromEnvironment('FIREBASE_PROJECT_ID');

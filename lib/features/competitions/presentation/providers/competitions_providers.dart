@@ -32,7 +32,7 @@ Future<List<Competition>> activeCompetitions(Ref ref) {
 class CompetitionDetail extends _$CompetitionDetail {
   @override
   Future<CompetitionWithEntries?> build(String competitionId) {
-    final profileId = ref.watch(authSessionProvider).value?.profileOrNull?.id;
+    final profileId = ref.watch(authProfileIdProvider);
     return ref.read(competitionsRepositoryProvider).fetchWithEntries(
           competitionId,
           currentProfileId: profileId,
@@ -40,7 +40,7 @@ class CompetitionDetail extends _$CompetitionDetail {
   }
 
   Future<bool> join() async {
-    final profileId = ref.read(authSessionProvider).value?.profileOrNull?.id;
+    final profileId = ref.read(authProfileIdProvider);
     if (profileId == null) {
       return false;
     }

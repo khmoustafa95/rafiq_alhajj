@@ -24,7 +24,8 @@ plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
     id("com.android.application") version "8.11.1" apply false
     id("org.jetbrains.kotlin.android") version "2.2.20" apply false
-    id("com.google.gms.google-services") version "4.4.2" apply false
+    // Google Services plugin: enable when android/app/google-services.json exists (FCM).
+    // Declaring it here forces a download on every build; apply via docs/push-notifications-setup.md.
 }
 
 include(":app")

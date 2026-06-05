@@ -35,10 +35,12 @@ Future<void> pushNotificationInit(Ref ref) async {
 void pushNotificationBinding(Ref ref) {
   ref.watch(pushNotificationInitProvider);
 
-  ref.listen(authSessionProvider, (previous, next) {
-    final profileId = next.value?.profileOrNull?.id;
+  ref.listen(authProfileIdProvider, (previous, next) {
+    if (previous == next) {
+      return;
+    }
     unawaited(
-      ref.read(pushNotificationServiceProvider).bindUser(profileId),
+      ref.read(pushNotificationServiceProvider).bindUser(next),
     );
   }, fireImmediately: true);
 }

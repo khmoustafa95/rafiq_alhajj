@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rafiq_alhajj/features/islamic_tools/domain/models/geo_location.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/providers/location_providers.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/providers/qibla_provider.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/utils/location_error_l10n.dart';
@@ -14,7 +15,6 @@ class QiblaScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final locationAsync = ref.watch(deviceLocationProvider);
-    final qiblaAsync = ref.watch(qiblaStateProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -38,62 +38,75 @@ class QiblaScreen extends ConsumerWidget {
             child: Text(locationErrorMessage(l10n, error)),
           ),
         ),
-        data: (location) {
-          return qiblaAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (_, _) => Center(child: Text(l10n.toolsQiblaCompassUnavailable)),
-            data: (state) {
-              return Center(
-                child: Padding(
-                  padding: EdgeInsets.all(24.w),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      QiblaCompassWidget(state: state),
-                      SizedBox(height: 24.h),
-                      Text(
-                        l10n.toolsQiblaBearing(
-                          state.qiblaBearing.toStringAsFixed(1),
-                        ),
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      if (state.compassHeading != null) ...[
-                        SizedBox(height: 8.h),
-                        Text(
-                          l10n.toolsCompassHeading(
-                            state.compassHeading!.toStringAsFixed(1),
-                          ),
-                        ),
-                      ],
-                      SizedBox(height: 8.h),
-                      Text(
-                        l10n.toolsCoordinates(
-                          location.latitude.toStringAsFixed(4),
-                          location.longitude.toStringAsFixed(4),
-                        ),
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      if (location.fromCache) ...[
-                        SizedBox(height: 8.h),
-                        Text(
-                          l10n.toolsUsingCachedLocation,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
-                      SizedBox(height: 8.h),
-                      Text(
-                        l10n.toolsQiblaHint,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        },
+        data: (location) => _QiblaCompassPanel(location: location),
       ),
+    );
+  }
+}
+
+/// Isolates high-frequency compass stream rebuilds from [Scaffold] / location UI.
+class _QiblaCompassPanel extends ConsumerWidget {
+  const _QiblaCompassPanel({required this.location});
+
+  final GeoLocation location;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final qiblaAsync = ref.watch(qiblaStateProvider);
+
+    return qiblaAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (_, _) => Center(child: Text(l10n.toolsQiblaCompassUnavailable)),
+      data: (state) {
+        return Center(
+          child: Padding(
+            padding: EdgeInsets.all(24.w),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                QiblaCompassWidget(state: state),
+                SizedBox(height: 24.h),
+                Text(
+                  l10n.toolsQiblaBearing(
+                    state.qiblaBearing.toStringAsFixed(1),
+                  ),
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                if (state.compassHeading != null) ...[
+                  SizedBox(height: 8.h),
+                  Text(
+                    l10n.toolsCompassHeading(
+                      state.compassHeading!.toStringAsFixed(1),
+                    ),
+                  ),
+                ],
+                SizedBox(height: 8.h),
+                Text(
+                  l10n.toolsCoordinates(
+                    location.latitude.toStringAsFixed(4),
+                    location.longitude.toStringAsFixed(4),
+                  ),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                if (location.fromCache) ...[
+                  SizedBox(height: 8.h),
+                  Text(
+                    l10n.toolsUsingCachedLocation,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+                SizedBox(height: 8.h),
+                Text(
+                  l10n.toolsQiblaHint,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

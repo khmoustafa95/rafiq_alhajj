@@ -147,7 +147,11 @@
   },
   "authErrorSupabaseUnavailable": "Sign-in requires Supabase. Run with local dart-defines or contact support.",
   "@authErrorSupabaseUnavailable": {
-    "description": "Supabase not configured or unreachable"
+    "description": "Supabase dart-defines missing at build time"
+  },
+  "authErrorNetworkConnection": "Cannot reach Supabase. Check that local Supabase is running and your network (try without VPN).",
+  "@authErrorNetworkConnection": {
+    "description": "Supabase configured but request failed (network / cleartext / wrong host)"
   },
   "authErrorUnknown": "Sign-in failed. Please try again.",
   "@authErrorUnknown": {

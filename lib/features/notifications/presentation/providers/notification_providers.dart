@@ -17,7 +17,7 @@ NotificationRepository notificationRepository(Ref ref) {
 
 @riverpod
 Stream<int> unreadNotificationCount(Ref ref) async* {
-  final profileId = ref.watch(authSessionProvider).value?.profileOrNull?.id;
+  final profileId = ref.watch(authProfileIdProvider);
   if (profileId == null) {
     yield 0;
     return;
@@ -44,7 +44,7 @@ Stream<int> unreadNotificationCount(Ref ref) async* {
 class NotificationInbox extends _$NotificationInbox {
   @override
   Future<List<InboxNotification>> build() {
-    final profileId = ref.watch(authSessionProvider).value?.profileOrNull?.id;
+    final profileId = ref.watch(authProfileIdProvider);
     if (profileId == null) {
       return Future.value([]);
     }
@@ -60,7 +60,7 @@ class NotificationInbox extends _$NotificationInbox {
   }
 
   Future<void> markAsRead(String notificationId) async {
-    final profileId = ref.read(authSessionProvider).value?.profileOrNull?.id;
+    final profileId = ref.read(authProfileIdProvider);
     if (profileId == null) {
       return;
     }
@@ -74,7 +74,7 @@ class NotificationInbox extends _$NotificationInbox {
   }
 
   Future<void> markAllAsRead() async {
-    final profileId = ref.read(authSessionProvider).value?.profileOrNull?.id;
+    final profileId = ref.read(authProfileIdProvider);
     if (profileId == null) {
       return;
     }
@@ -92,7 +92,7 @@ Future<List<NotificationGroupOption>> notificationGroups(Ref ref) {
 
 @riverpod
 Stream<InboxNotification> notificationToastEvents(Ref ref) async* {
-  final profileId = ref.watch(authSessionProvider).value?.profileOrNull?.id;
+  final profileId = ref.watch(authProfileIdProvider);
   if (profileId == null) {
     return;
   }

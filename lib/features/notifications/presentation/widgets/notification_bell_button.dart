@@ -14,14 +14,21 @@ class NotificationBellButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-    final isSignedIn =
-        ref.watch(authSessionProvider).value?.profileOrNull != null;
-
-    if (!isSignedIn) {
+    final profileId = ref.watch(authProfileIdProvider);
+    if (profileId == null) {
       return const SizedBox.shrink();
     }
 
+    return const _NotificationBellWithBadge();
+  }
+}
+
+class _NotificationBellWithBadge extends ConsumerWidget {
+  const _NotificationBellWithBadge();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final unreadAsync = ref.watch(unreadNotificationCountProvider);
 
     return unreadAsync.when(

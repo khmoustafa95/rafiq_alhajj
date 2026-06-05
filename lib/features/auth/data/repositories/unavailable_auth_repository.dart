@@ -20,7 +20,7 @@ class UnavailableAuthRepository implements AuthRepository {
     required String email,
     required String password,
   }) async {
-    throw const PilgrimAuthException(PilgrimAuthErrorCode.network);
+    throw const PilgrimAuthException(PilgrimAuthErrorCode.configMissing);
   }
 
   @override
@@ -28,7 +28,7 @@ class UnavailableAuthRepository implements AuthRepository {
     required String email,
     required String password,
   }) async {
-    throw const PilgrimAuthException(PilgrimAuthErrorCode.network);
+    throw const PilgrimAuthException(PilgrimAuthErrorCode.configMissing);
   }
 
   @override
@@ -36,7 +36,7 @@ class UnavailableAuthRepository implements AuthRepository {
     required String email,
     required String password,
   }) async {
-    throw const PilgrimAuthException(PilgrimAuthErrorCode.network);
+    throw const PilgrimAuthException(PilgrimAuthErrorCode.configMissing);
   }
 
   @override

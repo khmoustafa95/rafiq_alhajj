@@ -44,7 +44,9 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final loginState = ref.watch(adminLoginControllerProvider);
+    final isLoading = ref.watch(
+      adminLoginControllerProvider.select((state) => state.isLoading),
+    );
 
     ref.listen(adminLoginControllerProvider, (previous, next) {
       if (next.hasError && !next.isLoading) {
@@ -103,8 +105,8 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
                   ),
                   SizedBox(height: 24.h),
                   FilledButton(
-                    onPressed: loginState.isLoading ? null : _submit,
-                    child: loginState.isLoading
+                    onPressed: isLoading ? null : _submit,
+                    child: isLoading
                         ? const SizedBox(
                             height: 20,
                             width: 20,

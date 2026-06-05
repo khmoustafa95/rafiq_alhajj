@@ -36,6 +36,7 @@
   "authErrorNotPilgrimRole": "هذا الحساب ليس حساب حاج. استخدم لوحة الويب.",
   "authErrorProfileNotFound": "لم يُعثر على ملفك. تواصل مع المركز.",
   "authErrorSupabaseUnavailable": "تسجيل الدخول يتطلب Supabase. شغّل التطبيق بإعدادات التطوير المحلية.",
+  "authErrorNetworkConnection": "تعذّر الاتصال بـ Supabase. تأكد أن Supabase يعمل محلياً وجرب بدون VPN.",
   "authErrorUnknown": "فشل تسجيل الدخول. حاول مرة أخرى.",
   "homeIslamicTools": "الأدوات الإسلامية",
   "toolsHubTitle": "الأدوات الإسلامية",

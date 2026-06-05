@@ -57,4 +57,4 @@ final class AppRouterRefreshProvider
   }
 }
 
-String _$appRouterRefreshHash() => r'815a8dc33248aa29a4de06401b763db20953ae56';
+String _$appRouterRefreshHash() => r'8a94a4d4776d3f58413b91d74eb4753fea784434';

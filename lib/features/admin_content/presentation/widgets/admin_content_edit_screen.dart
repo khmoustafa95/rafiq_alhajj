@@ -100,8 +100,9 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final saveState = ref.watch(adminContentSaveProvider);
-    final isSaving = saveState.isLoading;
+    final isSaving = ref.watch(
+      adminContentSaveProvider.select((state) => state.isLoading),
+    );
 
     if (_isEditing) {
       final listAsync = ref.watch(adminContentListProvider);

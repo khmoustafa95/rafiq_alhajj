@@ -308,11 +308,17 @@ abstract class AppLocalizations {
   /// **'Your profile was not found. Contact your center.'**
   String get authErrorProfileNotFound;
 
-  /// Supabase not configured or unreachable
+  /// Supabase dart-defines missing at build time
   ///
   /// In en, this message translates to:
   /// **'Sign-in requires Supabase. Run with local dart-defines or contact support.'**
   String get authErrorSupabaseUnavailable;
+
+  /// Supabase configured but request failed (network / cleartext / wrong host)
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot reach Supabase. Check that local Supabase is running and your network (try without VPN).'**
+  String get authErrorNetworkConnection;
 
   /// Generic auth error
   ///

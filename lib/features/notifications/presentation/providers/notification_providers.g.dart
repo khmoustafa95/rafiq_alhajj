@@ -89,7 +89,7 @@ final class UnreadNotificationCountProvider
 }
 
 String _$unreadNotificationCountHash() =>
-    r'8a6c66c1813b1aa3bfddb07c502b0f9a3f2c31d4';
+    r'02cb6f211a59cecddc69105ae9ddcbb8cd6630ab';
 
 @ProviderFor(NotificationInbox)
 final notificationInboxProvider = NotificationInboxProvider._();
@@ -115,7 +115,7 @@ final class NotificationInboxProvider
   NotificationInbox create() => NotificationInbox();
 }
 
-String _$notificationInboxHash() => r'8ac0942675daf88041e5bd6c542186f43750e25c';
+String _$notificationInboxHash() => r'a66bfad7ffc0d81df575611ec1b8878e185ca1e3';
 
 abstract class _$NotificationInbox
     extends $AsyncNotifier<List<InboxNotification>> {
@@ -226,7 +226,7 @@ final class NotificationToastEventsProvider
 }
 
 String _$notificationToastEventsHash() =>
-    r'19bce5e4e667c6d9e88b813a95f2ffb3a7f4d7db';
+    r'b6a12170f9c07639fa9f6bb27a2e29246a4e3169';
 
 @ProviderFor(AdminNotificationBroadcast)
 final adminNotificationBroadcastProvider =

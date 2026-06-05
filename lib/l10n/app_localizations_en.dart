@@ -128,6 +128,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sign-in requires Supabase. Run with local dart-defines or contact support.';
 
   @override
+  String get authErrorNetworkConnection =>
+      'Cannot reach Supabase. Check that local Supabase is running and your network (try without VPN).';
+
+  @override
   String get authErrorUnknown => 'Sign-in failed. Please try again.';
 
   @override
