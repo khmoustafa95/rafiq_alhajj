@@ -451,5 +451,42 @@
       "count": {"type": "int"},
       "ayahsLabel": {"type": "String"}
     }
-  }
+  },
+  "navHome": "Home",
+  "navGuidance": "Guidance",
+  "navServices": "Services",
+  "navProfile": "Profile",
+  "homeNextPrayer": "Next Prayer",
+  "homePrayerLocation": "Makkah, KSA",
+  "homeJourneyTitle": "Begin Your Sacred Journey",
+  "homeJourneyBody": "Register now to secure your pilgrimage slot and access premium rituals guidance.",
+  "homeRegisterNow": "Register Now",
+  "homeNewsSeeAll": "See All →",
+  "contentImportantTag": "Important",
+  "contentHoursAgo": "{hours} Hours Ago",
+  "@contentHoursAgo": {
+    "placeholders": {"hours": {"type": "int"}}
+  },
+  "profileGuestTitle": "Guest",
+  "profileGuestBody": "Sign in to access your Hajj journey, rituals, and personalized content.",
+  "notificationsLatestUpdates": "Latest Updates",
+  "notificationsFilterAll": "All",
+  "notificationsFilterGeneral": "General News",
+  "notificationsFilterUrgent": "Urgent Alerts",
+  "notificationsUrgentBadge": "Urgent Alert!",
+  "notificationsMinutesAgo": "{minutes} min ago",
+  "@notificationsMinutesAgo": {
+    "placeholders": {"minutes": {"type": "int"}}
+  },
+  "staffNavHome": "Home",
+  "staffNavPilgrims": "Pilgrims",
+  "staffNavContent": "Content Management",
+  "staffNavCompetitions": "Competitions",
+  "staffNavNotifications": "Notifications",
+  "staffPortalSubtitle": "Admin Portal",
+  "staffDefaultUser": "Administrator",
+  "staffAdminRole": "Chief Coordinator",
+  "staffConnectedStatus": "Connected",
+  "staffActiveNow": "Active now",
+  "staffStable": "Stable"
 }

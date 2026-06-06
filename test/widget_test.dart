@@ -7,9 +7,11 @@ import 'package:rafiq_alhajj/features/auth/domain/models/auth_session_state.dart
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/public_content_feed.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/public_content_feed_provider.dart';
+import 'package:rafiq_alhajj/features/islamic_tools/domain/models/prayer_times_schedule.dart';
+import 'package:rafiq_alhajj/features/islamic_tools/presentation/providers/prayer_times_provider.dart';
 
 void main() {
-  testWidgets('AppRoot shows guest home with content sections', (tester) async {
+  testWidgets('AppRoot shows guest home with bottom navigation', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -22,13 +24,28 @@ void main() {
               newsAndAnnouncements: [],
             ),
           ),
+          prayerTimesScheduleProvider.overrideWith(
+            (ref) async => PrayerTimesSchedule(
+              date: DateTime(2026, 6, 6),
+              fajr: '5:00 AM',
+              sunrise: '6:15 AM',
+              dhuhr: '12:14 PM',
+              asr: '3:30 PM',
+              maghrib: '6:45 PM',
+              isha: '8:00 PM',
+              latitude: 21.4225,
+              longitude: 39.8262,
+              fromCachedLocation: true,
+            ),
+          ),
         ],
         child: const AppRoot(),
       ),
     );
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
 
     expect(find.byType(MaterialApp), findsOneWidget);
-    expect(find.byIcon(Icons.mosque_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.home_rounded), findsOneWidget);
   });
 }

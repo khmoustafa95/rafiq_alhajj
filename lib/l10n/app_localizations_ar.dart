@@ -842,4 +842,103 @@ class AppLocalizationsAr extends AppLocalizations {
   String toolsQuranSurahSubtitle(String name, int count, String ayahsLabel) {
     return '$name · $count $ayahsLabel';
   }
+
+  @override
+  String get navHome => 'الرئيسية';
+
+  @override
+  String get navGuidance => 'الإرشادات';
+
+  @override
+  String get navServices => 'الخدمات';
+
+  @override
+  String get navProfile => 'الملف الشخصي';
+
+  @override
+  String get homeNextPrayer => 'الصلاة القادمة';
+
+  @override
+  String get homePrayerLocation => 'مكة، السعودية';
+
+  @override
+  String get homeJourneyTitle => 'ابدأ رحلتك المقدسة';
+
+  @override
+  String get homeJourneyBody =>
+      'سجّل الآن لحجز مكانك في الحج والوصول إلى إرشادات المناسك المميزة.';
+
+  @override
+  String get homeRegisterNow => 'سجّل الآن';
+
+  @override
+  String get homeNewsSeeAll => 'عرض الكل ←';
+
+  @override
+  String get contentImportantTag => 'مهم';
+
+  @override
+  String contentHoursAgo(int hours) {
+    return 'منذ $hours ساعة';
+  }
+
+  @override
+  String get profileGuestTitle => 'زائر';
+
+  @override
+  String get profileGuestBody =>
+      'سجّل الدخول للوصول إلى رحلة حجّك والمناسك والمحتوى المخصص.';
+
+  @override
+  String get notificationsLatestUpdates => 'آخر المستجدات';
+
+  @override
+  String get notificationsFilterAll => 'الكل';
+
+  @override
+  String get notificationsFilterGeneral => 'أخبار عامة';
+
+  @override
+  String get notificationsFilterUrgent => 'تنبيهات عاجلة';
+
+  @override
+  String get notificationsUrgentBadge => 'تنبيه عاجل!';
+
+  @override
+  String notificationsMinutesAgo(int minutes) {
+    return 'منذ $minutes دقيقة';
+  }
+
+  @override
+  String get staffNavHome => 'الرئيسية';
+
+  @override
+  String get staffNavPilgrims => 'الحجاج';
+
+  @override
+  String get staffNavContent => 'إدارة المحتوى';
+
+  @override
+  String get staffNavCompetitions => 'المسابقات';
+
+  @override
+  String get staffNavNotifications => 'الإشعارات';
+
+  @override
+  String get staffPortalSubtitle => 'بوابة المسؤول';
+
+  @override
+  String get staffDefaultUser => 'المسؤول';
+
+  @override
+  String get staffAdminRole => 'المسؤول الرئيسي';
+
+  @override
+  String get staffConnectedStatus => 'متصل بالخدمة';
+
+  @override
+  String get staffActiveNow => 'نشط الآن';
+
+  @override
+  String get staffStable => 'مستقر';
 }

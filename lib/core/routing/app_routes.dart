@@ -21,6 +21,7 @@ abstract final class AppRoutes {
   static String adminCompetitionEditPath(String id) =>
       '/admin/competitions/$id/edit';
   static const String pilgrimDashboard = '/pilgrim';
+  static const String profile = '/profile';
   static const String operatorLogin = '/operator/login';
   static const String operatorIntake = '/operator/intake';
   static const String operatorPilgrims = '/operator/pilgrims';

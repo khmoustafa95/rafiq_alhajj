@@ -3,6 +3,15 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
+**Design.md updated** — documents applied Hajj Companion redesign (Phases 1–4), tokens, screen status, l10n keys; Phase 5 polish backlog listed.
+
+## Previous focus (2026-06-06)
+**Hajj Companion redesign applied** — new theme (green/gold/indigo), mobile bottom nav shell, redesigned home/notifications, web admin sidebar + CMS grid.
+
+## Previous focus (2026-06-06)
+**App redesign planning** — `Design.md` template at repo root.
+
+## Previous focus (2026-06-06)
 **Arabic default locale + AppBar language switcher** — `RafiqAppBar` on all screens; Quran surah names locale-aware.
 
 ## Recent changes (2026-06-06, locale v2)

@@ -852,4 +852,103 @@ class AppLocalizationsEn extends AppLocalizations {
   String toolsQuranSurahSubtitle(String name, int count, String ayahsLabel) {
     return '$name · $count $ayahsLabel';
   }
+
+  @override
+  String get navHome => 'Home';
+
+  @override
+  String get navGuidance => 'Guidance';
+
+  @override
+  String get navServices => 'Services';
+
+  @override
+  String get navProfile => 'Profile';
+
+  @override
+  String get homeNextPrayer => 'Next Prayer';
+
+  @override
+  String get homePrayerLocation => 'Makkah, KSA';
+
+  @override
+  String get homeJourneyTitle => 'Begin Your Sacred Journey';
+
+  @override
+  String get homeJourneyBody =>
+      'Register now to secure your pilgrimage slot and access premium rituals guidance.';
+
+  @override
+  String get homeRegisterNow => 'Register Now';
+
+  @override
+  String get homeNewsSeeAll => 'See All →';
+
+  @override
+  String get contentImportantTag => 'Important';
+
+  @override
+  String contentHoursAgo(int hours) {
+    return '$hours Hours Ago';
+  }
+
+  @override
+  String get profileGuestTitle => 'Guest';
+
+  @override
+  String get profileGuestBody =>
+      'Sign in to access your Hajj journey, rituals, and personalized content.';
+
+  @override
+  String get notificationsLatestUpdates => 'Latest Updates';
+
+  @override
+  String get notificationsFilterAll => 'All';
+
+  @override
+  String get notificationsFilterGeneral => 'General News';
+
+  @override
+  String get notificationsFilterUrgent => 'Urgent Alerts';
+
+  @override
+  String get notificationsUrgentBadge => 'Urgent Alert!';
+
+  @override
+  String notificationsMinutesAgo(int minutes) {
+    return '$minutes min ago';
+  }
+
+  @override
+  String get staffNavHome => 'Home';
+
+  @override
+  String get staffNavPilgrims => 'Pilgrims';
+
+  @override
+  String get staffNavContent => 'Content Management';
+
+  @override
+  String get staffNavCompetitions => 'Competitions';
+
+  @override
+  String get staffNavNotifications => 'Notifications';
+
+  @override
+  String get staffPortalSubtitle => 'Admin Portal';
+
+  @override
+  String get staffDefaultUser => 'Administrator';
+
+  @override
+  String get staffAdminRole => 'Chief Coordinator';
+
+  @override
+  String get staffConnectedStatus => 'Connected';
+
+  @override
+  String get staffActiveNow => 'Active now';
+
+  @override
+  String get staffStable => 'Stable';
 }

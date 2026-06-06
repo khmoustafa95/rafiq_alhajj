@@ -5,6 +5,8 @@ import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/routing/root_navigator_key.dart';
 import 'package:rafiq_alhajj/core/routing/router_refresh_notifier.dart';
 import 'package:rafiq_alhajj/core/routing/widgets/route_not_found_screen.dart';
+import 'package:rafiq_alhajj/core/widgets/pilgrim_shell_screen.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_web_shell.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/presentation/widgets/admin_dashboard_screen.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/presentation/widgets/admin_login_screen.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/widgets/admin_content_edit_screen.dart';
@@ -34,9 +36,326 @@ import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/opera
 import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_pilgrim_detail_screen.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_pilgrim_list_screen.dart';
 import 'package:rafiq_alhajj/features/pilgrim/presentation/widgets/pilgrim_dashboard_screen.dart';
+import 'package:rafiq_alhajj/features/profile/presentation/widgets/profile_screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_router.g.dart';
+
+List<RouteBase> _toolsChildRoutes() => [
+      GoRoute(
+        path: 'prayer-times',
+        name: 'prayerTimes',
+        builder: (context, state) => const PrayerTimesScreen(),
+      ),
+      GoRoute(
+        path: 'qibla',
+        name: 'qibla',
+        builder: (context, state) => const QiblaScreen(),
+      ),
+      GoRoute(
+        path: 'quran',
+        name: 'quran',
+        builder: (context, state) => const QuranSurahListScreen(),
+        routes: [
+          GoRoute(
+            path: ':surahNumber',
+            name: 'quranSurah',
+            builder: (context, state) {
+              final surahNumber = int.parse(
+                state.pathParameters['surahNumber']!,
+              );
+              return QuranSurahDetailScreen(surahNumber: surahNumber);
+            },
+          ),
+        ],
+      ),
+      GoRoute(
+        path: 'adhkar',
+        name: 'adhkar',
+        builder: (context, state) => const AdhkarScreen(),
+      ),
+    ];
+
+StatefulShellRoute _pilgrimShellRoute() {
+  return StatefulShellRoute.indexedStack(
+    builder: (context, state, navigationShell) {
+      return PilgrimShellScreen(navigationShell: navigationShell);
+    },
+    branches: [
+      StatefulShellBranch(
+        routes: [
+          GoRoute(
+            path: AppRoutes.home,
+            name: 'home',
+            builder: (context, state) => const HomeScreen(),
+          ),
+        ],
+      ),
+      StatefulShellBranch(
+        routes: [
+          GoRoute(
+            path: AppRoutes.tools,
+            name: 'tools',
+            builder: (context, state) => const IslamicToolsHubScreen(),
+            routes: _toolsChildRoutes(),
+          ),
+        ],
+      ),
+      StatefulShellBranch(
+        routes: [
+          GoRoute(
+            path: AppRoutes.notifications,
+            name: 'notifications',
+            builder: (context, state) => const NotificationListScreen(),
+          ),
+        ],
+      ),
+      StatefulShellBranch(
+        routes: [
+          GoRoute(
+            path: AppRoutes.profile,
+            name: 'profile',
+            builder: (context, state) => const ProfileScreen(),
+          ),
+        ],
+      ),
+    ],
+  );
+}
+
+List<RouteBase> _mobilePilgrimRoutes() => [
+      _pilgrimShellRoute(),
+      GoRoute(
+        path: AppRoutes.login,
+        name: 'login',
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.contentDetail,
+        name: 'contentDetail',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return ContentDetailScreen(contentId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.pilgrimDashboard,
+        name: 'pilgrimDashboard',
+        builder: (context, state) => const PilgrimDashboardScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.competitions,
+        name: 'competitions',
+        builder: (context, state) => const CompetitionsListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.competitionDetail,
+        name: 'competitionDetail',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return CompetitionDetailScreen(competitionId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.fieldOperatorLogin,
+        name: 'fieldOperatorLogin',
+        builder: (context, state) => const FieldOperatorLoginScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.fieldOperatorHome,
+        name: 'fieldOperatorHome',
+        builder: (context, state) => const FieldOperatorHomeScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.fieldOperatorPilgrim,
+        name: 'fieldOperatorPilgrim',
+        builder: (context, state) {
+          final profileId = state.pathParameters['profileId']!;
+          return FieldOperatorPilgrimScreen(profileId: profileId);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.adminLogin,
+        name: 'adminLogin',
+        builder: (context, state) => const AdminLoginScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminDashboard,
+        name: 'adminDashboard',
+        builder: (context, state) => const AdminDashboardScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminNotificationSend,
+        name: 'adminNotificationSend',
+        builder: (context, state) => const AdminNotificationBroadcastScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminContent,
+        name: 'adminContent',
+        builder: (context, state) => const AdminContentListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminContentNew,
+        name: 'adminContentNew',
+        builder: (context, state) => const AdminContentEditScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminContentEdit,
+        name: 'adminContentEdit',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return AdminContentEditScreen(contentId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.adminCompetitions,
+        name: 'adminCompetitions',
+        builder: (context, state) => const AdminCompetitionsListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminCompetitionNew,
+        name: 'adminCompetitionNew',
+        builder: (context, state) => const AdminCompetitionEditScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminCompetitionEdit,
+        name: 'adminCompetitionEdit',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return AdminCompetitionEditScreen(competitionId: id);
+        },
+      ),
+    ];
+
+List<RouteBase> _webRoutes() => [
+      GoRoute(
+        path: AppRoutes.home,
+        name: 'home',
+        builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.login,
+        name: 'login',
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.notifications,
+        name: 'notifications',
+        builder: (context, state) => const NotificationListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.contentDetail,
+        name: 'contentDetail',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return ContentDetailScreen(contentId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.pilgrimDashboard,
+        name: 'pilgrimDashboard',
+        builder: (context, state) => const PilgrimDashboardScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.operatorLogin,
+        name: 'operatorLogin',
+        builder: (context, state) => const OperatorLoginScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.operatorIntake,
+        name: 'operatorIntake',
+        builder: (context, state) => const OperatorIntakeScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.operatorPilgrims,
+        name: 'operatorPilgrims',
+        builder: (context, state) => const OperatorPilgrimListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.operatorPilgrimDetail,
+        name: 'operatorPilgrimDetail',
+        builder: (context, state) {
+          final profileId = state.pathParameters['profileId']!;
+          return OperatorPilgrimDetailScreen(profileId: profileId);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.adminLogin,
+        name: 'adminLogin',
+        builder: (context, state) => const AdminLoginScreen(),
+      ),
+      ShellRoute(
+        builder: (context, state, child) => StaffWebShell(child: child),
+        routes: [
+          GoRoute(
+            path: AppRoutes.adminDashboard,
+            name: 'adminDashboard',
+            builder: (context, state) => const AdminDashboardScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.adminNotificationSend,
+            name: 'adminNotificationSend',
+            builder: (context, state) =>
+                const AdminNotificationBroadcastScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.adminContent,
+            name: 'adminContent',
+            builder: (context, state) => const AdminContentListScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.adminContentNew,
+            name: 'adminContentNew',
+            builder: (context, state) => const AdminContentEditScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.adminContentEdit,
+            name: 'adminContentEdit',
+            builder: (context, state) {
+              final id = state.pathParameters['id']!;
+              return AdminContentEditScreen(contentId: id);
+            },
+          ),
+          GoRoute(
+            path: AppRoutes.adminCompetitions,
+            name: 'adminCompetitions',
+            builder: (context, state) => const AdminCompetitionsListScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.adminCompetitionNew,
+            name: 'adminCompetitionNew',
+            builder: (context, state) => const AdminCompetitionEditScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.adminCompetitionEdit,
+            name: 'adminCompetitionEdit',
+            builder: (context, state) {
+              final id = state.pathParameters['id']!;
+              return AdminCompetitionEditScreen(competitionId: id);
+            },
+          ),
+        ],
+      ),
+      GoRoute(
+        path: AppRoutes.competitions,
+        name: 'competitions',
+        builder: (context, state) => const CompetitionsListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.competitionDetail,
+        name: 'competitionDetail',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return CompetitionDetailScreen(competitionId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.tools,
+        name: 'tools',
+        builder: (context, state) => const IslamicToolsHubScreen(),
+        routes: _toolsChildRoutes(),
+      ),
+    ];
 
 @Riverpod(keepAlive: true)
 GoRouter appRouter(Ref ref) {
@@ -145,180 +464,7 @@ GoRouter appRouter(Ref ref) {
 
       return null;
     },
-    routes: [
-      GoRoute(
-        path: AppRoutes.home,
-        name: 'home',
-        builder: (context, state) => const HomeScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.login,
-        name: 'login',
-        builder: (context, state) => const LoginScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.notifications,
-        name: 'notifications',
-        builder: (context, state) => const NotificationListScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.contentDetail,
-        name: 'contentDetail',
-        builder: (context, state) {
-          final id = state.pathParameters['id']!;
-          return ContentDetailScreen(contentId: id);
-        },
-      ),
-      GoRoute(
-        path: AppRoutes.pilgrimDashboard,
-        name: 'pilgrimDashboard',
-        builder: (context, state) => const PilgrimDashboardScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.operatorLogin,
-        name: 'operatorLogin',
-        builder: (context, state) => const OperatorLoginScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.operatorIntake,
-        name: 'operatorIntake',
-        builder: (context, state) => const OperatorIntakeScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.operatorPilgrims,
-        name: 'operatorPilgrims',
-        builder: (context, state) => const OperatorPilgrimListScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.operatorPilgrimDetail,
-        name: 'operatorPilgrimDetail',
-        builder: (context, state) {
-          final profileId = state.pathParameters['profileId']!;
-          return OperatorPilgrimDetailScreen(profileId: profileId);
-        },
-      ),
-      GoRoute(
-        path: AppRoutes.adminLogin,
-        name: 'adminLogin',
-        builder: (context, state) => const AdminLoginScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.adminDashboard,
-        name: 'adminDashboard',
-        builder: (context, state) => const AdminDashboardScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.adminNotificationSend,
-        name: 'adminNotificationSend',
-        builder: (context, state) => const AdminNotificationBroadcastScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.adminContent,
-        name: 'adminContent',
-        builder: (context, state) => const AdminContentListScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.adminContentNew,
-        name: 'adminContentNew',
-        builder: (context, state) => const AdminContentEditScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.adminContentEdit,
-        name: 'adminContentEdit',
-        builder: (context, state) {
-          final id = state.pathParameters['id']!;
-          return AdminContentEditScreen(contentId: id);
-        },
-      ),
-      GoRoute(
-        path: AppRoutes.adminCompetitions,
-        name: 'adminCompetitions',
-        builder: (context, state) => const AdminCompetitionsListScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.adminCompetitionNew,
-        name: 'adminCompetitionNew',
-        builder: (context, state) => const AdminCompetitionEditScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.adminCompetitionEdit,
-        name: 'adminCompetitionEdit',
-        builder: (context, state) {
-          final id = state.pathParameters['id']!;
-          return AdminCompetitionEditScreen(competitionId: id);
-        },
-      ),
-      GoRoute(
-        path: AppRoutes.competitions,
-        name: 'competitions',
-        builder: (context, state) => const CompetitionsListScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.competitionDetail,
-        name: 'competitionDetail',
-        builder: (context, state) {
-          final id = state.pathParameters['id']!;
-          return CompetitionDetailScreen(competitionId: id);
-        },
-      ),
-      GoRoute(
-        path: AppRoutes.fieldOperatorLogin,
-        name: 'fieldOperatorLogin',
-        builder: (context, state) => const FieldOperatorLoginScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.fieldOperatorHome,
-        name: 'fieldOperatorHome',
-        builder: (context, state) => const FieldOperatorHomeScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.fieldOperatorPilgrim,
-        name: 'fieldOperatorPilgrim',
-        builder: (context, state) {
-          final profileId = state.pathParameters['profileId']!;
-          return FieldOperatorPilgrimScreen(profileId: profileId);
-        },
-      ),
-      GoRoute(
-        path: AppRoutes.tools,
-        name: 'tools',
-        builder: (context, state) => const IslamicToolsHubScreen(),
-        routes: [
-          GoRoute(
-            path: 'prayer-times',
-            name: 'prayerTimes',
-            builder: (context, state) => const PrayerTimesScreen(),
-          ),
-          GoRoute(
-            path: 'qibla',
-            name: 'qibla',
-            builder: (context, state) => const QiblaScreen(),
-          ),
-          GoRoute(
-            path: 'quran',
-            name: 'quran',
-            builder: (context, state) => const QuranSurahListScreen(),
-            routes: [
-              GoRoute(
-                path: ':surahNumber',
-                name: 'quranSurah',
-                builder: (context, state) {
-                  final surahNumber = int.parse(
-                    state.pathParameters['surahNumber']!,
-                  );
-                  return QuranSurahDetailScreen(surahNumber: surahNumber);
-                },
-              ),
-            ],
-          ),
-          GoRoute(
-            path: 'adhkar',
-            name: 'adhkar',
-            builder: (context, state) => const AdhkarScreen(),
-          ),
-        ],
-      ),
-    ],
+    routes: AppPlatform.isWeb ? _webRoutes() : _mobilePilgrimRoutes(),
     errorBuilder: (context, state) =>
         RouteNotFoundScreen(location: state.uri.toString()),
   );

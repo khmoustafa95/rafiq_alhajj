@@ -1650,6 +1650,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{name} · {count} {ayahsLabel}'**
   String toolsQuranSurahSubtitle(String name, int count, String ayahsLabel);
+
+  /// No description provided for @navHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get navHome;
+
+  /// No description provided for @navGuidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Guidance'**
+  String get navGuidance;
+
+  /// No description provided for @navServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Services'**
+  String get navServices;
+
+  /// No description provided for @navProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get navProfile;
+
+  /// No description provided for @homeNextPrayer.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Prayer'**
+  String get homeNextPrayer;
+
+  /// No description provided for @homePrayerLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Makkah, KSA'**
+  String get homePrayerLocation;
+
+  /// No description provided for @homeJourneyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Begin Your Sacred Journey'**
+  String get homeJourneyTitle;
+
+  /// No description provided for @homeJourneyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Register now to secure your pilgrimage slot and access premium rituals guidance.'**
+  String get homeJourneyBody;
+
+  /// No description provided for @homeRegisterNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Register Now'**
+  String get homeRegisterNow;
+
+  /// No description provided for @homeNewsSeeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See All →'**
+  String get homeNewsSeeAll;
+
+  /// No description provided for @contentImportantTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Important'**
+  String get contentImportantTag;
+
+  /// No description provided for @contentHoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} Hours Ago'**
+  String contentHoursAgo(int hours);
+
+  /// No description provided for @profileGuestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest'**
+  String get profileGuestTitle;
+
+  /// No description provided for @profileGuestBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to access your Hajj journey, rituals, and personalized content.'**
+  String get profileGuestBody;
+
+  /// No description provided for @notificationsLatestUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest Updates'**
+  String get notificationsLatestUpdates;
+
+  /// No description provided for @notificationsFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get notificationsFilterAll;
+
+  /// No description provided for @notificationsFilterGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General News'**
+  String get notificationsFilterGeneral;
+
+  /// No description provided for @notificationsFilterUrgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Urgent Alerts'**
+  String get notificationsFilterUrgent;
+
+  /// No description provided for @notificationsUrgentBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Urgent Alert!'**
+  String get notificationsUrgentBadge;
+
+  /// No description provided for @notificationsMinutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min ago'**
+  String notificationsMinutesAgo(int minutes);
+
+  /// No description provided for @staffNavHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get staffNavHome;
+
+  /// No description provided for @staffNavPilgrims.
+  ///
+  /// In en, this message translates to:
+  /// **'Pilgrims'**
+  String get staffNavPilgrims;
+
+  /// No description provided for @staffNavContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Content Management'**
+  String get staffNavContent;
+
+  /// No description provided for @staffNavCompetitions.
+  ///
+  /// In en, this message translates to:
+  /// **'Competitions'**
+  String get staffNavCompetitions;
+
+  /// No description provided for @staffNavNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get staffNavNotifications;
+
+  /// No description provided for @staffPortalSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Portal'**
+  String get staffPortalSubtitle;
+
+  /// No description provided for @staffDefaultUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Administrator'**
+  String get staffDefaultUser;
+
+  /// No description provided for @staffAdminRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Chief Coordinator'**
+  String get staffAdminRole;
+
+  /// No description provided for @staffConnectedStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get staffConnectedStatus;
+
+  /// No description provided for @staffActiveNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Active now'**
+  String get staffActiveNow;
+
+  /// No description provided for @staffStable.
+  ///
+  /// In en, this message translates to:
+  /// **'Stable'**
+  String get staffStable;
 }
 
 class _AppLocalizationsDelegate

@@ -60,6 +60,8 @@
 ## Changelog
 
 ### 2026-06-06
+- **Design (applied):** Hajj Companion visual system — `AppColors`/`AppTypography`/`AppDecorations`, Inter via `google_fonts`, mobile `PilgrimShellScreen` (Home/Guidance/Services/Profile), redesigned home (prayer hero, quick actions, journey CTA, news cards), notifications (featured hero, filter chips, accent cards, Qibla FAB), web `StaffWebShell` + admin dashboard KPI cards + CMS content grid.
+- **Design:** Added `Design.md` — editable redesign spec template (brand, theme, components, per-screen inventory, phased apply instructions).
 - **Locale:** Arabic default; `LocaleController` + persisted preference; global `LanguageSwitcherFab` with bottom sheet picker.
 - **Auth:** Fixed profiles RLS infinite recursion (`42P17`) that broke login for all roles; misreported as `authErrorNetworkConnection`. Migration `20260606100000_fix_profiles_rls_recursion.sql`.
 - Fixed `avoid_redundant_argument_values` on GoRouter `debugLogDiagnostics`; moved opt-in flag to `AppConfig.routerDebugLog` / `routerDebugLogDiagnostics` getter.
