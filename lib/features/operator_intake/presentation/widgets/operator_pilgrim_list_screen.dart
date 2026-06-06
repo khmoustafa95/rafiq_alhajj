@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/controllers/sign_out_controller.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_summary.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/operator_registry_providers.dart';
@@ -51,7 +52,7 @@ class _OperatorPilgrimListScreenState
     final pilgrimsAsync = ref.watch(operatorPilgrimRegistryProvider);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: RafiqAppBar(
         title: Text(l10n.operatorPilgrimListTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),

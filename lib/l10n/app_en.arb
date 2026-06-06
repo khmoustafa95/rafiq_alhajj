@@ -429,5 +429,27 @@
   "@adminNotificationSendSuccess": {
     "placeholders": {"count": {"type": "int"}}
   },
-  "adminNotificationSendError": "Could not send notification."
+  "adminNotificationSendError": "Could not send notification.",
+  "languageSwitcherTitle": "Choose language",
+  "@languageSwitcherTitle": {
+    "description": "Title on the language picker bottom sheet"
+  },
+  "languageSwitcherSubtitle": "Your choice is saved for next time",
+  "@languageSwitcherSubtitle": {
+    "description": "Subtitle on the language picker bottom sheet"
+  },
+  "languageArabic": "العربية",
+  "languageArabicSubtitle": "Arabic",
+  "languageEnglish": "English",
+  "languageEnglishSubtitle": "الإنجليزية",
+  "languageArabicShort": "عربي",
+  "languageEnglishShort": "EN",
+  "toolsQuranSurahSubtitle": "{name} · {count} {ayahsLabel}",
+  "@toolsQuranSurahSubtitle": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "count": {"type": "int"},
+      "ayahsLabel": {"type": "String"}
+    }
+  }
 }

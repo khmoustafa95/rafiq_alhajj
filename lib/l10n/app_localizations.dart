@@ -1596,6 +1596,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not send notification.'**
   String get adminNotificationSendError;
+
+  /// Title on the language picker bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Choose language'**
+  String get languageSwitcherTitle;
+
+  /// Subtitle on the language picker bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Your choice is saved for next time'**
+  String get languageSwitcherSubtitle;
+
+  /// No description provided for @languageArabic.
+  ///
+  /// In en, this message translates to:
+  /// **'العربية'**
+  String get languageArabic;
+
+  /// No description provided for @languageArabicSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Arabic'**
+  String get languageArabicSubtitle;
+
+  /// No description provided for @languageEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get languageEnglish;
+
+  /// No description provided for @languageEnglishSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'الإنجليزية'**
+  String get languageEnglishSubtitle;
+
+  /// No description provided for @languageArabicShort.
+  ///
+  /// In en, this message translates to:
+  /// **'عربي'**
+  String get languageArabicShort;
+
+  /// No description provided for @languageEnglishShort.
+  ///
+  /// In en, this message translates to:
+  /// **'EN'**
+  String get languageEnglishShort;
+
+  /// No description provided for @toolsQuranSurahSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} · {count} {ayahsLabel}'**
+  String toolsQuranSurahSubtitle(String name, int count, String ayahsLabel);
 }
 
 class _AppLocalizationsDelegate

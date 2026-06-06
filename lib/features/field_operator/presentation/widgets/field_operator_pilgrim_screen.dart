@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/field_operator/domain/models/field_pilgrim_status.dart';
 import 'package:rafiq_alhajj/features/field_operator/domain/models/pilgrim_field_record.dart';
 import 'package:rafiq_alhajj/features/field_operator/presentation/providers/field_operator_providers.dart';
@@ -90,7 +91,7 @@ class _FieldOperatorPilgrimScreenState
     final isSaving = detailAsync.isLoading && _initialized;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.fieldOperatorPilgrimTitle)),
+      appBar: RafiqAppBar(title: Text(l10n.fieldOperatorPilgrimTitle)),
       body: detailAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, _) => Center(child: Text(l10n.fieldOperatorLoadError)),

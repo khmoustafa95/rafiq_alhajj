@@ -3,6 +3,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/l10n/app_locale_settings.dart';
+import 'package:rafiq_alhajj/core/l10n/locale_controller.dart';
 import 'package:rafiq_alhajj/core/routing/app_router.dart';
 import 'package:rafiq_alhajj/core/theme/app_theme.dart';
 import 'package:rafiq_alhajj/core/widgets/push_notification_starter.dart';
@@ -16,6 +18,7 @@ class AppRoot extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
+    final locale = ref.watch(localeControllerProvider);
 
     return ScreenUtilInit(
       designSize: const Size(
@@ -30,16 +33,14 @@ class AppRoot extends ConsumerWidget {
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
-          localeResolutionCallback: (locale, supportedLocales) {
-            if (locale == null) {
-              return supportedLocales.first;
-            }
+          locale: locale,
+          localeResolutionCallback: (deviceLocale, supportedLocales) {
             for (final supported in supportedLocales) {
               if (supported.languageCode == locale.languageCode) {
                 return supported;
               }
             }
-            return supportedLocales.first;
+            return AppLocaleSettings.defaultLocale;
           },
           localizationsDelegates: const [
             AppLocalizations.delegate,
@@ -47,7 +48,7 @@ class AppRoot extends ConsumerWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: AppLocalizations.supportedLocales,
+          supportedLocales: AppLocaleSettings.supportedLocales,
           routerConfig: router,
           builder: (context, routerChild) {
             return PushNotificationStarter(

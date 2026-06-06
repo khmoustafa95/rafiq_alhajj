@@ -813,4 +813,33 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminNotificationSendError => 'تعذر إرسال الإشعار.';
+
+  @override
+  String get languageSwitcherTitle => 'اختر اللغة';
+
+  @override
+  String get languageSwitcherSubtitle => 'سيتم حفظ اختيارك للمرة القادمة';
+
+  @override
+  String get languageArabic => 'العربية';
+
+  @override
+  String get languageArabicSubtitle => 'Arabic';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageEnglishSubtitle => 'الإنجليزية';
+
+  @override
+  String get languageArabicShort => 'عربي';
+
+  @override
+  String get languageEnglishShort => 'EN';
+
+  @override
+  String toolsQuranSurahSubtitle(String name, int count, String ayahsLabel) {
+    return '$name · $count $ayahsLabel';
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/domain/models/geo_location.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/providers/location_providers.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/providers/qibla_provider.dart';
@@ -17,7 +18,7 @@ class QiblaScreen extends ConsumerWidget {
     final locationAsync = ref.watch(deviceLocationProvider);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: RafiqAppBar(
         title: Text(l10n.toolsQiblaTitle),
         actions: [
           IconButton(

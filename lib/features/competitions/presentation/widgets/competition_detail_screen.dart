@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition.dart';
@@ -19,7 +20,7 @@ class CompetitionDetailScreen extends ConsumerWidget {
         ref.watch(competitionDetailProvider(competitionId));
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.competitionDetailTitle)),
+      appBar: RafiqAppBar(title: Text(l10n.competitionDetailTitle)),
       body: detailAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, _) => Center(child: Text(l10n.competitionsLoadError)),

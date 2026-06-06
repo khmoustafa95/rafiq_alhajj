@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/notifications/domain/models/notification_audience.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
@@ -94,7 +95,7 @@ class _AdminNotificationBroadcastScreenState
     final isSending = ref.watch(adminNotificationBroadcastProvider).isLoading;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: RafiqAppBar(
         title: Text(l10n.adminNotificationSendTitle),
       ),
       body: Form(

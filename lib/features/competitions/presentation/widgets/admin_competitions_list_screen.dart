@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/providers/competitions_providers.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
@@ -18,7 +19,7 @@ class AdminCompetitionsListScreen extends ConsumerWidget {
     final listAsync = ref.watch(adminCompetitionListProvider);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: RafiqAppBar(
         title: Text(l10n.adminCompetitionsTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),

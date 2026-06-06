@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/notifications/application/utils/notification_navigation.dart';
 import 'package:rafiq_alhajj/features/notifications/domain/models/inbox_notification.dart';
 import 'package:rafiq_alhajj/features/notifications/domain/models/notification_type.dart';
@@ -20,7 +21,7 @@ class NotificationListScreen extends ConsumerWidget {
     final locale = Localizations.localeOf(context).languageCode;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: RafiqAppBar(
         title: Text(l10n.notificationsTitle),
         actions: const [_MarkAllReadAction()],
       ),

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/controllers/sign_out_controller.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_bell_button.dart';
 import 'package:rafiq_alhajj/features/operator_intake/application/utils/credential_generator.dart';
@@ -144,7 +145,7 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
     final pickedCount = controller.pickedFiles.length;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: RafiqAppBar(
         title: Text(l10n.operatorIntakeTitle),
         actions: [
           const NotificationBellButton(),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/controllers/operator_login_controller.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/utils/auth_error_l10n.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
@@ -59,6 +60,9 @@ class _FieldOperatorLoginScreenState
     });
 
     return Scaffold(
+      appBar: RafiqAppBar(
+        title: Text(l10n.fieldOperatorLoginTitle),
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(

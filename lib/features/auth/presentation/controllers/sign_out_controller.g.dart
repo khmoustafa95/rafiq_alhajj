@@ -20,7 +20,7 @@ final class SignOutControllerProvider
         argument: null,
         retry: null,
         name: r'signOutControllerProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -33,7 +33,7 @@ final class SignOutControllerProvider
   SignOutController create() => SignOutController();
 }
 
-String _$signOutControllerHash() => r'f17a766313ac07e766dd087d45e6621ccc2473c3';
+String _$signOutControllerHash() => r'9b783ccd341d180a6bb2c8860f5c6832344b4f71';
 
 abstract class _$SignOutController extends $AsyncNotifier<void> {
   FutureOr<void> build();

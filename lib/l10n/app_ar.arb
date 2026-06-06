@@ -248,5 +248,14 @@
   "adminNotificationBodyEn": "النص (إنجليزي، اختياري)",
   "adminNotificationSendButton": "إرسال",
   "adminNotificationSendSuccess": "تم الإرسال إلى {count} مستلم.",
-  "adminNotificationSendError": "تعذر إرسال الإشعار."
+  "adminNotificationSendError": "تعذر إرسال الإشعار.",
+  "languageSwitcherTitle": "اختر اللغة",
+  "languageSwitcherSubtitle": "سيتم حفظ اختيارك للمرة القادمة",
+  "languageArabic": "العربية",
+  "languageArabicSubtitle": "Arabic",
+  "languageEnglish": "English",
+  "languageEnglishSubtitle": "الإنجليزية",
+  "languageArabicShort": "عربي",
+  "languageEnglishShort": "EN",
+  "toolsQuranSurahSubtitle": "{name} · {count} {ayahsLabel}"
 }

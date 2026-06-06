@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/domain/data/adhkar_data.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/domain/models/adhkar_entry.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
@@ -15,7 +16,7 @@ class AdhkarScreen extends StatelessWidget {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        appBar: AppBar(
+        appBar: RafiqAppBar(
           title: Text(l10n.toolsAdhkarTitle),
           bottom: TabBar(
             tabs: [

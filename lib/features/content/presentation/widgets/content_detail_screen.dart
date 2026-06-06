@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_type.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_detail_provider.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
@@ -20,7 +21,7 @@ class ContentDetailScreen extends ConsumerWidget {
     final detailAsync = ref.watch(contentDetailProvider(contentId));
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: RafiqAppBar(
         title: Text(l10n.contentDetailTitle),
       ),
       body: detailAsync.when(

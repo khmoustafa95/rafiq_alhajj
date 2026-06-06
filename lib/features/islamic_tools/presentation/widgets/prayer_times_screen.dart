@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/providers/location_providers.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/providers/prayer_times_provider.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/utils/location_error_l10n.dart';
@@ -15,7 +16,7 @@ class PrayerTimesScreen extends ConsumerWidget {
     final scheduleAsync = ref.watch(prayerTimesScheduleProvider);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: RafiqAppBar(
         title: Text(l10n.toolsPrayerTimesTitle),
         actions: [
           IconButton(

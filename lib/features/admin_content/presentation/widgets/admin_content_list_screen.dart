@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/providers/admin_content_providers.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/utils/content_meta_l10n.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_item.dart';
@@ -64,7 +65,7 @@ class AdminContentListScreen extends ConsumerWidget {
     final itemsAsync = ref.watch(adminContentListProvider);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: RafiqAppBar(
         title: Text(l10n.adminContentListTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),

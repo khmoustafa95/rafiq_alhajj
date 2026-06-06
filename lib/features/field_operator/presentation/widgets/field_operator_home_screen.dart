@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/controllers/sign_out_controller.dart';
 import 'package:rafiq_alhajj/features/field_operator/domain/models/pilgrim_search_item.dart';
 import 'package:rafiq_alhajj/features/field_operator/presentation/providers/field_operator_providers.dart';
@@ -50,7 +51,7 @@ class _FieldOperatorHomeScreenState extends ConsumerState<FieldOperatorHomeScree
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: RafiqAppBar(
         title: Text(l10n.fieldOperatorHomeTitle),
         actions: [
           IconButton(

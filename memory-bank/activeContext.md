@@ -3,7 +3,23 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
-**Notifications phase 3 (FCM)** — device tokens, Edge Function push, mobile registration.
+**Arabic default locale + AppBar language switcher** — `RafiqAppBar` on all screens; Quran surah names locale-aware.
+
+## Recent changes (2026-06-06, locale v2)
+- Language switcher moved from floating FAB to **`RafiqAppBar`** (chip in app bar actions on every screen).
+- Staff login screens gained `RafiqAppBar`; removed `LanguageSwitcherOverlay`.
+- Quran list/detail: surah names follow active locale; `toolsQuranSurahSubtitle` ARB key.
+
+## Recent changes (2026-06-06, locale v1)
+- Default locale **Arabic**; `LocaleController` + `shared_preferences`.
+
+## Recent changes (2026-06-06, Arabic demo names)
+- Demo user seeding moved to `scripts/seed-demo-users.mjs` (Node UTF-8). Windows PS 5.1 `ConvertFrom-Json` was corrupting Arabic → `????` in `profiles.full_name`.
+- `npm run setup:users` now updates existing users + patches `profiles.full_name`.
+
+## Recent changes (2026-06-06, profiles RLS)
+- Migration `20260606100000_fix_profiles_rls_recursion.sql` — `is_admin()` / `is_operator_or_admin()` SECURITY DEFINER helpers; fixed policies on `profiles` that queried `profiles` under RLS.
+- Symptom: "Cannot reach Supabase" on operator/pilgrim/admin login despite Supabase running and correct `dart_defines.local.json`.
 
 ## Recent changes (2026-06-05, performance / rebuild optimization)
 - Derived auth providers: `authAccessModeProvider`, `authProfileIdProvider`, `authProfileFullNameProvider` — dependents rebuild only when value changes.

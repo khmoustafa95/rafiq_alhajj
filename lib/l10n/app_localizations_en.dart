@@ -823,4 +823,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminNotificationSendError => 'Could not send notification.';
+
+  @override
+  String get languageSwitcherTitle => 'Choose language';
+
+  @override
+  String get languageSwitcherSubtitle => 'Your choice is saved for next time';
+
+  @override
+  String get languageArabic => 'العربية';
+
+  @override
+  String get languageArabicSubtitle => 'Arabic';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageEnglishSubtitle => 'الإنجليزية';
+
+  @override
+  String get languageArabicShort => 'عربي';
+
+  @override
+  String get languageEnglishShort => 'EN';
+
+  @override
+  String toolsQuranSurahSubtitle(String name, int count, String ayahsLabel) {
+    return '$name · $count $ayahsLabel';
+  }
 }

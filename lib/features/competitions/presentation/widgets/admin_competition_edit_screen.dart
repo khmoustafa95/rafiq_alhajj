@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition_editor_input.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/providers/competitions_providers.dart';
@@ -114,11 +115,11 @@ class _AdminCompetitionEditScreenState
       final listAsync = ref.watch(adminCompetitionListProvider);
       return listAsync.when(
         loading: () => Scaffold(
-          appBar: AppBar(title: Text(l10n.adminCompetitionEditTitle)),
+          appBar: RafiqAppBar(title: Text(l10n.adminCompetitionEditTitle)),
           body: const Center(child: CircularProgressIndicator()),
         ),
         error: (_, _) => Scaffold(
-          appBar: AppBar(title: Text(l10n.adminCompetitionEditTitle)),
+          appBar: RafiqAppBar(title: Text(l10n.adminCompetitionEditTitle)),
           body: Center(child: Text(l10n.adminCompetitionsLoadError)),
         ),
         data: (items) {
@@ -131,7 +132,7 @@ class _AdminCompetitionEditScreenState
           }
           if (found == null) {
             return Scaffold(
-              appBar: AppBar(title: Text(l10n.adminCompetitionEditTitle)),
+              appBar: RafiqAppBar(title: Text(l10n.adminCompetitionEditTitle)),
               body: Center(child: Text(l10n.competitionNotFound)),
             );
           }
@@ -148,7 +149,7 @@ class _AdminCompetitionEditScreenState
 
   Widget _buildForm(AppLocalizations l10n, bool isSaving) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: RafiqAppBar(
         title: Text(
           _isEditing
               ? l10n.adminCompetitionEditTitle

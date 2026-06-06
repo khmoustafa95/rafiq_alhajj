@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_record.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_update.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/operator_registry_providers.dart';
@@ -99,7 +100,7 @@ class _OperatorPilgrimDetailScreenState
         ref.watch(operatorPilgrimDetailProvider(widget.profileId));
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: RafiqAppBar(
         title: Text(l10n.operatorPilgrimDetailTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),

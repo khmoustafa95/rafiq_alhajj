@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/admin_content/domain/models/content_editor_input.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/providers/admin_content_providers.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/utils/content_meta_l10n.dart';
@@ -108,11 +109,11 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
       final listAsync = ref.watch(adminContentListProvider);
       return listAsync.when(
         loading: () => Scaffold(
-          appBar: AppBar(title: Text(l10n.adminContentEditTitle)),
+          appBar: RafiqAppBar(title: Text(l10n.adminContentEditTitle)),
           body: const Center(child: CircularProgressIndicator()),
         ),
         error: (_, _) => Scaffold(
-          appBar: AppBar(title: Text(l10n.adminContentEditTitle)),
+          appBar: RafiqAppBar(title: Text(l10n.adminContentEditTitle)),
           body: Center(child: Text(l10n.adminContentLoadError)),
         ),
         data: (items) {
@@ -125,7 +126,7 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
           }
           if (item == null) {
             return Scaffold(
-              appBar: AppBar(title: Text(l10n.adminContentEditTitle)),
+              appBar: RafiqAppBar(title: Text(l10n.adminContentEditTitle)),
               body: Center(child: Text(l10n.adminContentNotFound)),
             );
           }
@@ -144,7 +145,7 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
     bool isSaving,
   ) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: RafiqAppBar(
         title: Text(
           _isEditing ? l10n.adminContentEditTitle : l10n.adminContentNewTitle,
         ),

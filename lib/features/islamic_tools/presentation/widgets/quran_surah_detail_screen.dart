@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:quran/quran.dart' as quran;
+import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 class QuranSurahDetailScreen extends StatelessWidget {
@@ -14,13 +15,19 @@ class QuranSurahDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final nameAr = quran.getSurahNameArabic(surahNumber);
     final nameEn = quran.getSurahName(surahNumber);
     final ayahCount = quran.getVerseCount(surahNumber);
+    final primaryName = isArabic ? nameAr : nameEn;
+    final secondaryName = isArabic ? nameEn : nameAr;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(nameAr),
+      appBar: RafiqAppBar(
+        title: Text(
+          primaryName,
+          textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+        ),
       ),
       body: ListView.builder(
         padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 24.h),
@@ -33,7 +40,9 @@ class QuranSurahDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    nameEn,
+                    secondaryName,
+                    textDirection:
+                        isArabic ? TextDirection.ltr : TextDirection.rtl,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   SizedBox(height: 4.h),
