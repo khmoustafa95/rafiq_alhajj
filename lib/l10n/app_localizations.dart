@@ -1687,6 +1687,18 @@ abstract class AppLocalizations {
   /// **'Makkah, KSA'**
   String get homePrayerLocation;
 
+  /// No description provided for @homeQuickActionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick tools'**
+  String get homeQuickActionsTitle;
+
+  /// No description provided for @homeSeeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See All →'**
+  String get homeSeeAll;
+
   /// No description provided for @homeJourneyTitle.
   ///
   /// In en, this message translates to:
@@ -1696,8 +1708,20 @@ abstract class AppLocalizations {
   /// No description provided for @homeJourneyBody.
   ///
   /// In en, this message translates to:
-  /// **'Register now to secure your pilgrimage slot and access premium rituals guidance.'**
+  /// **'Contact us to inquire about registration. If the technical team provided your account credentials, enter them to sign in.'**
   String get homeJourneyBody;
+
+  /// No description provided for @homeContactUs.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact us'**
+  String get homeContactUs;
+
+  /// No description provided for @homeEnterRegistration.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter registration details'**
+  String get homeEnterRegistration;
 
   /// No description provided for @homeRegisterNow.
   ///

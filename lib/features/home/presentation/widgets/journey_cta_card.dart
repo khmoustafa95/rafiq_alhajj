@@ -7,6 +7,10 @@ import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+/// Temporary inquiries WhatsApp number (replace when production contact is set).
+const _inquiriesWhatsAppPhone = '963951957301';
 
 class JourneyCtaCard extends StatelessWidget {
   const JourneyCtaCard({
@@ -69,10 +73,11 @@ class JourneyCtaCard extends StatelessWidget {
                       Row(
                         children: [
                           Expanded(
-                            child: FilledButton(
+                            child: FilledButton.icon(
                               onPressed: () =>
-                                  unawaited(context.push(AppRoutes.login)),
-                              child: Text(l10n.homeRegisterNow),
+                                  unawaited(_openWhatsAppInquiries(context)),
+                              icon: const Icon(Icons.chat_outlined),
+                              label: Text(l10n.homeContactUs),
                             ),
                           ),
                           SizedBox(width: 10.w),
@@ -80,7 +85,7 @@ class JourneyCtaCard extends StatelessWidget {
                             child: OutlinedButton(
                               onPressed: () =>
                                   unawaited(context.push(AppRoutes.login)),
-                              child: Text(l10n.loginTitle),
+                              child: Text(l10n.homeEnterRegistration),
                             ),
                           ),
                         ],
@@ -95,5 +100,17 @@ class JourneyCtaCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _openWhatsAppInquiries(BuildContext context) async {
+    final uri = Uri.parse('https://wa.me/$_inquiriesWhatsAppPhone');
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication) &&
+        context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context).contentOpenMediaFailed),
+        ),
+      );
+    }
   }
 }

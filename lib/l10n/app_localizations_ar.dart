@@ -862,11 +862,23 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homePrayerLocation => 'مكة، السعودية';
 
   @override
+  String get homeQuickActionsTitle => 'الأدوات السريعة';
+
+  @override
+  String get homeSeeAll => 'عرض الكل ←';
+
+  @override
   String get homeJourneyTitle => 'ابدأ رحلتك المقدسة';
 
   @override
   String get homeJourneyBody =>
-      'سجّل الآن لحجز مكانك في الحج والوصول إلى إرشادات المناسك المميزة.';
+      'للاستفسار عن التسجيل تواصل معنا. إذا زوّدك الفريق التقني بمعلومات الحساب، أدخلها للدخول.';
+
+  @override
+  String get homeContactUs => 'تواصل معنا';
+
+  @override
+  String get homeEnterRegistration => 'إدخال معلومات التسجيل';
 
   @override
   String get homeRegisterNow => 'سجّل الآن';

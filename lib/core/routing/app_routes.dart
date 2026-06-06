@@ -3,6 +3,8 @@ abstract final class AppRoutes {
   static const String home = '/';
   static const String notifications = '/notifications';
   static const String login = '/login';
+  static const String contentVideosList = '/content/videos';
+  static const String contentNewsList = '/content/news';
   static const String contentDetail = '/content/:id';
   static const String tools = '/tools';
   static const String prayerTimes = '/tools/prayer-times';

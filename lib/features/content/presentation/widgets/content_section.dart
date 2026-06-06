@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:rafiq_alhajj/core/theme/app_colors.dart';
+import 'package:rafiq_alhajj/core/widgets/section_header.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_item.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_card.dart';
 
@@ -13,6 +13,8 @@ class ContentSection extends StatelessWidget {
     required this.onItemTap,
     required this.emptyMessage,
     this.seeAllLabel,
+    this.onSeeAll,
+    this.maxItems,
     this.layout = ContentSectionLayout.compact,
     super.key,
   });
@@ -22,36 +24,25 @@ class ContentSection extends StatelessWidget {
   final void Function(ContentItem item) onItemTap;
   final String emptyMessage;
   final String? seeAllLabel;
+  final VoidCallback? onSeeAll;
+  final int? maxItems;
   final ContentSectionLayout layout;
 
   @override
   Widget build(BuildContext context) {
+    final limit = maxItems ?? items.length;
+    final visibleItems = items.take(limit).toList();
+    final hasMore = items.length > visibleItems.length;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 12.h),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                ),
-              ),
-              if (seeAllLabel != null && items.isNotEmpty)
-                Text(
-                  seeAllLabel!,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: AppColors.primary,
-                      ),
-                ),
-            ],
-          ),
+        SectionHeader(
+          title: title,
+          seeAllLabel: hasMore ? seeAllLabel : null,
+          onSeeAll: hasMore ? onSeeAll : null,
         ),
-        if (items.isEmpty)
+        if (visibleItems.isEmpty)
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
             child: Text(
@@ -60,7 +51,7 @@ class ContentSection extends StatelessWidget {
             ),
           )
         else
-          ...items.asMap().entries.map((entry) {
+          ...visibleItems.asMap().entries.map((entry) {
             final index = entry.key;
             final item = entry.value;
             final cardLayout = layout == ContentSectionLayout.featured

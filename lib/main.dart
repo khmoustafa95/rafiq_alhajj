@@ -26,7 +26,9 @@ Future<void> main() async {
     },
     (error, stackTrace) {
       unawaited(CrashReporter.instance.recordError(error, stackTrace));
-      _runBootstrapFailureApp(error, onRetry: _launchApp);
+      if (kDebugMode) {
+        debugPrint('Uncaught zone error: $error');
+      }
     },
   );
 }

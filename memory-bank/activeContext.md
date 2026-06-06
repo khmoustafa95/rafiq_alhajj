@@ -3,6 +3,15 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
+**Home previews** — quick tools horizontal scroll + see all → `/tools`; videos/news sections show 2 items + see all → `/content/videos` & `/content/news`.
+
+## Previous focus
+**Runtime stability** — fixed emulator crash: removed `google_fonts` network fetch from `AppTypography`; zone error handler no longer calls `runApp` (avoids Zone mismatch).
+
+## Previous focus
+**Home journey CTA** — guest card: WhatsApp inquiries (`963951957301`) + registration login; removed register-now / duplicate pilgrim-login buttons.
+
+## Previous focus
 **Design.md updated** — documents applied Hajj Companion redesign (Phases 1–4), tokens, screen status, l10n keys; Phase 5 polish backlog listed.
 
 ## Previous focus (2026-06-06)

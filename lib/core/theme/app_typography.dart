@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 
 abstract final class AppTypography {
   static TextTheme textTheme(Brightness brightness) {
-    final base = GoogleFonts.interTextTheme();
+    final base = ThemeData(brightness: brightness).textTheme;
     final color = brightness == Brightness.light
         ? AppColors.textPrimary
         : const Color(0xFFF9FAFB);

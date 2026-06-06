@@ -19,6 +19,7 @@ import 'package:rafiq_alhajj/features/competitions/presentation/widgets/admin_co
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competition_detail_screen.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competitions_list_screen.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_detail_screen.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/content_list_screen.dart';
 import 'package:rafiq_alhajj/features/field_operator/presentation/widgets/field_operator_home_screen.dart';
 import 'package:rafiq_alhajj/features/field_operator/presentation/widgets/field_operator_login_screen.dart';
 import 'package:rafiq_alhajj/features/field_operator/presentation/widgets/field_operator_pilgrim_screen.dart';
@@ -129,6 +130,20 @@ List<RouteBase> _mobilePilgrimRoutes() => [
         path: AppRoutes.login,
         name: 'login',
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.contentVideosList,
+        name: 'contentVideosList',
+        builder: (context, state) => const ContentListScreen(
+          category: ContentListCategory.videos,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.contentNewsList,
+        name: 'contentNewsList',
+        builder: (context, state) => const ContentListScreen(
+          category: ContentListCategory.news,
+        ),
       ),
       GoRoute(
         path: AppRoutes.contentDetail,
@@ -242,6 +257,20 @@ List<RouteBase> _webRoutes() => [
         path: AppRoutes.notifications,
         name: 'notifications',
         builder: (context, state) => const NotificationListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.contentVideosList,
+        name: 'contentVideosListWeb',
+        builder: (context, state) => const ContentListScreen(
+          category: ContentListCategory.videos,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.contentNewsList,
+        name: 'contentNewsListWeb',
+        builder: (context, state) => const ContentListScreen(
+          category: ContentListCategory.news,
+        ),
       ),
       GoRoute(
         path: AppRoutes.contentDetail,

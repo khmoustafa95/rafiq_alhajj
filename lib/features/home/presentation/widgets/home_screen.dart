@@ -20,6 +20,11 @@ import 'package:rafiq_alhajj/features/home/presentation/widgets/quick_action_til
 import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_bell_button.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
+abstract final class HomeFeedPreviewLimits {
+  static const int videos = 2;
+  static const int news = 2;
+}
+
 /// Home — US-01 public content + redesigned Hajj Companion layout.
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -146,6 +151,11 @@ class _HomeBody extends ConsumerWidget {
                             items: feed.videos,
                             emptyMessage: l10n.contentVideosEmpty,
                             onItemTap: onContentTap,
+                            maxItems: HomeFeedPreviewLimits.videos,
+                            seeAllLabel: l10n.homeSeeAll,
+                            onSeeAll: () => unawaited(
+                              context.push(AppRoutes.contentVideosList),
+                            ),
                           ),
                         ),
                         SliverToBoxAdapter(
@@ -154,7 +164,11 @@ class _HomeBody extends ConsumerWidget {
                             items: feed.newsAndAnnouncements,
                             emptyMessage: l10n.contentNewsEmpty,
                             onItemTap: onContentTap,
-                            seeAllLabel: l10n.homeNewsSeeAll,
+                            maxItems: HomeFeedPreviewLimits.news,
+                            seeAllLabel: l10n.homeSeeAll,
+                            onSeeAll: () => unawaited(
+                              context.push(AppRoutes.contentNewsList),
+                            ),
                             layout: ContentSectionLayout.featured,
                           ),
                         ),

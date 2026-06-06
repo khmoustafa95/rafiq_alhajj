@@ -872,11 +872,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homePrayerLocation => 'Makkah, KSA';
 
   @override
+  String get homeQuickActionsTitle => 'Quick tools';
+
+  @override
+  String get homeSeeAll => 'See All →';
+
+  @override
   String get homeJourneyTitle => 'Begin Your Sacred Journey';
 
   @override
   String get homeJourneyBody =>
-      'Register now to secure your pilgrimage slot and access premium rituals guidance.';
+      'Contact us to inquire about registration. If the technical team provided your account credentials, enter them to sign in.';
+
+  @override
+  String get homeContactUs => 'Contact us';
+
+  @override
+  String get homeEnterRegistration => 'Enter registration details';
 
   @override
   String get homeRegisterNow => 'Register Now';
