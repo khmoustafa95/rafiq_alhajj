@@ -164,14 +164,58 @@ class AppLocalizationsAr extends AppLocalizations {
   String get toolsAdhkarSubtitle => 'أذكار الصباح والمساء';
 
   @override
-  String get toolsVirtualTourTitle => 'التجول الافتراضي';
+  String get toolsVirtualTourTitle => 'دليل الحرم';
 
   @override
   String get toolsVirtualTourSubtitle =>
-      'خريطة الحرم ونموذج 3D وبانوراما تفاعلية';
+      'خريطة حقيقية، دليل المناسك، وبانوراما لمكة';
 
   @override
-  String get toolsVirtualTourLoadError => 'تعذر تحميل التجول الافتراضي.';
+  String get toolsVirtualTourLoadError => 'تعذر تحميل البانوراما.';
+
+  @override
+  String get toolsVirtualTourTabGuide => 'الدليل';
+
+  @override
+  String get toolsVirtualTourTabMap => 'الخريطة';
+
+  @override
+  String get toolsVirtualTourTabPanorama => 'بانوراما';
+
+  @override
+  String get toolsVirtualTourDisclaimer =>
+      'للتعريف والإرشاد فقط — ليس بديلاً عن أداء الحج في المشاعر.';
+
+  @override
+  String get toolsVirtualTourGuideHeading => 'معالم الحرم ومناسكها';
+
+  @override
+  String get toolsVirtualTourStepsLabel => 'الخطوات';
+
+  @override
+  String get toolsVirtualTourTipsLabel => 'نصائح عملية';
+
+  @override
+  String get toolsVirtualTourRitualLabel => 'المنسك';
+
+  @override
+  String get toolsVirtualTourMapHint =>
+      'خريطة OpenStreetMap — اضغط أيقونة معلم لعرض التفاصيل. تتطلب اتصالاً للتحميل الأول.';
+
+  @override
+  String get toolsVirtualTourCenterKaaba => 'توسيط الكعبة';
+
+  @override
+  String get toolsVirtualTourPanoramaHint =>
+      'اسحب للنظر حولك — بانوراما جوية لمكة من برج الساعة (CC0).';
+
+  @override
+  String get toolsVirtualTourPanoramaCredit =>
+      'صورة بانوراما: Wurzelgnohm / Wikimedia Commons (CC0)';
+
+  @override
+  String get toolsVirtualTourPhotoCredit =>
+      'صورة الكعبة: GusJuned / Wikimedia Commons';
 
   @override
   String get toolsRefreshLocation => 'تحديث الموقع';

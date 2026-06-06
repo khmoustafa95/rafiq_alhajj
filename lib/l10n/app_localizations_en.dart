@@ -166,14 +166,58 @@ class AppLocalizationsEn extends AppLocalizations {
   String get toolsAdhkarSubtitle => 'Morning and evening remembrances';
 
   @override
-  String get toolsVirtualTourTitle => 'Virtual tour';
+  String get toolsVirtualTourTitle => 'Haram guide';
 
   @override
   String get toolsVirtualTourSubtitle =>
-      'Haram map, 3D model, and interactive panorama';
+      'Real map, ritual guide, and Makkah panorama';
 
   @override
-  String get toolsVirtualTourLoadError => 'Could not load the virtual tour.';
+  String get toolsVirtualTourLoadError => 'Could not load the panorama.';
+
+  @override
+  String get toolsVirtualTourTabGuide => 'Guide';
+
+  @override
+  String get toolsVirtualTourTabMap => 'Map';
+
+  @override
+  String get toolsVirtualTourTabPanorama => 'Panorama';
+
+  @override
+  String get toolsVirtualTourDisclaimer =>
+      'For guidance only — not a substitute for performing Hajj on site.';
+
+  @override
+  String get toolsVirtualTourGuideHeading => 'Haram landmarks & rituals';
+
+  @override
+  String get toolsVirtualTourStepsLabel => 'Steps';
+
+  @override
+  String get toolsVirtualTourTipsLabel => 'Practical tips';
+
+  @override
+  String get toolsVirtualTourRitualLabel => 'Rite';
+
+  @override
+  String get toolsVirtualTourMapHint =>
+      'OpenStreetMap — tap a marker for details. Internet required for first load.';
+
+  @override
+  String get toolsVirtualTourCenterKaaba => 'Center on Kaaba';
+
+  @override
+  String get toolsVirtualTourPanoramaHint =>
+      'Drag to look around — aerial Makkah panorama from Abraj Al-Bait (CC0).';
+
+  @override
+  String get toolsVirtualTourPanoramaCredit =>
+      'Panorama: Wurzelgnohm / Wikimedia Commons (CC0)';
+
+  @override
+  String get toolsVirtualTourPhotoCredit =>
+      'Kaaba photo: GusJuned / Wikimedia Commons';
 
   @override
   String get toolsRefreshLocation => 'Refresh location';

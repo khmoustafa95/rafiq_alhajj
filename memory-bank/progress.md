@@ -60,7 +60,7 @@
 ## Changelog
 
 ### 2026-06-06
-- **Virtual tour (MVP):** `VirtualTourScreen` + `assets/virtual_tour/` (offline HTML/CSS/JS), `webview_flutter`, route `/tools/virtual-tour`, catalog entry; AR/EN via `setLocale`.
+- **Haram guide v2:** Ritual guide cards (Tawaf/Sa'i/Zamzam steps), `flutter_map` OSM around Kaaba, Pannellum + real Makkah CC0 panorama + Kaaba photo (Wikimedia); renamed «دليل الحرم».
 - **Home previews:** `QuickActionTiles` horizontal scroll (4 tools from `islamicToolsCatalog`) + see all; `ContentSection` `maxItems`/`onSeeAll`; `ContentListScreen` routes for full videos/news lists.
 - **Runtime fix:** `AppTypography` uses bundled `ThemeData` text theme (no `google_fonts` CDN); `runZonedGuarded` error callback logs only — fixes Zone mismatch + offline emulator crash.
 - **Home journey CTA:** Guest card — «تواصل معنا» opens WhatsApp inquiries (`963951957301`); «إدخال معلومات التسجيل» → `/login`. Removed register-now / duplicate pilgrim-login buttons.

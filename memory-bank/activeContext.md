@@ -3,7 +3,10 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
-**Virtual tour tool** — `/tools/virtual-tour` WebView + bundled `assets/virtual_tour/` (map, CSS 3D Kaaba, drag panorama); entry in `islamicToolsCatalog`.
+**Haram guide v2** — Flutter tabs: ritual guide (landmarks + steps), OSM map (`flutter_map`), Pannellum panorama (real Makkah CC0 image); bundled Wikimedia photos.
+
+## Previous focus
+**Virtual tour tool (v1)** — replaced weak CSS demo with useful pilgrimage content.
 
 ## Previous focus
 **Home previews** — quick tools horizontal scroll + see all → `/tools`; videos/news sections show 2 items + see all → `/content/videos` & `/content/news`.

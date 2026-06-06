@@ -389,20 +389,98 @@ abstract class AppLocalizations {
   /// No description provided for @toolsVirtualTourTitle.
   ///
   /// In en, this message translates to:
-  /// **'Virtual tour'**
+  /// **'Haram guide'**
   String get toolsVirtualTourTitle;
 
   /// No description provided for @toolsVirtualTourSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Haram map, 3D model, and interactive panorama'**
+  /// **'Real map, ritual guide, and Makkah panorama'**
   String get toolsVirtualTourSubtitle;
 
   /// No description provided for @toolsVirtualTourLoadError.
   ///
   /// In en, this message translates to:
-  /// **'Could not load the virtual tour.'**
+  /// **'Could not load the panorama.'**
   String get toolsVirtualTourLoadError;
+
+  /// No description provided for @toolsVirtualTourTabGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Guide'**
+  String get toolsVirtualTourTabGuide;
+
+  /// No description provided for @toolsVirtualTourTabMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get toolsVirtualTourTabMap;
+
+  /// No description provided for @toolsVirtualTourTabPanorama.
+  ///
+  /// In en, this message translates to:
+  /// **'Panorama'**
+  String get toolsVirtualTourTabPanorama;
+
+  /// No description provided for @toolsVirtualTourDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'For guidance only — not a substitute for performing Hajj on site.'**
+  String get toolsVirtualTourDisclaimer;
+
+  /// No description provided for @toolsVirtualTourGuideHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Haram landmarks & rituals'**
+  String get toolsVirtualTourGuideHeading;
+
+  /// No description provided for @toolsVirtualTourStepsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Steps'**
+  String get toolsVirtualTourStepsLabel;
+
+  /// No description provided for @toolsVirtualTourTipsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Practical tips'**
+  String get toolsVirtualTourTipsLabel;
+
+  /// No description provided for @toolsVirtualTourRitualLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Rite'**
+  String get toolsVirtualTourRitualLabel;
+
+  /// No description provided for @toolsVirtualTourMapHint.
+  ///
+  /// In en, this message translates to:
+  /// **'OpenStreetMap — tap a marker for details. Internet required for first load.'**
+  String get toolsVirtualTourMapHint;
+
+  /// No description provided for @toolsVirtualTourCenterKaaba.
+  ///
+  /// In en, this message translates to:
+  /// **'Center on Kaaba'**
+  String get toolsVirtualTourCenterKaaba;
+
+  /// No description provided for @toolsVirtualTourPanoramaHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to look around — aerial Makkah panorama from Abraj Al-Bait (CC0).'**
+  String get toolsVirtualTourPanoramaHint;
+
+  /// No description provided for @toolsVirtualTourPanoramaCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'Panorama: Wurzelgnohm / Wikimedia Commons (CC0)'**
+  String get toolsVirtualTourPanoramaCredit;
+
+  /// No description provided for @toolsVirtualTourPhotoCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'Kaaba photo: GusJuned / Wikimedia Commons'**
+  String get toolsVirtualTourPhotoCredit;
 
   /// No description provided for @toolsRefreshLocation.
   ///

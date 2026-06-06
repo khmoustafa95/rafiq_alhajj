@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="stylesheet" href="pannellum/pannellum.css" />
+  <style>
+    html, body, #panorama { margin: 0; width: 100%; height: 100%; background: #111827; }
+    #error { display: none; color: #f9fafb; padding: 24px; text-align: center; font-family: system-ui, sans-serif; }
+  </style>
+</head>
+<body>
+  <div id="panorama"></div>
+  <p id="error"></p>
+  <script src="pannellum/pannellum.js"></script>
+  <script>
+    try {
+      pannellum.viewer('panorama', {
+        type: 'equirectangular',
+        panorama: 'images/makkah_panorama.jpg',
+        autoLoad: true,
+        compass: true,
+        hfov: 95,
+        minHfov: 50,
+        maxHfov: 120,
+        showZoomCtrl: true,
+        mouseZoom: true,
+        friction: 0.15,
+      });
+    } catch (e) {
+      document.getElementById('panorama').style.display = 'none';
+      var err = document.getElementById('error');
+      err.style.display = 'block';
+      err.textContent = e.message || 'Panorama load failed';
+    }
+  </script>
+</body>
+</html>
