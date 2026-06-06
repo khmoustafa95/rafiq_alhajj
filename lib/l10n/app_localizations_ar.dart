@@ -164,6 +164,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get toolsAdhkarSubtitle => 'أذكار الصباح والمساء';
 
   @override
+  String get toolsVirtualTourTitle => 'التجول الافتراضي';
+
+  @override
+  String get toolsVirtualTourSubtitle =>
+      'خريطة الحرم ونموذج 3D وبانوراما تفاعلية';
+
+  @override
+  String get toolsVirtualTourLoadError => 'تعذر تحميل التجول الافتراضي.';
+
+  @override
   String get toolsRefreshLocation => 'تحديث الموقع';
 
   @override

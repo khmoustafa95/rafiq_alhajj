@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Virtual Tour</title>
+  <link rel="stylesheet" href="tour.css" />
+</head>
+<body>
+  <header class="header">
+    <p class="disclaimer" id="disclaimer"></p>
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-tab="map" role="tab" id="tab-map"></button>
+      <button class="tab" data-tab="model" role="tab" id="tab-model"></button>
+      <button class="tab" data-tab="panorama" role="tab" id="tab-panorama"></button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="panel-map" class="panel active" role="tabpanel">
+      <div class="map-wrap">
+        <svg viewBox="0 0 400 400" class="haram-map" aria-label="Haram map">
+          <rect x="20" y="20" width="360" height="360" rx="24" class="map-bg" />
+          <rect x="155" y="155" width="90" height="90" class="kaaba-shape" />
+          <ellipse cx="200" cy="200" rx="130" ry="130" class="tawaf-ring" />
+          <line x1="320" y1="200" x2="380" y2="200" class="sai-path" />
+          <circle cx="120" cy="120" r="10" class="hotspot" data-id="kaaba" />
+          <circle cx="200" cy="70" r="10" class="hotspot" data-id="tawaf" />
+          <circle cx="340" cy="200" r="10" class="hotspot" data-id="sai" />
+          <circle cx="200" cy="330" r="10" class="hotspot" data-id="zamzam" />
+          <circle cx="70" cy="200" r="10" class="hotspot" data-id="gates" />
+        </svg>
+      </div>
+      <div class="landmark-list" id="landmark-list"></div>
+    </section>
+
+    <section id="panel-model" class="panel" role="tabpanel">
+      <div class="scene-3d">
+        <div class="scene-floor"></div>
+        <div class="kaaba-3d">
+          <div class="face front"></div>
+          <div class="face back"></div>
+          <div class="face right"></div>
+          <div class="face left"></div>
+          <div class="face top"></div>
+        </div>
+      </div>
+      <p class="hint" id="model-hint"></p>
+    </section>
+
+    <section id="panel-panorama" class="panel" role="tabpanel">
+      <div class="panorama" id="panorama">
+        <div class="panorama-sky"></div>
+        <div class="panorama-ground"></div>
+        <div class="panorama-kaaba"></div>
+      </div>
+      <p class="hint" id="panorama-hint"></p>
+    </section>
+  </main>
+
+  <aside class="info-card hidden" id="info-card">
+    <button class="close-btn" id="close-info" aria-label="Close">×</button>
+    <h2 id="info-title"></h2>
+    <p id="info-body"></p>
+  </aside>
+
+  <script src="tour.js"></script>
+</body>
+</html>

@@ -38,6 +38,7 @@ import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/opera
 import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_pilgrim_list_screen.dart';
 import 'package:rafiq_alhajj/features/pilgrim/presentation/widgets/pilgrim_dashboard_screen.dart';
 import 'package:rafiq_alhajj/features/profile/presentation/widgets/profile_screen.dart';
+import 'package:rafiq_alhajj/features/virtual_tour/presentation/widgets/virtual_tour_screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_router.g.dart';
@@ -74,6 +75,11 @@ List<RouteBase> _toolsChildRoutes() => [
         path: 'adhkar',
         name: 'adhkar',
         builder: (context, state) => const AdhkarScreen(),
+      ),
+      GoRoute(
+        path: 'virtual-tour',
+        name: 'virtualTour',
+        builder: (context, state) => const VirtualTourScreen(),
       ),
     ];
 

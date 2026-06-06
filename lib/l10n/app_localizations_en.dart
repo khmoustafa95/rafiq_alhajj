@@ -166,6 +166,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get toolsAdhkarSubtitle => 'Morning and evening remembrances';
 
   @override
+  String get toolsVirtualTourTitle => 'Virtual tour';
+
+  @override
+  String get toolsVirtualTourSubtitle =>
+      'Haram map, 3D model, and interactive panorama';
+
+  @override
+  String get toolsVirtualTourLoadError => 'Could not load the virtual tour.';
+
+  @override
   String get toolsRefreshLocation => 'Refresh location';
 
   @override

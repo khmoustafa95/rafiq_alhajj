@@ -3,6 +3,9 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
+**Virtual tour tool** — `/tools/virtual-tour` WebView + bundled `assets/virtual_tour/` (map, CSS 3D Kaaba, drag panorama); entry in `islamicToolsCatalog`.
+
+## Previous focus
 **Home previews** — quick tools horizontal scroll + see all → `/tools`; videos/news sections show 2 items + see all → `/content/videos` & `/content/news`.
 
 ## Previous focus

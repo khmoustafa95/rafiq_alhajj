@@ -12,6 +12,7 @@ abstract final class AppRoutes {
   static const String quran = '/tools/quran';
   static const String quranSurah = '/tools/quran/:surahNumber';
   static const String adhkar = '/tools/adhkar';
+  static const String virtualTour = '/tools/virtual-tour';
   static const String competitions = '/competitions';
   static const String competitionDetail = '/competitions/:id';
   static const String adminCompetitions = '/admin/competitions';

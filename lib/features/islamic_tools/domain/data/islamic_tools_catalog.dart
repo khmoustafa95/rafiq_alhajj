@@ -35,6 +35,13 @@ List<IslamicToolEntry> islamicToolsCatalog(AppLocalizations l10n) => [
         color: AppColors.secondary,
       ),
       IslamicToolEntry(
+        icon: Icons.view_in_ar_rounded,
+        title: l10n.toolsVirtualTourTitle,
+        subtitle: l10n.toolsVirtualTourSubtitle,
+        route: AppRoutes.virtualTour,
+        color: AppColors.accentPurple,
+      ),
+      IslamicToolEntry(
         icon: Icons.menu_book_rounded,
         title: l10n.toolsQuranTitle,
         subtitle: l10n.toolsQuranSubtitle,

@@ -386,6 +386,24 @@ abstract class AppLocalizations {
   /// **'Morning and evening remembrances'**
   String get toolsAdhkarSubtitle;
 
+  /// No description provided for @toolsVirtualTourTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Virtual tour'**
+  String get toolsVirtualTourTitle;
+
+  /// No description provided for @toolsVirtualTourSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Haram map, 3D model, and interactive panorama'**
+  String get toolsVirtualTourSubtitle;
+
+  /// No description provided for @toolsVirtualTourLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the virtual tour.'**
+  String get toolsVirtualTourLoadError;
+
   /// No description provided for @toolsRefreshLocation.
   ///
   /// In en, this message translates to:
