@@ -1324,6 +1324,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get staffConnectedStatus => 'Connected';
 
   @override
+  String get staffOfflineStatus => 'Offline';
+
+  @override
+  String get staffOfflineBanner =>
+      'You appear to be offline. Some actions may not work until connectivity is restored.';
+
+  @override
+  String get staffErrorNetwork =>
+      'Could not reach the server. Check your internet connection and try again.';
+
+  @override
+  String get staffErrorPermission =>
+      'You do not have permission to perform this action.';
+
+  @override
+  String get staffErrorGeneric => 'Something went wrong. Please try again.';
+
+  @override
   String get staffActiveNow => 'Active now';
 
   @override

@@ -10,6 +10,7 @@ import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/routing/staff_navigation.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_account.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_editor_input.dart';
@@ -371,6 +372,7 @@ class _AdminOperatorEditScreenState extends ConsumerState<AdminOperatorEditScree
           ref.watch(adminOperatorDetailProvider(widget.operatorId!));
 
       return detailAsync.when(
+        skipLoadingOnReload: true,
         loading: () => StaffAdaptivePage(
           web: StaffWebPage(
             title: _pageTitle(l10n),
@@ -381,14 +383,26 @@ class _AdminOperatorEditScreenState extends ConsumerState<AdminOperatorEditScree
             body: const Center(child: CircularProgressIndicator()),
           ),
         ),
-        error: (_, _) => StaffAdaptivePage(
+        error: (error, _) => StaffAdaptivePage(
           web: StaffWebPage(
             title: _pageTitle(l10n),
-            body: StaffEmptyState(message: l10n.adminOperatorLoadError),
+            body: StaffErrorView.fromError(
+              l10n,
+              error: error,
+              onRetry: () => ref.invalidate(
+                adminOperatorDetailProvider(widget.operatorId!),
+              ),
+            ),
           ),
           mobile: Scaffold(
             appBar: RafiqAppBar(title: Text(_pageTitle(l10n))),
-            body: Center(child: Text(l10n.adminOperatorLoadError)),
+            body: StaffErrorView.fromError(
+              l10n,
+              error: error,
+              onRetry: () => ref.invalidate(
+                adminOperatorDetailProvider(widget.operatorId!),
+              ),
+            ),
           ),
         ),
         data: (operator) {

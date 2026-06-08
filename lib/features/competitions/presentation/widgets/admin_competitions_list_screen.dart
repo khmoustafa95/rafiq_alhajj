@@ -10,6 +10,8 @@ import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/utils/staff_table_processor.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_data_table.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_table_definition_cache.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition.dart';
@@ -28,6 +30,12 @@ class _AdminCompetitionsListScreenState
     extends ConsumerState<AdminCompetitionsListScreen> {
   StaffTableQuery _query = const StaffTableQuery(
     sortColumnId: 'title',
+  );
+
+  late final StaffTableDefinitionCache<Competition> _tableDefs =
+      StaffTableDefinitionCache<Competition>(
+    buildColumns: _buildColumns,
+    buildFilters: _buildFilters,
   );
 
   void _openNew() {
@@ -123,28 +131,30 @@ class _AdminCompetitionsListScreenState
     final l10n = AppLocalizations.of(context);
     final listAsync = ref.watch(adminCompetitionListProvider);
     final toolbarActions = _toolbarActions(l10n);
+    final columns = _tableDefs.columns(context);
+    final filters = _tableDefs.filters(context);
 
     final body = listAsync.when(
       skipLoadingOnReload: true,
       loading: () => AppPlatform.isWeb
           ? StaffDataTable<Competition>(
-              columns: _columns(l10n),
+              columns: columns,
               rows: const [],
               totalCount: 0,
               query: _query,
               onQueryChanged: (query) => setState(() => _query = query),
               searchHint: l10n.staffTableSearchCompetitions,
-              filters: _filters(l10n),
+              filters: filters,
               toolbarActions: toolbarActions,
               isLoading: true,
               emptyMessage: l10n.adminCompetitionsEmpty,
               emptyIcon: Icons.emoji_events_outlined,
             )
           : const Center(child: CircularProgressIndicator()),
-      error: (_, _) => StaffEmptyState(
-        message: l10n.adminCompetitionsLoadError,
-        actionLabel: l10n.retry,
-        onAction: () {
+      error: (error, _) => StaffErrorView.fromError(
+        l10n,
+        error: error,
+        onRetry: () {
           unawaited(ref.read(adminCompetitionListProvider.notifier).refresh());
         },
       ),
@@ -153,13 +163,13 @@ class _AdminCompetitionsListScreenState
 
         if (AppPlatform.isWeb) {
           return StaffDataTable<Competition>(
-            columns: _columns(l10n),
+            columns: columns,
             rows: page.items,
             totalCount: page.totalCount,
             query: _query,
             onQueryChanged: (query) => setState(() => _query = query),
             searchHint: l10n.staffTableSearchCompetitions,
-            filters: _filters(l10n),
+            filters: filters,
             toolbarActions: toolbarActions,
             isLoading: listAsync.isLoading,
             onRowTap: (competition) => _openEdit(competition.id),
@@ -232,7 +242,7 @@ class _AdminCompetitionsListScreenState
     );
   }
 
-  List<StaffTableFilter> _filters(AppLocalizations l10n) {
+  List<StaffTableFilter> _buildFilters(AppLocalizations l10n) {
     return [
       StaffTableFilter(
         id: 'status',
@@ -252,7 +262,7 @@ class _AdminCompetitionsListScreenState
     ];
   }
 
-  List<StaffTableColumn<Competition>> _columns(AppLocalizations l10n) {
+  List<StaffTableColumn<Competition>> _buildColumns(AppLocalizations l10n) {
     return [
       StaffTableColumn(
         id: 'title',

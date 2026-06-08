@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rafiq_alhajj/core/network/staff_connectivity.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_responsive_grid.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
@@ -70,6 +72,7 @@ class _AdminDashboardWebBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final isOnline = ref.watch(staffConnectivityProvider);
 
     return StaffWebPage(
       title: l10n.adminDashboardTitle,
@@ -79,9 +82,13 @@ class _AdminDashboardWebBody extends ConsumerWidget {
         Container(
           padding: EdgeInsets.symmetric(horizontal: sw(12), vertical: sh(6)),
           decoration: BoxDecoration(
-            color: AppColors.success.withValues(alpha: 0.12),
+            color: (isOnline ? AppColors.success : AppColors.warning)
+                .withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
+            border: Border.all(
+              color: (isOnline ? AppColors.success : AppColors.warning)
+                  .withValues(alpha: 0.3),
+            ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -89,16 +96,16 @@ class _AdminDashboardWebBody extends ConsumerWidget {
               Container(
                 width: 8,
                 height: 8,
-                decoration: const BoxDecoration(
-                  color: AppColors.success,
+                decoration: BoxDecoration(
+                  color: isOnline ? AppColors.success : AppColors.warning,
                   shape: BoxShape.circle,
                 ),
               ),
               SizedBox(width: sw(8)),
               Text(
-                l10n.staffConnectedStatus,
+                isOnline ? l10n.staffConnectedStatus : l10n.staffOfflineStatus,
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: AppColors.success,
+                      color: isOnline ? AppColors.success : AppColors.warning,
                       fontWeight: FontWeight.w600,
                     ),
               ),
@@ -130,42 +137,12 @@ class _AdminDashboardContent extends ConsumerWidget {
       skipLoadingOnReload: true,
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, _) => Center(
-        child: Padding(
-          padding: EdgeInsets.all(sw(24)),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.error_outline,
-                size: ss(40),
-                color: AppColors.textSecondary,
-              ),
-              SizedBox(height: sh(12)),
-              Text(
-                l10n.adminDashboardLoadError,
-                style: Theme.of(context).textTheme.titleMedium,
-                textAlign: TextAlign.center,
-              ),
-              if (error case final Object e) ...[
-                SizedBox(height: sh(8)),
-                Text(
-                  e.toString(),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-              SizedBox(height: sh(16)),
-              FilledButton.icon(
-                onPressed: () {
-                  unawaited(ref.read(adminDashboardProvider.notifier).refresh());
-                },
-                icon: const Icon(Icons.refresh_rounded),
-                label: Text(l10n.retry),
-              ),
-            ],
-          ),
+        child: StaffErrorView.fromError(
+          l10n,
+          error: error,
+          onRetry: () {
+            unawaited(ref.read(adminDashboardProvider.notifier).refresh());
+          },
         ),
       ),
       data: (stats) => RefreshIndicator(

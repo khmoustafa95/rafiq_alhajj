@@ -10,6 +10,7 @@ import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_data_table.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_table_definition_cache.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
@@ -32,6 +33,11 @@ class _OperatorPilgrimListScreenState
     extends ConsumerState<OperatorPilgrimListScreen> {
   StaffTableQuery _query = const StaffTableQuery(
     sortColumnId: 'full_name',
+  );
+
+  late final StaffTableDefinitionCache<OperatorPilgrimSummary> _columnCache =
+      StaffTableDefinitionCache<OperatorPilgrimSummary>(
+    buildColumns: _buildColumns,
   );
 
   void _openPilgrim(OperatorPilgrimSummary item) {
@@ -224,7 +230,7 @@ class _OperatorPilgrimListScreenState
     required bool isLoading,
   }) {
     return StaffDataTable<OperatorPilgrimSummary>(
-      columns: _columns(l10n),
+      columns: _columnCache.columns(context),
       rows: rows,
       totalCount: totalCount,
       query: _query,
@@ -375,7 +381,7 @@ class _OperatorPilgrimListScreenState
     );
   }
 
-  List<StaffTableColumn<OperatorPilgrimSummary>> _columns(
+  List<StaffTableColumn<OperatorPilgrimSummary>> _buildColumns(
     AppLocalizations l10n,
   ) {
     return [

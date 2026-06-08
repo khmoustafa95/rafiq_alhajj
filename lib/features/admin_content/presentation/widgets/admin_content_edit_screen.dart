@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/routing/staff_navigation.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/features/admin_content/domain/models/content_editor_input.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/providers/admin_content_providers.dart';
@@ -120,15 +121,15 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
     );
   }
 
-  Widget _errorState(AppLocalizations l10n, String message) {
+  Widget _errorState(AppLocalizations l10n, Object error, {VoidCallback? onRetry}) {
     return StaffAdaptivePage(
       web: StaffWebPage(
         title: _pageTitle,
-        body: StaffEmptyState(message: message),
+        body: StaffErrorView.fromError(l10n, error: error, onRetry: onRetry),
       ),
       mobile: Scaffold(
         appBar: RafiqAppBar(title: Text(_pageTitle)),
-        body: Center(child: Text(message)),
+        body: StaffErrorView.fromError(l10n, error: error, onRetry: onRetry),
       ),
     );
   }
@@ -141,20 +142,28 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
     );
 
     if (_isEditing) {
-      final listAsync = ref.watch(adminContentListProvider);
-      return listAsync.when(
+      final contentId = widget.contentId!;
+      final detailAsync = ref.watch(adminContentDetailProvider(contentId));
+      return detailAsync.when(
+        skipLoadingOnReload: true,
         loading: () => _loadingState(l10n),
-        error: (_, _) => _errorState(l10n, l10n.adminContentLoadError),
-        data: (items) {
-          ContentItem? item;
-          for (final entry in items) {
-            if (entry.id == widget.contentId) {
-              item = entry;
-              break;
-            }
-          }
+        error: (error, _) => _errorState(
+          l10n,
+          error,
+          onRetry: () => ref.invalidate(adminContentDetailProvider(contentId)),
+        ),
+        data: (item) {
           if (item == null) {
-            return _errorState(l10n, l10n.adminContentNotFound);
+            return StaffAdaptivePage(
+              web: StaffWebPage(
+                title: _pageTitle,
+                body: StaffErrorView(message: l10n.adminContentNotFound),
+              ),
+              mobile: Scaffold(
+                appBar: RafiqAppBar(title: Text(_pageTitle)),
+                body: StaffErrorView(message: l10n.adminContentNotFound),
+              ),
+            );
           }
           _bindItem(item);
           return _buildForm(l10n, isSaving);

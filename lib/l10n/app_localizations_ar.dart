@@ -1308,6 +1308,23 @@ class AppLocalizationsAr extends AppLocalizations {
   String get staffConnectedStatus => 'متصل بالخدمة';
 
   @override
+  String get staffOfflineStatus => 'غير متصل';
+
+  @override
+  String get staffOfflineBanner =>
+      'يبدو أنك غير متصل بالإنترنت. قد لا تعمل بعض الإجراءات حتى يعود الاتصال.';
+
+  @override
+  String get staffErrorNetwork =>
+      'تعذّر الوصول إلى الخادم. تحقق من اتصال الإنترنت ثم أعد المحاولة.';
+
+  @override
+  String get staffErrorPermission => 'ليس لديك صلاحية لتنفيذ هذا الإجراء.';
+
+  @override
+  String get staffErrorGeneric => 'حدث خطأ ما. يرجى المحاولة مرة أخرى.';
+
+  @override
   String get staffActiveNow => 'نشط الآن';
 
   @override

@@ -10,6 +10,8 @@ import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_data_table.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_table_definition_cache.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_account.dart';
@@ -28,6 +30,12 @@ class _AdminOperatorsListScreenState
     extends ConsumerState<AdminOperatorsListScreen> {
   StaffTableQuery _query = const StaffTableQuery(
     sortColumnId: 'full_name',
+  );
+
+  late final StaffTableDefinitionCache<OperatorAccount> _tableDefs =
+      StaffTableDefinitionCache<OperatorAccount>(
+    buildColumns: _buildColumns,
+    buildFilters: _buildFilters,
   );
 
   void _openNew(BuildContext context) {
@@ -62,49 +70,43 @@ class _AdminOperatorsListScreenState
     final l10n = AppLocalizations.of(context);
     final pageAsync = ref.watch(adminOperatorListPageProvider(_query));
     final toolbarActions = _toolbarActions(l10n);
+    final columns = _tableDefs.columns(context);
+    final filters = _tableDefs.filters(context);
 
     final body = pageAsync.when(
       skipLoadingOnReload: true,
       loading: () => AppPlatform.isWeb
           ? StaffDataTable<OperatorAccount>(
-              columns: _columns(l10n),
+              columns: columns,
               rows: const [],
               totalCount: 0,
               query: _query,
               onQueryChanged: (query) => setState(() => _query = query),
               searchHint: l10n.staffTableSearchOperators,
-              filters: _filters(l10n),
+              filters: filters,
               toolbarActions: toolbarActions,
               isLoading: true,
               emptyMessage: l10n.adminOperatorEmpty,
               emptyIcon: Icons.badge_outlined,
             )
           : const Center(child: CircularProgressIndicator()),
-      error: (_, _) => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(l10n.adminOperatorLoadError),
-            SizedBox(height: sh(12)),
-            FilledButton(
-              onPressed: () {
-                ref.invalidate(adminOperatorListPageProvider(_query));
-              },
-              child: Text(l10n.retry),
-            ),
-          ],
+      error: (error, _) => Center(
+        child: StaffErrorView.fromError(
+          l10n,
+          error: error,
+          onRetry: () => ref.invalidate(adminOperatorListPageProvider(_query)),
         ),
       ),
       data: (page) {
         if (AppPlatform.isWeb) {
           return StaffDataTable<OperatorAccount>(
-            columns: _columns(l10n),
+            columns: columns,
             rows: page.items,
             totalCount: page.totalCount,
             query: _query,
             onQueryChanged: (query) => setState(() => _query = query),
             searchHint: l10n.staffTableSearchOperators,
-            filters: _filters(l10n),
+            filters: filters,
             toolbarActions: toolbarActions,
             isLoading: pageAsync.isLoading,
             onRowTap: (operator) => _openEdit(context, operator.id),
@@ -172,7 +174,7 @@ class _AdminOperatorsListScreenState
     );
   }
 
-  List<StaffTableFilter> _filters(AppLocalizations l10n) {
+  List<StaffTableFilter> _buildFilters(AppLocalizations l10n) {
     return [
       StaffTableFilter(
         id: 'status',
@@ -192,7 +194,7 @@ class _AdminOperatorsListScreenState
     ];
   }
 
-  List<StaffTableColumn<OperatorAccount>> _columns(AppLocalizations l10n) {
+  List<StaffTableColumn<OperatorAccount>> _buildColumns(AppLocalizations l10n) {
     return [
       StaffTableColumn(
         id: 'full_name',

@@ -1,4 +1,5 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
 import 'package:rafiq_alhajj/core/supabase/realtime_refresh.dart';
 import 'package:rafiq_alhajj/core/supabase/realtime_tables.dart';
 import 'package:rafiq_alhajj/features/admin_content/application/services/admin_content_service.dart';
@@ -23,34 +24,46 @@ AdminContentService adminContentService(Ref ref) {
 }
 
 @riverpod
-class AdminContentList extends _$AdminContentList {
+Future<PaginatedResult<ContentItem>> adminContentListPage(
+  Ref ref,
+  StaffTableQuery query,
+) async {
+  final result = await ref.read(adminContentServiceProvider).listPage(query);
+
+  watchSupabaseTables(
+    ref,
+    client: AppConfig.hasSupabase ? Supabase.instance.client : null,
+    tables: RealtimeTables.contentFeed,
+  );
+
+  return result;
+}
+
+@riverpod
+Future<ContentItem?> adminContentDetail(Ref ref, String id) async {
+  final item = await ref.read(adminContentServiceProvider).getById(id);
+
+  watchSupabaseTables(
+    ref,
+    client: AppConfig.hasSupabase ? Supabase.instance.client : null,
+    tables: RealtimeTables.contentFeed,
+  );
+
+  return item;
+}
+
+@riverpod
+class AdminContentDelete extends _$AdminContentDelete {
   @override
-  Future<List<ContentItem>> build() async {
-    final items = await ref.read(adminContentServiceProvider).listAll();
-
-    watchSupabaseTables(
-      ref,
-      client: AppConfig.hasSupabase ? Supabase.instance.client : null,
-      tables: RealtimeTables.contentFeed,
-    );
-
-    return items;
-  }
-
-  Future<void> refresh() async {
-    ref.invalidateSelf();
-    await future;
-  }
+  FutureOr<void> build() {}
 
   Future<bool> deleteItem(String id) async {
-    try {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
       await ref.read(adminContentServiceProvider).remove(id);
-      ref.invalidateSelf();
-      await future;
-      return true;
-    } on AdminContentException {
-      return false;
-    }
+      ref.invalidate(adminContentListPageProvider);
+    });
+    return !state.hasError;
   }
 }
 
@@ -63,7 +76,10 @@ class AdminContentSave extends _$AdminContentSave {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       await ref.read(adminContentServiceProvider).save(input);
-      ref.invalidate(adminContentListProvider);
+      ref.invalidate(adminContentListPageProvider);
+      if (input.id != null) {
+        ref.invalidate(adminContentDetailProvider(input.id!));
+      }
     });
     return !state.hasError;
   }

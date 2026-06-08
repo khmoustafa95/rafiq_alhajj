@@ -24,7 +24,7 @@ OperatorRegistryService operatorRegistryService(Ref ref) {
   return OperatorRegistryService(ref.watch(operatorRegistryRepositoryProvider));
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<List<PilgrimGroupOption>> pilgrimGroupFilterOptions(Ref ref) async {
   return ref.read(operatorRegistryServiceProvider).listGroupOptions();
 }

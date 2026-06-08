@@ -63,6 +63,17 @@
 
 ## Changelog
 
+### 2026-06-09 — Content server pagination + table cache
+- [x] Content CMS server-side pagination (`fetchPage`, `adminContentListPageProvider`)
+- [x] `StaffTableDefinitionCache` on all staff list screens (locale-aware column/filter caching)
+
+### 2026-06-09 — Admin staff web hardening
+- [x] PostgREST search sanitization (operators, groups, pilgrims)
+- [x] Auth redirect deferred while session loading
+- [x] Shared staff error/offline UX (`StaffErrorView`, connectivity banner)
+- [x] Responsive table toolbar/pagination; performance tweaks (detail providers, select, keepAlive)
+- [x] `connectivity_plus` dependency for offline detection
+
 ### 2026-06-09 — Pilgrims table selection + admin upsert
 - [x] Optional row selection + bulk actions on `StaffDataTable`
 - [x] Pilgrims filters (gender, group), admin add/edit, bulk group assign

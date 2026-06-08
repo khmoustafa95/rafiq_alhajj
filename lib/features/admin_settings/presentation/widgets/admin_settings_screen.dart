@@ -8,6 +8,7 @@ import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/features/admin_settings/domain/models/system_settings.dart';
 import 'package:rafiq_alhajj/features/admin_settings/domain/models/system_settings_input.dart';
@@ -506,9 +507,12 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final settingsAsync = ref.watch(systemSettingsProvider);
-    final isSaving = ref.watch(systemSettingsSaveProvider).isLoading;
+    final isSaving = ref.watch(
+      systemSettingsSaveProvider.select((state) => state.isLoading),
+    );
 
     return settingsAsync.when(
+      skipLoadingOnReload: true,
       loading: () => StaffAdaptivePage(
         web: StaffWebPage(
           title: l10n.adminSettingsTitle,
@@ -524,20 +528,18 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
         web: StaffWebPage(
           title: l10n.adminSettingsTitle,
           subtitle: l10n.adminSettingsSubtitle,
-          body: StaffEmptyState(
-            message: l10n.adminSettingsLoadError,
-            icon: Icons.settings_outlined,
-            actionLabel: l10n.retry,
-            onAction: () => ref.invalidate(systemSettingsProvider),
+          body: StaffErrorView.fromError(
+            l10n,
+            error: error,
+            onRetry: () => ref.invalidate(systemSettingsProvider),
           ),
         ),
         mobile: Scaffold(
           appBar: RafiqAppBar(title: Text(l10n.adminSettingsTitle)),
-          body: StaffEmptyState(
-            message: l10n.adminSettingsLoadError,
-            icon: Icons.settings_outlined,
-            actionLabel: l10n.retry,
-            onAction: () => ref.invalidate(systemSettingsProvider),
+          body: StaffErrorView.fromError(
+            l10n,
+            error: error,
+            onRetry: () => ref.invalidate(systemSettingsProvider),
           ),
         ),
       ),

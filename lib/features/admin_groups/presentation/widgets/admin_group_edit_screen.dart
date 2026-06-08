@@ -12,6 +12,7 @@ import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_button_styles.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/features/admin_groups/domain/models/group_editor_input.dart';
@@ -421,6 +422,7 @@ class _AdminGroupEditScreenState extends ConsumerState<AdminGroupEditScreen> {
     if (_isEditing) {
       final detailAsync = ref.watch(adminGroupDetailProvider(widget.groupId!));
       return detailAsync.when(
+        skipLoadingOnReload: true,
         loading: () => StaffAdaptivePage(
           web: StaffWebPage(
             title: l10n.adminGroupEditTitle,
@@ -431,14 +433,24 @@ class _AdminGroupEditScreenState extends ConsumerState<AdminGroupEditScreen> {
             body: const Center(child: CircularProgressIndicator()),
           ),
         ),
-        error: (_, _) => StaffAdaptivePage(
+        error: (error, _) => StaffAdaptivePage(
           web: StaffWebPage(
             title: l10n.adminGroupEditTitle,
-            body: StaffEmptyState(message: l10n.adminGroupsLoadError),
+            body: StaffErrorView.fromError(
+              l10n,
+              error: error,
+              onRetry: () =>
+                  ref.invalidate(adminGroupDetailProvider(widget.groupId!)),
+            ),
           ),
           mobile: Scaffold(
             appBar: RafiqAppBar(title: Text(l10n.adminGroupEditTitle)),
-            body: Center(child: Text(l10n.adminGroupsLoadError)),
+            body: StaffErrorView.fromError(
+              l10n,
+              error: error,
+              onRetry: () =>
+                  ref.invalidate(adminGroupDetailProvider(widget.groupId!)),
+            ),
           ),
         ),
         data: (group) {

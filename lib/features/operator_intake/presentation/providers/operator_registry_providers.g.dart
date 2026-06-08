@@ -125,7 +125,7 @@ final class PilgrimGroupFilterOptionsProvider
         argument: null,
         retry: null,
         name: r'pilgrimGroupFilterOptionsProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -146,7 +146,7 @@ final class PilgrimGroupFilterOptionsProvider
 }
 
 String _$pilgrimGroupFilterOptionsHash() =>
-    r'e20c8f0e570d6e6878608325e8e746e4c9a78137';
+    r'05d9d09c2b7bb95f9dc4a801b261facf9f716dec';
 
 @ProviderFor(operatorPilgrimRegistryPage)
 final operatorPilgrimRegistryPageProvider =

@@ -1,3 +1,4 @@
+import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
 import 'package:rafiq_alhajj/features/admin_content/data/repositories/admin_content_repository.dart';
 import 'package:rafiq_alhajj/features/admin_content/domain/models/content_editor_input.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_item.dart';
@@ -7,7 +8,10 @@ class AdminContentService {
 
   final AdminContentRepository _repository;
 
-  Future<List<ContentItem>> listAll() => _repository.fetchAll();
+  Future<PaginatedResult<ContentItem>> listPage(StaffTableQuery query) =>
+      _repository.fetchPage(query);
+
+  Future<ContentItem?> getById(String id) => _repository.fetchById(id);
 
   Future<ContentItem> save(ContentEditorInput input) =>
       _repository.upsert(input);

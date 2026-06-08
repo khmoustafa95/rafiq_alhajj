@@ -1,5 +1,6 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
+import 'package:rafiq_alhajj/core/utils/postgrest_search_sanitize.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_record.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_summary.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_update.dart';
@@ -78,7 +79,7 @@ class OperatorRegistryRepository {
 
       final search = query.search.trim();
       if (search.isNotEmpty) {
-        final term = search.replaceAll(',', '');
+        final term = sanitizePostgrestSearchTerm(search);
         request = request.or(
           'full_name.ilike.%$term%,'
           'pilgrim_details.passport_number.ilike.%$term%,'

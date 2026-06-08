@@ -10,6 +10,8 @@ import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_data_table.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_table_definition_cache.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/features/admin_groups/domain/models/hajj_group.dart';
@@ -26,6 +28,11 @@ class AdminGroupsListScreen extends ConsumerStatefulWidget {
 
 class _AdminGroupsListScreenState extends ConsumerState<AdminGroupsListScreen> {
   StaffTableQuery _query = const StaffTableQuery(sortColumnId: 'name');
+
+  late final StaffTableDefinitionCache<HajjGroup> _tableDefs =
+      StaffTableDefinitionCache<HajjGroup>(
+    buildColumns: _buildColumns,
+  );
 
   void _openNew() {
     if (AppPlatform.isWeb) {
@@ -98,12 +105,13 @@ class _AdminGroupsListScreenState extends ConsumerState<AdminGroupsListScreen> {
     final l10n = AppLocalizations.of(context);
     final pageAsync = ref.watch(adminGroupListPageProvider(_query));
     final toolbarActions = _toolbarActions(l10n);
+    final columns = _tableDefs.columns(context);
 
     final body = pageAsync.when(
       skipLoadingOnReload: true,
       loading: () => AppPlatform.isWeb
           ? StaffDataTable<HajjGroup>(
-              columns: _columns(l10n),
+              columns: columns,
               rows: const [],
               totalCount: 0,
               query: _query,
@@ -115,25 +123,17 @@ class _AdminGroupsListScreenState extends ConsumerState<AdminGroupsListScreen> {
               emptyIcon: Icons.groups_outlined,
             )
           : const Center(child: CircularProgressIndicator()),
-      error: (_, _) => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(l10n.adminGroupsLoadError),
-            SizedBox(height: sh(12)),
-            FilledButton(
-              onPressed: () {
-                ref.invalidate(adminGroupListPageProvider(_query));
-              },
-              child: Text(l10n.retry),
-            ),
-          ],
+      error: (error, _) => Center(
+        child: StaffErrorView.fromError(
+          l10n,
+          error: error,
+          onRetry: () => ref.invalidate(adminGroupListPageProvider(_query)),
         ),
       ),
       data: (page) {
         if (AppPlatform.isWeb) {
           return StaffDataTable<HajjGroup>(
-            columns: _columns(l10n),
+            columns: columns,
             rows: page.items,
             totalCount: page.totalCount,
             query: _query,
@@ -211,7 +211,7 @@ class _AdminGroupsListScreenState extends ConsumerState<AdminGroupsListScreen> {
     );
   }
 
-  List<StaffTableColumn<HajjGroup>> _columns(AppLocalizations l10n) {
+  List<StaffTableColumn<HajjGroup>> _buildColumns(AppLocalizations l10n) {
     return [
       StaffTableColumn(
         id: 'name',

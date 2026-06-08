@@ -363,82 +363,122 @@ class _Toolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: Theme.of(context).copyWith(
-        filledButtonTheme: FilledButtonThemeData(
-          style: staffRowFilledButtonStyle(context),
-        ),
-        outlinedButtonTheme: OutlinedButtonThemeData(
-          style: staffRowOutlinedButtonStyle(context),
-        ),
-      ),
-      child: Wrap(
-        spacing: sw(12),
-        runSpacing: sh(10),
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          SizedBox(
-            width: sw(320),
-            child: TextField(
-              controller: searchController,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 720;
+        final searchField = SizedBox(
+          width: compact ? constraints.maxWidth : sw(320),
+          child: TextField(
+            controller: searchController,
+            decoration: InputDecoration(
+              hintText: searchHint,
+              prefixIcon: const Icon(Icons.search, size: 20),
+              filled: true,
+              fillColor: AppColors.surface,
+              isDense: true,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: sw(12),
+                vertical: sh(12),
+              ),
+            ),
+            onChanged: onSearchChanged,
+          ),
+        );
+
+        final filterWidgets = filters.map((filter) {
+          final current = query.filters[filter.id] ?? '';
+          return SizedBox(
+            width: compact ? constraints.maxWidth : sw(180),
+            child: DropdownButtonFormField<String>(
+              key: ValueKey('${filter.id}-$current'),
+              initialValue: current.isEmpty ? null : current,
               decoration: InputDecoration(
-                hintText: searchHint,
-                prefixIcon: const Icon(Icons.search, size: 20),
+                labelText: filter.label,
                 filled: true,
                 fillColor: AppColors.surface,
                 isDense: true,
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: sw(12),
-                  vertical: sh(12),
+                  vertical: sh(10),
                 ),
               ),
-              onChanged: onSearchChanged,
+              items: [
+                DropdownMenuItem(
+                  value: '',
+                  child: Text(filter.allLabel ?? '—'),
+                ),
+                ...filter.options.map(
+                  (option) => DropdownMenuItem(
+                    value: option.value,
+                    child: Text(option.label),
+                  ),
+                ),
+              ],
+              onChanged: (value) {
+                final next = Map<String, String>.from(query.filters);
+                if (value == null || value.isEmpty) {
+                  next.remove(filter.id);
+                } else {
+                  next[filter.id] = value;
+                }
+                onFilterChanged(next);
+              },
+            ),
+          );
+        });
+
+        if (compact) {
+          return Theme(
+            data: Theme.of(context).copyWith(
+              filledButtonTheme: FilledButtonThemeData(
+                style: staffRowFilledButtonStyle(context),
+              ),
+              outlinedButtonTheme: OutlinedButtonThemeData(
+                style: staffRowOutlinedButtonStyle(context),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                searchField,
+                SizedBox(height: sh(10)),
+                ...filterWidgets.map(
+                  (widget) => Padding(
+                    padding: EdgeInsets.only(bottom: sh(10)),
+                    child: widget,
+                  ),
+                ),
+                Wrap(
+                  spacing: sw(8),
+                  runSpacing: sh(8),
+                  children: toolbarActions,
+                ),
+              ],
+            ),
+          );
+        }
+
+        return Theme(
+          data: Theme.of(context).copyWith(
+            filledButtonTheme: FilledButtonThemeData(
+              style: staffRowFilledButtonStyle(context),
+            ),
+            outlinedButtonTheme: OutlinedButtonThemeData(
+              style: staffRowOutlinedButtonStyle(context),
             ),
           ),
-          ...filters.map((filter) {
-            final current = query.filters[filter.id] ?? '';
-            return SizedBox(
-              width: sw(180),
-              child: DropdownButtonFormField<String>(
-                key: ValueKey('${filter.id}-$current'),
-                initialValue: current.isEmpty ? null : current,
-                decoration: InputDecoration(
-                  labelText: filter.label,
-                  filled: true,
-                  fillColor: AppColors.surface,
-                  isDense: true,
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: sw(12),
-                    vertical: sh(10),
-                  ),
-                ),
-                items: [
-                  DropdownMenuItem(
-                    value: '',
-                    child: Text(filter.allLabel ?? '—'),
-                  ),
-                  ...filter.options.map(
-                    (option) => DropdownMenuItem(
-                      value: option.value,
-                      child: Text(option.label),
-                    ),
-                  ),
-                ],
-                onChanged: (value) {
-                  final next = Map<String, String>.from(query.filters);
-                  if (value == null || value.isEmpty) {
-                    next.remove(filter.id);
-                  } else {
-                    next[filter.id] = value;
-                  }
-                  onFilterChanged(next);
-                },
-              ),
-            );
-          }),
-          ...toolbarActions,
-        ],
-      ),
+          child: Wrap(
+            spacing: sw(12),
+            runSpacing: sh(10),
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              searchField,
+              ...filterWidgets,
+              ...toolbarActions,
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -706,15 +746,16 @@ class _PaginationBar extends StatelessWidget {
         ? 0
         : ((currentPage + 1) * pageSize).clamp(0, totalCount);
 
-    return Row(
+    final summary = Text(
+      l10n.staffTableShowing(from, to, totalCount),
+      style: theme.textTheme.bodySmall?.copyWith(
+        color: AppColors.textSecondary,
+      ),
+    );
+
+    final controls = Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          l10n.staffTableShowing(from, to, totalCount),
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: AppColors.textSecondary,
-          ),
-        ),
-        const Spacer(),
         Text(
           l10n.staffTableRowsPerPage,
           style: theme.textTheme.bodySmall,
@@ -756,6 +797,31 @@ class _PaginationBar extends StatelessWidget {
           tooltip: l10n.staffTableNextPage,
         ),
       ],
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 640) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              summary,
+              SizedBox(height: sh(8)),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: controls,
+              ),
+            ],
+          );
+        }
+
+        return Row(
+          children: [
+            Flexible(child: summary),
+            controls,
+          ],
+        );
+      },
     );
   }
 }

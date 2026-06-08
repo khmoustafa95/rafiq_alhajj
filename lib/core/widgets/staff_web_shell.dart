@@ -6,6 +6,7 @@ import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/language_switcher.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_button_styles.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_connectivity_banner.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/controllers/sign_out_controller.dart';
@@ -43,8 +44,9 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
     final l10n = AppLocalizations.of(context);
     final location = GoRouterState.of(context).matchedLocation;
     final profileName = ref.watch(authProfileFullNameProvider);
-    final accessMode = ref.watch(authAccessModeProvider);
-    final isAdmin = accessMode == AppAccessMode.admin;
+    final isAdmin = ref.watch(
+      authAccessModeProvider.select((mode) => mode == AppAccessMode.admin),
+    );
     final isCompact =
         MediaQuery.sizeOf(context).width < StaffWebShell.compactBreakpoint;
 
@@ -59,6 +61,14 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
       navItems: navItems,
       onNavigate: _navigate,
       onSignOut: () => ref.read(signOutControllerProvider.notifier).signOut(),
+    );
+
+    final pageBody = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const StaffConnectivityBanner(),
+        Expanded(child: widget.child),
+      ],
     );
 
     if (isCompact) {
@@ -86,7 +96,7 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
         ),
         body: Material(
           color: AppColors.background,
-          child: widget.child,
+          child: pageBody,
         ),
       );
     }
@@ -99,7 +109,7 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
           Expanded(
             child: Material(
               color: AppColors.background,
-              child: widget.child,
+              child: pageBody,
             ),
           ),
         ],

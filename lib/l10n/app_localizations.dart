@@ -2527,6 +2527,36 @@ abstract class AppLocalizations {
   /// **'Connected'**
   String get staffConnectedStatus;
 
+  /// No description provided for @staffOfflineStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get staffOfflineStatus;
+
+  /// No description provided for @staffOfflineBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'You appear to be offline. Some actions may not work until connectivity is restored.'**
+  String get staffOfflineBanner;
+
+  /// No description provided for @staffErrorNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reach the server. Check your internet connection and try again.'**
+  String get staffErrorNetwork;
+
+  /// No description provided for @staffErrorPermission.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to perform this action.'**
+  String get staffErrorPermission;
+
+  /// No description provided for @staffErrorGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get staffErrorGeneric;
+
   /// No description provided for @staffActiveNow.
   ///
   /// In en, this message translates to:

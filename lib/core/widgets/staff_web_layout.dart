@@ -122,7 +122,7 @@ class StaffFormSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: AppDecorations.card(radius: AppDecorations.radiusLg),
-      padding: EdgeInsets.all(20.w),
+      padding: EdgeInsets.all(sw(20)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

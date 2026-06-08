@@ -534,6 +534,9 @@ GoRouter appRouter(Ref ref) {
     debugLogDiagnostics: AppConfig.routerDebugLogDiagnostics,
     redirect: (context, state) {
       final sessionAsync = ref.read(authSessionProvider);
+      if (sessionAsync.isLoading) {
+        return null;
+      }
       final location = state.matchedLocation;
 
       final accessMode = sessionAsync.maybeWhen(

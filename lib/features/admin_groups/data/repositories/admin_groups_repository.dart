@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
+import 'package:rafiq_alhajj/core/utils/postgrest_search_sanitize.dart';
 import 'package:rafiq_alhajj/features/admin_groups/domain/models/group_administration_member.dart';
 import 'package:rafiq_alhajj/features/admin_groups/domain/models/group_editor_input.dart';
 import 'package:rafiq_alhajj/features/admin_groups/domain/models/hajj_group.dart';
@@ -38,7 +39,7 @@ class AdminGroupsRepository {
 
       final search = query.search.trim();
       if (search.isNotEmpty) {
-        final term = search.replaceAll(',', '');
+        final term = sanitizePostgrestSearchTerm(search);
         request = request.or(
           'name.ilike.%$term%,president_name.ilike.%$term%,code.ilike.%$term%',
         );

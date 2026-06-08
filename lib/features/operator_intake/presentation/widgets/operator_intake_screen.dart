@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
+import 'package:rafiq_alhajj/core/utils/staff_error_message.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/controllers/sign_out_controller.dart';
@@ -77,6 +78,7 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
       return;
     }
 
+    final l10n = AppLocalizations.of(context);
     final form = PilgrimIntakeForm(
       fullName: _fullNameController.text,
       email: _emailController.text,
@@ -100,9 +102,9 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
       _showCredentialsDialog(created.email, created.password);
       _clearForm();
     } else if (ref.read(operatorIntakeControllerProvider).hasError) {
-      final error = ref.read(operatorIntakeControllerProvider).error;
+      final error = ref.read(operatorIntakeControllerProvider).error!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error.toString())),
+        SnackBar(content: Text(staffErrorMessage(l10n, error))),
       );
     }
   }
