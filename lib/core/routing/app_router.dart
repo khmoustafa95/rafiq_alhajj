@@ -274,6 +274,81 @@ List<RouteBase> _mobilePilgrimRoutes() => [
       ),
     ];
 
+ShellRoute _staffWebShellRoute() {
+  return ShellRoute(
+    builder: (context, state, child) {
+      return StaffWebShell(child: child);
+    },
+    routes: [
+      GoRoute(
+        path: AppRoutes.operatorIntake,
+        name: 'operatorIntake',
+        builder: (context, state) => const OperatorIntakeScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.operatorPilgrims,
+        name: 'operatorPilgrims',
+        builder: (context, state) => const OperatorPilgrimListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.operatorPilgrimDetail,
+        name: 'operatorPilgrimDetail',
+        builder: (context, state) {
+          final profileId = state.pathParameters['profileId']!;
+          return OperatorPilgrimDetailScreen(profileId: profileId);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.adminDashboard,
+        name: 'adminDashboard',
+        builder: (context, state) => const AdminDashboardScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminNotificationSend,
+        name: 'adminNotificationSend',
+        builder: (context, state) =>
+            const AdminNotificationBroadcastScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminContent,
+        name: 'adminContent',
+        builder: (context, state) => const AdminContentListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminContentNew,
+        name: 'adminContentNew',
+        builder: (context, state) => const AdminContentEditScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminContentEdit,
+        name: 'adminContentEdit',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return AdminContentEditScreen(contentId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.adminCompetitions,
+        name: 'adminCompetitions',
+        builder: (context, state) => const AdminCompetitionsListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminCompetitionNew,
+        name: 'adminCompetitionNew',
+        builder: (context, state) => const AdminCompetitionEditScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminCompetitionEdit,
+        name: 'adminCompetitionEdit',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return AdminCompetitionEditScreen(competitionId: id);
+        },
+      ),
+    ],
+  );
+}
+
 List<RouteBase> _webRoutes() => [
       GoRoute(
         path: AppRoutes.home,
@@ -323,80 +398,11 @@ List<RouteBase> _webRoutes() => [
         builder: (context, state) => const OperatorLoginScreen(),
       ),
       GoRoute(
-        path: AppRoutes.operatorIntake,
-        name: 'operatorIntake',
-        builder: (context, state) => const OperatorIntakeScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.operatorPilgrims,
-        name: 'operatorPilgrims',
-        builder: (context, state) => const OperatorPilgrimListScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.operatorPilgrimDetail,
-        name: 'operatorPilgrimDetail',
-        builder: (context, state) {
-          final profileId = state.pathParameters['profileId']!;
-          return OperatorPilgrimDetailScreen(profileId: profileId);
-        },
-      ),
-      GoRoute(
         path: AppRoutes.adminLogin,
         name: 'adminLogin',
         builder: (context, state) => const AdminLoginScreen(),
       ),
-      ShellRoute(
-        builder: (context, state, child) => StaffWebShell(child: child),
-        routes: [
-          GoRoute(
-            path: AppRoutes.adminDashboard,
-            name: 'adminDashboard',
-            builder: (context, state) => const AdminDashboardScreen(),
-          ),
-          GoRoute(
-            path: AppRoutes.adminNotificationSend,
-            name: 'adminNotificationSend',
-            builder: (context, state) =>
-                const AdminNotificationBroadcastScreen(),
-          ),
-          GoRoute(
-            path: AppRoutes.adminContent,
-            name: 'adminContent',
-            builder: (context, state) => const AdminContentListScreen(),
-          ),
-          GoRoute(
-            path: AppRoutes.adminContentNew,
-            name: 'adminContentNew',
-            builder: (context, state) => const AdminContentEditScreen(),
-          ),
-          GoRoute(
-            path: AppRoutes.adminContentEdit,
-            name: 'adminContentEdit',
-            builder: (context, state) {
-              final id = state.pathParameters['id']!;
-              return AdminContentEditScreen(contentId: id);
-            },
-          ),
-          GoRoute(
-            path: AppRoutes.adminCompetitions,
-            name: 'adminCompetitions',
-            builder: (context, state) => const AdminCompetitionsListScreen(),
-          ),
-          GoRoute(
-            path: AppRoutes.adminCompetitionNew,
-            name: 'adminCompetitionNew',
-            builder: (context, state) => const AdminCompetitionEditScreen(),
-          ),
-          GoRoute(
-            path: AppRoutes.adminCompetitionEdit,
-            name: 'adminCompetitionEdit',
-            builder: (context, state) {
-              final id = state.pathParameters['id']!;
-              return AdminCompetitionEditScreen(competitionId: id);
-            },
-          ),
-        ],
-      ),
+      _staffWebShellRoute(),
       GoRoute(
         path: AppRoutes.competitions,
         name: 'competitions',

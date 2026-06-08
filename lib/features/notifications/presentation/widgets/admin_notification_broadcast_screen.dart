@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/features/notifications/domain/models/notification_audience.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
@@ -88,125 +90,135 @@ class _AdminNotificationBroadcastScreenState
     return trimmed.isEmpty ? null : trimmed;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+  Widget _buildForm(AppLocalizations l10n, bool isSending) {
     final groupsAsync = ref.watch(notificationGroupsProvider);
-    final isSending = ref.watch(adminNotificationBroadcastProvider).isLoading;
 
-    return Scaffold(
-      appBar: RafiqAppBar(
-        title: Text(l10n.adminNotificationSendTitle),
-      ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: EdgeInsets.all(16.w),
-          children: [
-            Text(
-              l10n.adminNotificationAudienceLabel,
-              style: Theme.of(context).textTheme.titleSmall,
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          StaffFormSection(
+            icon: Icons.groups_outlined,
+            title: l10n.adminNotificationAudienceLabel,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SegmentedButton<NotificationAudience>(
+                  segments: [
+                    ButtonSegment(
+                      value: NotificationAudience.allPilgrims,
+                      label: Text(l10n.adminNotificationAudienceAllPilgrims),
+                      icon: const Icon(Icons.people_outline),
+                    ),
+                    ButtonSegment(
+                      value: NotificationAudience.groupPilgrims,
+                      label: Text(l10n.adminNotificationAudienceGroup),
+                      icon: const Icon(Icons.group_outlined),
+                    ),
+                    ButtonSegment(
+                      value: NotificationAudience.allOperators,
+                      label: Text(l10n.adminNotificationAudienceOperators),
+                      icon: const Icon(Icons.engineering_outlined),
+                    ),
+                  ],
+                  selected: {_audience},
+                  onSelectionChanged: (selection) {
+                    if (isSending) {
+                      return;
+                    }
+                    setState(() {
+                      _audience = selection.first;
+                      if (_audience != NotificationAudience.groupPilgrims) {
+                        _groupId = null;
+                      }
+                    });
+                  },
+                ),
+                if (_audience == NotificationAudience.groupPilgrims) ...[
+                  SizedBox(height: 16.h),
+                  groupsAsync.when(
+                    loading: () => const LinearProgressIndicator(),
+                    error: (_, _) => Text(l10n.adminNotificationGroupsLoadError),
+                    data: (groups) {
+                      if (groups.isEmpty) {
+                        return Text(l10n.adminNotificationGroupsEmpty);
+                      }
+                      return DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          labelText: l10n.adminNotificationGroupLabel,
+                        ),
+                        initialValue: _groupId,
+                        items: [
+                          for (final group in groups)
+                            DropdownMenuItem(
+                              value: group.id,
+                              child: Text(group.name),
+                            ),
+                        ],
+                        onChanged: isSending
+                            ? null
+                            : (value) => setState(() => _groupId = value),
+                        validator: (value) {
+                          if (_audience == NotificationAudience.groupPilgrims &&
+                              (value == null || value.isEmpty)) {
+                            return l10n.adminNotificationGroupRequired;
+                          }
+                          return null;
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ],
             ),
-            SizedBox(height: 8.h),
-            SegmentedButton<NotificationAudience>(
-              segments: [
-                ButtonSegment(
-                  value: NotificationAudience.allPilgrims,
-                  label: Text(l10n.adminNotificationAudienceAllPilgrims),
+          ),
+          SizedBox(height: 16.h),
+          StaffFormSection(
+            icon: Icons.translate_outlined,
+            title: l10n.adminNotificationContentSection,
+            child: ResponsiveFormGrid(
+              children: [
+                TextFormField(
+                  controller: _titleArController,
+                  enabled: !isSending,
+                  decoration: InputDecoration(
+                    labelText: l10n.adminNotificationTitleAr,
+                  ),
+                  validator: (value) => value == null || value.trim().isEmpty
+                      ? l10n.adminNotificationTitleRequired
+                      : null,
                 ),
-                ButtonSegment(
-                  value: NotificationAudience.groupPilgrims,
-                  label: Text(l10n.adminNotificationAudienceGroup),
+                TextFormField(
+                  controller: _titleEnController,
+                  enabled: !isSending,
+                  decoration: InputDecoration(
+                    labelText: l10n.adminNotificationTitleEn,
+                  ),
+                  validator: (value) => value == null || value.trim().isEmpty
+                      ? l10n.adminNotificationTitleRequired
+                      : null,
                 ),
-                ButtonSegment(
-                  value: NotificationAudience.allOperators,
-                  label: Text(l10n.adminNotificationAudienceOperators),
+                TextFormField(
+                  controller: _bodyArController,
+                  enabled: !isSending,
+                  decoration: InputDecoration(
+                    labelText: l10n.adminNotificationBodyAr,
+                  ),
+                  maxLines: 4,
+                ),
+                TextFormField(
+                  controller: _bodyEnController,
+                  enabled: !isSending,
+                  decoration: InputDecoration(
+                    labelText: l10n.adminNotificationBodyEn,
+                  ),
+                  maxLines: 4,
                 ),
               ],
-              selected: {_audience},
-              onSelectionChanged: (selection) {
-                setState(() {
-                  _audience = selection.first;
-                  if (_audience != NotificationAudience.groupPilgrims) {
-                    _groupId = null;
-                  }
-                });
-              },
             ),
-            if (_audience == NotificationAudience.groupPilgrims) ...[
-              SizedBox(height: 16.h),
-              groupsAsync.when(
-                loading: () => const LinearProgressIndicator(),
-                error: (_, _) => Text(l10n.adminNotificationGroupsLoadError),
-                data: (groups) {
-                  if (groups.isEmpty) {
-                    return Text(l10n.adminNotificationGroupsEmpty);
-                  }
-                  return DropdownButtonFormField<String>(
-                    decoration: InputDecoration(
-                      labelText: l10n.adminNotificationGroupLabel,
-                      border: const OutlineInputBorder(),
-                    ),
-                    initialValue: _groupId,
-                    items: [
-                      for (final group in groups)
-                        DropdownMenuItem(
-                          value: group.id,
-                          child: Text(group.name),
-                        ),
-                    ],
-                    onChanged: (value) => setState(() => _groupId = value),
-                    validator: (value) {
-                      if (_audience == NotificationAudience.groupPilgrims &&
-                          (value == null || value.isEmpty)) {
-                        return l10n.adminNotificationGroupRequired;
-                      }
-                      return null;
-                    },
-                  );
-                },
-              ),
-            ],
-            SizedBox(height: 16.h),
-            TextFormField(
-              controller: _titleArController,
-              decoration: InputDecoration(
-                labelText: l10n.adminNotificationTitleAr,
-                border: const OutlineInputBorder(),
-              ),
-              validator: (value) => value == null || value.trim().isEmpty
-                  ? l10n.adminNotificationTitleRequired
-                  : null,
-            ),
-            SizedBox(height: 12.h),
-            TextFormField(
-              controller: _titleEnController,
-              decoration: InputDecoration(
-                labelText: l10n.adminNotificationTitleEn,
-                border: const OutlineInputBorder(),
-              ),
-              validator: (value) => value == null || value.trim().isEmpty
-                  ? l10n.adminNotificationTitleRequired
-                  : null,
-            ),
-            SizedBox(height: 12.h),
-            TextFormField(
-              controller: _bodyArController,
-              decoration: InputDecoration(
-                labelText: l10n.adminNotificationBodyAr,
-                border: const OutlineInputBorder(),
-              ),
-              maxLines: 3,
-            ),
-            SizedBox(height: 12.h),
-            TextFormField(
-              controller: _bodyEnController,
-              decoration: InputDecoration(
-                labelText: l10n.adminNotificationBodyEn,
-                border: const OutlineInputBorder(),
-              ),
-              maxLines: 3,
-            ),
+          ),
+          if (!AppPlatform.isWeb) ...[
             SizedBox(height: 24.h),
             FilledButton.icon(
               onPressed: isSending ? null : _submit,
@@ -220,6 +232,33 @@ class _AdminNotificationBroadcastScreenState
               label: Text(l10n.adminNotificationSendButton),
             ),
           ],
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final isSending = ref.watch(adminNotificationBroadcastProvider).isLoading;
+    final form = _buildForm(l10n, isSending);
+
+    return StaffAdaptivePage(
+      web: StaffWebPage(
+        title: l10n.adminNotificationSendTitle,
+        subtitle: l10n.adminNotificationSendSubtitle,
+        body: form,
+        bottomBar: StaffFormActionsBar(
+          primaryLabel: l10n.adminNotificationSendButton,
+          onPrimary: _submit,
+          isLoading: isSending,
+        ),
+      ),
+      mobile: Scaffold(
+        appBar: RafiqAppBar(title: Text(l10n.adminNotificationSendTitle)),
+        body: SingleChildScrollView(
+          padding: EdgeInsets.all(16.w),
+          child: form,
         ),
       ),
     );

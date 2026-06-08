@@ -367,6 +367,25 @@ class AppLocalizationsAr extends AppLocalizations {
   String get operatorLoginSubtitle => 'تقني المركز — تسجيل الحجاج (US-05)';
 
   @override
+  String get staffLoginHighlightRegistration => 'تسجيل الحجاج ورفع المستندات';
+
+  @override
+  String get staffLoginHighlightDocuments => 'تخزين آمن للمستندات لكل حاج';
+
+  @override
+  String get staffLoginHighlightRegistry => 'إدارة سجل الحجاج لحظياً';
+
+  @override
+  String get staffLoginHighlightAnalytics =>
+      'لوحات وتقارير وحالة ميدانية مباشرة';
+
+  @override
+  String get staffLoginHighlightContent => 'نشر الفيديوهات والأخبار والإعلانات';
+
+  @override
+  String get staffLoginHighlightNotifications => 'بث التنبيهات للحجاج والطاقم';
+
+  @override
   String get operatorIntakeTitle => 'تسجيل حاج';
 
   @override
@@ -1284,4 +1303,46 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get staffStable => 'مستقر';
+
+  @override
+  String get staffNavRegister => 'تسجيل حاج';
+
+  @override
+  String get staffOperatorPortalSubtitle => 'بوابة التقني';
+
+  @override
+  String get staffOperatorRole => 'تقني المركز';
+
+  @override
+  String get operatorSectionPersonalInfo => 'البيانات الشخصية';
+
+  @override
+  String get operatorSectionPersonalInfoHint =>
+      'الاسم الكامل كما في جواز السفر.';
+
+  @override
+  String get operatorSectionAccount => 'حساب الموبايل';
+
+  @override
+  String get operatorSectionAccountHint => 'بيانات الدخول لتطبيق الحاج.';
+
+  @override
+  String get operatorSectionDocumentsHint =>
+      'ارفع جواز السفر أو التصريح أو الملفات الطبية (PDF أو صور).';
+
+  @override
+  String get operatorSectionLogisticsHint =>
+      'تفاصيل السفر والإقامة (اختياري عند التسجيل).';
+
+  @override
+  String get operatorClearForm => 'مسح النموذج';
+
+  @override
+  String get operatorPilgrimListSubtitle => 'ابحث وأدر الحجاج المسجّلين.';
+
+  @override
+  String get adminNotificationSendSubtitle => 'أنشئ وأرسل إشعاراً ثنائي اللغة.';
+
+  @override
+  String get adminNotificationContentSection => 'محتوى الرسالة';
 }

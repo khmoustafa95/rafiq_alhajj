@@ -60,9 +60,16 @@
 
 ## Changelog
 
+### 2026-06-08 (pm)
+- **Staff web shell fix:** `StatefulShellRoute` → `ShellRoute` for operator/admin pages; `StaffWebPage` + `StaffWebShell` layout constraints fixed (blank intake pane + overlay hit-test errors).
+
 ### 2026-06-08
+- **Staff web UI redesign:** `StaffWebPage` + form sections + responsive grid + sticky action bar; `StaffWebShell` drawer on narrow screens, role-based nav; operator intake/list/detail and all admin web pages refactored.
+- **Staff web login redesign:** `StaffWebLoginScaffold` — responsive split hero/form (≥900px), scrollable compact layout on narrow screens; operator + admin login refactored; l10n hero highlights; fixes bottom overflow on web.
+- **Field operator shell:** bottom nav (Home stats dashboard + Pilgrims list); replaced monolithic home screen.
+- **Supabase Realtime:** migration + `watchSupabaseTable` helper; providers invalidate on table changes.
 - **Fake pilgrim data:** 12 demo pilgrims (`pilgrim@demo.local` … `pilgrim12@demo.local`) with full registry in `scripts/fake-pilgrim-registry.json`; seeded via `seed-fake-pilgrim-registry.mjs` (all 5 `field_status` values, varied clusters/groups/health/hotels).
-- **US-06 extended registry:** `Pilgrim` model with full Excel/Kobo field set; migration `20260608120000_pilgrim_registry_extended.sql`; `PilgrimRegistryRepository`; field operator home stats + status filters + redesigned list; operator/pilgrim full profile sections (`PilgrimProfileSections`); seed demo data updated.
+- **US-06 extended registry:** `Pilgrim` model with full Excel/Kobo field set; migration `20260608120000_pilgrim_registry_extended.sql`; `PilgrimRegistryRepository`; field operator stats + status filters + redesigned list; operator/pilgrim full profile sections (`PilgrimProfileSections`); seed demo data updated.
 
 ### 2026-06-06
 - **Auth fix:** Added 15s timeout for Supabase `signInWithPassword` and profile fetch in `SupabaseAuthRepository`; timeout now maps to `network` error so login loading does not hang on bad config/network.

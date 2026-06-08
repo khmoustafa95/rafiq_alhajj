@@ -6,11 +6,13 @@ import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/language_switcher.dart';
+import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/controllers/sign_out_controller.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_bell_button.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
-class StaffWebShell extends ConsumerWidget {
+class StaffWebShell extends ConsumerStatefulWidget {
   const StaffWebShell({
     required this.child,
     super.key,
@@ -18,14 +20,105 @@ class StaffWebShell extends ConsumerWidget {
 
   final Widget child;
 
+  static const compactBreakpoint = 960.0;
+  static const sidebarWidth = 260.0;
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<StaffWebShell> createState() => _StaffWebShellState();
+}
+
+class _StaffWebShellState extends ConsumerState<StaffWebShell> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  void _navigate(String route) {
+    context.go(route);
+    if (MediaQuery.sizeOf(context).width < StaffWebShell.compactBreakpoint) {
+      _scaffoldKey.currentState?.closeDrawer();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final location = GoRouterState.of(context).matchedLocation;
     final profileName = ref.watch(authProfileFullNameProvider);
+    final accessMode = ref.watch(authAccessModeProvider);
+    final isAdmin = accessMode == AppAccessMode.admin;
     final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final isCompact =
+        MediaQuery.sizeOf(context).width < StaffWebShell.compactBreakpoint;
 
-    final navItems = [
+    final navItems = isAdmin
+        ? _adminNavItems(l10n, location)
+        : _operatorNavItems(l10n, location);
+
+    final sidebar = _StaffSidebar(
+      l10n: l10n,
+      profileName: profileName,
+      isAdmin: isAdmin,
+      navItems: navItems,
+      onNavigate: _navigate,
+      onSignOut: () => ref.read(signOutControllerProvider.notifier).signOut(),
+    );
+
+    if (isCompact) {
+      return Scaffold(
+        key: _scaffoldKey,
+        backgroundColor: AppColors.background,
+        drawer: Drawer(
+          width: StaffWebShell.sidebarWidth,
+          child: sidebar,
+        ),
+        appBar: AppBar(
+          backgroundColor: AppColors.surface,
+          surfaceTintColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          title: Text(
+            _pageTitle(l10n, location, isAdmin),
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          actions: const [
+            NotificationBellButton(),
+            LanguageSwitcherAppBarAction(),
+            SizedBox(width: 8),
+          ],
+        ),
+        body: Material(
+          color: AppColors.background,
+          child: widget.child,
+        ),
+      );
+    }
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: Row(
+        children: isRtl
+            ? [
+                Expanded(
+                  child: Material(
+                    color: AppColors.background,
+                    child: widget.child,
+                  ),
+                ),
+                SizedBox(width: StaffWebShell.sidebarWidth, child: sidebar),
+              ]
+            : [
+                SizedBox(width: StaffWebShell.sidebarWidth, child: sidebar),
+                Expanded(
+                  child: Material(
+                    color: AppColors.background,
+                    child: widget.child,
+                  ),
+                ),
+              ],
+      ),
+    );
+  }
+
+  List<_StaffNavItem> _adminNavItems(AppLocalizations l10n, String location) {
+    return [
       _StaffNavItem(
         icon: Icons.home_rounded,
         label: l10n.staffNavHome,
@@ -57,37 +150,90 @@ class StaffWebShell extends ConsumerWidget {
         isActive: location == AppRoutes.adminNotificationSend,
       ),
     ];
+  }
 
-    final sidebar = Container(
-      width: 260.w,
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        border: Border(
-          right: isRtl ? BorderSide.none : const BorderSide(color: AppColors.border),
-          left: isRtl ? const BorderSide(color: AppColors.border) : BorderSide.none,
-        ),
+  List<_StaffNavItem> _operatorNavItems(AppLocalizations l10n, String location) {
+    return [
+      _StaffNavItem(
+        icon: Icons.person_add_alt_1_outlined,
+        label: l10n.staffNavRegister,
+        route: AppRoutes.operatorIntake,
+        isActive: location == AppRoutes.operatorIntake,
       ),
+      _StaffNavItem(
+        icon: Icons.people_outline_rounded,
+        label: l10n.staffNavPilgrims,
+        route: AppRoutes.operatorPilgrims,
+        isActive: location.startsWith(AppRoutes.operatorPilgrims),
+      ),
+    ];
+  }
+
+  String _pageTitle(AppLocalizations l10n, String location, bool isAdmin) {
+    if (location == AppRoutes.operatorIntake) {
+      return l10n.operatorIntakeTitle;
+    }
+    if (location.startsWith(AppRoutes.operatorPilgrims)) {
+      return l10n.operatorPilgrimListTitle;
+    }
+    if (location == AppRoutes.adminDashboard) {
+      return l10n.adminDashboardTitle;
+    }
+    if (location.startsWith(AppRoutes.adminContent)) {
+      return l10n.adminContentListTitle;
+    }
+    if (location.startsWith(AppRoutes.adminCompetitions)) {
+      return l10n.adminCompetitionsTitle;
+    }
+    if (location == AppRoutes.adminNotificationSend) {
+      return l10n.adminNotificationSendTitle;
+    }
+    return isAdmin ? l10n.staffPortalSubtitle : l10n.staffOperatorPortalSubtitle;
+  }
+}
+
+class _StaffSidebar extends StatelessWidget {
+  const _StaffSidebar({
+    required this.l10n,
+    required this.profileName,
+    required this.isAdmin,
+    required this.navItems,
+    required this.onNavigate,
+    required this.onSignOut,
+  });
+
+  final AppLocalizations l10n;
+  final String? profileName;
+  final bool isAdmin;
+  final List<_StaffNavItem> navItems;
+  final ValueChanged<String> onNavigate;
+  final VoidCallback onSignOut;
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: AppColors.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: EdgeInsets.all(20.w),
+            padding: const EdgeInsets.all(20),
             child: Row(
               children: [
                 Container(
-                  width: 40.w,
-                  height: 40.w,
+                  width: 40,
+                  height: 40,
                   decoration: BoxDecoration(
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.mosque_rounded,
                     color: AppColors.onPrimary,
-                    size: 22.sp,
+                    size: 22,
                   ),
                 ),
-                SizedBox(width: 12.w),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,7 +246,9 @@ class StaffWebShell extends ConsumerWidget {
                             ),
                       ),
                       Text(
-                        l10n.staffPortalSubtitle,
+                        isAdmin
+                            ? l10n.staffPortalSubtitle
+                            : l10n.staffOperatorPortalSubtitle,
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
@@ -112,12 +260,12 @@ class StaffWebShell extends ConsumerWidget {
           const Divider(height: 1),
           Expanded(
             child: ListView(
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               children: navItems
                   .map(
                     (item) => _SidebarTile(
                       item: item,
-                      onTap: () => context.go(item.route),
+                      onTap: () => onNavigate(item.route),
                     ),
                   )
                   .toList(),
@@ -125,15 +273,15 @@ class StaffWebShell extends ConsumerWidget {
           ),
           const Divider(height: 1),
           Padding(
-            padding: EdgeInsets.all(16.w),
+            padding: const EdgeInsets.all(16),
             child: Row(
               children: [
                 CircleAvatar(
-                  radius: 20.r,
+                  radius: 20,
                   backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-                  child: Icon(Icons.person, color: AppColors.primary, size: 20.sp),
+                  child: const Icon(Icons.person, color: AppColors.primary, size: 20),
                 ),
-                SizedBox(width: 10.w),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,15 +293,14 @@ class StaffWebShell extends ConsumerWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
-                        l10n.staffAdminRole,
+                        isAdmin ? l10n.staffAdminRole : l10n.staffOperatorRole,
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
                   ),
                 ),
                 IconButton(
-                  onPressed:
-                      ref.read(signOutControllerProvider.notifier).signOut,
+                  onPressed: onSignOut,
                   icon: const Icon(Icons.logout_rounded, size: 20),
                   tooltip: l10n.signOut,
                 ),
@@ -161,15 +308,6 @@ class StaffWebShell extends ConsumerWidget {
             ),
           ),
         ],
-      ),
-    );
-
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Row(
-        children: isRtl
-            ? [Expanded(child: child), sidebar]
-            : [sidebar, Expanded(child: child)],
       ),
     );
   }
@@ -201,7 +339,7 @@ class _SidebarTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 4.h),
+      padding: const EdgeInsets.only(bottom: 4),
       child: Material(
         color: item.isActive ? AppColors.primary : Colors.transparent,
         borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
@@ -209,16 +347,17 @@ class _SidebarTile extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             child: Row(
               children: [
                 Icon(
                   item.icon,
-                  size: 20.sp,
-                  color:
-                      item.isActive ? AppColors.onPrimary : AppColors.textSecondary,
+                  size: 20,
+                  color: item.isActive
+                      ? AppColors.onPrimary
+                      : AppColors.textSecondary,
                 ),
-                SizedBox(width: 12.w),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     item.label,
@@ -238,7 +377,7 @@ class _SidebarTile extends StatelessWidget {
   }
 }
 
-/// Top bar for staff web content pages.
+/// Top bar for staff web content pages (wide layout).
 class StaffWebHeader extends StatelessWidget {
   const StaffWebHeader({
     required this.title,
@@ -253,6 +392,13 @@ class StaffWebHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isCompact =
+        MediaQuery.sizeOf(context).width < StaffWebShell.compactBreakpoint;
+
+    if (isCompact) {
+      return const SizedBox.shrink();
+    }
+
     return Container(
       padding: EdgeInsets.fromLTRB(24.w, 20.h, 24.w, 16.h),
       decoration: const BoxDecoration(
@@ -277,6 +423,7 @@ class StaffWebHeader extends StatelessWidget {
               ],
             ),
           ),
+          const NotificationBellButton(),
           const LanguageSwitcherAppBarAction(),
           ...actions,
         ],

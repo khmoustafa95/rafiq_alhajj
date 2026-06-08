@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition_editor_input.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/providers/competitions_providers.dart';
@@ -30,6 +31,9 @@ class _AdminCompetitionEditScreenState
   bool _loaded = false;
 
   bool get _isEditing => widget.competitionId != null;
+
+  String _pageTitle(AppLocalizations l10n) =>
+      _isEditing ? l10n.adminCompetitionEditTitle : l10n.adminCompetitionNewTitle;
 
   @override
   void dispose() {
@@ -114,13 +118,25 @@ class _AdminCompetitionEditScreenState
     if (_isEditing) {
       final listAsync = ref.watch(adminCompetitionListProvider);
       return listAsync.when(
-        loading: () => Scaffold(
-          appBar: RafiqAppBar(title: Text(l10n.adminCompetitionEditTitle)),
-          body: const Center(child: CircularProgressIndicator()),
+        loading: () => StaffAdaptivePage(
+          web: StaffWebPage(
+            title: _pageTitle(l10n),
+            body: const Center(child: CircularProgressIndicator()),
+          ),
+          mobile: Scaffold(
+            appBar: RafiqAppBar(title: Text(_pageTitle(l10n))),
+            body: const Center(child: CircularProgressIndicator()),
+          ),
         ),
-        error: (_, _) => Scaffold(
-          appBar: RafiqAppBar(title: Text(l10n.adminCompetitionEditTitle)),
-          body: Center(child: Text(l10n.adminCompetitionsLoadError)),
+        error: (_, _) => StaffAdaptivePage(
+          web: StaffWebPage(
+            title: _pageTitle(l10n),
+            body: StaffEmptyState(message: l10n.adminCompetitionsLoadError),
+          ),
+          mobile: Scaffold(
+            appBar: RafiqAppBar(title: Text(_pageTitle(l10n))),
+            body: Center(child: Text(l10n.adminCompetitionsLoadError)),
+          ),
         ),
         data: (items) {
           Competition? found;
@@ -131,9 +147,15 @@ class _AdminCompetitionEditScreenState
             }
           }
           if (found == null) {
-            return Scaffold(
-              appBar: RafiqAppBar(title: Text(l10n.adminCompetitionEditTitle)),
-              body: Center(child: Text(l10n.competitionNotFound)),
+            return StaffAdaptivePage(
+              web: StaffWebPage(
+                title: _pageTitle(l10n),
+                body: StaffEmptyState(message: l10n.competitionNotFound),
+              ),
+              mobile: Scaffold(
+                appBar: RafiqAppBar(title: Text(_pageTitle(l10n))),
+                body: Center(child: Text(l10n.competitionNotFound)),
+              ),
             );
           }
           _bind(found);
@@ -148,18 +170,12 @@ class _AdminCompetitionEditScreenState
   }
 
   Widget _buildForm(AppLocalizations l10n, bool isSaving) {
-    return Scaffold(
-      appBar: RafiqAppBar(
-        title: Text(
-          _isEditing
-              ? l10n.adminCompetitionEditTitle
-              : l10n.adminCompetitionNewTitle,
-        ),
-      ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: EdgeInsets.all(16.w),
+    final form = Form(
+      key: _formKey,
+      child: StaffFormSection(
+        icon: Icons.emoji_events_outlined,
+        title: l10n.adminCompetitionsTitle,
+        child: ResponsiveFormGrid(
           children: [
             TextFormField(
               controller: _titleController,
@@ -168,7 +184,6 @@ class _AdminCompetitionEditScreenState
               validator: (v) =>
                   v == null || v.trim().isEmpty ? l10n.adminContentTitleRequired : null,
             ),
-            SizedBox(height: 16.h),
             TextFormField(
               controller: _descriptionController,
               enabled: !isSaving,
@@ -177,42 +192,53 @@ class _AdminCompetitionEditScreenState
                 labelText: l10n.adminContentDescriptionLabel,
               ),
             ),
-            SizedBox(height: 16.h),
-            ListTile(
-              title: Text(l10n.adminCompetitionStartsAt),
-              subtitle: Text(
-                _startsAt == null
-                    ? '—'
-                    : MaterialLocalizations.of(context)
-                        .formatMediumDate(_startsAt!),
-              ),
-              trailing: IconButton(
-                icon: const Icon(Icons.calendar_today),
-                onPressed: isSaving ? null : () => _pickDate(isStart: true),
-              ),
+            StaffDateFormField(
+              label: l10n.adminCompetitionStartsAt,
+              value: _startsAt,
+              onPick: isSaving ? null : () => _pickDate(isStart: true),
+              enabled: !isSaving,
             ),
-            ListTile(
-              title: Text(l10n.adminCompetitionEndsAt),
-              subtitle: Text(
-                _endsAt == null
-                    ? '—'
-                    : MaterialLocalizations.of(context)
-                        .formatMediumDate(_endsAt!),
-              ),
-              trailing: IconButton(
-                icon: const Icon(Icons.calendar_today),
-                onPressed: isSaving ? null : () => _pickDate(isStart: false),
-              ),
+            StaffDateFormField(
+              label: l10n.adminCompetitionEndsAt,
+              value: _endsAt,
+              onPick: isSaving ? null : () => _pickDate(isStart: false),
+              enabled: !isSaving,
             ),
             SwitchListTile(
+              contentPadding: EdgeInsets.zero,
               title: Text(l10n.adminCompetitionActive),
               value: _isActive,
               onChanged: isSaving
                   ? null
                   : (value) => setState(() => _isActive = value),
             ),
-            SizedBox(height: 24.h),
-            FilledButton(
+          ],
+        ),
+      ),
+    );
+
+    return StaffAdaptivePage(
+      web: StaffWebPage(
+        title: _pageTitle(l10n),
+        body: form,
+        bottomBar: StaffFormActionsBar(
+          primaryLabel: l10n.adminContentSave,
+          onPrimary: _submit,
+          secondaryLabel: l10n.dialogCancel,
+          onSecondary: isSaving ? null : () => context.pop(),
+          isLoading: isSaving,
+        ),
+      ),
+      mobile: Scaffold(
+        appBar: RafiqAppBar(title: Text(_pageTitle(l10n))),
+        body: SingleChildScrollView(
+          padding: EdgeInsets.all(16.w),
+          child: form,
+        ),
+        bottomNavigationBar: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(16.w),
+            child: FilledButton(
               onPressed: isSaving ? null : _submit,
               child: isSaving
                   ? const SizedBox(
@@ -222,7 +248,7 @@ class _AdminCompetitionEditScreenState
                     )
                   : Text(l10n.adminContentSave),
             ),
-          ],
+          ),
         ),
       ),
     );

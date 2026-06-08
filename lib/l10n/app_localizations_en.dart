@@ -376,6 +376,30 @@ class AppLocalizationsEn extends AppLocalizations {
       'Center technician — pilgrim registration (US-05)';
 
   @override
+  String get staffLoginHighlightRegistration =>
+      'Register pilgrims and upload documents';
+
+  @override
+  String get staffLoginHighlightDocuments =>
+      'Secure document storage per pilgrim';
+
+  @override
+  String get staffLoginHighlightRegistry =>
+      'Manage pilgrim registry in real time';
+
+  @override
+  String get staffLoginHighlightAnalytics =>
+      'Live dashboards and field status charts';
+
+  @override
+  String get staffLoginHighlightContent =>
+      'Publish videos, news, and announcements';
+
+  @override
+  String get staffLoginHighlightNotifications =>
+      'Broadcast alerts to pilgrims and staff';
+
+  @override
   String get operatorIntakeTitle => 'Register pilgrim';
 
   @override
@@ -1295,4 +1319,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get staffStable => 'Stable';
+
+  @override
+  String get staffNavRegister => 'Register pilgrim';
+
+  @override
+  String get staffOperatorPortalSubtitle => 'Operator Portal';
+
+  @override
+  String get staffOperatorRole => 'Center technician';
+
+  @override
+  String get operatorSectionPersonalInfo => 'Personal information';
+
+  @override
+  String get operatorSectionPersonalInfoHint =>
+      'Full legal name as shown on passport.';
+
+  @override
+  String get operatorSectionAccount => 'Mobile account';
+
+  @override
+  String get operatorSectionAccountHint =>
+      'Credentials for the pilgrim mobile app.';
+
+  @override
+  String get operatorSectionDocumentsHint =>
+      'Upload passport, permit, or medical files (PDF or images).';
+
+  @override
+  String get operatorSectionLogisticsHint =>
+      'Travel and accommodation details (optional at registration).';
+
+  @override
+  String get operatorClearForm => 'Clear form';
+
+  @override
+  String get operatorPilgrimListSubtitle =>
+      'Search and manage registered pilgrims.';
+
+  @override
+  String get adminNotificationSendSubtitle =>
+      'Compose and broadcast a bilingual notification.';
+
+  @override
+  String get adminNotificationContentSection => 'Message content';
 }

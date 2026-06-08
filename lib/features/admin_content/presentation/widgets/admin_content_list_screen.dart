@@ -9,7 +9,7 @@ import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
-import 'package:rafiq_alhajj/core/widgets/staff_web_shell.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/providers/admin_content_providers.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/utils/content_meta_l10n.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_item.dart';
@@ -138,22 +138,18 @@ class AdminContentListScreen extends ConsumerWidget {
     );
 
     if (AppPlatform.isWeb) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          StaffWebHeader(
-            title: l10n.adminContentListTitle,
-            actions: [
-              FilledButton.icon(
-                onPressed: () =>
-                    unawaited(context.push(AppRoutes.adminContentNew)),
-                icon: const Icon(Icons.add_rounded),
-                label: Text(l10n.adminContentAdd),
-              ),
-            ],
+      return StaffWebPage(
+        title: l10n.adminContentListTitle,
+        scrollable: false,
+        actions: [
+          FilledButton.icon(
+            onPressed: () =>
+                unawaited(context.push(AppRoutes.adminContentNew)),
+            icon: const Icon(Icons.add_rounded),
+            label: Text(l10n.adminContentAdd),
           ),
-          Expanded(child: content),
         ],
+        body: content,
       );
     }
 

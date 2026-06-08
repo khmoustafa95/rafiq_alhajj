@@ -9,6 +9,7 @@ import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_shell.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/presentation/providers/admin_analytics_providers.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/presentation/widgets/admin_bar_chart_card.dart';
@@ -69,55 +70,50 @@ class _AdminDashboardWebBody extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        StaffWebHeader(
-          title: l10n.adminDashboardTitle,
-          subtitle: l10n.adminDashboardSubtitle,
-          actions: [
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-              decoration: BoxDecoration(
-                color: AppColors.success.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
+    return StaffWebPage(
+      title: l10n.adminDashboardTitle,
+      subtitle: l10n.adminDashboardSubtitle,
+      scrollable: false,
+      actions: [
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+          decoration: BoxDecoration(
+            color: AppColors.success.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: AppColors.success,
+                  shape: BoxShape.circle,
+                ),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
+              SizedBox(width: 8.w),
+              Text(
+                l10n.staffConnectedStatus,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       color: AppColors.success,
-                      shape: BoxShape.circle,
+                      fontWeight: FontWeight.w600,
                     ),
-                  ),
-                  SizedBox(width: 8.w),
-                  Text(
-                    l10n.staffConnectedStatus,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          color: AppColors.success,
-                          fontWeight: FontWeight.w600,
-                        ),
-                  ),
-                ],
               ),
-            ),
-            SizedBox(width: 8.w),
-            const NotificationBellButton(),
-            IconButton(
-              onPressed: () {
-                unawaited(ref.read(adminDashboardProvider.notifier).refresh());
-              },
-              icon: const Icon(Icons.refresh_rounded),
-              tooltip: l10n.retry,
-            ),
-          ],
+            ],
+          ),
         ),
-        const Expanded(child: _AdminDashboardContent()),
+        SizedBox(width: 8.w),
+        IconButton(
+          onPressed: () {
+            unawaited(ref.read(adminDashboardProvider.notifier).refresh());
+          },
+          icon: const Icon(Icons.refresh_rounded),
+          tooltip: l10n.retry,
+        ),
       ],
+      body: const _AdminDashboardContent(),
     );
   }
 }

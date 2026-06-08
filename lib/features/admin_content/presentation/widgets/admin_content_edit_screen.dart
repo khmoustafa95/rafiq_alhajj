@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/features/admin_content/domain/models/content_editor_input.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/providers/admin_content_providers.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/utils/content_meta_l10n.dart';
@@ -35,6 +36,11 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
   bool _loaded = false;
 
   bool get _isEditing => widget.contentId != null;
+
+  String get _pageTitle {
+    final l10n = AppLocalizations.of(context);
+    return _isEditing ? l10n.adminContentEditTitle : l10n.adminContentNewTitle;
+  }
 
   @override
   void dispose() {
@@ -71,9 +77,7 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
       visibility: _visibility,
     );
 
-    final ok = await ref
-        .read(adminContentSaveProvider.notifier)
-        .save(input);
+    final ok = await ref.read(adminContentSaveProvider.notifier).save(input);
 
     if (!mounted) {
       return;
@@ -98,6 +102,32 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
     );
   }
 
+  Widget _loadingState(AppLocalizations l10n) {
+    return StaffAdaptivePage(
+      web: StaffWebPage(
+        title: _pageTitle,
+        body: const Center(child: CircularProgressIndicator()),
+      ),
+      mobile: Scaffold(
+        appBar: RafiqAppBar(title: Text(_pageTitle)),
+        body: const Center(child: CircularProgressIndicator()),
+      ),
+    );
+  }
+
+  Widget _errorState(AppLocalizations l10n, String message) {
+    return StaffAdaptivePage(
+      web: StaffWebPage(
+        title: _pageTitle,
+        body: StaffEmptyState(message: message),
+      ),
+      mobile: Scaffold(
+        appBar: RafiqAppBar(title: Text(_pageTitle)),
+        body: Center(child: Text(message)),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -108,14 +138,8 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
     if (_isEditing) {
       final listAsync = ref.watch(adminContentListProvider);
       return listAsync.when(
-        loading: () => Scaffold(
-          appBar: RafiqAppBar(title: Text(l10n.adminContentEditTitle)),
-          body: const Center(child: CircularProgressIndicator()),
-        ),
-        error: (_, _) => Scaffold(
-          appBar: RafiqAppBar(title: Text(l10n.adminContentEditTitle)),
-          body: Center(child: Text(l10n.adminContentLoadError)),
-        ),
+        loading: () => _loadingState(l10n),
+        error: (_, _) => _errorState(l10n, l10n.adminContentLoadError),
         data: (items) {
           ContentItem? item;
           for (final entry in items) {
@@ -125,39 +149,24 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
             }
           }
           if (item == null) {
-            return Scaffold(
-              appBar: RafiqAppBar(title: Text(l10n.adminContentEditTitle)),
-              body: Center(child: Text(l10n.adminContentNotFound)),
-            );
+            return _errorState(l10n, l10n.adminContentNotFound);
           }
           _bindItem(item);
-          return _buildForm(context, l10n, isSaving);
+          return _buildForm(l10n, isSaving);
         },
       );
     }
 
-    return _buildForm(context, l10n, isSaving);
+    return _buildForm(l10n, isSaving);
   }
 
-  Widget _buildForm(
-    BuildContext context,
-    AppLocalizations l10n,
-    bool isSaving,
-  ) {
-    return Scaffold(
-      appBar: RafiqAppBar(
-        title: Text(
-          _isEditing ? l10n.adminContentEditTitle : l10n.adminContentNewTitle,
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: isSaving ? null : () => context.pop(),
-        ),
-      ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: EdgeInsets.all(16.w),
+  Widget _buildForm(AppLocalizations l10n, bool isSaving) {
+    final form = Form(
+      key: _formKey,
+      child: StaffFormSection(
+        icon: Icons.article_outlined,
+        title: l10n.adminContentListTitle,
+        child: ResponsiveFormGrid(
           children: [
             TextFormField(
               controller: _titleController,
@@ -170,16 +179,6 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
                 return null;
               },
             ),
-            SizedBox(height: 16.h),
-            TextFormField(
-              controller: _descriptionController,
-              enabled: !isSaving,
-              maxLines: 4,
-              decoration: InputDecoration(
-                labelText: l10n.adminContentDescriptionLabel,
-              ),
-            ),
-            SizedBox(height: 16.h),
             TextFormField(
               controller: _mediaUrlController,
               enabled: !isSaving,
@@ -188,7 +187,14 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
               ),
               keyboardType: TextInputType.url,
             ),
-            SizedBox(height: 16.h),
+            TextFormField(
+              controller: _descriptionController,
+              enabled: !isSaving,
+              maxLines: 4,
+              decoration: InputDecoration(
+                labelText: l10n.adminContentDescriptionLabel,
+              ),
+            ),
             DropdownButtonFormField<ContentType>(
               key: ValueKey(_type),
               initialValue: _type,
@@ -209,7 +215,6 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
                       }
                     },
             ),
-            SizedBox(height: 16.h),
             DropdownButtonFormField<ContentVisibility>(
               key: ValueKey(_visibility),
               initialValue: _visibility,
@@ -232,19 +237,46 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
                       }
                     },
             ),
-            SizedBox(height: 24.h),
-            FilledButton(
-              onPressed: isSaving ? null : _submit,
-              child: isSaving
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(l10n.adminContentSave),
-            ),
           ],
         ),
+      ),
+    );
+
+    return StaffAdaptivePage(
+      web: StaffWebPage(
+        title: _pageTitle,
+        body: form,
+        bottomBar: StaffFormActionsBar(
+          primaryLabel: l10n.adminContentSave,
+          onPrimary: _submit,
+          secondaryLabel: l10n.dialogCancel,
+          onSecondary: isSaving ? null : () => context.pop(),
+          isLoading: isSaving,
+        ),
+      ),
+      mobile: Scaffold(
+        appBar: RafiqAppBar(
+          title: Text(_pageTitle),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: isSaving ? null : () => context.pop(),
+          ),
+        ),
+        body: SingleChildScrollView(
+          padding: EdgeInsets.all(16.w),
+          child: form,
+        ),
+        bottomNavigationBar: isSaving
+            ? null
+            : SafeArea(
+                child: Padding(
+                  padding: EdgeInsets.all(16.w),
+                  child: FilledButton(
+                    onPressed: _submit,
+                    child: Text(l10n.adminContentSave),
+                  ),
+                ),
+              ),
       ),
     );
   }

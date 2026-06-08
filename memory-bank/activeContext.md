@@ -3,26 +3,22 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
-**Field operator shell (US-06)** — bottom nav: Home (dashboard stats) + Pilgrims (search/list); tap stat cards to filter list tab.
+**Staff web shell routing fix** — blank content pane + overlay hit-test errors on `/operator/intake`.
 
 ## Recent changes (2026-06-08)
-- Migration `20260608120000_pilgrim_registry_extended.sql` — all registry columns on `pilgrim_details`.
-- `Pilgrim` freezed model + `PilgrimDto` + `PilgrimRegistryRepository` (shared read/update).
-- Field operator home: stats cards, status filter chips, enhanced search, `PilgrimListTile`.
-- Field operator detail: header card + status edit + `PilgrimProfileSections` (grouped expandable profile).
-- Pilgrim dashboard: full registration profile via `PilgrimProfileSections`.
-- `seed.sql` demo pilgrim updated with sample extended registry data.
+- **Routing fix:** Replaced `StatefulShellRoute.indexedStack` (single branch, many sibling routes) with **`ShellRoute`** + `child` for staff web — matches how `context.go()` navigates between operator/admin pages.
+- **`StaffWebShell`:** Uses `child` again; wraps content in `Material` for proper overlay ancestor.
+- **`StaffWebPage`:** Root `SizedBox.expand` + bounded `LayoutBuilder` so pages fill the shell viewport.
 
 ## Next steps
-1. Apply migration: `supabase db reset` (or `supabase migration up`) + `npm run setup`.
-2. Sign in as `operator@demo.local` → `/operator/field` — verify stats, search, profile sections.
-3. Sign in as pilgrim → dashboard shows full registry profile.
+1. **Hot restart** web app (not hot reload) — verify `/operator/intake` shows form, no console spam.
+2. Test `/operator/pilgrims`, `/admin/dashboard` at wide + narrow widths.
+3. Field operator Android unchanged (mobile shell).
 
 ## Key paths
 | Concern | Location |
 |---------|----------|
-| Pilgrim model | `lib/features/pilgrim/domain/models/pilgrim.dart` |
-| Registry repo | `lib/features/pilgrim/data/repositories/pilgrim_registry_repository.dart` |
-| Field operator home | `lib/features/field_operator/presentation/widgets/field_operator_home_screen.dart` |
-| Profile UI | `lib/features/pilgrim/presentation/widgets/pilgrim_profile_sections.dart` |
-| Migration | `supabase/migrations/20260608120000_pilgrim_registry_extended.sql` |
+| Staff shell route | `lib/core/routing/app_router.dart` → `_staffWebShellRoute()` |
+| Web layout primitives | `lib/core/widgets/staff_web_layout.dart` |
+| Staff shell (sidebar/drawer) | `lib/core/widgets/staff_web_shell.dart` |
+| Pilgrim registration | `lib/features/operator_intake/presentation/widgets/operator_intake_screen.dart` |

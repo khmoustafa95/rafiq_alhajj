@@ -740,6 +740,42 @@ abstract class AppLocalizations {
   /// **'Center technician — pilgrim registration (US-05)'**
   String get operatorLoginSubtitle;
 
+  /// No description provided for @staffLoginHighlightRegistration.
+  ///
+  /// In en, this message translates to:
+  /// **'Register pilgrims and upload documents'**
+  String get staffLoginHighlightRegistration;
+
+  /// No description provided for @staffLoginHighlightDocuments.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure document storage per pilgrim'**
+  String get staffLoginHighlightDocuments;
+
+  /// No description provided for @staffLoginHighlightRegistry.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage pilgrim registry in real time'**
+  String get staffLoginHighlightRegistry;
+
+  /// No description provided for @staffLoginHighlightAnalytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Live dashboards and field status charts'**
+  String get staffLoginHighlightAnalytics;
+
+  /// No description provided for @staffLoginHighlightContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish videos, news, and announcements'**
+  String get staffLoginHighlightContent;
+
+  /// No description provided for @staffLoginHighlightNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Broadcast alerts to pilgrims and staff'**
+  String get staffLoginHighlightNotifications;
+
   /// No description provided for @operatorIntakeTitle.
   ///
   /// In en, this message translates to:
@@ -2484,6 +2520,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Stable'**
   String get staffStable;
+
+  /// No description provided for @staffNavRegister.
+  ///
+  /// In en, this message translates to:
+  /// **'Register pilgrim'**
+  String get staffNavRegister;
+
+  /// No description provided for @staffOperatorPortalSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Operator Portal'**
+  String get staffOperatorPortalSubtitle;
+
+  /// No description provided for @staffOperatorRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Center technician'**
+  String get staffOperatorRole;
+
+  /// No description provided for @operatorSectionPersonalInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal information'**
+  String get operatorSectionPersonalInfo;
+
+  /// No description provided for @operatorSectionPersonalInfoHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Full legal name as shown on passport.'**
+  String get operatorSectionPersonalInfoHint;
+
+  /// No description provided for @operatorSectionAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile account'**
+  String get operatorSectionAccount;
+
+  /// No description provided for @operatorSectionAccountHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Credentials for the pilgrim mobile app.'**
+  String get operatorSectionAccountHint;
+
+  /// No description provided for @operatorSectionDocumentsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload passport, permit, or medical files (PDF or images).'**
+  String get operatorSectionDocumentsHint;
+
+  /// No description provided for @operatorSectionLogisticsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel and accommodation details (optional at registration).'**
+  String get operatorSectionLogisticsHint;
+
+  /// No description provided for @operatorClearForm.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear form'**
+  String get operatorClearForm;
+
+  /// No description provided for @operatorPilgrimListSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search and manage registered pilgrims.'**
+  String get operatorPilgrimListSubtitle;
+
+  /// No description provided for @adminNotificationSendSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Compose and broadcast a bilingual notification.'**
+  String get adminNotificationSendSubtitle;
+
+  /// No description provided for @adminNotificationContentSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Message content'**
+  String get adminNotificationContentSection;
 }
 
 class _AppLocalizationsDelegate
