@@ -25,14 +25,16 @@ AdminContentService adminContentService(Ref ref) {
 @riverpod
 class AdminContentList extends _$AdminContentList {
   @override
-  Future<List<ContentItem>> build() {
+  Future<List<ContentItem>> build() async {
+    final items = await ref.read(adminContentServiceProvider).listAll();
+
     watchSupabaseTables(
       ref,
       client: AppConfig.hasSupabase ? Supabase.instance.client : null,
       tables: RealtimeTables.contentFeed,
     );
 
-    return ref.read(adminContentServiceProvider).listAll();
+    return items;
   }
 
   Future<void> refresh() async {

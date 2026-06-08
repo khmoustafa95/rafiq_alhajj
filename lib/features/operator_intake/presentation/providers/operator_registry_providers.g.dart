@@ -135,7 +135,7 @@ final class OperatorPilgrimRegistryProvider
 }
 
 String _$operatorPilgrimRegistryHash() =>
-    r'1bb0024ef1146ae10ce76695072947f28218471b';
+    r'fdc7d04b91191626c9edde069cd61df63d415816';
 
 abstract class _$OperatorPilgrimRegistry
     extends $AsyncNotifier<List<OperatorPilgrimSummary>> {

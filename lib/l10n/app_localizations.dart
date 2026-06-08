@@ -2467,6 +2467,12 @@ abstract class AppLocalizations {
   /// **'Pilgrims'**
   String get staffNavPilgrims;
 
+  /// No description provided for @staffNavOperators.
+  ///
+  /// In en, this message translates to:
+  /// **'Operators'**
+  String get staffNavOperators;
+
   /// No description provided for @staffNavContent.
   ///
   /// In en, this message translates to:
@@ -2598,6 +2604,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Message content'**
   String get adminNotificationContentSection;
+
+  /// No description provided for @adminOperatorsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Operator management'**
+  String get adminOperatorsTitle;
+
+  /// No description provided for @adminOperatorsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add operators and control their roles and permissions.'**
+  String get adminOperatorsSubtitle;
+
+  /// No description provided for @adminOperatorAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add operator'**
+  String get adminOperatorAdd;
+
+  /// No description provided for @adminOperatorNewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New operator'**
+  String get adminOperatorNewTitle;
+
+  /// No description provided for @adminOperatorEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit operator'**
+  String get adminOperatorEditTitle;
+
+  /// No description provided for @adminOperatorFullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name'**
+  String get adminOperatorFullName;
+
+  /// No description provided for @adminOperatorFullNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name is required'**
+  String get adminOperatorFullNameRequired;
+
+  /// No description provided for @adminOperatorEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get adminOperatorEmail;
+
+  /// No description provided for @adminOperatorEmailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required'**
+  String get adminOperatorEmailRequired;
+
+  /// No description provided for @adminOperatorEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address'**
+  String get adminOperatorEmailInvalid;
+
+  /// No description provided for @adminOperatorActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Account active'**
+  String get adminOperatorActive;
+
+  /// No description provided for @adminOperatorActiveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get adminOperatorActiveLabel;
+
+  /// No description provided for @adminOperatorInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get adminOperatorInactive;
+
+  /// No description provided for @adminOperatorPermissionsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Roles & permissions'**
+  String get adminOperatorPermissionsSection;
+
+  /// No description provided for @adminOperatorPermRegister.
+  ///
+  /// In en, this message translates to:
+  /// **'Register pilgrims'**
+  String get adminOperatorPermRegister;
+
+  /// No description provided for @adminOperatorPermRegisterHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow pilgrim intake and mobile account creation.'**
+  String get adminOperatorPermRegisterHint;
+
+  /// No description provided for @adminOperatorPermRegistry.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage pilgrim registry'**
+  String get adminOperatorPermRegistry;
+
+  /// No description provided for @adminOperatorPermRegistryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'View and edit registered pilgrims.'**
+  String get adminOperatorPermRegistryHint;
+
+  /// No description provided for @adminOperatorPermField.
+  ///
+  /// In en, this message translates to:
+  /// **'Field operator tools'**
+  String get adminOperatorPermField;
+
+  /// No description provided for @adminOperatorPermFieldHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Access the field operator portal and on-site workflows.'**
+  String get adminOperatorPermFieldHint;
+
+  /// No description provided for @adminOperatorPermUpload.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload documents'**
+  String get adminOperatorPermUpload;
+
+  /// No description provided for @adminOperatorPermUploadHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload pilgrim documents during registration.'**
+  String get adminOperatorPermUploadHint;
+
+  /// No description provided for @adminOperatorGeneratePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate password'**
+  String get adminOperatorGeneratePassword;
+
+  /// No description provided for @adminOperatorPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get adminOperatorPasswordLabel;
+
+  /// No description provided for @adminOperatorPasswordCreateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave blank to auto-generate a secure password.'**
+  String get adminOperatorPasswordCreateHint;
+
+  /// No description provided for @adminOperatorPasswordEditHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave blank to keep the current password.'**
+  String get adminOperatorPasswordEditHint;
+
+  /// No description provided for @adminOperatorCopyPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy password'**
+  String get adminOperatorCopyPassword;
+
+  /// No description provided for @adminOperatorCreateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Operator account created'**
+  String get adminOperatorCreateSuccess;
+
+  /// No description provided for @adminOperatorSaveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Operator updated'**
+  String get adminOperatorSaveSuccess;
+
+  /// No description provided for @adminOperatorSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save operator. Try again.'**
+  String get adminOperatorSaveError;
+
+  /// No description provided for @adminOperatorLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load operators.'**
+  String get adminOperatorLoadError;
+
+  /// No description provided for @adminOperatorEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No operators yet. Add your first center technician.'**
+  String get adminOperatorEmpty;
 }
 
 class _AppLocalizationsDelegate

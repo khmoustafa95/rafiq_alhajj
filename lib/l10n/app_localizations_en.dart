@@ -1294,6 +1294,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get staffNavPilgrims => 'Pilgrims';
 
   @override
+  String get staffNavOperators => 'Operators';
+
+  @override
   String get staffNavContent => 'Content Management';
 
   @override
@@ -1364,4 +1367,108 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminNotificationContentSection => 'Message content';
+
+  @override
+  String get adminOperatorsTitle => 'Operator management';
+
+  @override
+  String get adminOperatorsSubtitle =>
+      'Add operators and control their roles and permissions.';
+
+  @override
+  String get adminOperatorAdd => 'Add operator';
+
+  @override
+  String get adminOperatorNewTitle => 'New operator';
+
+  @override
+  String get adminOperatorEditTitle => 'Edit operator';
+
+  @override
+  String get adminOperatorFullName => 'Full name';
+
+  @override
+  String get adminOperatorFullNameRequired => 'Full name is required';
+
+  @override
+  String get adminOperatorEmail => 'Email';
+
+  @override
+  String get adminOperatorEmailRequired => 'Email is required';
+
+  @override
+  String get adminOperatorEmailInvalid => 'Enter a valid email address';
+
+  @override
+  String get adminOperatorActive => 'Account active';
+
+  @override
+  String get adminOperatorActiveLabel => 'Active';
+
+  @override
+  String get adminOperatorInactive => 'Inactive';
+
+  @override
+  String get adminOperatorPermissionsSection => 'Roles & permissions';
+
+  @override
+  String get adminOperatorPermRegister => 'Register pilgrims';
+
+  @override
+  String get adminOperatorPermRegisterHint =>
+      'Allow pilgrim intake and mobile account creation.';
+
+  @override
+  String get adminOperatorPermRegistry => 'Manage pilgrim registry';
+
+  @override
+  String get adminOperatorPermRegistryHint =>
+      'View and edit registered pilgrims.';
+
+  @override
+  String get adminOperatorPermField => 'Field operator tools';
+
+  @override
+  String get adminOperatorPermFieldHint =>
+      'Access the field operator portal and on-site workflows.';
+
+  @override
+  String get adminOperatorPermUpload => 'Upload documents';
+
+  @override
+  String get adminOperatorPermUploadHint =>
+      'Upload pilgrim documents during registration.';
+
+  @override
+  String get adminOperatorGeneratePassword => 'Generate password';
+
+  @override
+  String get adminOperatorPasswordLabel => 'Password';
+
+  @override
+  String get adminOperatorPasswordCreateHint =>
+      'Leave blank to auto-generate a secure password.';
+
+  @override
+  String get adminOperatorPasswordEditHint =>
+      'Leave blank to keep the current password.';
+
+  @override
+  String get adminOperatorCopyPassword => 'Copy password';
+
+  @override
+  String get adminOperatorCreateSuccess => 'Operator account created';
+
+  @override
+  String get adminOperatorSaveSuccess => 'Operator updated';
+
+  @override
+  String get adminOperatorSaveError => 'Could not save operator. Try again.';
+
+  @override
+  String get adminOperatorLoadError => 'Could not load operators.';
+
+  @override
+  String get adminOperatorEmpty =>
+      'No operators yet. Add your first center technician.';
 }

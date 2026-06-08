@@ -24,14 +24,18 @@ AdminAnalyticsService adminAnalyticsService(Ref ref) {
 @riverpod
 class AdminDashboard extends _$AdminDashboard {
   @override
-  Future<AdminDashboardStats> build() {
+  Future<AdminDashboardStats> build() async {
+    final stats = await ref.read(adminAnalyticsServiceProvider).loadDashboard();
+
+    // Subscribe after the first fetch so initial realtime snapshots cannot
+    // invalidate the provider while it is still loading.
     watchSupabaseTables(
       ref,
       client: AppConfig.hasSupabase ? Supabase.instance.client : null,
       tables: RealtimeTables.adminAnalytics,
     );
 
-    return ref.read(adminAnalyticsServiceProvider).loadDashboard();
+    return stats;
   }
 
   Future<void> refresh() async {

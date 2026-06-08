@@ -108,14 +108,16 @@ class CompetitionDetail extends _$CompetitionDetail {
 @riverpod
 class AdminCompetitionList extends _$AdminCompetitionList {
   @override
-  Future<List<Competition>> build() {
+  Future<List<Competition>> build() async {
+    final items = await ref.read(adminCompetitionsRepositoryProvider).fetchAll();
+
     watchSupabaseTables(
       ref,
       client: _realtimeClient(),
       tables: RealtimeTables.competitions,
     );
 
-    return ref.read(adminCompetitionsRepositoryProvider).fetchAll();
+    return items;
   }
 
   Future<void> refresh() async {

@@ -1278,6 +1278,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get staffNavPilgrims => 'الحجاج';
 
   @override
+  String get staffNavOperators => 'المشغّلون';
+
+  @override
   String get staffNavContent => 'إدارة المحتوى';
 
   @override
@@ -1345,4 +1348,105 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminNotificationContentSection => 'محتوى الرسالة';
+
+  @override
+  String get adminOperatorsTitle => 'إدارة المشغّلين';
+
+  @override
+  String get adminOperatorsSubtitle =>
+      'أضف المشغّلين وتحكّم بأدوارهم وصلاحياتهم.';
+
+  @override
+  String get adminOperatorAdd => 'إضافة مشغّل';
+
+  @override
+  String get adminOperatorNewTitle => 'مشغّل جديد';
+
+  @override
+  String get adminOperatorEditTitle => 'تعديل المشغّل';
+
+  @override
+  String get adminOperatorFullName => 'الاسم الكامل';
+
+  @override
+  String get adminOperatorFullNameRequired => 'الاسم الكامل مطلوب';
+
+  @override
+  String get adminOperatorEmail => 'البريد الإلكتروني';
+
+  @override
+  String get adminOperatorEmailRequired => 'البريد الإلكتروني مطلوب';
+
+  @override
+  String get adminOperatorEmailInvalid => 'أدخل بريداً إلكترونياً صالحاً';
+
+  @override
+  String get adminOperatorActive => 'الحساب نشط';
+
+  @override
+  String get adminOperatorActiveLabel => 'نشط';
+
+  @override
+  String get adminOperatorInactive => 'غير نشط';
+
+  @override
+  String get adminOperatorPermissionsSection => 'الأدوار والصلاحيات';
+
+  @override
+  String get adminOperatorPermRegister => 'تسجيل الحجاج';
+
+  @override
+  String get adminOperatorPermRegisterHint =>
+      'السماح بتسجيل الحجاج وإنشاء حسابات الموبايل.';
+
+  @override
+  String get adminOperatorPermRegistry => 'إدارة سجل الحجاج';
+
+  @override
+  String get adminOperatorPermRegistryHint => 'عرض وتعديل الحجاج المسجّلين.';
+
+  @override
+  String get adminOperatorPermField => 'أدوات المشغّل الميداني';
+
+  @override
+  String get adminOperatorPermFieldHint =>
+      'الوصول إلى بوابة المشغّل الميداني وسير العمل الميداني.';
+
+  @override
+  String get adminOperatorPermUpload => 'رفع المستندات';
+
+  @override
+  String get adminOperatorPermUploadHint => 'رفع مستندات الحجاج أثناء التسجيل.';
+
+  @override
+  String get adminOperatorGeneratePassword => 'توليد كلمة مرور';
+
+  @override
+  String get adminOperatorPasswordLabel => 'كلمة المرور';
+
+  @override
+  String get adminOperatorPasswordCreateHint =>
+      'اتركه فارغاً لتوليد كلمة مرور آمنة تلقائياً.';
+
+  @override
+  String get adminOperatorPasswordEditHint =>
+      'اتركه فارغاً للإبقاء على كلمة المرور الحالية.';
+
+  @override
+  String get adminOperatorCopyPassword => 'نسخ كلمة المرور';
+
+  @override
+  String get adminOperatorCreateSuccess => 'تم إنشاء حساب المشغّل';
+
+  @override
+  String get adminOperatorSaveSuccess => 'تم تحديث المشغّل';
+
+  @override
+  String get adminOperatorSaveError => 'تعذّر حفظ المشغّل. حاول مرة أخرى.';
+
+  @override
+  String get adminOperatorLoadError => 'تعذّر تحميل المشغّلين.';
+
+  @override
+  String get adminOperatorEmpty => 'لا يوجد مشغّلون بعد. أضف أول تقني مركز.';
 }

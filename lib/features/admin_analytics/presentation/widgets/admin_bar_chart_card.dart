@@ -1,6 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/domain/models/chart_slice.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/presentation/utils/chart_label_l10n.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
@@ -24,12 +24,12 @@ class AdminBarChartCard extends StatelessWidget {
     if (slices.isEmpty) {
       return Card(
         child: Padding(
-          padding: EdgeInsets.all(16.w),
+          padding: EdgeInsets.all(sw(16)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(title, style: Theme.of(context).textTheme.titleMedium),
-              SizedBox(height: 8.h),
+              SizedBox(height: sh(8)),
               Text(l10n.adminChartEmpty),
             ],
           ),
@@ -41,14 +41,14 @@ class AdminBarChartCard extends StatelessWidget {
 
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.all(sw(16)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(title, style: Theme.of(context).textTheme.titleMedium),
-            SizedBox(height: 16.h),
+            SizedBox(height: sh(16)),
             SizedBox(
-              height: 220.h,
+              height: sh(220),
               child: BarChart(
                 BarChartData(
                   maxY: maxValue.toDouble() + 1,
@@ -60,9 +60,9 @@ class AdminBarChartCard extends StatelessWidget {
                           BarChartRodData(
                             toY: slices[i].value.toDouble(),
                             color: colorScheme.primary,
-                            width: 20.w,
+                            width: sw(20),
                             borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(4.r),
+                              top: Radius.circular(sr(4)),
                             ),
                           ),
                         ],
@@ -85,7 +85,7 @@ class AdminBarChartCard extends StatelessWidget {
                             slices[index].label,
                           );
                           return Padding(
-                            padding: EdgeInsets.only(top: 8.h),
+                            padding: EdgeInsets.only(top: sh(8)),
                             child: Text(
                               label.length > 10
                                   ? '${label.substring(0, 10)}…'

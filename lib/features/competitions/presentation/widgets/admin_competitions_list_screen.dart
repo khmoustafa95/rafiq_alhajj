@@ -2,13 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_responsive_grid.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/providers/competitions_providers.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
@@ -16,12 +18,30 @@ import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 class AdminCompetitionsListScreen extends ConsumerWidget {
   const AdminCompetitionsListScreen({super.key});
 
+  void _openNew(BuildContext context) {
+    if (AppPlatform.isWeb) {
+      context.go(AppRoutes.adminCompetitionNew);
+    } else {
+      unawaited(context.push(AppRoutes.adminCompetitionNew));
+    }
+  }
+
+  void _openEdit(BuildContext context, String id) {
+    final path = AppRoutes.adminCompetitionEditPath(id);
+    if (AppPlatform.isWeb) {
+      context.go(path);
+    } else {
+      unawaited(context.push(path));
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final listAsync = ref.watch(adminCompetitionListProvider);
 
     final body = listAsync.when(
+      skipLoadingOnReload: true,
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (_, _) => StaffEmptyState(
         message: l10n.adminCompetitionsLoadError,
@@ -36,35 +56,30 @@ class AdminCompetitionsListScreen extends ConsumerWidget {
             message: l10n.adminCompetitionsEmpty,
             icon: Icons.emoji_events_outlined,
             actionLabel: l10n.adminCompetitionAdd,
-            onAction: () =>
-                unawaited(context.push(AppRoutes.adminCompetitionNew)),
+            onAction: () => _openNew(context),
           );
         }
 
         return RefreshIndicator(
           onRefresh: () =>
               ref.read(adminCompetitionListProvider.notifier).refresh(),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final crossAxisCount = constraints.maxWidth > 900
-                  ? 3
-                  : constraints.maxWidth > 560
-                      ? 2
-                      : 1;
-
-              return GridView.builder(
-                padding: EdgeInsets.only(bottom: 24.h),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
-                  crossAxisSpacing: 16.w,
-                  mainAxisSpacing: 16.h,
-                  childAspectRatio: crossAxisCount == 1 ? 2.8 : 1.4,
-                ),
-                itemCount: items.length,
-                itemBuilder: (context, index) =>
-                    _CompetitionCard(competition: items[index]),
-              );
-            },
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              StaffResponsiveGrid(
+                minItemWidth: 300,
+                spacing: sw(16),
+                children: items
+                    .map(
+                      (competition) => _CompetitionCard(
+                        competition: competition,
+                        onEdit: () => _openEdit(context, competition.id),
+                      ),
+                    )
+                    .toList(),
+              ),
+              SizedBox(height: sh(24)),
+            ],
           ),
         );
       },
@@ -75,8 +90,7 @@ class AdminCompetitionsListScreen extends ConsumerWidget {
         title: l10n.adminCompetitionsTitle,
         actions: [
           FilledButton.icon(
-            onPressed: () =>
-                unawaited(context.push(AppRoutes.adminCompetitionNew)),
+            onPressed: () => _openNew(context),
             icon: const Icon(Icons.add_rounded),
             label: Text(l10n.adminCompetitionAdd),
           ),
@@ -93,8 +107,7 @@ class AdminCompetitionsListScreen extends ConsumerWidget {
           ),
         ),
         floatingActionButton: FloatingActionButton.extended(
-          onPressed: () =>
-              unawaited(context.push(AppRoutes.adminCompetitionNew)),
+          onPressed: () => _openNew(context),
           icon: const Icon(Icons.add),
           label: Text(l10n.adminCompetitionAdd),
         ),
@@ -105,9 +118,13 @@ class AdminCompetitionsListScreen extends ConsumerWidget {
 }
 
 class _CompetitionCard extends ConsumerWidget {
-  const _CompetitionCard({required this.competition});
+  const _CompetitionCard({
+    required this.competition,
+    required this.onEdit,
+  });
 
   final Competition competition;
+  final VoidCallback onEdit;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -117,21 +134,20 @@ class _CompetitionCard extends ConsumerWidget {
       color: AppColors.surface,
       borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
       child: InkWell(
-        onTap: () => unawaited(
-          context.push(AppRoutes.adminCompetitionEditPath(competition.id)),
-        ),
+        onTap: onEdit,
         borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
         child: DecoratedBox(
           decoration: AppDecorations.card(),
           child: Padding(
-            padding: EdgeInsets.all(16.w),
+            padding: EdgeInsets.all(sw(16)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Row(
                   children: [
                     Container(
-                      padding: EdgeInsets.all(8.w),
+                      padding: EdgeInsets.all(sw(8)),
                       decoration: BoxDecoration(
                         color: AppColors.secondary.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(8),
@@ -139,12 +155,15 @@ class _CompetitionCard extends ConsumerWidget {
                       child: Icon(
                         Icons.emoji_events_outlined,
                         color: AppColors.primary,
-                        size: 22.sp,
+                        size: ss(22),
                       ),
                     ),
                     const Spacer(),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: sw(8),
+                        vertical: sh(4),
+                      ),
                       decoration: BoxDecoration(
                         color: competition.isActive
                             ? AppColors.success.withValues(alpha: 0.12)
@@ -160,32 +179,34 @@ class _CompetitionCard extends ConsumerWidget {
                                   ? AppColors.success
                                   : AppColors.chipInactiveText,
                             ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 12.h),
+                SizedBox(height: sh(12)),
                 Text(
                   competition.title,
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const Spacer(),
+                SizedBox(height: sh(16)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     IconButton(
                       icon: const Icon(Icons.edit_outlined, size: 20),
-                      onPressed: () => unawaited(
-                        context.push(
-                          AppRoutes.adminCompetitionEditPath(competition.id),
-                        ),
-                      ),
+                      onPressed: onEdit,
+                      visualDensity: VisualDensity.compact,
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete_outline, size: 20),
                       onPressed: () => _confirmDelete(context, ref, l10n),
+                      visualDensity: VisualDensity.compact,
                     ),
                   ],
                 ),
@@ -235,7 +256,9 @@ class _CompetitionCard extends ConsumerWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          ok ? l10n.adminCompetitionDeleteSuccess : l10n.adminCompetitionDeleteError,
+          ok
+              ? l10n.adminCompetitionDeleteSuccess
+              : l10n.adminCompetitionDeleteError,
         ),
       ),
     );

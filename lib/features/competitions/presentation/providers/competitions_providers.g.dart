@@ -271,7 +271,7 @@ final class AdminCompetitionListProvider
 }
 
 String _$adminCompetitionListHash() =>
-    r'b70f2cc5ed2243b8fb94c3809174b9b084f0e18c';
+    r'47654f2da3476c571852c4eb789e475c6e9d45b2';
 
 abstract class _$AdminCompetitionList
     extends $AsyncNotifier<List<Competition>> {

@@ -20,6 +20,7 @@
 | Field operator (US-06) | ✅ Stats dashboard, filters, full pilgrim profile, status updates |
 | Admin analytics (US-07) | ✅ Web dashboard, charts, groups, live Supabase |
 | Admin content CMS (US-08) | ✅ Web `/admin/content` CRUD on `content_library` |
+| Admin operator management | ✅ Web `/admin/operators` CRUD + permissions (needs migration + edge fn deploy) |
 | Operator pilgrim registry (US-09) | ✅ Web `/operator/pilgrims` list + logistics edit |
 | Competitions (US-10) | ✅ Pilgrim join/leaderboard + admin CRUD |
 | Dev one-command scripts | ✅ `npm run dev` / `scripts/*.ps1` |
@@ -59,6 +60,17 @@
 - [x] FCM push (device tokens + Edge Function)
 
 ## Changelog
+
+### 2026-06-08 — Admin operator management
+- [x] Migration: `profiles` email, `is_active`, `operator_permissions`; admin update RLS
+- [x] Edge function `manage-operator` (create/update operator accounts)
+- [x] Flutter feature `admin_operators` + routes + sidebar nav + l10n (en/ar)
+
+### 2026-06-08 — Admin dashboard loading fix
+- [x] Debounced realtime invalidation (`realtime_refresh.dart`)
+- [x] Admin dashboard: fetch before realtime subscribe; parallel Supabase queries
+- [x] Dashboard UI: `skipLoadingOnReload`, show error detail, remove duplicate chart block
+
 
 ### 2026-06-08 (pm)
 - **Staff web shell fix:** `StatefulShellRoute` → `ShellRoute` for operator/admin pages; `StaffWebPage` + `StaffWebShell` layout constraints fixed (blank intake pane + overlay hit-test errors).
@@ -109,6 +121,11 @@
 - CI: GitHub Actions `flutter_ci.yml` (analyze + test).
 - `scripts/seed-demo-users.ps1` + `npm run setup:users`; `dev-setup` seeds Auth automatically.
 - Staging/production `dart_defines.*.example.json`; Gradle JVM limits for Android daemon stability.
+
+### 2026-06-08
+- Admin dashboard: fixed infinite loading (realtime debounce + defer subscribe until after first fetch).
+- Parallel Supabase dashboard queries + 30s timeout; `skipLoadingOnReload` on dashboard UI.
+- Staff web: row-safe button styles, layout fixes for operator intake / pilgrim list.
 
 ### 2026-05-21
 - **US-10:** Competitions feature + migration + dev scripts + Android Gradle hardening.

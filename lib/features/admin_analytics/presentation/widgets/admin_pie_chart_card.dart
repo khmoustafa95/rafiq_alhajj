@@ -1,6 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/domain/models/chart_slice.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/presentation/utils/chart_label_l10n.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
@@ -24,12 +24,12 @@ class AdminPieChartCard extends StatelessWidget {
     if (slices.isEmpty) {
       return Card(
         child: Padding(
-          padding: EdgeInsets.all(16.w),
+          padding: EdgeInsets.all(sw(16)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(title, style: Theme.of(context).textTheme.titleMedium),
-              SizedBox(height: 8.h),
+              SizedBox(height: sh(8)),
               Text(l10n.adminChartEmpty),
             ],
           ),
@@ -49,14 +49,14 @@ class AdminPieChartCard extends StatelessWidget {
 
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.all(sw(16)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(title, style: Theme.of(context).textTheme.titleMedium),
-            SizedBox(height: 8.h),
+            SizedBox(height: sh(8)),
             SizedBox(
-              height: 200.h,
+              height: sh(200),
               child: Row(
                 children: [
                   Expanded(
@@ -64,7 +64,7 @@ class AdminPieChartCard extends StatelessWidget {
                     child: PieChart(
                       PieChartData(
                         sectionsSpace: 2,
-                        centerSpaceRadius: 32.r,
+                        centerSpaceRadius: sr(32),
                         sections: [
                           for (var i = 0; i < slices.length; i++)
                             PieChartSectionData(
@@ -72,7 +72,7 @@ class AdminPieChartCard extends StatelessWidget {
                               color: palette[i % palette.length],
                               title:
                                   '${(slices[i].value / total * 100).round()}%',
-                              radius: 56.r,
+                              radius: sr(56),
                               titleStyle: Theme.of(context)
                                   .textTheme
                                   .labelSmall
@@ -88,15 +88,15 @@ class AdminPieChartCard extends StatelessWidget {
                       children: [
                         for (var i = 0; i < slices.length; i++)
                           Padding(
-                            padding: EdgeInsets.only(bottom: 4.h),
+                            padding: EdgeInsets.only(bottom: sh(4)),
                             child: Row(
                               children: [
                                 Container(
-                                  width: 10.w,
-                                  height: 10.w,
+                                  width: sw(10),
+                                  height: sw(10),
                                   color: palette[i % palette.length],
                                 ),
-                                SizedBox(width: 6.w),
+                                SizedBox(width: sw(6)),
                                 Expanded(
                                   child: Text(
                                     '${chartSliceLabel(l10n, slices[i].label)} (${slices[i].value})',

@@ -42,8 +42,13 @@ abstract final class AppRoutes {
   static const String adminContent = '/admin/content';
   static const String adminContentNew = '/admin/content/new';
   static const String adminContentEdit = '/admin/content/:id/edit';
+  static const String adminOperators = '/admin/operators';
+  static const String adminOperatorNew = '/admin/operators/new';
+  static const String adminOperatorEdit = '/admin/operators/:id/edit';
 
   static String adminContentEditPath(String id) => '/admin/content/$id/edit';
+
+  static String adminOperatorEditPath(String id) => '/admin/operators/$id/edit';
 
   static String contentDetailPath(String id) => '/content/$id';
 

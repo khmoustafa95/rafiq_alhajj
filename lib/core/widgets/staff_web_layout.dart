@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_button_styles.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_shell.dart';
 
 /// Standard staff web page: header + scrollable content with max width.
@@ -58,7 +60,12 @@ class StaffWebPage extends StatelessWidget {
                       width: contentWidth,
                       height: constraints.maxHeight,
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(24.w, 24.h, 24.w, 32.h),
+                        padding: EdgeInsets.fromLTRB(
+                          sw(24),
+                          sh(24),
+                          sw(24),
+                          sh(32),
+                        ),
                         child: _buildContentArea(),
                       ),
                     ),
@@ -81,18 +88,16 @@ class StaffWebPage extends StatelessWidget {
       );
     }
 
-    if (top != null) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (top != null) ...[
           top!,
           SizedBox(height: 16.h),
-          Expanded(child: body),
         ],
-      );
-    }
-
-    return body;
+        Expanded(child: body),
+      ],
+    );
   }
 }
 
@@ -158,7 +163,18 @@ class StaffFormSection extends StatelessWidget {
                   ],
                 ),
               ),
-              ?trailing,
+              if (trailing != null)
+                Theme(
+                  data: Theme.of(context).copyWith(
+                    outlinedButtonTheme: OutlinedButtonThemeData(
+                      style: staffRowOutlinedButtonStyle(context),
+                    ),
+                    filledButtonTheme: FilledButtonThemeData(
+                      style: staffRowFilledButtonStyle(context),
+                    ),
+                  ),
+                  child: trailing!,
+                ),
             ],
           ),
           SizedBox(height: 20.h),
@@ -187,6 +203,13 @@ class ResponsiveFormGrid extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
+        if (!constraints.hasBoundedWidth) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: _withSpacing(children, spacing, vertical: true),
+          );
+        }
+
         final columns = width >= 900
             ? maxColumns.clamp(1, 3)
             : width >= 520
@@ -263,23 +286,26 @@ class StaffFormActionsBar extends StatelessWidget {
       ),
       child: SafeArea(
         top: false,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: StaffWebPage.maxContentWidth),
-          child: Row(
-            children: [
-              if (secondaryLabel != null && onSecondary != null) ...[
-                OutlinedButton(
-                  onPressed: isLoading ? null : onSecondary,
-                  child: Text(secondaryLabel!),
-                ),
-                SizedBox(width: 12.w),
-              ],
-              const Spacer(),
-              FilledButton(
-                onPressed: isLoading ? null : onPrimary,
-                style: FilledButton.styleFrom(
-                  minimumSize: Size(160.w, 44.h),
-                ),
+        child: Align(
+          child: ConstrainedBox(
+            constraints:
+                const BoxConstraints(maxWidth: StaffWebPage.maxContentWidth),
+            child: Row(
+              children: [
+                if (secondaryLabel != null && onSecondary != null) ...[
+                  OutlinedButton(
+                    onPressed: isLoading ? null : onSecondary,
+                    style: staffRowOutlinedButtonStyle(context),
+                    child: Text(secondaryLabel!),
+                  ),
+                  SizedBox(width: 12.w),
+                ],
+                const Spacer(),
+                FilledButton(
+                  onPressed: isLoading ? null : onPrimary,
+                  style: staffRowFilledButtonStyle(context).copyWith(
+                    minimumSize: WidgetStatePropertyAll(Size(160.w, 44.h)),
+                  ),
                 child: isLoading
                     ? SizedBox(
                         height: 22,
@@ -290,8 +316,9 @@ class StaffFormActionsBar extends StatelessWidget {
                         ),
                       )
                     : Text(primaryLabel),
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -6,7 +6,9 @@ import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 /// Compact language control for [AppBar] actions.
 class LanguageSwitcherAppBarAction extends ConsumerWidget {
-  const LanguageSwitcherAppBarAction({super.key});
+  const LanguageSwitcherAppBarAction({this.compact = false, super.key});
+
+  final bool compact;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,6 +18,17 @@ class LanguageSwitcherAppBarAction extends ConsumerWidget {
     final shortLabel = locale.languageCode == 'ar'
         ? l10n.languageArabicShort
         : l10n.languageEnglishShort;
+
+    if (compact) {
+      return IconButton(
+        onPressed: () => showLanguagePickerSheet(context),
+        tooltip: l10n.languageSwitcherTitle,
+        icon: Icon(
+          Icons.translate_rounded,
+          color: colorScheme.onSurfaceVariant,
+        ),
+      );
+    }
 
     return Padding(
       padding: EdgeInsetsDirectional.only(end: 8.w),

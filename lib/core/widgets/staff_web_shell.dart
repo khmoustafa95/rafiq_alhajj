@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/language_switcher.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_button_styles.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/controllers/sign_out_controller.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
@@ -44,7 +45,6 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
     final profileName = ref.watch(authProfileFullNameProvider);
     final accessMode = ref.watch(authAccessModeProvider);
     final isAdmin = accessMode == AppAccessMode.admin;
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
     final isCompact =
         MediaQuery.sizeOf(context).width < StaffWebShell.compactBreakpoint;
 
@@ -80,7 +80,7 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
           ),
           actions: const [
             NotificationBellButton(),
-            LanguageSwitcherAppBarAction(),
+            LanguageSwitcherAppBarAction(compact: true),
             SizedBox(width: 8),
           ],
         ),
@@ -94,25 +94,15 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Row(
-        children: isRtl
-            ? [
-                Expanded(
-                  child: Material(
-                    color: AppColors.background,
-                    child: widget.child,
-                  ),
-                ),
-                SizedBox(width: StaffWebShell.sidebarWidth, child: sidebar),
-              ]
-            : [
-                SizedBox(width: StaffWebShell.sidebarWidth, child: sidebar),
-                Expanded(
-                  child: Material(
-                    color: AppColors.background,
-                    child: widget.child,
-                  ),
-                ),
-              ],
+        children: [
+          SizedBox(width: StaffWebShell.sidebarWidth, child: sidebar),
+          Expanded(
+            child: Material(
+              color: AppColors.background,
+              child: widget.child,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -130,6 +120,12 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
         label: l10n.staffNavPilgrims,
         route: AppRoutes.operatorPilgrims,
         isActive: location.startsWith(AppRoutes.operatorPilgrims),
+      ),
+      _StaffNavItem(
+        icon: Icons.badge_outlined,
+        label: l10n.staffNavOperators,
+        route: AppRoutes.adminOperators,
+        isActive: location.startsWith(AppRoutes.adminOperators),
       ),
       _StaffNavItem(
         icon: Icons.article_outlined,
@@ -175,6 +171,9 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
     }
     if (location.startsWith(AppRoutes.operatorPilgrims)) {
       return l10n.operatorPilgrimListTitle;
+    }
+    if (location.startsWith(AppRoutes.adminOperators)) {
+      return l10n.adminOperatorsTitle;
     }
     if (location == AppRoutes.adminDashboard) {
       return l10n.adminDashboardTitle;
@@ -400,33 +399,57 @@ class StaffWebHeader extends StatelessWidget {
     }
 
     return Container(
-      padding: EdgeInsets.fromLTRB(24.w, 20.h, 24.w, 16.h),
+      padding: EdgeInsets.fromLTRB(sw(24), sh(20), sw(24), sh(16)),
       decoration: const BoxDecoration(
         color: AppColors.surface,
         border: Border(bottom: BorderSide(color: AppColors.border)),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                if (subtitle != null) ...[
-                  SizedBox(height: 4.h),
-                  Text(subtitle!, style: Theme.of(context).textTheme.bodyMedium),
-                ],
-              ],
-            ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          filledButtonTheme: FilledButtonThemeData(
+            style: staffRowFilledButtonStyle(context),
           ),
-          const NotificationBellButton(),
-          const LanguageSwitcherAppBarAction(),
-          ...actions,
-        ],
+          outlinedButtonTheme: OutlinedButtonThemeData(
+            style: staffRowOutlinedButtonStyle(context),
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  if (subtitle != null) ...[
+                    SizedBox(height: sh(4)),
+                    Text(
+                      subtitle!,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                            height: 1.4,
+                          ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            SizedBox(width: sw(8)),
+            Flexible(
+              child: Wrap(
+                spacing: sw(8),
+                runSpacing: sh(8),
+                children: [
+                  const NotificationBellButton(),
+                  const LanguageSwitcherAppBarAction(compact: true),
+                  ...actions,
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -451,10 +474,18 @@ class StaffStatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context);
+    final labelStyle = locale.languageCode == 'ar'
+        ? Theme.of(context).textTheme.labelMedium
+        : Theme.of(context).textTheme.labelSmall?.copyWith(
+              letterSpacing: 0.5,
+            );
+
     return DecoratedBox(
       decoration: AppDecorations.card(),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
             height: 4,
@@ -466,45 +497,57 @@ class StaffStatCard extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(16.w),
+            padding: EdgeInsets.all(sw(16)),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        label.toUpperCase(),
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              letterSpacing: 0.5,
-                            ),
+                        locale.languageCode == 'ar' ? label : label.toUpperCase(),
+                        style: labelStyle?.copyWith(
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      SizedBox(height: 8.h),
+                      SizedBox(height: sh(8)),
                       Text(
                         value,
-                        style: Theme.of(context).textTheme.headlineMedium,
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              height: 1.1,
+                            ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       if (badge != null) ...[
-                        SizedBox(height: 4.h),
+                        SizedBox(height: sh(6)),
                         Text(
                           badge!,
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: accentColor,
                                 fontWeight: FontWeight.w600,
                               ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ],
                   ),
                 ),
+                SizedBox(width: sw(12)),
                 Container(
-                  width: 44.w,
-                  height: 44.w,
+                  width: sw(44),
+                  height: sw(44),
                   decoration: BoxDecoration(
-                    color: accentColor.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(10),
+                    color: accentColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(sr(10)),
                   ),
-                  child: Icon(icon, color: accentColor, size: 22.sp),
+                  child: Icon(icon, color: accentColor, size: ss(22)),
                 ),
               ],
             ),

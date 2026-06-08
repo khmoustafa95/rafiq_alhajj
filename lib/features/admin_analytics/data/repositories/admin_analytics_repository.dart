@@ -32,37 +32,31 @@ class AdminAnalyticsRepository {
     try {
       final client = _client!;
 
-      final pilgrims = await client
-          .from('profiles')
-          .select('id, group_id')
-          .eq('role', 'pilgrim');
+      final results = await Future.wait<dynamic>([
+        client.from('profiles').select('id, group_id').eq('role', 'pilgrim'),
+        client.from('profiles').select('id').eq('role', 'operator'),
+        client.from('groups').select('id, name'),
+        client.from('pilgrim_details').select('profile_id, field_status'),
+        client
+            .from('ritual_logs')
+            .select('pilgrim_id, ritual_key, is_completed')
+            .eq('is_completed', true),
+        client
+            .from('pilgrim_documents')
+            .select('uploaded_by, profiles:uploaded_by(full_name)'),
+      ]).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () => throw const AdminAnalyticsException(
+          'Dashboard metrics request timed out',
+        ),
+      );
 
-      final operators = await client
-          .from('profiles')
-          .select('id')
-          .eq('role', 'operator');
-
-      final groups = await client.from('groups').select('id, name');
-
-      final details = await client
-          .from('pilgrim_details')
-          .select('profile_id, field_status');
-
-      final ritualLogs = await client
-          .from('ritual_logs')
-          .select('pilgrim_id, ritual_key, is_completed')
-          .eq('is_completed', true);
-
-      final documents = await client
-          .from('pilgrim_documents')
-          .select('uploaded_by, profiles:uploaded_by(full_name)');
-
-      final pilgrimRows = pilgrims as List<dynamic>;
-      final operatorRows = operators as List<dynamic>;
-      final groupRows = groups as List<dynamic>;
-      final detailRows = details as List<dynamic>;
-      final ritualRows = ritualLogs as List<dynamic>;
-      final documentRows = documents as List<dynamic>;
+      final pilgrimRows = results[0] as List<dynamic>;
+      final operatorRows = results[1] as List<dynamic>;
+      final groupRows = results[2] as List<dynamic>;
+      final detailRows = results[3] as List<dynamic>;
+      final ritualRows = results[4] as List<dynamic>;
+      final documentRows = results[5] as List<dynamic>;
 
       final groupNames = <String, String>{
         for (final row in groupRows)

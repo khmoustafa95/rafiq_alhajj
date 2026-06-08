@@ -129,7 +129,7 @@ final class AdminDashboardProvider
   AdminDashboard create() => AdminDashboard();
 }
 
-String _$adminDashboardHash() => r'd9f6c14f8e6eef06268e1ef5b8674dea9ca774dd';
+String _$adminDashboardHash() => r'f9b9bcaf3239a64d21f8bc228c84ca139d0f006b';
 
 abstract class _$AdminDashboard extends $AsyncNotifier<AdminDashboardStats> {
   FutureOr<AdminDashboardStats> build();

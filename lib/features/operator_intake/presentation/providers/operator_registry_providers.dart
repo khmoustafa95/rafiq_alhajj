@@ -29,13 +29,14 @@ class OperatorPilgrimRegistry extends _$OperatorPilgrimRegistry {
 
   @override
   Future<List<OperatorPilgrimSummary>> build() async {
+    _all = await ref.read(operatorRegistryServiceProvider).listPilgrims();
+
     watchSupabaseTables(
       ref,
       client: AppConfig.hasSupabase ? Supabase.instance.client : null,
       tables: RealtimeTables.pilgrimRegistry,
     );
 
-    _all = await ref.read(operatorRegistryServiceProvider).listPilgrims();
     return _all;
   }
 

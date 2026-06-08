@@ -11,6 +11,8 @@ import 'package:rafiq_alhajj/features/admin_analytics/presentation/widgets/admin
 import 'package:rafiq_alhajj/features/admin_analytics/presentation/widgets/admin_login_screen.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/widgets/admin_content_edit_screen.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/widgets/admin_content_list_screen.dart';
+import 'package:rafiq_alhajj/features/admin_operators/presentation/widgets/admin_operator_edit_screen.dart';
+import 'package:rafiq_alhajj/features/admin_operators/presentation/widgets/admin_operators_list_screen.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/widgets/login_screen.dart';
@@ -272,6 +274,24 @@ List<RouteBase> _mobilePilgrimRoutes() => [
           return AdminCompetitionEditScreen(competitionId: id);
         },
       ),
+      GoRoute(
+        path: AppRoutes.adminOperators,
+        name: 'adminOperators',
+        builder: (context, state) => const AdminOperatorsListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminOperatorNew,
+        name: 'adminOperatorNew',
+        builder: (context, state) => const AdminOperatorEditScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminOperatorEdit,
+        name: 'adminOperatorEdit',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return AdminOperatorEditScreen(operatorId: id);
+        },
+      ),
     ];
 
 ShellRoute _staffWebShellRoute() {
@@ -345,8 +365,35 @@ ShellRoute _staffWebShellRoute() {
           return AdminCompetitionEditScreen(competitionId: id);
         },
       ),
+      GoRoute(
+        path: AppRoutes.adminOperators,
+        name: 'adminOperators',
+        builder: (context, state) => const AdminOperatorsListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminOperatorNew,
+        name: 'adminOperatorNew',
+        builder: (context, state) => const AdminOperatorEditScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminOperatorEdit,
+        name: 'adminOperatorEdit',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return AdminOperatorEditScreen(operatorId: id);
+        },
+      ),
     ],
   );
+}
+
+/// Admin staff portal on web: `/admin/*` plus shared pilgrim registry routes.
+bool _isAdminStaffWebRoute(String location) {
+  if (location.startsWith('/admin') && location != AppRoutes.adminLogin) {
+    return true;
+  }
+  return location == AppRoutes.operatorPilgrims ||
+      location.startsWith('${AppRoutes.operatorPilgrims}/');
 }
 
 List<RouteBase> _webRoutes() => [
@@ -472,10 +519,13 @@ GoRouter appRouter(Ref ref) {
         }
 
         if (isAdmin) {
-          if (!isAdminRoute || location == AppRoutes.adminLogin) {
+          if (location == AppRoutes.adminLogin) {
             return AppRoutes.adminDashboard;
           }
-          return null;
+          if (_isAdminStaffWebRoute(location)) {
+            return null;
+          }
+          return AppRoutes.adminDashboard;
         }
 
         if (isOperator) {
@@ -500,10 +550,13 @@ GoRouter appRouter(Ref ref) {
       }
 
       if (isAdmin) {
-        if (!isAdminRoute || location == AppRoutes.adminLogin) {
+        if (location == AppRoutes.adminLogin) {
           return AppRoutes.adminDashboard;
         }
-        return null;
+        if (_isAdminStaffWebRoute(location)) {
+          return null;
+        }
+        return AppRoutes.adminDashboard;
       }
 
       if (isOperator) {

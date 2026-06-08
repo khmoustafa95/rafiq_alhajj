@@ -2,14 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_responsive_grid.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_shell.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/presentation/providers/admin_analytics_providers.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/presentation/widgets/admin_bar_chart_card.dart';
@@ -76,7 +77,7 @@ class _AdminDashboardWebBody extends ConsumerWidget {
       scrollable: false,
       actions: [
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+          padding: EdgeInsets.symmetric(horizontal: sw(12), vertical: sh(6)),
           decoration: BoxDecoration(
             color: AppColors.success.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(20),
@@ -93,7 +94,7 @@ class _AdminDashboardWebBody extends ConsumerWidget {
                   shape: BoxShape.circle,
                 ),
               ),
-              SizedBox(width: 8.w),
+              SizedBox(width: sw(8)),
               Text(
                 l10n.staffConnectedStatus,
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
@@ -104,7 +105,6 @@ class _AdminDashboardWebBody extends ConsumerWidget {
             ],
           ),
         ),
-        SizedBox(width: 8.w),
         IconButton(
           onPressed: () {
             unawaited(ref.read(adminDashboardProvider.notifier).refresh());
@@ -127,190 +127,200 @@ class _AdminDashboardContent extends ConsumerWidget {
     final statsAsync = ref.watch(adminDashboardProvider);
 
     return statsAsync.when(
+      skipLoadingOnReload: true,
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (_, _) => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(l10n.adminDashboardLoadError),
-            SizedBox(height: 12.h),
-            FilledButton(
-              onPressed: () {
-                unawaited(ref.read(adminDashboardProvider.notifier).refresh());
-              },
-              child: Text(l10n.retry),
-            ),
-          ],
+      error: (error, _) => Center(
+        child: Padding(
+          padding: EdgeInsets.all(sw(24)),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.error_outline,
+                size: ss(40),
+                color: AppColors.textSecondary,
+              ),
+              SizedBox(height: sh(12)),
+              Text(
+                l10n.adminDashboardLoadError,
+                style: Theme.of(context).textTheme.titleMedium,
+                textAlign: TextAlign.center,
+              ),
+              if (error case final Object e) ...[
+                SizedBox(height: sh(8)),
+                Text(
+                  e.toString(),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+              SizedBox(height: sh(16)),
+              FilledButton.icon(
+                onPressed: () {
+                  unawaited(ref.read(adminDashboardProvider.notifier).refresh());
+                },
+                icon: const Icon(Icons.refresh_rounded),
+                label: Text(l10n.retry),
+              ),
+            ],
+          ),
         ),
       ),
       data: (stats) => RefreshIndicator(
         onRefresh: () => ref.read(adminDashboardProvider.notifier).refresh(),
         child: ListView(
-          padding: EdgeInsets.all(AppPlatform.isWeb ? 24.w : 16.w),
+          padding: EdgeInsets.zero,
           children: [
             if (!AppPlatform.isWeb) ...[
               Text(
                 l10n.adminDashboardSubtitle,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-              SizedBox(height: 16.h),
+              SizedBox(height: sh(16)),
             ],
+            StaffResponsiveGrid(
+              spacing: sw(16),
+              children: [
+                StaffStatCard(
+                  label: l10n.adminStatPilgrims,
+                  value: '${stats.pilgrimCount}',
+                  icon: Icons.people_outline_rounded,
+                  accentColor: AppColors.success,
+                  badge: '+12%',
+                ),
+                StaffStatCard(
+                  label: l10n.adminStatOperators,
+                  value: '${stats.operatorCount}',
+                  icon: Icons.engineering_outlined,
+                  accentColor: AppColors.secondary,
+                  badge: l10n.staffActiveNow,
+                ),
+                StaffStatCard(
+                  label: l10n.adminStatRitualProgress,
+                  value: '${stats.ritualCompletionPercent.toStringAsFixed(0)}%',
+                  icon: Icons.sync_rounded,
+                  accentColor: AppColors.tertiary,
+                  badge: l10n.staffStable,
+                ),
+              ],
+            ),
+            SizedBox(height: sh(24)),
             LayoutBuilder(
               builder: (context, constraints) {
-                final isWide = constraints.maxWidth > 700;
-                final cards = [
-                  StaffStatCard(
-                    label: l10n.adminStatPilgrims,
-                    value: '${stats.pilgrimCount}',
-                    icon: Icons.people_outline_rounded,
-                    accentColor: AppColors.success,
-                    badge: '+12%',
-                  ),
-                  StaffStatCard(
-                    label: l10n.adminStatOperators,
-                    value: '${stats.operatorCount}',
-                    icon: Icons.engineering_outlined,
-                    accentColor: AppColors.secondary,
-                    badge: l10n.staffActiveNow,
-                  ),
-                  StaffStatCard(
-                    label: l10n.adminStatRitualProgress,
-                    value:
-                        '${stats.ritualCompletionPercent.toStringAsFixed(0)}%',
-                    icon: Icons.sync_rounded,
-                    accentColor: AppColors.tertiary,
-                    badge: l10n.staffStable,
-                  ),
-                ];
+                final isWide = constraints.maxWidth >= 960;
+
+                final pilgrimsChart = AdminBarChartCard(
+                  title: l10n.adminChartPilgrimsByGroup,
+                  slices: stats.pilgrimsByGroup,
+                  l10n: l10n,
+                );
+                final statusChart = AdminPieChartCard(
+                  title: l10n.adminChartFieldStatus,
+                  slices: stats.fieldStatusBreakdown,
+                  l10n: l10n,
+                );
 
                 if (isWide) {
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: cards
-                        .map(
-                          (card) => Expanded(
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                right: card == cards.last ? 0 : 12.w,
-                              ),
-                              child: card,
-                            ),
-                          ),
-                        )
-                        .toList(),
+                    children: [
+                      Expanded(child: pilgrimsChart),
+                      SizedBox(width: sw(16)),
+                      Expanded(child: statusChart),
+                    ],
                   );
                 }
 
                 return Column(
-                  children: cards
-                      .map(
-                        (card) => Padding(
-                          padding: EdgeInsets.only(bottom: 12.h),
-                          child: card,
-                        ),
-                      )
-                      .toList(),
+                  children: [
+                    pilgrimsChart,
+                    SizedBox(height: sh(16)),
+                    statusChart,
+                  ],
                 );
               },
             ),
-            SizedBox(height: 20.h),
-            if (AppPlatform.isWeb)
-              Container(
-                decoration: AppDecorations.card(),
-                padding: EdgeInsets.all(20.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.adminChartPilgrimsByGroup,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    SizedBox(height: 16.h),
-                    ...stats.pilgrimsByGroup.map(
-                      (slice) => Padding(
-                        padding: EdgeInsets.only(bottom: 10.h),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                slice.label,
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                            ),
-                            Text(
-                              '${slice.value.toInt()}',
-                              style:
-                                  Theme.of(context).textTheme.titleSmall,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            SizedBox(height: 16.h),
-            AdminBarChartCard(
-              title: l10n.adminChartPilgrimsByGroup,
-              slices: stats.pilgrimsByGroup,
-              l10n: l10n,
-            ),
-            SizedBox(height: 16.h),
-            AdminPieChartCard(
-              title: l10n.adminChartFieldStatus,
-              slices: stats.fieldStatusBreakdown,
-              l10n: l10n,
-            ),
-            SizedBox(height: 16.h),
+            SizedBox(height: sh(16)),
             AdminBarChartCard(
               title: l10n.adminChartOperatorUploads,
               slices: stats.operatorDocumentUploads,
               l10n: l10n,
             ),
-            SizedBox(height: 16.h),
             if (AppPlatform.isWeb) ...[
-              Wrap(
-                spacing: 12.w,
-                runSpacing: 12.h,
-                children: [
-                  FilledButton.icon(
-                    onPressed: () =>
-                        context.go(AppRoutes.adminNotificationSend),
-                    icon: const Icon(Icons.campaign_outlined),
-                    label: Text(l10n.adminSendNotification),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: () => context.go(AppRoutes.adminContent),
-                    icon: const Icon(Icons.article_outlined),
-                    label: Text(l10n.adminManageContent),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: () => context.go(AppRoutes.adminCompetitions),
-                    icon: const Icon(Icons.emoji_events_outlined),
-                    label: Text(l10n.adminManageCompetitions),
-                  ),
-                ],
-              ),
+              SizedBox(height: sh(24)),
+              _QuickActionsCard(l10n: l10n),
             ] else ...[
+              SizedBox(height: sh(16)),
               OutlinedButton.icon(
                 onPressed: () => context.push(AppRoutes.adminNotificationSend),
                 icon: const Icon(Icons.campaign_outlined),
                 label: Text(l10n.adminSendNotification),
               ),
-              SizedBox(height: 12.h),
+              SizedBox(height: sh(12)),
               OutlinedButton.icon(
                 onPressed: () => context.push(AppRoutes.adminContent),
                 icon: const Icon(Icons.article_outlined),
                 label: Text(l10n.adminManageContent),
               ),
-              SizedBox(height: 12.h),
+              SizedBox(height: sh(12)),
               OutlinedButton.icon(
                 onPressed: () => context.push(AppRoutes.adminCompetitions),
                 icon: const Icon(Icons.emoji_events_outlined),
                 label: Text(l10n.adminManageCompetitions),
               ),
             ],
-            SizedBox(height: 24.h),
+            SizedBox(height: sh(24)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _QuickActionsCard extends StatelessWidget {
+  const _QuickActionsCard({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: AppDecorations.card(),
+      child: Padding(
+        padding: EdgeInsets.all(sw(20)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.homeQuickActionsTitle,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+            SizedBox(height: sh(16)),
+            Wrap(
+              spacing: sw(12),
+              runSpacing: sh(12),
+              children: [
+                FilledButton.icon(
+                  onPressed: () => context.go(AppRoutes.adminNotificationSend),
+                  icon: const Icon(Icons.campaign_outlined),
+                  label: Text(l10n.adminSendNotification),
+                ),
+                OutlinedButton.icon(
+                  onPressed: () => context.go(AppRoutes.adminContent),
+                  icon: const Icon(Icons.article_outlined),
+                  label: Text(l10n.adminManageContent),
+                ),
+                OutlinedButton.icon(
+                  onPressed: () => context.go(AppRoutes.adminCompetitions),
+                  icon: const Icon(Icons.emoji_events_outlined),
+                  label: Text(l10n.adminManageCompetitions),
+                ),
+              ],
+            ),
           ],
         ),
       ),

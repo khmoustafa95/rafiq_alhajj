@@ -2,14 +2,18 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_responsive_grid.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
+import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/controllers/sign_out_controller.dart';
+import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_summary.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/operator_registry_providers.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
@@ -44,14 +48,18 @@ class _OperatorPilgrimListScreenState
   }
 
   void _openPilgrim(OperatorPilgrimSummary item) {
-    unawaited(
-      context.push(AppRoutes.operatorPilgrimDetailPath(item.profileId)),
-    );
+    final path = AppRoutes.operatorPilgrimDetailPath(item.profileId);
+    if (AppPlatform.isWeb) {
+      context.go(path);
+    } else {
+      unawaited(context.push(path));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final isAdmin = ref.watch(authAccessModeProvider) == AppAccessMode.admin;
     final pilgrimsAsync = ref.watch(operatorPilgrimRegistryProvider);
 
     final searchField = TextField(
@@ -61,11 +69,16 @@ class _OperatorPilgrimListScreenState
         prefixIcon: const Icon(Icons.search),
         filled: true,
         fillColor: AppColors.surface,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: sw(16),
+          vertical: sh(14),
+        ),
       ),
       onChanged: _onSearchChanged,
     );
 
     final listBody = pilgrimsAsync.when(
+      skipLoadingOnReload: true,
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (_, _) => StaffEmptyState(
         message: l10n.operatorPilgrimListLoadError,
@@ -82,8 +95,8 @@ class _OperatorPilgrimListScreenState
           return StaffEmptyState(
             message: l10n.operatorPilgrimListEmpty,
             icon: Icons.people_outline,
-            actionLabel: l10n.operatorIntakeTitle,
-            onAction: () => context.go(AppRoutes.operatorIntake),
+            actionLabel: isAdmin ? null : l10n.operatorIntakeTitle,
+            onAction: isAdmin ? null : () => context.go(AppRoutes.operatorIntake),
           );
         }
 
@@ -92,26 +105,54 @@ class _OperatorPilgrimListScreenState
               ref.read(operatorPilgrimRegistryProvider.notifier).refresh(),
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final isWide = constraints.maxWidth >= 720;
+              final useTable = constraints.maxWidth >= 900;
 
-              if (isWide) {
+              if (useTable) {
                 return ListView.separated(
-                  padding: EdgeInsets.only(bottom: 24.h),
-                  itemCount: pilgrims.length,
-                  separatorBuilder: (_, _) => SizedBox(height: 8.h),
-                  itemBuilder: (context, index) =>
-                      _PilgrimTableRow(
-                        item: pilgrims[index],
-                        l10n: l10n,
-                        onTap: () => _openPilgrim(pilgrims[index]),
-                      ),
+                  padding: EdgeInsets.only(bottom: sh(24)),
+                  itemCount: pilgrims.length + 1,
+                  separatorBuilder: (_, _) => SizedBox(height: sh(8)),
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return _PilgrimTableHeader(l10n: l10n);
+                    }
+                    final item = pilgrims[index - 1];
+                    return _PilgrimTableRow(
+                      item: item,
+                      l10n: l10n,
+                      onTap: () => _openPilgrim(item),
+                    );
+                  },
+                );
+              }
+
+              if (constraints.maxWidth >= 560) {
+                return ListView(
+                  padding: EdgeInsets.only(bottom: sh(24)),
+                  children: [
+                    StaffResponsiveGrid(
+                      minItemWidth: 280,
+                      maxColumns: 2,
+                      spacing: sw(16),
+                      children: pilgrims
+                          .map(
+                            (item) => _PilgrimCard(
+                              item: item,
+                              l10n: l10n,
+                              subtitle: _subtitle(l10n, item),
+                              onTap: () => _openPilgrim(item),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ],
                 );
               }
 
               return ListView.separated(
-                padding: EdgeInsets.only(bottom: 24.h),
+                padding: EdgeInsets.only(bottom: sh(24)),
                 itemCount: pilgrims.length,
-                separatorBuilder: (_, _) => SizedBox(height: 10.h),
+                separatorBuilder: (_, _) => SizedBox(height: sh(10)),
                 itemBuilder: (context, index) => _PilgrimCard(
                   item: pilgrims[index],
                   l10n: l10n,
@@ -125,17 +166,21 @@ class _OperatorPilgrimListScreenState
       },
     );
 
+    final registerAction = isAdmin
+        ? const <Widget>[]
+        : [
+            FilledButton.icon(
+              onPressed: () => context.go(AppRoutes.operatorIntake),
+              icon: const Icon(Icons.person_add_outlined),
+              label: Text(l10n.operatorIntakeTitle),
+            ),
+          ];
+
     return StaffAdaptivePage(
       web: StaffWebPage(
         title: l10n.operatorPilgrimListTitle,
         subtitle: l10n.operatorPilgrimListSubtitle,
-        actions: [
-          FilledButton.icon(
-            onPressed: () => context.go(AppRoutes.operatorIntake),
-            icon: const Icon(Icons.person_add_outlined),
-            label: Text(l10n.operatorIntakeTitle),
-          ),
-        ],
+        actions: registerAction,
         scrollable: false,
         top: searchField,
         body: listBody,
@@ -145,14 +190,17 @@ class _OperatorPilgrimListScreenState
           title: Text(l10n.operatorPilgrimListTitle),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: () => context.go(AppRoutes.operatorIntake),
+            onPressed: () => context.go(
+              isAdmin ? AppRoutes.adminDashboard : AppRoutes.operatorIntake,
+            ),
           ),
           actions: [
-            IconButton(
-              onPressed: () => context.go(AppRoutes.operatorIntake),
-              icon: const Icon(Icons.person_add_outlined),
-              tooltip: l10n.operatorIntakeTitle,
-            ),
+            if (!isAdmin)
+              IconButton(
+                onPressed: () => context.go(AppRoutes.operatorIntake),
+                icon: const Icon(Icons.person_add_outlined),
+                tooltip: l10n.operatorIntakeTitle,
+              ),
             IconButton(
               onPressed: ref.read(signOutControllerProvider.notifier).signOut,
               tooltip: l10n.signOut,
@@ -163,7 +211,7 @@ class _OperatorPilgrimListScreenState
         body: Column(
           children: [
             Padding(
-              padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 8.h),
+              padding: EdgeInsets.fromLTRB(sw(16), sh(8), sw(16), sh(8)),
               child: searchField,
             ),
             Expanded(child: listBody),
@@ -191,6 +239,46 @@ class _OperatorPilgrimListScreenState
   }
 }
 
+class _PilgrimTableHeader extends StatelessWidget {
+  const _PilgrimTableHeader({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = Theme.of(context).textTheme.labelMedium?.copyWith(
+          color: AppColors.textSecondary,
+          fontWeight: FontWeight.w600,
+        );
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: sw(16), vertical: sh(8)),
+      child: Row(
+        children: [
+          SizedBox(width: sw(52)),
+          Expanded(
+            flex: 3,
+            child: Text(l10n.operatorFullName, style: style),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(l10n.operatorPassport, style: style),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(l10n.pilgrimTravelDate, style: style),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(l10n.pilgrimHotel, style: style),
+          ),
+          SizedBox(width: sw(24)),
+        ],
+      ),
+    );
+  }
+}
+
 class _PilgrimCard extends StatelessWidget {
   const _PilgrimCard({
     required this.item,
@@ -215,7 +303,10 @@ class _PilgrimCard extends StatelessWidget {
         child: DecoratedBox(
           decoration: AppDecorations.card(),
           child: ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: sw(16),
+              vertical: sh(8),
+            ),
             leading: CircleAvatar(
               backgroundColor: AppColors.primary.withValues(alpha: 0.12),
               child: Text(
@@ -226,8 +317,17 @@ class _PilgrimCard extends StatelessWidget {
                 ),
               ),
             ),
-            title: Text(item.fullName, style: Theme.of(context).textTheme.titleSmall),
-            subtitle: Text(subtitle),
+            title: Text(
+              item.fullName,
+              style: Theme.of(context).textTheme.titleSmall,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            subtitle: Text(
+              subtitle,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
             trailing: const Icon(Icons.chevron_right),
           ),
         ),
@@ -262,26 +362,28 @@ class _PilgrimTableRow extends StatelessWidget {
         child: DecoratedBox(
           decoration: AppDecorations.card(),
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+            padding: EdgeInsets.symmetric(horizontal: sw(16), vertical: sh(14)),
             child: Row(
               children: [
                 CircleAvatar(
-                  radius: 20.r,
+                  radius: sr(20),
                   backgroundColor: AppColors.primary.withValues(alpha: 0.12),
                   child: Text(
                     item.fullName.isNotEmpty ? item.fullName[0].toUpperCase() : '?',
                     style: const TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w600,
-                ),
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-                SizedBox(width: 14.w),
+                SizedBox(width: sw(14)),
                 Expanded(
                   flex: 3,
                   child: Text(
                     item.fullName,
                     style: Theme.of(context).textTheme.titleSmall,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Expanded(
@@ -289,11 +391,18 @@ class _PilgrimTableRow extends StatelessWidget {
                   child: Text(
                     item.passportNumber ?? '—',
                     style: Theme.of(context).textTheme.bodyMedium,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Expanded(
                   flex: 2,
-                  child: Text(dateLabel, style: Theme.of(context).textTheme.bodyMedium),
+                  child: Text(
+                    dateLabel,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 Expanded(
                   flex: 2,
@@ -304,7 +413,11 @@ class _PilgrimTableRow extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Icon(Icons.chevron_right, color: AppColors.textSecondary, size: 20.sp),
+                Icon(
+                  Icons.chevron_right,
+                  color: AppColors.textSecondary,
+                  size: ss(20),
+                ),
               ],
             ),
           ),
