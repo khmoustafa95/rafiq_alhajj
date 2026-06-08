@@ -665,5 +665,30 @@
   "adminOperatorSaveSuccess": "Operator updated",
   "adminOperatorSaveError": "Could not save operator. Try again.",
   "adminOperatorLoadError": "Could not load operators.",
-  "adminOperatorEmpty": "No operators yet. Add your first center technician."
+  "adminOperatorEmpty": "No operators yet. Add your first center technician.",
+  "staffTableEmpty": "No results found",
+  "staffTableRowsPerPage": "Rows per page",
+  "staffTablePreviousPage": "Previous page",
+  "staffTableNextPage": "Next page",
+  "staffTableShowing": "Showing {from}–{to} of {total}",
+  "@staffTableShowing": {
+    "placeholders": {
+      "from": {"type": "int"},
+      "to": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "staffTablePageOf": "Page {current} of {total}",
+  "@staffTablePageOf": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "staffTableFilterAll": "All",
+  "staffTableFilterStatus": "Status",
+  "staffTableColumnCreated": "Created",
+  "staffTableSearchOperators": "Search by name or email",
+  "staffTableSearchContent": "Search by title or description",
+  "staffTableSearchCompetitions": "Search by title or description"
 }

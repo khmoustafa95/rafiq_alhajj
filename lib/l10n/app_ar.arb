@@ -448,5 +448,30 @@
   "adminOperatorSaveSuccess": "تم تحديث المشغّل",
   "adminOperatorSaveError": "تعذّر حفظ المشغّل. حاول مرة أخرى.",
   "adminOperatorLoadError": "تعذّر تحميل المشغّلين.",
-  "adminOperatorEmpty": "لا يوجد مشغّلون بعد. أضف أول تقني مركز."
+  "adminOperatorEmpty": "لا يوجد مشغّلون بعد. أضف أول تقني مركز.",
+  "staffTableEmpty": "لا توجد نتائج",
+  "staffTableRowsPerPage": "صفوف لكل صفحة",
+  "staffTablePreviousPage": "الصفحة السابقة",
+  "staffTableNextPage": "الصفحة التالية",
+  "staffTableShowing": "عرض {from}–{to} من {total}",
+  "@staffTableShowing": {
+    "placeholders": {
+      "from": {"type": "int"},
+      "to": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "staffTablePageOf": "صفحة {current} من {total}",
+  "@staffTablePageOf": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "staffTableFilterAll": "الكل",
+  "staffTableFilterStatus": "الحالة",
+  "staffTableColumnCreated": "تاريخ الإنشاء",
+  "staffTableSearchOperators": "ابحث بالاسم أو البريد",
+  "staffTableSearchContent": "ابحث بالعنوان أو الوصف",
+  "staffTableSearchCompetitions": "ابحث بالعنوان أو الوصف"
 }

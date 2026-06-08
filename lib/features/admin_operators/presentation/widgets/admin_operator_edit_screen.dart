@@ -7,8 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
-import 'package:rafiq_alhajj/core/widgets/staff_button_styles.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_account.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_editor_input.dart';
@@ -185,45 +185,57 @@ class _AdminOperatorEditScreenState extends ConsumerState<AdminOperatorEditScree
             icon: Icons.person_outline_rounded,
             title: l10n.operatorSectionPersonalInfo,
             subtitle: l10n.operatorSectionPersonalInfoHint,
-            child: ResponsiveFormGrid(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                TextFormField(
-                  controller: _fullNameController,
-                  enabled: !isSaving,
-                  decoration: InputDecoration(
-                    labelText: l10n.adminOperatorFullName,
-                  ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return l10n.adminOperatorFullNameRequired;
-                    }
-                    return null;
-                  },
+                ResponsiveFormGrid(
+                  children: [
+                    TextFormField(
+                      controller: _fullNameController,
+                      enabled: !isSaving,
+                      decoration: InputDecoration(
+                        labelText: l10n.adminOperatorFullName,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return l10n.adminOperatorFullNameRequired;
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      controller: _emailController,
+                      enabled: !isSaving,
+                      decoration: InputDecoration(
+                        labelText: l10n.adminOperatorEmail,
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return l10n.adminOperatorEmailRequired;
+                        }
+                        if (!value.contains('@')) {
+                          return l10n.adminOperatorEmailInvalid;
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
                 ),
-                TextFormField(
-                  controller: _emailController,
-                  enabled: !isSaving,
-                  decoration: InputDecoration(
-                    labelText: l10n.adminOperatorEmail,
+                SizedBox(height: 12.h),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceMuted,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppColors.border),
                   ),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return l10n.adminOperatorEmailRequired;
-                    }
-                    if (!value.contains('@')) {
-                      return l10n.adminOperatorEmailInvalid;
-                    }
-                    return null;
-                  },
-                ),
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(l10n.adminOperatorActive),
-                  value: _isActive,
-                  onChanged: isSaving
-                      ? null
-                      : (value) => setState(() => _isActive = value),
+                  child: SwitchListTile(
+                    title: Text(l10n.adminOperatorActive),
+                    value: _isActive,
+                    onChanged: isSaving
+                        ? null
+                        : (value) => setState(() => _isActive = value),
+                  ),
                 ),
               ],
             ),
@@ -233,11 +245,6 @@ class _AdminOperatorEditScreenState extends ConsumerState<AdminOperatorEditScree
             icon: Icons.lock_outline_rounded,
             title: l10n.operatorSectionAccount,
             subtitle: l10n.operatorSectionAccountHint,
-            trailing: OutlinedButton(
-              onPressed: isSaving ? null : _generateAndSetPassword,
-              style: staffRowOutlinedButtonStyle(context),
-              child: Text(l10n.adminOperatorGeneratePassword),
-            ),
             child: TextFormField(
               controller: _passwordController,
               enabled: !isSaving,
@@ -247,6 +254,11 @@ class _AdminOperatorEditScreenState extends ConsumerState<AdminOperatorEditScree
                 helperText: _isEditing
                     ? l10n.adminOperatorPasswordEditHint
                     : l10n.adminOperatorPasswordCreateHint,
+                suffixIcon: IconButton(
+                  onPressed: isSaving ? null : _generateAndSetPassword,
+                  tooltip: l10n.adminOperatorGeneratePassword,
+                  icon: const Icon(Icons.autorenew_rounded),
+                ),
               ),
             ),
           ),
@@ -254,7 +266,7 @@ class _AdminOperatorEditScreenState extends ConsumerState<AdminOperatorEditScree
           StaffFormSection(
             icon: Icons.admin_panel_settings_outlined,
             title: l10n.adminOperatorPermissionsSection,
-            child: Column(
+            child: ResponsiveFormGrid(
               children: [
                 _permissionSwitch(
                   title: l10n.adminOperatorPermRegister,

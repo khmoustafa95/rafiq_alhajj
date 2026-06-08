@@ -1449,4 +1449,44 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminOperatorEmpty => 'لا يوجد مشغّلون بعد. أضف أول تقني مركز.';
+
+  @override
+  String get staffTableEmpty => 'لا توجد نتائج';
+
+  @override
+  String get staffTableRowsPerPage => 'صفوف لكل صفحة';
+
+  @override
+  String get staffTablePreviousPage => 'الصفحة السابقة';
+
+  @override
+  String get staffTableNextPage => 'الصفحة التالية';
+
+  @override
+  String staffTableShowing(int from, int to, int total) {
+    return 'عرض $from–$to من $total';
+  }
+
+  @override
+  String staffTablePageOf(int current, int total) {
+    return 'صفحة $current من $total';
+  }
+
+  @override
+  String get staffTableFilterAll => 'الكل';
+
+  @override
+  String get staffTableFilterStatus => 'الحالة';
+
+  @override
+  String get staffTableColumnCreated => 'تاريخ الإنشاء';
+
+  @override
+  String get staffTableSearchOperators => 'ابحث بالاسم أو البريد';
+
+  @override
+  String get staffTableSearchContent => 'ابحث بالعنوان أو الوصف';
+
+  @override
+  String get staffTableSearchCompetitions => 'ابحث بالعنوان أو الوصف';
 }

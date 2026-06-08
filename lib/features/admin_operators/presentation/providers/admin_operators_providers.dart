@@ -1,4 +1,5 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
 import 'package:rafiq_alhajj/core/supabase/realtime_refresh.dart';
 import 'package:rafiq_alhajj/features/admin_operators/application/services/admin_operators_service.dart';
 import 'package:rafiq_alhajj/features/admin_operators/data/repositories/admin_operators_repository.dart';
@@ -23,24 +24,19 @@ AdminOperatorsService adminOperatorsService(Ref ref) {
 }
 
 @riverpod
-class AdminOperatorList extends _$AdminOperatorList {
-  @override
-  Future<List<OperatorAccount>> build() async {
-    final operators = await ref.read(adminOperatorsServiceProvider).listOperators();
+Future<PaginatedResult<OperatorAccount>> adminOperatorListPage(
+  Ref ref,
+  StaffTableQuery query,
+) async {
+  final result = await ref.read(adminOperatorsServiceProvider).listPage(query);
 
-    watchSupabaseTables(
-      ref,
-      client: AppConfig.hasSupabase ? Supabase.instance.client : null,
-      tables: const ['profiles'],
-    );
+  watchSupabaseTables(
+    ref,
+    client: AppConfig.hasSupabase ? Supabase.instance.client : null,
+    tables: const ['profiles'],
+  );
 
-    return operators;
-  }
-
-  Future<void> refresh() async {
-    ref.invalidateSelf();
-    await future;
-  }
+  return result;
 }
 
 @riverpod
@@ -58,7 +54,7 @@ class AdminOperatorSave extends _$AdminOperatorSave {
     CreatedOperatorAccount? created;
     state = await AsyncValue.guard(() async {
       created = await ref.read(adminOperatorsServiceProvider).create(input);
-      ref.invalidate(adminOperatorListProvider);
+      ref.invalidate(adminOperatorListPageProvider);
     });
     return state.hasError ? null : created;
   }
@@ -67,7 +63,7 @@ class AdminOperatorSave extends _$AdminOperatorSave {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       await ref.read(adminOperatorsServiceProvider).update(input);
-      ref.invalidate(adminOperatorListProvider);
+      ref.invalidate(adminOperatorListPageProvider);
       if (input.id != null) {
         ref.invalidate(adminOperatorDetailProvider(input.id!));
       }

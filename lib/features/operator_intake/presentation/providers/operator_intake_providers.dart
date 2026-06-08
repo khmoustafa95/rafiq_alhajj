@@ -72,7 +72,7 @@ class OperatorIntakeController extends _$OperatorIntakeController {
       }
       _lastCreated = created;
       _pickedFiles = [];
-      ref.invalidate(operatorPilgrimRegistryProvider);
+      ref.invalidate(operatorPilgrimRegistryPageProvider);
     });
 
     return state.hasError ? null : created;

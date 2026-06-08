@@ -106,62 +106,87 @@ final class OperatorRegistryServiceProvider
 String _$operatorRegistryServiceHash() =>
     r'ca271565c452da087ea3a3a3482a8e595a90359a';
 
-@ProviderFor(OperatorPilgrimRegistry)
-final operatorPilgrimRegistryProvider = OperatorPilgrimRegistryProvider._();
+@ProviderFor(operatorPilgrimRegistryPage)
+final operatorPilgrimRegistryPageProvider =
+    OperatorPilgrimRegistryPageFamily._();
 
-final class OperatorPilgrimRegistryProvider
+final class OperatorPilgrimRegistryPageProvider
     extends
-        $AsyncNotifierProvider<
-          OperatorPilgrimRegistry,
-          List<OperatorPilgrimSummary>
-        > {
-  OperatorPilgrimRegistryProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'operatorPilgrimRegistryProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+        $FunctionalProvider<
+          AsyncValue<PaginatedResult<OperatorPilgrimSummary>>,
+          PaginatedResult<OperatorPilgrimSummary>,
+          FutureOr<PaginatedResult<OperatorPilgrimSummary>>
+        >
+    with
+        $FutureModifier<PaginatedResult<OperatorPilgrimSummary>>,
+        $FutureProvider<PaginatedResult<OperatorPilgrimSummary>> {
+  OperatorPilgrimRegistryPageProvider._({
+    required OperatorPilgrimRegistryPageFamily super.from,
+    required StaffTableQuery super.argument,
+  }) : super(
+         retry: null,
+         name: r'operatorPilgrimRegistryPageProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
-  String debugGetCreateSourceHash() => _$operatorPilgrimRegistryHash();
+  String debugGetCreateSourceHash() => _$operatorPilgrimRegistryPageHash();
+
+  @override
+  String toString() {
+    return r'operatorPilgrimRegistryPageProvider'
+        ''
+        '($argument)';
+  }
 
   @$internal
   @override
-  OperatorPilgrimRegistry create() => OperatorPilgrimRegistry();
+  $FutureProviderElement<PaginatedResult<OperatorPilgrimSummary>>
+  $createElement($ProviderPointer pointer) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<PaginatedResult<OperatorPilgrimSummary>> create(Ref ref) {
+    final argument = this.argument as StaffTableQuery;
+    return operatorPilgrimRegistryPage(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is OperatorPilgrimRegistryPageProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
 }
 
-String _$operatorPilgrimRegistryHash() =>
-    r'fdc7d04b91191626c9edde069cd61df63d415816';
+String _$operatorPilgrimRegistryPageHash() =>
+    r'7eb8eae86e3fa28d0dc5389d31e145792c05c53f';
 
-abstract class _$OperatorPilgrimRegistry
-    extends $AsyncNotifier<List<OperatorPilgrimSummary>> {
-  FutureOr<List<OperatorPilgrimSummary>> build();
-  @$mustCallSuper
+final class OperatorPilgrimRegistryPageFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<PaginatedResult<OperatorPilgrimSummary>>,
+          StaffTableQuery
+        > {
+  OperatorPilgrimRegistryPageFamily._()
+    : super(
+        retry: null,
+        name: r'operatorPilgrimRegistryPageProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  OperatorPilgrimRegistryPageProvider call(StaffTableQuery query) =>
+      OperatorPilgrimRegistryPageProvider._(argument: query, from: this);
+
   @override
-  void runBuild() {
-    final ref =
-        this.ref
-            as $Ref<
-              AsyncValue<List<OperatorPilgrimSummary>>,
-              List<OperatorPilgrimSummary>
-            >;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<
-                AsyncValue<List<OperatorPilgrimSummary>>,
-                List<OperatorPilgrimSummary>
-              >,
-              AsyncValue<List<OperatorPilgrimSummary>>,
-              Object?,
-              Object?
-            >;
-    element.handleCreate(ref, build);
-  }
+  String toString() => r'operatorPilgrimRegistryPageProvider';
 }
 
 @ProviderFor(OperatorPilgrimDetail)
@@ -207,7 +232,7 @@ final class OperatorPilgrimDetailProvider
 }
 
 String _$operatorPilgrimDetailHash() =>
-    r'fa5cb89f640c8d4ec0199c929f7c09cea956d1b4';
+    r'eb6ca66f194aed5fa0e402f3a6b475a6992430b6';
 
 final class OperatorPilgrimDetailFamily extends $Family
     with

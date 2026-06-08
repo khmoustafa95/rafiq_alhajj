@@ -2796,6 +2796,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No operators yet. Add your first center technician.'**
   String get adminOperatorEmpty;
+
+  /// No description provided for @staffTableEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No results found'**
+  String get staffTableEmpty;
+
+  /// No description provided for @staffTableRowsPerPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Rows per page'**
+  String get staffTableRowsPerPage;
+
+  /// No description provided for @staffTablePreviousPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous page'**
+  String get staffTablePreviousPage;
+
+  /// No description provided for @staffTableNextPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Next page'**
+  String get staffTableNextPage;
+
+  /// No description provided for @staffTableShowing.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing {from}–{to} of {total}'**
+  String staffTableShowing(int from, int to, int total);
+
+  /// No description provided for @staffTablePageOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {current} of {total}'**
+  String staffTablePageOf(int current, int total);
+
+  /// No description provided for @staffTableFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get staffTableFilterAll;
+
+  /// No description provided for @staffTableFilterStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get staffTableFilterStatus;
+
+  /// No description provided for @staffTableColumnCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Created'**
+  String get staffTableColumnCreated;
+
+  /// No description provided for @staffTableSearchOperators.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name or email'**
+  String get staffTableSearchOperators;
+
+  /// No description provided for @staffTableSearchContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by title or description'**
+  String get staffTableSearchContent;
+
+  /// No description provided for @staffTableSearchCompetitions.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by title or description'**
+  String get staffTableSearchCompetitions;
 }
 
 class _AppLocalizationsDelegate

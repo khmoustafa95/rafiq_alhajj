@@ -1,3 +1,4 @@
+import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
 import 'package:rafiq_alhajj/features/admin_operators/data/repositories/admin_operators_repository.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/created_operator_account.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_account.dart';
@@ -10,6 +11,9 @@ class AdminOperatorsService {
 
   Future<List<OperatorAccount>> listOperators() =>
       _repository.fetchOperators();
+
+  Future<PaginatedResult<OperatorAccount>> listPage(StaffTableQuery query) =>
+      _repository.fetchOperatorsPage(query);
 
   Future<OperatorAccount> getOperator(String id) =>
       _repository.fetchOperator(id);

@@ -1,4 +1,5 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_record.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_summary.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_update.dart';
@@ -26,18 +27,45 @@ class OperatorRegistryRepository {
       'travel_date, hotel_name, hotel_location_url, transportation_details)';
 
   Future<List<OperatorPilgrimSummary>> fetchAll() async {
+    final page = await fetchPage(const StaffTableQuery(pageSize: 1000));
+    return page.items;
+  }
+
+  Future<PaginatedResult<OperatorPilgrimSummary>> fetchPage(
+    StaffTableQuery query,
+  ) async {
     if (!isAvailable) {
       throw const OperatorRegistryException('Supabase is not configured');
     }
 
     try {
-      final rows = await _client!
+      var request = _client!
           .from('profiles')
           .select(_profileSelect)
-          .eq('role', 'pilgrim')
-          .order('full_name');
+          .eq('role', 'pilgrim');
 
-      return _mapSummaries(rows as List<dynamic>);
+      final search = query.search.trim();
+      if (search.isNotEmpty) {
+        final term = search.replaceAll(',', '');
+        request = request.or(
+          'full_name.ilike.%$term%,'
+          'pilgrim_details.passport_number.ilike.%$term%,'
+          'pilgrim_details.travel_permit_number.ilike.%$term%',
+        );
+      }
+
+      final response = await request
+          .order('full_name', ascending: query.sortAscending)
+          .range(query.from, query.to)
+          .count(CountOption.exact);
+
+      final rows = response.data as List<dynamic>;
+      final items = _mapSummaries(rows);
+      return PaginatedResult(
+        items: items,
+        totalCount: response.count,
+        pageSize: query.pageSize,
+      );
     } on PostgrestException catch (e) {
       throw OperatorRegistryException(e.message);
     }

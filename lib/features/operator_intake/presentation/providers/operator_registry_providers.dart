@@ -1,4 +1,5 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
 import 'package:rafiq_alhajj/core/supabase/realtime_refresh.dart';
 import 'package:rafiq_alhajj/core/supabase/realtime_tables.dart';
 import 'package:rafiq_alhajj/features/operator_intake/application/services/operator_registry_service.dart';
@@ -24,43 +25,19 @@ OperatorRegistryService operatorRegistryService(Ref ref) {
 }
 
 @riverpod
-class OperatorPilgrimRegistry extends _$OperatorPilgrimRegistry {
-  List<OperatorPilgrimSummary> _all = const [];
+Future<PaginatedResult<OperatorPilgrimSummary>> operatorPilgrimRegistryPage(
+  Ref ref,
+  StaffTableQuery query,
+) async {
+  final result = await ref.read(operatorRegistryServiceProvider).listPage(query);
 
-  @override
-  Future<List<OperatorPilgrimSummary>> build() async {
-    _all = await ref.read(operatorRegistryServiceProvider).listPilgrims();
+  watchSupabaseTables(
+    ref,
+    client: AppConfig.hasSupabase ? Supabase.instance.client : null,
+    tables: RealtimeTables.pilgrimRegistry,
+  );
 
-    watchSupabaseTables(
-      ref,
-      client: AppConfig.hasSupabase ? Supabase.instance.client : null,
-      tables: RealtimeTables.pilgrimRegistry,
-    );
-
-    return _all;
-  }
-
-  Future<void> refresh() async {
-    ref.invalidateSelf();
-    await future;
-  }
-
-  Future<void> search(String query) async {
-    final normalized = query.trim().toLowerCase();
-    if (normalized.isEmpty) {
-      state = AsyncData(_all);
-      return;
-    }
-
-    state = AsyncData(
-      _all.where((item) {
-        return item.fullName.toLowerCase().contains(normalized) ||
-            (item.passportNumber?.toLowerCase().contains(normalized) ?? false) ||
-            (item.travelPermitNumber?.toLowerCase().contains(normalized) ??
-                false);
-      }).toList(),
-    );
-  }
+  return result;
 }
 
 @riverpod
@@ -86,7 +63,7 @@ class OperatorPilgrimDetail extends _$OperatorPilgrimDetail {
           .read(operatorRegistryServiceProvider)
           .saveLogistics(profileId: profileId, update: update);
       ref.invalidateSelf();
-      ref.invalidate(operatorPilgrimRegistryProvider);
+      ref.invalidate(operatorPilgrimRegistryPageProvider);
       await future;
       return true;
     } on OperatorRegistryException {

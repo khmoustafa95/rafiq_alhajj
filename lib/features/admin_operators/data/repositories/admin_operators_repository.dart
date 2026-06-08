@@ -1,4 +1,5 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/created_operator_account.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_account.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_editor_input.dart';
@@ -21,21 +22,60 @@ class AdminOperatorsRepository {
 
   bool get isAvailable => AppConfig.hasSupabase && _client != null;
 
+  static const _operatorSelect =
+      'id, full_name, email, is_active, operator_permissions, updated_at';
+
   Future<List<OperatorAccount>> fetchOperators() async {
+    final page = await fetchOperatorsPage(
+      const StaffTableQuery(pageSize: 1000),
+    );
+    return page.items;
+  }
+
+  Future<PaginatedResult<OperatorAccount>> fetchOperatorsPage(
+    StaffTableQuery query,
+  ) async {
     if (!isAvailable) {
       throw const AdminOperatorsException('Supabase is not configured');
     }
 
     try {
-      final rows = await _client!
+      var request = _client!
           .from('profiles')
-          .select(
-            'id, full_name, email, is_active, operator_permissions, updated_at',
-          )
-          .eq('role', 'operator')
-          .order('full_name');
+          .select(_operatorSelect)
+          .eq('role', 'operator');
 
-      return (rows as List<dynamic>).map(_rowToAccount).toList();
+      final search = query.search.trim();
+      if (search.isNotEmpty) {
+        final term = search.replaceAll(',', '');
+        request = request.or('full_name.ilike.%$term%,email.ilike.%$term%');
+      }
+
+      final status = query.filters['status'];
+      if (status == 'active') {
+        request = request.eq('is_active', true);
+      } else if (status == 'inactive') {
+        request = request.eq('is_active', false);
+      }
+
+      final sortColumn = switch (query.sortColumnId) {
+        'email' => 'email',
+        'is_active' => 'is_active',
+        'updated_at' => 'updated_at',
+        _ => 'full_name',
+      };
+
+      final response = await request
+          .order(sortColumn, ascending: query.sortAscending)
+          .range(query.from, query.to)
+          .count(CountOption.exact);
+
+      final rows = response.data as List<dynamic>;
+      return PaginatedResult(
+        items: rows.map(_rowToAccount).toList(),
+        totalCount: response.count,
+        pageSize: query.pageSize,
+      );
     } on PostgrestException catch (e) {
       throw AdminOperatorsException(e.message);
     }
@@ -49,9 +89,7 @@ class AdminOperatorsRepository {
     try {
       final row = await _client!
           .from('profiles')
-          .select(
-            'id, full_name, email, is_active, operator_permissions, updated_at',
-          )
+          .select(_operatorSelect)
           .eq('id', id)
           .eq('role', 'operator')
           .single();

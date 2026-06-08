@@ -105,54 +105,86 @@ final class AdminOperatorsServiceProvider
 String _$adminOperatorsServiceHash() =>
     r'814b88cd714b526cfdf12b94ccd10e8a7057aba1';
 
-@ProviderFor(AdminOperatorList)
-final adminOperatorListProvider = AdminOperatorListProvider._();
+@ProviderFor(adminOperatorListPage)
+final adminOperatorListPageProvider = AdminOperatorListPageFamily._();
 
-final class AdminOperatorListProvider
-    extends $AsyncNotifierProvider<AdminOperatorList, List<OperatorAccount>> {
-  AdminOperatorListProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'adminOperatorListProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+final class AdminOperatorListPageProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<PaginatedResult<OperatorAccount>>,
+          PaginatedResult<OperatorAccount>,
+          FutureOr<PaginatedResult<OperatorAccount>>
+        >
+    with
+        $FutureModifier<PaginatedResult<OperatorAccount>>,
+        $FutureProvider<PaginatedResult<OperatorAccount>> {
+  AdminOperatorListPageProvider._({
+    required AdminOperatorListPageFamily super.from,
+    required StaffTableQuery super.argument,
+  }) : super(
+         retry: null,
+         name: r'adminOperatorListPageProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
-  String debugGetCreateSourceHash() => _$adminOperatorListHash();
+  String debugGetCreateSourceHash() => _$adminOperatorListPageHash();
+
+  @override
+  String toString() {
+    return r'adminOperatorListPageProvider'
+        ''
+        '($argument)';
+  }
 
   @$internal
   @override
-  AdminOperatorList create() => AdminOperatorList();
+  $FutureProviderElement<PaginatedResult<OperatorAccount>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<PaginatedResult<OperatorAccount>> create(Ref ref) {
+    final argument = this.argument as StaffTableQuery;
+    return adminOperatorListPage(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is AdminOperatorListPageProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
 }
 
-String _$adminOperatorListHash() => r'7e58722192fa28490faa80fb2cb40d5130273a1d';
+String _$adminOperatorListPageHash() =>
+    r'f9a24d4dbd048b9eed48a54e084500c3e0b30453';
 
-abstract class _$AdminOperatorList
-    extends $AsyncNotifier<List<OperatorAccount>> {
-  FutureOr<List<OperatorAccount>> build();
-  @$mustCallSuper
+final class AdminOperatorListPageFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<PaginatedResult<OperatorAccount>>,
+          StaffTableQuery
+        > {
+  AdminOperatorListPageFamily._()
+    : super(
+        retry: null,
+        name: r'adminOperatorListPageProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  AdminOperatorListPageProvider call(StaffTableQuery query) =>
+      AdminOperatorListPageProvider._(argument: query, from: this);
+
   @override
-  void runBuild() {
-    final ref =
-        this.ref
-            as $Ref<AsyncValue<List<OperatorAccount>>, List<OperatorAccount>>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<
-                AsyncValue<List<OperatorAccount>>,
-                List<OperatorAccount>
-              >,
-              AsyncValue<List<OperatorAccount>>,
-              Object?,
-              Object?
-            >;
-    element.handleCreate(ref, build);
-  }
+  String toString() => r'adminOperatorListPageProvider';
 }
 
 @ProviderFor(adminOperatorDetail)
@@ -255,7 +287,7 @@ final class AdminOperatorSaveProvider
   AdminOperatorSave create() => AdminOperatorSave();
 }
 
-String _$adminOperatorSaveHash() => r'8484eae34b11be46119b9f2f9ef9f6e18001f9d1';
+String _$adminOperatorSaveHash() => r'cec50d0509a3edf86686fad1f36ef5f49b94497e';
 
 abstract class _$AdminOperatorSave extends $AsyncNotifier<void> {
   FutureOr<void> build();

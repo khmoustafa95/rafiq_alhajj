@@ -3,27 +3,36 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
-import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
+import 'package:rafiq_alhajj/core/utils/staff_table_processor.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
-import 'package:rafiq_alhajj/core/widgets/staff_responsive_grid.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_data_table.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/providers/admin_content_providers.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/utils/content_meta_l10n.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_item.dart';
+import 'package:rafiq_alhajj/features/content/domain/models/content_type.dart';
+import 'package:rafiq_alhajj/features/content/domain/models/content_visibility.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
-class AdminContentListScreen extends ConsumerWidget {
+class AdminContentListScreen extends ConsumerStatefulWidget {
   const AdminContentListScreen({super.key});
 
-  Future<void> _confirmDelete(
-    BuildContext context,
-    WidgetRef ref,
-    ContentItem item,
-  ) async {
+  @override
+  ConsumerState<AdminContentListScreen> createState() =>
+      _AdminContentListScreenState();
+}
+
+class _AdminContentListScreenState extends ConsumerState<AdminContentListScreen> {
+  StaffTableQuery _query = const StaffTableQuery(
+    sortColumnId: 'title',
+  );
+
+  Future<void> _confirmDelete(ContentItem item) async {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
@@ -43,7 +52,7 @@ class AdminContentListScreen extends ConsumerWidget {
       ),
     );
 
-    if (confirmed != true || !context.mounted) {
+    if (confirmed != true || !mounted) {
       return;
     }
 
@@ -51,7 +60,7 @@ class AdminContentListScreen extends ConsumerWidget {
         .read(adminContentListProvider.notifier)
         .deleteItem(item.id);
 
-    if (!context.mounted) {
+    if (!mounted) {
       return;
     }
 
@@ -64,7 +73,7 @@ class AdminContentListScreen extends ConsumerWidget {
     );
   }
 
-  void _openNew(BuildContext context) {
+  void _openNew() {
     if (AppPlatform.isWeb) {
       context.go(AppRoutes.adminContentNew);
     } else {
@@ -72,7 +81,7 @@ class AdminContentListScreen extends ConsumerWidget {
     }
   }
 
-  void _openEdit(BuildContext context, String id) {
+  void _openEdit(String id) {
     final path = AppRoutes.adminContentEditPath(id);
     if (AppPlatform.isWeb) {
       context.go(path);
@@ -81,14 +90,45 @@ class AdminContentListScreen extends ConsumerWidget {
     }
   }
 
+  PaginatedResult<ContentItem> _pageFrom(List<ContentItem> items) {
+    return StaffTableProcessor.paginate(
+      source: items,
+      query: _query,
+      searchValue: (item) =>
+          '${item.title} ${item.description ?? ''}'.trim(),
+      filterValues: {
+        'type': (item) => item.type.name,
+        'visibility': (item) => item.visibility.name,
+      },
+      sortValues: {
+        'title': (item) => item.title.toLowerCase(),
+        'type': (item) => item.type.name,
+        'visibility': (item) => item.visibility.name,
+        'created_at': (item) => item.createdAt,
+      },
+    );
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final itemsAsync = ref.watch(adminContentListProvider);
 
     final content = itemsAsync.when(
       skipLoadingOnReload: true,
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => AppPlatform.isWeb
+          ? StaffDataTable<ContentItem>(
+              columns: _columns(l10n),
+              rows: const [],
+              totalCount: 0,
+              query: _query,
+              onQueryChanged: (query) => setState(() => _query = query),
+              searchHint: l10n.staffTableSearchContent,
+              filters: _filters(l10n),
+              isLoading: true,
+              emptyMessage: l10n.adminContentEmpty,
+            )
+          : const Center(child: CircularProgressIndicator()),
       error: (_, _) => Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -107,41 +147,57 @@ class AdminContentListScreen extends ConsumerWidget {
         ),
       ),
       data: (items) {
-        if (items.isEmpty) {
+        final page = _pageFrom(items);
+
+        if (AppPlatform.isWeb) {
+          return StaffDataTable<ContentItem>(
+            columns: _columns(l10n),
+            rows: page.items,
+            totalCount: page.totalCount,
+            query: _query,
+            onQueryChanged: (query) => setState(() => _query = query),
+            searchHint: l10n.staffTableSearchContent,
+            filters: _filters(l10n),
+            isLoading: itemsAsync.isLoading,
+            onRowTap: (item) => _openEdit(item.id),
+            trailingBuilder: (context, item) => Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.edit_outlined, size: 18),
+                  onPressed: () => _openEdit(item.id),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, size: 18),
+                  onPressed: () => unawaited(_confirmDelete(item)),
+                ),
+              ],
+            ),
+            emptyMessage: l10n.adminContentEmpty,
+            emptyIcon: Icons.article_outlined,
+          );
+        }
+
+        if (page.items.isEmpty) {
           return StaffEmptyState(
             message: l10n.adminContentEmpty,
             icon: Icons.article_outlined,
             actionLabel: l10n.adminContentAdd,
-            onAction: () => _openNew(context),
+            onAction: _openNew,
           );
         }
 
-        return RefreshIndicator(
-          onRefresh: () =>
-              ref.read(adminContentListProvider.notifier).refresh(),
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              StaffResponsiveGrid(
-                minItemWidth: 280,
-                maxColumns: 4,
-                spacing: sw(16),
-                children: [
-                  ...items.map(
-                    (item) => _AdminContentCard(
-                      item: item,
-                      l10n: l10n,
-                      onEdit: () => _openEdit(context, item.id),
-                      onDelete: () =>
-                          unawaited(_confirmDelete(context, ref, item)),
-                    ),
-                  ),
-                  _AddContentCard(onTap: () => _openNew(context)),
-                ],
-              ),
-              SizedBox(height: sh(24)),
-            ],
-          ),
+        return ListView.builder(
+          padding: EdgeInsets.all(sw(16)),
+          itemCount: page.items.length,
+          itemBuilder: (context, index) {
+            final item = page.items[index];
+            return ListTile(
+              title: Text(item.title),
+              subtitle: Text(contentTypeLabel(l10n, item.type)),
+              onTap: () => _openEdit(item.id),
+            );
+          },
         );
       },
     );
@@ -152,7 +208,7 @@ class AdminContentListScreen extends ConsumerWidget {
         scrollable: false,
         actions: [
           FilledButton.icon(
-            onPressed: () => _openNew(context),
+            onPressed: _openNew,
             icon: const Icon(Icons.add_rounded),
             label: Text(l10n.adminContentAdd),
           ),
@@ -170,206 +226,121 @@ class AdminContentListScreen extends ConsumerWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _openNew(context),
+        onPressed: _openNew,
         icon: const Icon(Icons.add),
         label: Text(l10n.adminContentAdd),
       ),
       body: content,
     );
   }
-}
 
-class _AdminContentCard extends StatelessWidget {
-  const _AdminContentCard({
-    required this.item,
-    required this.l10n,
-    required this.onEdit,
-    required this.onDelete,
-  });
-
-  final ContentItem item;
-  final AppLocalizations l10n;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
-      child: InkWell(
-        onTap: onEdit,
-        borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
-        child: DecoratedBox(
-          decoration: AppDecorations.card(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                height: sh(112),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(AppDecorations.radiusMd),
-                    ),
-                    gradient: LinearGradient(
-                      colors: [
-                        AppColors.primary.withValues(alpha: 0.85),
-                        AppColors.primaryDark,
-                      ],
-                    ),
-                  ),
-                  child: Stack(
-                    children: [
-                      Center(
-                        child: Icon(
-                          Icons.article_rounded,
-                          size: ss(36),
-                          color: AppColors.onPrimary.withValues(alpha: 0.9),
-                        ),
-                      ),
-                      PositionedDirectional(
-                        top: sh(8),
-                        end: sw(8),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: sw(8),
-                            vertical: sh(4),
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.secondary,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            contentTypeLabel(l10n, item.type),
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.primaryDark,
-                                ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+  List<StaffTableFilter> _filters(AppLocalizations l10n) {
+    return [
+      StaffTableFilter(
+        id: 'type',
+        label: l10n.adminContentTypeLabel,
+        allLabel: l10n.staffTableFilterAll,
+        options: ContentType.values
+            .map(
+              (type) => StaffTableFilterOption(
+                value: type.name,
+                label: contentTypeLabel(l10n, type),
               ),
-              Padding(
-                padding: EdgeInsets.all(sw(14)),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.title,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (item.description != null) ...[
-                      SizedBox(height: sh(6)),
-                      Text(
-                        item.description!,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                    SizedBox(height: sh(12)),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.circle,
-                          size: ss(8),
-                          color: AppColors.success,
-                        ),
-                        SizedBox(width: sw(6)),
-                        Expanded(
-                          child: Text(
-                            contentVisibilityLabel(l10n, item.visibility),
-                            style: Theme.of(context).textTheme.labelSmall,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.edit_outlined, size: 18),
-                          onPressed: onEdit,
-                          visualDensity: VisualDensity.compact,
-                          constraints: const BoxConstraints(
-                            minWidth: 36,
-                            minHeight: 36,
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete_outline, size: 18),
-                          onPressed: onDelete,
-                          visualDensity: VisualDensity.compact,
-                          constraints: const BoxConstraints(
-                            minWidth: 36,
-                            minHeight: 36,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+            )
+            .toList(),
+      ),
+      StaffTableFilter(
+        id: 'visibility',
+        label: l10n.adminContentVisibilityLabel,
+        allLabel: l10n.staffTableFilterAll,
+        options: ContentVisibility.values
+            .map(
+              (visibility) => StaffTableFilterOption(
+                value: visibility.name,
+                label: contentVisibilityLabel(l10n, visibility),
               ),
-            ],
-          ),
+            )
+            .toList(),
+      ),
+    ];
+  }
+
+  List<StaffTableColumn<ContentItem>> _columns(AppLocalizations l10n) {
+    return [
+      StaffTableColumn(
+        id: 'title',
+        label: l10n.adminContentTitleLabel,
+        flex: 4,
+        sortable: true,
+        cellBuilder: (context, item) => Text(
+          item.title,
+          style: Theme.of(context).textTheme.titleSmall,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
-    );
+      StaffTableColumn(
+        id: 'type',
+        label: l10n.adminContentTypeLabel,
+        flex: 2,
+        sortable: true,
+        cellBuilder: (context, item) => _Badge(
+          label: contentTypeLabel(l10n, item.type),
+          color: AppColors.secondary,
+          textColor: AppColors.primaryDark,
+        ),
+      ),
+      StaffTableColumn(
+        id: 'visibility',
+        label: l10n.adminContentVisibilityLabel,
+        flex: 2,
+        sortable: true,
+        cellBuilder: (context, item) => Text(
+          contentVisibilityLabel(l10n, item.visibility),
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      ),
+      StaffTableColumn(
+        id: 'created_at',
+        label: l10n.staffTableColumnCreated,
+        flex: 2,
+        sortable: true,
+        cellBuilder: (context, item) => Text(
+          MaterialLocalizations.of(context).formatMediumDate(item.createdAt),
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      ),
+    ];
   }
 }
 
-class _AddContentCard extends StatelessWidget {
-  const _AddContentCard({required this.onTap});
+class _Badge extends StatelessWidget {
+  const _Badge({
+    required this.label,
+    required this.color,
+    required this.textColor,
+  });
 
-  final VoidCallback onTap;
+  final String label;
+  final Color color;
+  final Color textColor;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
-            border: Border.all(
-              color: AppColors.border,
-              width: 1.5,
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: sw(8), vertical: sh(4)),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: textColor,
             ),
-          ),
-          child: SizedBox(
-            height: sh(220),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.add_circle_outline_rounded,
-                  size: ss(36),
-                  color: AppColors.textSecondary,
-                ),
-                SizedBox(height: sh(8)),
-                Text(
-                  l10n.adminContentAdd,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }

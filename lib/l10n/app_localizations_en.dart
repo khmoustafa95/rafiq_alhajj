@@ -1471,4 +1471,44 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get adminOperatorEmpty =>
       'No operators yet. Add your first center technician.';
+
+  @override
+  String get staffTableEmpty => 'No results found';
+
+  @override
+  String get staffTableRowsPerPage => 'Rows per page';
+
+  @override
+  String get staffTablePreviousPage => 'Previous page';
+
+  @override
+  String get staffTableNextPage => 'Next page';
+
+  @override
+  String staffTableShowing(int from, int to, int total) {
+    return 'Showing $from–$to of $total';
+  }
+
+  @override
+  String staffTablePageOf(int current, int total) {
+    return 'Page $current of $total';
+  }
+
+  @override
+  String get staffTableFilterAll => 'All';
+
+  @override
+  String get staffTableFilterStatus => 'Status';
+
+  @override
+  String get staffTableColumnCreated => 'Created';
+
+  @override
+  String get staffTableSearchOperators => 'Search by name or email';
+
+  @override
+  String get staffTableSearchContent => 'Search by title or description';
+
+  @override
+  String get staffTableSearchCompetitions => 'Search by title or description';
 }

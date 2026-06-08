@@ -3,20 +3,32 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
-import 'package:rafiq_alhajj/core/widgets/staff_responsive_grid.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_data_table.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_account.dart';
 import 'package:rafiq_alhajj/features/admin_operators/presentation/providers/admin_operators_providers.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
-class AdminOperatorsListScreen extends ConsumerWidget {
+class AdminOperatorsListScreen extends ConsumerStatefulWidget {
   const AdminOperatorsListScreen({super.key});
+
+  @override
+  ConsumerState<AdminOperatorsListScreen> createState() =>
+      _AdminOperatorsListScreenState();
+}
+
+class _AdminOperatorsListScreenState
+    extends ConsumerState<AdminOperatorsListScreen> {
+  StaffTableQuery _query = const StaffTableQuery(
+    sortColumnId: 'full_name',
+  );
 
   void _openNew(BuildContext context) {
     if (AppPlatform.isWeb) {
@@ -36,13 +48,26 @@ class AdminOperatorsListScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final operatorsAsync = ref.watch(adminOperatorListProvider);
+    final pageAsync = ref.watch(adminOperatorListPageProvider(_query));
 
-    final content = operatorsAsync.when(
+    final body = pageAsync.when(
       skipLoadingOnReload: true,
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => AppPlatform.isWeb
+          ? StaffDataTable<OperatorAccount>(
+              columns: _columns(l10n),
+              rows: const [],
+              totalCount: 0,
+              query: _query,
+              onQueryChanged: (query) => setState(() => _query = query),
+              searchHint: l10n.staffTableSearchOperators,
+              filters: _filters(l10n),
+              isLoading: true,
+              emptyMessage: l10n.adminOperatorEmpty,
+              emptyIcon: Icons.badge_outlined,
+            )
+          : const Center(child: CircularProgressIndicator()),
       error: (_, _) => Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -51,17 +76,35 @@ class AdminOperatorsListScreen extends ConsumerWidget {
             SizedBox(height: sh(12)),
             FilledButton(
               onPressed: () {
-                unawaited(
-                  ref.read(adminOperatorListProvider.notifier).refresh(),
-                );
+                ref.invalidate(adminOperatorListPageProvider(_query));
               },
               child: Text(l10n.retry),
             ),
           ],
         ),
       ),
-      data: (operators) {
-        if (operators.isEmpty) {
+      data: (page) {
+        if (AppPlatform.isWeb) {
+          return StaffDataTable<OperatorAccount>(
+            columns: _columns(l10n),
+            rows: page.items,
+            totalCount: page.totalCount,
+            query: _query,
+            onQueryChanged: (query) => setState(() => _query = query),
+            searchHint: l10n.staffTableSearchOperators,
+            filters: _filters(l10n),
+            isLoading: pageAsync.isLoading,
+            onRowTap: (operator) => _openEdit(context, operator.id),
+            trailingBuilder: (context, operator) => IconButton(
+              icon: const Icon(Icons.edit_outlined, size: 20),
+              onPressed: () => _openEdit(context, operator.id),
+            ),
+            emptyMessage: l10n.adminOperatorEmpty,
+            emptyIcon: Icons.badge_outlined,
+          );
+        }
+
+        if (page.items.isEmpty) {
           return StaffEmptyState(
             message: l10n.adminOperatorEmpty,
             icon: Icons.badge_outlined,
@@ -70,32 +113,18 @@ class AdminOperatorsListScreen extends ConsumerWidget {
           );
         }
 
-        return RefreshIndicator(
-          onRefresh: () =>
-              ref.read(adminOperatorListProvider.notifier).refresh(),
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              StaffResponsiveGrid(
-                minItemWidth: 300,
-                spacing: sw(16),
-                children: [
-                  ...operators.map(
-                    (operator) => _OperatorCard(
-                      operator: operator,
-                      l10n: l10n,
-                      onTap: () => _openEdit(context, operator.id),
-                    ),
-                  ),
-                  _AddOperatorCard(
-                    label: l10n.adminOperatorAdd,
-                    onTap: () => _openNew(context),
-                  ),
-                ],
-              ),
-              SizedBox(height: sh(24)),
-            ],
-          ),
+        return ListView.separated(
+          padding: EdgeInsets.all(sw(16)),
+          itemCount: page.items.length,
+          separatorBuilder: (_, _) => SizedBox(height: sh(10)),
+          itemBuilder: (context, index) {
+            final operator = page.items[index];
+            return _MobileOperatorTile(
+              operator: operator,
+              l10n: l10n,
+              onTap: () => _openEdit(context, operator.id),
+            );
+          },
         );
       },
     );
@@ -112,7 +141,7 @@ class AdminOperatorsListScreen extends ConsumerWidget {
             label: Text(l10n.adminOperatorAdd),
           ),
         ],
-        body: content,
+        body: body,
       );
     }
 
@@ -129,102 +158,103 @@ class AdminOperatorsListScreen extends ConsumerWidget {
         icon: const Icon(Icons.person_add_alt_1),
         label: Text(l10n.adminOperatorAdd),
       ),
-      body: content,
+      body: body,
     );
   }
-}
 
-class _OperatorCard extends StatelessWidget {
-  const _OperatorCard({
-    required this.operator,
-    required this.l10n,
-    required this.onTap,
-  });
-
-  final OperatorAccount operator;
-  final AppLocalizations l10n;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Material(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
-        child: DecoratedBox(
-          decoration: AppDecorations.card(),
-          child: Padding(
-            padding: EdgeInsets.all(sw(16)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: sr(22),
-                      backgroundColor:
-                          AppColors.primary.withValues(alpha: 0.12),
-                      child: Icon(
-                        Icons.badge_outlined,
-                        color: AppColors.primary,
-                        size: ss(22),
-                      ),
-                    ),
-                    SizedBox(width: sw(12)),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            operator.fullName,
-                            style: theme.textTheme.titleSmall,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          SizedBox(height: sh(2)),
-                          Text(
-                            operator.email,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ),
-                    _StatusChip(
-                      active: operator.isActive,
-                      activeLabel: l10n.adminOperatorActiveLabel,
-                      inactiveLabel: l10n.adminOperatorInactive,
-                    ),
-                  ],
-                ),
-                SizedBox(height: sh(12)),
-                Wrap(
-                  spacing: sw(6),
-                  runSpacing: sh(6),
-                  children: [
-                    if (operator.permissions.canRegisterPilgrims)
-                      _PermChip(label: l10n.adminOperatorPermRegister),
-                    if (operator.permissions.canManagePilgrimRegistry)
-                      _PermChip(label: l10n.adminOperatorPermRegistry),
-                    if (operator.permissions.canUseFieldTools)
-                      _PermChip(label: l10n.adminOperatorPermField),
-                    if (operator.permissions.canUploadDocuments)
-                      _PermChip(label: l10n.adminOperatorPermUpload),
-                  ],
-                ),
-              ],
-            ),
+  List<StaffTableFilter> _filters(AppLocalizations l10n) {
+    return [
+      StaffTableFilter(
+        id: 'status',
+        label: l10n.staffTableFilterStatus,
+        allLabel: l10n.staffTableFilterAll,
+        options: [
+          StaffTableFilterOption(
+            value: 'active',
+            label: l10n.adminOperatorActiveLabel,
           ),
+          StaffTableFilterOption(
+            value: 'inactive',
+            label: l10n.adminOperatorInactive,
+          ),
+        ],
+      ),
+    ];
+  }
+
+  List<StaffTableColumn<OperatorAccount>> _columns(AppLocalizations l10n) {
+    return [
+      StaffTableColumn(
+        id: 'full_name',
+        label: l10n.adminOperatorFullName,
+        flex: 3,
+        sortable: true,
+        cellBuilder: (context, operator) => Row(
+          children: [
+            CircleAvatar(
+              radius: sr(16),
+              backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+              child: Icon(
+                Icons.badge_outlined,
+                size: ss(16),
+                color: AppColors.primary,
+              ),
+            ),
+            SizedBox(width: sw(10)),
+            Expanded(
+              child: Text(
+                operator.fullName,
+                style: Theme.of(context).textTheme.titleSmall,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
         ),
       ),
-    );
+      StaffTableColumn(
+        id: 'email',
+        label: l10n.adminOperatorEmail,
+        flex: 3,
+        sortable: true,
+        cellBuilder: (context, operator) => Text(
+          operator.email,
+          style: Theme.of(context).textTheme.bodyMedium,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      StaffTableColumn(
+        id: 'is_active',
+        label: l10n.staffTableFilterStatus,
+        flex: 2,
+        sortable: true,
+        cellBuilder: (context, operator) => _StatusChip(
+          active: operator.isActive,
+          activeLabel: l10n.adminOperatorActiveLabel,
+          inactiveLabel: l10n.adminOperatorInactive,
+        ),
+      ),
+      StaffTableColumn(
+        id: 'permissions',
+        label: l10n.adminOperatorPermissionsSection,
+        flex: 4,
+        cellBuilder: (context, operator) => Wrap(
+          spacing: sw(4),
+          runSpacing: sh(4),
+          children: [
+            if (operator.permissions.canRegisterPilgrims)
+              _PermChip(label: l10n.adminOperatorPermRegister),
+            if (operator.permissions.canManagePilgrimRegistry)
+              _PermChip(label: l10n.adminOperatorPermRegistry),
+            if (operator.permissions.canUseFieldTools)
+              _PermChip(label: l10n.adminOperatorPermField),
+            if (operator.permissions.canUploadDocuments)
+              _PermChip(label: l10n.adminOperatorPermUpload),
+          ],
+        ),
+      ),
+    ];
   }
 }
 
@@ -268,65 +298,42 @@ class _PermChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: sw(8), vertical: sh(4)),
+      padding: EdgeInsets.symmetric(horizontal: sw(6), vertical: sh(2)),
       decoration: BoxDecoration(
         color: AppColors.background,
         borderRadius: BorderRadius.circular(AppDecorations.radiusSm),
         border: Border.all(color: AppColors.border),
       ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelSmall,
-      ),
+      child: Text(label, style: Theme.of(context).textTheme.labelSmall),
     );
   }
 }
 
-class _AddOperatorCard extends StatelessWidget {
-  const _AddOperatorCard({
-    required this.label,
+class _MobileOperatorTile extends StatelessWidget {
+  const _MobileOperatorTile({
+    required this.operator,
+    required this.l10n,
     required this.onTap,
   });
 
-  final String label;
+  final OperatorAccount operator;
+  final AppLocalizations l10n;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
+    return ListTile(
+      onTap: onTap,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
-            border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.35),
-              width: 1.5,
-            ),
-          ),
-          child: SizedBox(
-            height: sh(140),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.add_circle_outline_rounded,
-                  size: ss(32),
-                  color: AppColors.primary,
-                ),
-                SizedBox(height: sh(8)),
-                Text(
-                  label,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: AppColors.primary,
-                      ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        side: const BorderSide(color: AppColors.border),
+      ),
+      title: Text(operator.fullName),
+      subtitle: Text(operator.email),
+      trailing: _StatusChip(
+        active: operator.isActive,
+        activeLabel: l10n.adminOperatorActiveLabel,
+        inactiveLabel: l10n.adminOperatorInactive,
       ),
     );
   }

@@ -61,6 +61,11 @@
 
 ## Changelog
 
+### 2026-06-08 — Staff web data tables
+- [x] `StaffDataTable` reusable widget (sort, filter, pagination)
+- [x] Server-side pagination: operators + pilgrims; client-side: content + competitions
+- [x] All staff web list pages migrated to table layout
+
 ### 2026-06-08 — Admin operator management
 - [x] Migration: `profiles` email, `is_active`, `operator_permissions`; admin update RLS
 - [x] Edge function `manage-operator` (create/update operator accounts)
