@@ -1,0 +1,572 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/platform/app_platform.dart';
+import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/theme/app_colors.dart';
+import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
+import 'package:rafiq_alhajj/features/admin_settings/domain/models/system_settings.dart';
+import 'package:rafiq_alhajj/features/admin_settings/domain/models/system_settings_input.dart';
+import 'package:rafiq_alhajj/features/admin_settings/presentation/providers/system_settings_providers.dart';
+import 'package:rafiq_alhajj/l10n/app_localizations.dart';
+
+class AdminSettingsScreen extends ConsumerStatefulWidget {
+  const AdminSettingsScreen({super.key});
+
+  @override
+  ConsumerState<AdminSettingsScreen> createState() => _AdminSettingsScreenState();
+}
+
+class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _organizationNameController = TextEditingController();
+  final _supportEmailController = TextEditingController();
+  final _supportPhoneController = TextEditingController();
+  final _hajjSeasonController = TextEditingController();
+  final _maintenanceMessageController = TextEditingController();
+  final _maxPilgrimsController = TextEditingController();
+
+  bool _registrationOpen = true;
+  bool _maintenanceMode = false;
+  bool _requireDocumentsOnIntake = true;
+  bool _autoGeneratePilgrimPassword = true;
+  bool _allowOperatorSelfRegistration = false;
+  bool _enablePublicContentFeed = true;
+  bool _enableCompetitions = true;
+  bool _enablePushNotifications = true;
+  bool _enableInAppNotifications = true;
+  bool _pilgrimRitualTrackingEnabled = true;
+  bool _loaded = false;
+
+  @override
+  void dispose() {
+    _organizationNameController.dispose();
+    _supportEmailController.dispose();
+    _supportPhoneController.dispose();
+    _hajjSeasonController.dispose();
+    _maintenanceMessageController.dispose();
+    _maxPilgrimsController.dispose();
+    super.dispose();
+  }
+
+  void _bindSettings(SystemSettings settings) {
+    if (_loaded) {
+      return;
+    }
+
+    _organizationNameController.text = settings.organizationName;
+    _supportEmailController.text = settings.supportEmail ?? '';
+    _supportPhoneController.text = settings.supportPhone ?? '';
+    _hajjSeasonController.text = settings.hajjSeasonLabel ?? '';
+    _maintenanceMessageController.text = settings.maintenanceMessage ?? '';
+    _maxPilgrimsController.text =
+        settings.maxPilgrimsPerGroup?.toString() ?? '';
+
+    _registrationOpen = settings.registrationOpen;
+    _maintenanceMode = settings.maintenanceMode;
+    _requireDocumentsOnIntake = settings.requireDocumentsOnIntake;
+    _autoGeneratePilgrimPassword = settings.autoGeneratePilgrimPassword;
+    _allowOperatorSelfRegistration = settings.allowOperatorSelfRegistration;
+    _enablePublicContentFeed = settings.enablePublicContentFeed;
+    _enableCompetitions = settings.enableCompetitions;
+    _enablePushNotifications = settings.enablePushNotifications;
+    _enableInAppNotifications = settings.enableInAppNotifications;
+    _pilgrimRitualTrackingEnabled = settings.pilgrimRitualTrackingEnabled;
+    _loaded = true;
+  }
+
+  int? _parseMaxPilgrims() {
+    final text = _maxPilgrimsController.text.trim();
+    if (text.isEmpty) {
+      return null;
+    }
+    return int.tryParse(text);
+  }
+
+  SystemSettingsInput _buildInput() {
+    return SystemSettingsInput(
+      organizationName: _organizationNameController.text,
+      supportEmail: _supportEmailController.text,
+      supportPhone: _supportPhoneController.text,
+      hajjSeasonLabel: _hajjSeasonController.text,
+      registrationOpen: _registrationOpen,
+      maintenanceMode: _maintenanceMode,
+      maintenanceMessage: _maintenanceMessageController.text,
+      requireDocumentsOnIntake: _requireDocumentsOnIntake,
+      autoGeneratePilgrimPassword: _autoGeneratePilgrimPassword,
+      allowOperatorSelfRegistration: _allowOperatorSelfRegistration,
+      enablePublicContentFeed: _enablePublicContentFeed,
+      enableCompetitions: _enableCompetitions,
+      enablePushNotifications: _enablePushNotifications,
+      enableInAppNotifications: _enableInAppNotifications,
+      pilgrimRitualTrackingEnabled: _pilgrimRitualTrackingEnabled,
+      maxPilgrimsPerGroup: _parseMaxPilgrims(),
+    );
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    final maxPilgrims = _parseMaxPilgrims();
+    if (_maxPilgrimsController.text.trim().isNotEmpty && maxPilgrims == null) {
+      return;
+    }
+
+    final l10n = AppLocalizations.of(context);
+    final ok = await ref
+        .read(systemSettingsSaveProvider.notifier)
+        .save(_buildInput());
+
+    if (!mounted) {
+      return;
+    }
+
+    if (ok) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.adminSettingsSaveSuccess)),
+      );
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.adminSettingsSaveError)),
+    );
+  }
+
+  Widget _settingSwitch({
+    required String title,
+    required String subtitle,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+    required bool enabled,
+  }) {
+    return SwitchListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(title),
+      subtitle: Text(subtitle),
+      value: value,
+      onChanged: enabled ? onChanged : null,
+    );
+  }
+
+  Widget _statusRow({
+    required String label,
+    required bool isConfigured,
+    required AppLocalizations l10n,
+  }) {
+    final color = isConfigured ? AppColors.success : AppColors.textSecondary;
+    final status = isConfigured
+        ? l10n.adminSettingsStatusConfigured
+        : l10n.adminSettingsStatusNotConfigured;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 6.h),
+      child: Row(
+        children: [
+          Icon(
+            isConfigured ? Icons.check_circle_outline : Icons.info_outline,
+            color: color,
+            size: 20.sp,
+          ),
+          SizedBox(width: 10.w),
+          Expanded(
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+          Text(
+            status,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _quickLink({
+    required String label,
+    required String route,
+    required IconData icon,
+  }) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(icon, color: AppColors.primary),
+      title: Text(label),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () => context.go(route),
+    );
+  }
+
+  Widget _buildForm(AppLocalizations l10n, bool isSaving, SystemSettings? settings) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          StaffFormSection(
+            icon: Icons.apartment_outlined,
+            title: l10n.adminSettingsOrganizationSection,
+            subtitle: l10n.adminSettingsOrganizationSectionHint,
+            child: ResponsiveFormGrid(
+              children: [
+                TextFormField(
+                  controller: _organizationNameController,
+                  enabled: !isSaving,
+                  decoration: InputDecoration(
+                    labelText: l10n.adminSettingsOrganizationName,
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return l10n.adminSettingsOrganizationNameRequired;
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: _hajjSeasonController,
+                  enabled: !isSaving,
+                  decoration: InputDecoration(
+                    labelText: l10n.adminSettingsHajjSeason,
+                  ),
+                ),
+                TextFormField(
+                  controller: _supportEmailController,
+                  enabled: !isSaving,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    labelText: l10n.adminSettingsSupportEmail,
+                  ),
+                ),
+                TextFormField(
+                  controller: _supportPhoneController,
+                  enabled: !isSaving,
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(
+                    labelText: l10n.adminSettingsSupportPhone,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 20.h),
+          StaffFormSection(
+            icon: Icons.tune_outlined,
+            title: l10n.adminSettingsOperationsSection,
+            subtitle: l10n.adminSettingsOperationsSectionHint,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _settingSwitch(
+                  title: l10n.adminSettingsRegistrationOpen,
+                  subtitle: l10n.adminSettingsRegistrationOpenHint,
+                  value: _registrationOpen,
+                  enabled: !isSaving,
+                  onChanged: (value) =>
+                      setState(() => _registrationOpen = value),
+                ),
+                const Divider(height: 1),
+                _settingSwitch(
+                  title: l10n.adminSettingsMaintenanceMode,
+                  subtitle: l10n.adminSettingsMaintenanceModeHint,
+                  value: _maintenanceMode,
+                  enabled: !isSaving,
+                  onChanged: (value) =>
+                      setState(() => _maintenanceMode = value),
+                ),
+                if (_maintenanceMode) ...[
+                  SizedBox(height: 12.h),
+                  TextFormField(
+                    controller: _maintenanceMessageController,
+                    enabled: !isSaving,
+                    decoration: InputDecoration(
+                      labelText: l10n.adminSettingsMaintenanceMessage,
+                    ),
+                    maxLines: 3,
+                  ),
+                ],
+              ],
+            ),
+          ),
+          SizedBox(height: 20.h),
+          StaffFormSection(
+            icon: Icons.person_add_alt_1_outlined,
+            title: l10n.adminSettingsIntakeSection,
+            subtitle: l10n.adminSettingsIntakeSectionHint,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _settingSwitch(
+                  title: l10n.adminSettingsRequireDocuments,
+                  subtitle: l10n.adminSettingsRequireDocumentsHint,
+                  value: _requireDocumentsOnIntake,
+                  enabled: !isSaving,
+                  onChanged: (value) =>
+                      setState(() => _requireDocumentsOnIntake = value),
+                ),
+                const Divider(height: 1),
+                _settingSwitch(
+                  title: l10n.adminSettingsAutoGeneratePassword,
+                  subtitle: l10n.adminSettingsAutoGeneratePasswordHint,
+                  value: _autoGeneratePilgrimPassword,
+                  enabled: !isSaving,
+                  onChanged: (value) =>
+                      setState(() => _autoGeneratePilgrimPassword = value),
+                ),
+                const Divider(height: 1),
+                _settingSwitch(
+                  title: l10n.adminSettingsOperatorSelfRegistration,
+                  subtitle: l10n.adminSettingsOperatorSelfRegistrationHint,
+                  value: _allowOperatorSelfRegistration,
+                  enabled: !isSaving,
+                  onChanged: (value) =>
+                      setState(() => _allowOperatorSelfRegistration = value),
+                ),
+                SizedBox(height: 12.h),
+                TextFormField(
+                  controller: _maxPilgrimsController,
+                  enabled: !isSaving,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: InputDecoration(
+                    labelText: l10n.adminSettingsMaxPilgrimsPerGroup,
+                    helperText: l10n.adminSettingsMaxPilgrimsPerGroupHint,
+                  ),
+                  validator: (value) {
+                    final text = value?.trim() ?? '';
+                    if (text.isEmpty) {
+                      return null;
+                    }
+                    final parsed = int.tryParse(text);
+                    if (parsed == null || parsed < 1) {
+                      return l10n.adminSettingsMaxPilgrimsInvalid;
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 20.h),
+          StaffFormSection(
+            icon: Icons.extension_outlined,
+            title: l10n.adminSettingsFeaturesSection,
+            subtitle: l10n.adminSettingsFeaturesSectionHint,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _settingSwitch(
+                  title: l10n.adminSettingsPublicContentFeed,
+                  subtitle: l10n.adminSettingsPublicContentFeedHint,
+                  value: _enablePublicContentFeed,
+                  enabled: !isSaving,
+                  onChanged: (value) =>
+                      setState(() => _enablePublicContentFeed = value),
+                ),
+                const Divider(height: 1),
+                _settingSwitch(
+                  title: l10n.adminSettingsCompetitions,
+                  subtitle: l10n.adminSettingsCompetitionsHint,
+                  value: _enableCompetitions,
+                  enabled: !isSaving,
+                  onChanged: (value) =>
+                      setState(() => _enableCompetitions = value),
+                ),
+                const Divider(height: 1),
+                _settingSwitch(
+                  title: l10n.adminSettingsRitualTracking,
+                  subtitle: l10n.adminSettingsRitualTrackingHint,
+                  value: _pilgrimRitualTrackingEnabled,
+                  enabled: !isSaving,
+                  onChanged: (value) =>
+                      setState(() => _pilgrimRitualTrackingEnabled = value),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 20.h),
+          StaffFormSection(
+            icon: Icons.notifications_outlined,
+            title: l10n.adminSettingsNotificationsSection,
+            subtitle: l10n.adminSettingsNotificationsSectionHint,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _settingSwitch(
+                  title: l10n.adminSettingsInAppNotifications,
+                  subtitle: l10n.adminSettingsInAppNotificationsHint,
+                  value: _enableInAppNotifications,
+                  enabled: !isSaving,
+                  onChanged: (value) =>
+                      setState(() => _enableInAppNotifications = value),
+                ),
+                const Divider(height: 1),
+                _settingSwitch(
+                  title: l10n.adminSettingsPushNotifications,
+                  subtitle: l10n.adminSettingsPushNotificationsHint,
+                  value: _enablePushNotifications,
+                  enabled: !isSaving && AppConfig.hasFirebase,
+                  onChanged: (value) =>
+                      setState(() => _enablePushNotifications = value),
+                ),
+                if (!AppConfig.hasFirebase) ...[
+                  SizedBox(height: 8.h),
+                  Text(
+                    l10n.adminSettingsPushNotificationsUnavailable,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          SizedBox(height: 20.h),
+          StaffFormSection(
+            icon: Icons.admin_panel_settings_outlined,
+            title: l10n.adminSettingsManagementSection,
+            subtitle: l10n.adminSettingsManagementSectionHint,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _quickLink(
+                  label: l10n.adminOperatorsTitle,
+                  route: AppRoutes.adminOperators,
+                  icon: Icons.badge_outlined,
+                ),
+                const Divider(height: 1),
+                _quickLink(
+                  label: l10n.adminGroupsTitle,
+                  route: AppRoutes.adminGroups,
+                  icon: Icons.groups_outlined,
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 20.h),
+          StaffFormSection(
+            icon: Icons.cloud_outlined,
+            title: l10n.adminSettingsIntegrationsSection,
+            subtitle: l10n.adminSettingsIntegrationsSectionHint,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _statusRow(
+                  label: l10n.adminSettingsSupabaseStatus,
+                  isConfigured: AppConfig.hasSupabase,
+                  l10n: l10n,
+                ),
+                _statusRow(
+                  label: l10n.adminSettingsFirebaseStatus,
+                  isConfigured: AppConfig.hasFirebase,
+                  l10n: l10n,
+                ),
+                if (settings?.updatedAt != null) ...[
+                  SizedBox(height: 12.h),
+                  Text(
+                    l10n.adminSettingsLastUpdated(
+                      MaterialLocalizations.of(context).formatMediumDate(
+                        settings!.updatedAt!.toLocal(),
+                      ),
+                    ),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          if (!AppPlatform.isWeb) ...[
+            SizedBox(height: 24.h),
+            FilledButton(
+              onPressed: isSaving ? null : _submit,
+              child: isSaving
+                  ? const SizedBox(
+                      height: 22,
+                      width: 22,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text(l10n.adminSettingsSave),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final settingsAsync = ref.watch(systemSettingsProvider);
+    final isSaving = ref.watch(systemSettingsSaveProvider).isLoading;
+
+    return settingsAsync.when(
+      loading: () => StaffAdaptivePage(
+        web: StaffWebPage(
+          title: l10n.adminSettingsTitle,
+          subtitle: l10n.adminSettingsSubtitle,
+          body: const Center(child: CircularProgressIndicator()),
+        ),
+        mobile: Scaffold(
+          appBar: RafiqAppBar(title: Text(l10n.adminSettingsTitle)),
+          body: const Center(child: CircularProgressIndicator()),
+        ),
+      ),
+      error: (error, _) => StaffAdaptivePage(
+        web: StaffWebPage(
+          title: l10n.adminSettingsTitle,
+          subtitle: l10n.adminSettingsSubtitle,
+          body: StaffEmptyState(
+            message: l10n.adminSettingsLoadError,
+            icon: Icons.settings_outlined,
+            actionLabel: l10n.retry,
+            onAction: () => ref.invalidate(systemSettingsProvider),
+          ),
+        ),
+        mobile: Scaffold(
+          appBar: RafiqAppBar(title: Text(l10n.adminSettingsTitle)),
+          body: StaffEmptyState(
+            message: l10n.adminSettingsLoadError,
+            icon: Icons.settings_outlined,
+            actionLabel: l10n.retry,
+            onAction: () => ref.invalidate(systemSettingsProvider),
+          ),
+        ),
+      ),
+      data: (settings) {
+        _bindSettings(settings);
+        final form = _buildForm(l10n, isSaving, settings);
+
+        return StaffAdaptivePage(
+          web: StaffWebPage(
+            title: l10n.adminSettingsTitle,
+            subtitle: l10n.adminSettingsSubtitle,
+            body: form,
+            bottomBar: StaffFormActionsBar(
+              primaryLabel: l10n.adminSettingsSave,
+              onPrimary: _submit,
+              isLoading: isSaving,
+            ),
+          ),
+          mobile: Scaffold(
+            appBar: RafiqAppBar(title: Text(l10n.adminSettingsTitle)),
+            body: SingleChildScrollView(
+              padding: EdgeInsets.all(16.w),
+              child: form,
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

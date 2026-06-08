@@ -15,6 +15,7 @@ import 'package:rafiq_alhajj/features/admin_groups/presentation/widgets/admin_gr
 import 'package:rafiq_alhajj/features/admin_groups/presentation/widgets/admin_groups_list_screen.dart';
 import 'package:rafiq_alhajj/features/admin_operators/presentation/widgets/admin_operator_edit_screen.dart';
 import 'package:rafiq_alhajj/features/admin_operators/presentation/widgets/admin_operators_list_screen.dart';
+import 'package:rafiq_alhajj/features/admin_settings/presentation/widgets/admin_settings_screen.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/widgets/login_screen.dart';
@@ -312,6 +313,11 @@ List<RouteBase> _mobilePilgrimRoutes() => [
           return AdminGroupEditScreen(groupId: id);
         },
       ),
+      GoRoute(
+        path: AppRoutes.adminSettings,
+        name: 'adminSettings',
+        builder: (context, state) => const AdminSettingsScreen(),
+      ),
     ];
 
 ShellRoute _staffWebShellRoute() {
@@ -420,6 +426,11 @@ ShellRoute _staffWebShellRoute() {
           final id = state.pathParameters['id']!;
           return AdminGroupEditScreen(groupId: id);
         },
+      ),
+      GoRoute(
+        path: AppRoutes.adminSettings,
+        name: 'adminSettings',
+        builder: (context, state) => const AdminSettingsScreen(),
       ),
     ],
   );

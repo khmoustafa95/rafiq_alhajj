@@ -160,15 +160,14 @@ class _AdminContentListScreenState extends ConsumerState<AdminContentListScreen>
             filters: _filters(l10n),
             isLoading: itemsAsync.isLoading,
             onRowTap: (item) => _openEdit(item.id),
-            trailingBuilder: (context, item) => Row(
-              mainAxisSize: MainAxisSize.min,
+            trailingBuilder: (context, item) => StaffTableRowActions(
               children: [
-                IconButton(
-                  icon: const Icon(Icons.edit_outlined, size: 18),
+                StaffTableRowActions.iconButton(
+                  icon: Icons.edit_outlined,
                   onPressed: () => _openEdit(item.id),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.delete_outline, size: 18),
+                StaffTableRowActions.iconButton(
+                  icon: Icons.delete_outline,
                   onPressed: () => unawaited(_confirmDelete(item)),
                 ),
               ],

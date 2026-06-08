@@ -49,6 +49,9 @@ class StaffTableColumn<T> {
   final Widget Function(BuildContext context, T item) cellBuilder;
 }
 
+/// Width reserved for trailing row actions (e.g. two compact icon buttons).
+const double staffTableActionsColumnWidth = 88;
+
 class StaffDataTable<T> extends StatefulWidget {
   const StaffDataTable({
     required this.columns,
@@ -384,7 +387,8 @@ class _HeaderRow extends StatelessWidget {
                       ),
               );
             }),
-            if (hasTrailing) SizedBox(width: sw(72)),
+            if (hasTrailing)
+              const SizedBox(width: staffTableActionsColumnWidth),
           ],
         ),
       ),
@@ -427,8 +431,11 @@ class _DataRow<T> extends StatelessWidget {
               ),
               if (trailing != null)
                 SizedBox(
-                  width: sw(72),
-                  child: trailing,
+                  width: staffTableActionsColumnWidth,
+                  child: Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: trailing,
+                  ),
                 ),
             ],
           ),
@@ -516,6 +523,36 @@ class _PaginationBar extends StatelessWidget {
           tooltip: l10n.staffTableNextPage,
         ),
       ],
+    );
+  }
+}
+
+/// Compact icon buttons for [StaffDataTable] trailing cells.
+class StaffTableRowActions extends StatelessWidget {
+  const StaffTableRowActions({required this.children, super.key});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: children,
+    );
+  }
+
+  static Widget iconButton({
+    required IconData icon,
+    required VoidCallback? onPressed,
+    String? tooltip,
+  }) {
+    return IconButton(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 18),
+      tooltip: tooltip,
+      visualDensity: VisualDensity.compact,
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints.tightFor(width: 40, height: 36),
     );
   }
 }

@@ -150,15 +150,14 @@ class _AdminCompetitionsListScreenState
             filters: _filters(l10n),
             isLoading: listAsync.isLoading,
             onRowTap: (competition) => _openEdit(competition.id),
-            trailingBuilder: (context, competition) => Row(
-              mainAxisSize: MainAxisSize.min,
+            trailingBuilder: (context, competition) => StaffTableRowActions(
               children: [
-                IconButton(
-                  icon: const Icon(Icons.edit_outlined, size: 18),
+                StaffTableRowActions.iconButton(
+                  icon: Icons.edit_outlined,
                   onPressed: () => _openEdit(competition.id),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.delete_outline, size: 18),
+                StaffTableRowActions.iconButton(
+                  icon: Icons.delete_outline,
                   onPressed: () => unawaited(_confirmDelete(competition)),
                 ),
               ],

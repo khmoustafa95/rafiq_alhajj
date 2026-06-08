@@ -95,9 +95,13 @@ class _AdminOperatorsListScreenState
             filters: _filters(l10n),
             isLoading: pageAsync.isLoading,
             onRowTap: (operator) => _openEdit(context, operator.id),
-            trailingBuilder: (context, operator) => IconButton(
-              icon: const Icon(Icons.edit_outlined, size: 20),
-              onPressed: () => _openEdit(context, operator.id),
+            trailingBuilder: (context, operator) => StaffTableRowActions(
+              children: [
+                StaffTableRowActions.iconButton(
+                  icon: Icons.edit_outlined,
+                  onPressed: () => _openEdit(context, operator.id),
+                ),
+              ],
             ),
             emptyMessage: l10n.adminOperatorEmpty,
             emptyIcon: Icons.badge_outlined,

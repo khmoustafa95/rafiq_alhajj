@@ -48,6 +48,7 @@ abstract final class AppRoutes {
   static const String adminGroups = '/admin/groups';
   static const String adminGroupNew = '/admin/groups/new';
   static const String adminGroupEdit = '/admin/groups/:id/edit';
+  static const String adminSettings = '/admin/settings';
 
   static String adminContentEditPath(String id) => '/admin/content/$id/edit';
 

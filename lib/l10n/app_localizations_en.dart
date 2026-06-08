@@ -1309,6 +1309,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get staffNavNotifications => 'Notifications';
 
   @override
+  String get staffNavSettings => 'Settings';
+
+  @override
   String get staffPortalSubtitle => 'Admin Portal';
 
   @override
@@ -1617,4 +1620,195 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminGroupDeleteError => 'Could not delete group';
+
+  @override
+  String get adminSettingsTitle => 'System settings';
+
+  @override
+  String get adminSettingsSubtitle =>
+      'Configure organization details, features, and platform behavior.';
+
+  @override
+  String get adminSettingsSave => 'Save settings';
+
+  @override
+  String get adminSettingsSaveSuccess => 'Settings saved';
+
+  @override
+  String get adminSettingsSaveError => 'Could not save settings. Try again.';
+
+  @override
+  String get adminSettingsLoadError => 'Could not load settings.';
+
+  @override
+  String get adminSettingsOrganizationSection => 'Organization';
+
+  @override
+  String get adminSettingsOrganizationSectionHint =>
+      'Public-facing name and support contacts for the Hajj season.';
+
+  @override
+  String get adminSettingsOrganizationName => 'Organization name';
+
+  @override
+  String get adminSettingsOrganizationNameRequired =>
+      'Organization name is required';
+
+  @override
+  String get adminSettingsHajjSeason => 'Hajj season label';
+
+  @override
+  String get adminSettingsSupportEmail => 'Support email';
+
+  @override
+  String get adminSettingsSupportPhone => 'Support phone';
+
+  @override
+  String get adminSettingsOperationsSection => 'Operations';
+
+  @override
+  String get adminSettingsOperationsSectionHint =>
+      'Control registration availability and maintenance windows.';
+
+  @override
+  String get adminSettingsRegistrationOpen => 'Registration open';
+
+  @override
+  String get adminSettingsRegistrationOpenHint =>
+      'Allow operators to register new pilgrims.';
+
+  @override
+  String get adminSettingsMaintenanceMode => 'Maintenance mode';
+
+  @override
+  String get adminSettingsMaintenanceModeHint =>
+      'Show a maintenance message and limit staff actions.';
+
+  @override
+  String get adminSettingsMaintenanceMessage => 'Maintenance message';
+
+  @override
+  String get adminSettingsIntakeSection => 'Pilgrim intake';
+
+  @override
+  String get adminSettingsIntakeSectionHint =>
+      'Defaults for operator registration workflows.';
+
+  @override
+  String get adminSettingsRequireDocuments => 'Require documents on intake';
+
+  @override
+  String get adminSettingsRequireDocumentsHint =>
+      'Operators must upload required documents when registering pilgrims.';
+
+  @override
+  String get adminSettingsAutoGeneratePassword =>
+      'Auto-generate pilgrim passwords';
+
+  @override
+  String get adminSettingsAutoGeneratePasswordHint =>
+      'Create secure passwords automatically during registration.';
+
+  @override
+  String get adminSettingsOperatorSelfRegistration =>
+      'Allow operator self-registration';
+
+  @override
+  String get adminSettingsOperatorSelfRegistrationHint =>
+      'Let new operators request accounts without admin approval.';
+
+  @override
+  String get adminSettingsMaxPilgrimsPerGroup => 'Max pilgrims per group';
+
+  @override
+  String get adminSettingsMaxPilgrimsPerGroupHint =>
+      'Leave empty for no limit.';
+
+  @override
+  String get adminSettingsMaxPilgrimsInvalid =>
+      'Enter a positive number or leave empty.';
+
+  @override
+  String get adminSettingsFeaturesSection => 'Features';
+
+  @override
+  String get adminSettingsFeaturesSectionHint =>
+      'Enable or disable major app modules.';
+
+  @override
+  String get adminSettingsPublicContentFeed => 'Public content feed';
+
+  @override
+  String get adminSettingsPublicContentFeedHint =>
+      'Show news and videos on the pilgrim home screen.';
+
+  @override
+  String get adminSettingsCompetitions => 'Competitions';
+
+  @override
+  String get adminSettingsCompetitionsHint =>
+      'Allow pilgrims to view and join Hajj competitions.';
+
+  @override
+  String get adminSettingsRitualTracking => 'Pilgrim ritual tracking';
+
+  @override
+  String get adminSettingsRitualTrackingHint =>
+      'Track and display ritual progress for pilgrims.';
+
+  @override
+  String get adminSettingsNotificationsSection => 'Notifications';
+
+  @override
+  String get adminSettingsNotificationsSectionHint =>
+      'Control in-app and push notification delivery.';
+
+  @override
+  String get adminSettingsInAppNotifications => 'In-app notifications';
+
+  @override
+  String get adminSettingsInAppNotificationsHint =>
+      'Deliver notifications inside the pilgrim inbox.';
+
+  @override
+  String get adminSettingsPushNotifications => 'Push notifications';
+
+  @override
+  String get adminSettingsPushNotificationsHint =>
+      'Send Firebase push notifications to devices.';
+
+  @override
+  String get adminSettingsPushNotificationsUnavailable =>
+      'Firebase is not configured. Push notifications cannot be enabled.';
+
+  @override
+  String get adminSettingsManagementSection => 'Management shortcuts';
+
+  @override
+  String get adminSettingsManagementSectionHint =>
+      'Jump to related admin areas.';
+
+  @override
+  String get adminSettingsIntegrationsSection => 'Integrations';
+
+  @override
+  String get adminSettingsIntegrationsSectionHint =>
+      'Backend services configured for this deployment.';
+
+  @override
+  String get adminSettingsSupabaseStatus => 'Supabase';
+
+  @override
+  String get adminSettingsFirebaseStatus => 'Firebase';
+
+  @override
+  String get adminSettingsStatusConfigured => 'Configured';
+
+  @override
+  String get adminSettingsStatusNotConfigured => 'Not configured';
+
+  @override
+  String adminSettingsLastUpdated(String date) {
+    return 'Last updated $date';
+  }
 }

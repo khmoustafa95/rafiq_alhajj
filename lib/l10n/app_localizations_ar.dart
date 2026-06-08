@@ -1293,6 +1293,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get staffNavNotifications => 'الإشعارات';
 
   @override
+  String get staffNavSettings => 'الإعدادات';
+
+  @override
   String get staffPortalSubtitle => 'بوابة المسؤول';
 
   @override
@@ -1594,4 +1597,195 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminGroupDeleteError => 'تعذّر حذف المجموعة';
+
+  @override
+  String get adminSettingsTitle => 'إعدادات النظام';
+
+  @override
+  String get adminSettingsSubtitle =>
+      'تهيئة بيانات المؤسسة والميزات وسلوك المنصة.';
+
+  @override
+  String get adminSettingsSave => 'حفظ الإعدادات';
+
+  @override
+  String get adminSettingsSaveSuccess => 'تم حفظ الإعدادات';
+
+  @override
+  String get adminSettingsSaveError => 'تعذّر حفظ الإعدادات. حاول مرة أخرى.';
+
+  @override
+  String get adminSettingsLoadError => 'تعذّر تحميل الإعدادات.';
+
+  @override
+  String get adminSettingsOrganizationSection => 'المؤسسة';
+
+  @override
+  String get adminSettingsOrganizationSectionHint =>
+      'الاسم الظاهر للجمهور وبيانات الدعم لموسم الحج.';
+
+  @override
+  String get adminSettingsOrganizationName => 'اسم المؤسسة';
+
+  @override
+  String get adminSettingsOrganizationNameRequired => 'اسم المؤسسة مطلوب';
+
+  @override
+  String get adminSettingsHajjSeason => 'تسمية موسم الحج';
+
+  @override
+  String get adminSettingsSupportEmail => 'بريد الدعم';
+
+  @override
+  String get adminSettingsSupportPhone => 'هاتف الدعم';
+
+  @override
+  String get adminSettingsOperationsSection => 'التشغيل';
+
+  @override
+  String get adminSettingsOperationsSectionHint =>
+      'التحكم في فتح التسجيل ونوافذ الصيانة.';
+
+  @override
+  String get adminSettingsRegistrationOpen => 'التسجيل مفتوح';
+
+  @override
+  String get adminSettingsRegistrationOpenHint =>
+      'السماح للمشغّلين بتسجيل حجاج جدد.';
+
+  @override
+  String get adminSettingsMaintenanceMode => 'وضع الصيانة';
+
+  @override
+  String get adminSettingsMaintenanceModeHint =>
+      'عرض رسالة صيانة وتقييد إجراءات الموظفين.';
+
+  @override
+  String get adminSettingsMaintenanceMessage => 'رسالة الصيانة';
+
+  @override
+  String get adminSettingsIntakeSection => 'تسجيل الحجاج';
+
+  @override
+  String get adminSettingsIntakeSectionHint =>
+      'الإعدادات الافتراضية لسير عمل تسجيل المشغّلين.';
+
+  @override
+  String get adminSettingsRequireDocuments => 'اشتراط المستندات عند التسجيل';
+
+  @override
+  String get adminSettingsRequireDocumentsHint =>
+      'يجب على المشغّلين رفع المستندات المطلوبة عند تسجيل الحجاج.';
+
+  @override
+  String get adminSettingsAutoGeneratePassword =>
+      'إنشاء كلمات مرور الحجاج تلقائياً';
+
+  @override
+  String get adminSettingsAutoGeneratePasswordHint =>
+      'إنشاء كلمات مرور آمنة تلقائياً أثناء التسجيل.';
+
+  @override
+  String get adminSettingsOperatorSelfRegistration =>
+      'السماح بتسجيل المشغّلين الذاتي';
+
+  @override
+  String get adminSettingsOperatorSelfRegistrationHint =>
+      'السماح للمشغّلين الجدد بطلب حسابات دون موافقة المسؤول.';
+
+  @override
+  String get adminSettingsMaxPilgrimsPerGroup =>
+      'الحد الأقصى للحجاج في المجموعة';
+
+  @override
+  String get adminSettingsMaxPilgrimsPerGroupHint =>
+      'اتركه فارغاً لعدم وجود حد.';
+
+  @override
+  String get adminSettingsMaxPilgrimsInvalid =>
+      'أدخل رقماً موجباً أو اتركه فارغاً.';
+
+  @override
+  String get adminSettingsFeaturesSection => 'الميزات';
+
+  @override
+  String get adminSettingsFeaturesSectionHint =>
+      'تفعيل أو تعطيل الوحدات الرئيسية في التطبيق.';
+
+  @override
+  String get adminSettingsPublicContentFeed => 'موجز المحتوى العام';
+
+  @override
+  String get adminSettingsPublicContentFeedHint =>
+      'عرض الأخبار والفيديوهات في الشاشة الرئيسية للحاج.';
+
+  @override
+  String get adminSettingsCompetitions => 'المسابقات';
+
+  @override
+  String get adminSettingsCompetitionsHint =>
+      'السماح للحجاج بعرض والانضمام إلى مسابقات الحج.';
+
+  @override
+  String get adminSettingsRitualTracking => 'تتبع مناسك الحاج';
+
+  @override
+  String get adminSettingsRitualTrackingHint =>
+      'تتبع وعرض تقدم المناسك للحجاج.';
+
+  @override
+  String get adminSettingsNotificationsSection => 'الإشعارات';
+
+  @override
+  String get adminSettingsNotificationsSectionHint =>
+      'التحكم في الإشعارات داخل التطبيق والإشعارات الفورية.';
+
+  @override
+  String get adminSettingsInAppNotifications => 'الإشعارات داخل التطبيق';
+
+  @override
+  String get adminSettingsInAppNotificationsHint =>
+      'تسليم الإشعارات في صندوق وارد الحاج.';
+
+  @override
+  String get adminSettingsPushNotifications => 'الإشعارات الفورية';
+
+  @override
+  String get adminSettingsPushNotificationsHint =>
+      'إرسال إشعارات Firebase إلى الأجهزة.';
+
+  @override
+  String get adminSettingsPushNotificationsUnavailable =>
+      'Firebase غير مهيأ. لا يمكن تفعيل الإشعارات الفورية.';
+
+  @override
+  String get adminSettingsManagementSection => 'اختصارات الإدارة';
+
+  @override
+  String get adminSettingsManagementSectionHint =>
+      'الانتقال إلى مناطق الإدارة ذات الصلة.';
+
+  @override
+  String get adminSettingsIntegrationsSection => 'التكاملات';
+
+  @override
+  String get adminSettingsIntegrationsSectionHint =>
+      'خدمات الخلفية المهيأة لهذا النشر.';
+
+  @override
+  String get adminSettingsSupabaseStatus => 'Supabase';
+
+  @override
+  String get adminSettingsFirebaseStatus => 'Firebase';
+
+  @override
+  String get adminSettingsStatusConfigured => 'مهيأ';
+
+  @override
+  String get adminSettingsStatusNotConfigured => 'غير مهيأ';
+
+  @override
+  String adminSettingsLastUpdated(String date) {
+    return 'آخر تحديث $date';
+  }
 }

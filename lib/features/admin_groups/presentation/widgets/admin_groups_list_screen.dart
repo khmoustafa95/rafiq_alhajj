@@ -129,15 +129,14 @@ class _AdminGroupsListScreenState extends ConsumerState<AdminGroupsListScreen> {
             searchHint: l10n.staffTableSearchGroups,
             isLoading: pageAsync.isLoading,
             onRowTap: (group) => _openEdit(group.id),
-            trailingBuilder: (context, group) => Row(
-              mainAxisSize: MainAxisSize.min,
+            trailingBuilder: (context, group) => StaffTableRowActions(
               children: [
-                IconButton(
-                  icon: const Icon(Icons.edit_outlined, size: 18),
+                StaffTableRowActions.iconButton(
+                  icon: Icons.edit_outlined,
                   onPressed: () => _openEdit(group.id),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.delete_outline, size: 18),
+                StaffTableRowActions.iconButton(
+                  icon: Icons.delete_outline,
                   onPressed: () => unawaited(_confirmDelete(group)),
                 ),
               ],

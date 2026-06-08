@@ -2497,6 +2497,12 @@ abstract class AppLocalizations {
   /// **'Notifications'**
   String get staffNavNotifications;
 
+  /// No description provided for @staffNavSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get staffNavSettings;
+
   /// No description provided for @staffPortalSubtitle.
   ///
   /// In en, this message translates to:
@@ -3072,6 +3078,336 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not delete group'**
   String get adminGroupDeleteError;
+
+  /// No description provided for @adminSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'System settings'**
+  String get adminSettingsTitle;
+
+  /// No description provided for @adminSettingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure organization details, features, and platform behavior.'**
+  String get adminSettingsSubtitle;
+
+  /// No description provided for @adminSettingsSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save settings'**
+  String get adminSettingsSave;
+
+  /// No description provided for @adminSettingsSaveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings saved'**
+  String get adminSettingsSaveSuccess;
+
+  /// No description provided for @adminSettingsSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save settings. Try again.'**
+  String get adminSettingsSaveError;
+
+  /// No description provided for @adminSettingsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load settings.'**
+  String get adminSettingsLoadError;
+
+  /// No description provided for @adminSettingsOrganizationSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Organization'**
+  String get adminSettingsOrganizationSection;
+
+  /// No description provided for @adminSettingsOrganizationSectionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Public-facing name and support contacts for the Hajj season.'**
+  String get adminSettingsOrganizationSectionHint;
+
+  /// No description provided for @adminSettingsOrganizationName.
+  ///
+  /// In en, this message translates to:
+  /// **'Organization name'**
+  String get adminSettingsOrganizationName;
+
+  /// No description provided for @adminSettingsOrganizationNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Organization name is required'**
+  String get adminSettingsOrganizationNameRequired;
+
+  /// No description provided for @adminSettingsHajjSeason.
+  ///
+  /// In en, this message translates to:
+  /// **'Hajj season label'**
+  String get adminSettingsHajjSeason;
+
+  /// No description provided for @adminSettingsSupportEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Support email'**
+  String get adminSettingsSupportEmail;
+
+  /// No description provided for @adminSettingsSupportPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Support phone'**
+  String get adminSettingsSupportPhone;
+
+  /// No description provided for @adminSettingsOperationsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Operations'**
+  String get adminSettingsOperationsSection;
+
+  /// No description provided for @adminSettingsOperationsSectionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Control registration availability and maintenance windows.'**
+  String get adminSettingsOperationsSectionHint;
+
+  /// No description provided for @adminSettingsRegistrationOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration open'**
+  String get adminSettingsRegistrationOpen;
+
+  /// No description provided for @adminSettingsRegistrationOpenHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow operators to register new pilgrims.'**
+  String get adminSettingsRegistrationOpenHint;
+
+  /// No description provided for @adminSettingsMaintenanceMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintenance mode'**
+  String get adminSettingsMaintenanceMode;
+
+  /// No description provided for @adminSettingsMaintenanceModeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Show a maintenance message and limit staff actions.'**
+  String get adminSettingsMaintenanceModeHint;
+
+  /// No description provided for @adminSettingsMaintenanceMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintenance message'**
+  String get adminSettingsMaintenanceMessage;
+
+  /// No description provided for @adminSettingsIntakeSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Pilgrim intake'**
+  String get adminSettingsIntakeSection;
+
+  /// No description provided for @adminSettingsIntakeSectionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Defaults for operator registration workflows.'**
+  String get adminSettingsIntakeSectionHint;
+
+  /// No description provided for @adminSettingsRequireDocuments.
+  ///
+  /// In en, this message translates to:
+  /// **'Require documents on intake'**
+  String get adminSettingsRequireDocuments;
+
+  /// No description provided for @adminSettingsRequireDocumentsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Operators must upload required documents when registering pilgrims.'**
+  String get adminSettingsRequireDocumentsHint;
+
+  /// No description provided for @adminSettingsAutoGeneratePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-generate pilgrim passwords'**
+  String get adminSettingsAutoGeneratePassword;
+
+  /// No description provided for @adminSettingsAutoGeneratePasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Create secure passwords automatically during registration.'**
+  String get adminSettingsAutoGeneratePasswordHint;
+
+  /// No description provided for @adminSettingsOperatorSelfRegistration.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow operator self-registration'**
+  String get adminSettingsOperatorSelfRegistration;
+
+  /// No description provided for @adminSettingsOperatorSelfRegistrationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Let new operators request accounts without admin approval.'**
+  String get adminSettingsOperatorSelfRegistrationHint;
+
+  /// No description provided for @adminSettingsMaxPilgrimsPerGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Max pilgrims per group'**
+  String get adminSettingsMaxPilgrimsPerGroup;
+
+  /// No description provided for @adminSettingsMaxPilgrimsPerGroupHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty for no limit.'**
+  String get adminSettingsMaxPilgrimsPerGroupHint;
+
+  /// No description provided for @adminSettingsMaxPilgrimsInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a positive number or leave empty.'**
+  String get adminSettingsMaxPilgrimsInvalid;
+
+  /// No description provided for @adminSettingsFeaturesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Features'**
+  String get adminSettingsFeaturesSection;
+
+  /// No description provided for @adminSettingsFeaturesSectionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable or disable major app modules.'**
+  String get adminSettingsFeaturesSectionHint;
+
+  /// No description provided for @adminSettingsPublicContentFeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Public content feed'**
+  String get adminSettingsPublicContentFeed;
+
+  /// No description provided for @adminSettingsPublicContentFeedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Show news and videos on the pilgrim home screen.'**
+  String get adminSettingsPublicContentFeedHint;
+
+  /// No description provided for @adminSettingsCompetitions.
+  ///
+  /// In en, this message translates to:
+  /// **'Competitions'**
+  String get adminSettingsCompetitions;
+
+  /// No description provided for @adminSettingsCompetitionsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow pilgrims to view and join Hajj competitions.'**
+  String get adminSettingsCompetitionsHint;
+
+  /// No description provided for @adminSettingsRitualTracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Pilgrim ritual tracking'**
+  String get adminSettingsRitualTracking;
+
+  /// No description provided for @adminSettingsRitualTrackingHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Track and display ritual progress for pilgrims.'**
+  String get adminSettingsRitualTrackingHint;
+
+  /// No description provided for @adminSettingsNotificationsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get adminSettingsNotificationsSection;
+
+  /// No description provided for @adminSettingsNotificationsSectionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Control in-app and push notification delivery.'**
+  String get adminSettingsNotificationsSectionHint;
+
+  /// No description provided for @adminSettingsInAppNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'In-app notifications'**
+  String get adminSettingsInAppNotifications;
+
+  /// No description provided for @adminSettingsInAppNotificationsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Deliver notifications inside the pilgrim inbox.'**
+  String get adminSettingsInAppNotificationsHint;
+
+  /// No description provided for @adminSettingsPushNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Push notifications'**
+  String get adminSettingsPushNotifications;
+
+  /// No description provided for @adminSettingsPushNotificationsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Firebase push notifications to devices.'**
+  String get adminSettingsPushNotificationsHint;
+
+  /// No description provided for @adminSettingsPushNotificationsUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Firebase is not configured. Push notifications cannot be enabled.'**
+  String get adminSettingsPushNotificationsUnavailable;
+
+  /// No description provided for @adminSettingsManagementSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Management shortcuts'**
+  String get adminSettingsManagementSection;
+
+  /// No description provided for @adminSettingsManagementSectionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Jump to related admin areas.'**
+  String get adminSettingsManagementSectionHint;
+
+  /// No description provided for @adminSettingsIntegrationsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Integrations'**
+  String get adminSettingsIntegrationsSection;
+
+  /// No description provided for @adminSettingsIntegrationsSectionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Backend services configured for this deployment.'**
+  String get adminSettingsIntegrationsSectionHint;
+
+  /// No description provided for @adminSettingsSupabaseStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Supabase'**
+  String get adminSettingsSupabaseStatus;
+
+  /// No description provided for @adminSettingsFirebaseStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Firebase'**
+  String get adminSettingsFirebaseStatus;
+
+  /// No description provided for @adminSettingsStatusConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Configured'**
+  String get adminSettingsStatusConfigured;
+
+  /// No description provided for @adminSettingsStatusNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Not configured'**
+  String get adminSettingsStatusNotConfigured;
+
+  /// No description provided for @adminSettingsLastUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated {date}'**
+  String adminSettingsLastUpdated(String date);
 }
 
 class _AppLocalizationsDelegate
