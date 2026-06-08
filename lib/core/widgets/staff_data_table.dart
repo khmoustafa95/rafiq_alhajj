@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_button_styles.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
@@ -66,6 +67,7 @@ class StaffDataTable<T> extends StatefulWidget {
     this.trailingBuilder,
     this.emptyMessage,
     this.emptyIcon = Icons.inbox_outlined,
+    this.toolbarActions = const [],
     super.key,
   });
 
@@ -81,6 +83,7 @@ class StaffDataTable<T> extends StatefulWidget {
   final Widget Function(BuildContext context, T item)? trailingBuilder;
   final String? emptyMessage;
   final IconData emptyIcon;
+  final List<Widget> toolbarActions;
 
   @override
   State<StaffDataTable<T>> createState() => _StaffDataTableState<T>();
@@ -153,6 +156,7 @@ class _StaffDataTableState<T> extends State<StaffDataTable<T>> {
           searchHint: widget.searchHint,
           filters: widget.filters,
           query: widget.query,
+          toolbarActions: widget.toolbarActions,
           onSearchChanged: _onSearchChanged,
           onFilterChanged: (filters) {
             _updateQuery(widget.query.copyWith(filters: filters, page: 0));
@@ -236,6 +240,7 @@ class _Toolbar extends StatelessWidget {
     required this.query,
     required this.onSearchChanged,
     required this.onFilterChanged,
+    this.toolbarActions = const [],
   });
 
   final TextEditingController searchController;
@@ -244,74 +249,86 @@ class _Toolbar extends StatelessWidget {
   final StaffTableQuery query;
   final ValueChanged<String> onSearchChanged;
   final ValueChanged<Map<String, String>> onFilterChanged;
+  final List<Widget> toolbarActions;
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: sw(12),
-      runSpacing: sh(10),
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: [
-        SizedBox(
-          width: sw(320),
-          child: TextField(
-            controller: searchController,
-            decoration: InputDecoration(
-              hintText: searchHint,
-              prefixIcon: const Icon(Icons.search, size: 20),
-              filled: true,
-              fillColor: AppColors.surface,
-              isDense: true,
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: sw(12),
-                vertical: sh(12),
-              ),
-            ),
-            onChanged: onSearchChanged,
-          ),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        filledButtonTheme: FilledButtonThemeData(
+          style: staffRowFilledButtonStyle(context),
         ),
-        ...filters.map((filter) {
-          final current = query.filters[filter.id] ?? '';
-          return SizedBox(
-            width: sw(180),
-            child: DropdownButtonFormField<String>(
-              key: ValueKey('${filter.id}-$current'),
-              initialValue: current.isEmpty ? null : current,
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: staffRowOutlinedButtonStyle(context),
+        ),
+      ),
+      child: Wrap(
+        spacing: sw(12),
+        runSpacing: sh(10),
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          SizedBox(
+            width: sw(320),
+            child: TextField(
+              controller: searchController,
               decoration: InputDecoration(
-                labelText: filter.label,
+                hintText: searchHint,
+                prefixIcon: const Icon(Icons.search, size: 20),
                 filled: true,
                 fillColor: AppColors.surface,
                 isDense: true,
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: sw(12),
-                  vertical: sh(10),
+                  vertical: sh(12),
                 ),
               ),
-              items: [
-                DropdownMenuItem(
-                  value: '',
-                  child: Text(filter.allLabel ?? '—'),
-                ),
-                ...filter.options.map(
-                  (option) => DropdownMenuItem(
-                    value: option.value,
-                    child: Text(option.label),
+              onChanged: onSearchChanged,
+            ),
+          ),
+          ...filters.map((filter) {
+            final current = query.filters[filter.id] ?? '';
+            return SizedBox(
+              width: sw(180),
+              child: DropdownButtonFormField<String>(
+                key: ValueKey('${filter.id}-$current'),
+                initialValue: current.isEmpty ? null : current,
+                decoration: InputDecoration(
+                  labelText: filter.label,
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  isDense: true,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: sw(12),
+                    vertical: sh(10),
                   ),
                 ),
-              ],
-              onChanged: (value) {
-                final next = Map<String, String>.from(query.filters);
-                if (value == null || value.isEmpty) {
-                  next.remove(filter.id);
-                } else {
-                  next[filter.id] = value;
-                }
-                onFilterChanged(next);
-              },
-            ),
-          );
-        }),
-      ],
+                items: [
+                  DropdownMenuItem(
+                    value: '',
+                    child: Text(filter.allLabel ?? '—'),
+                  ),
+                  ...filter.options.map(
+                    (option) => DropdownMenuItem(
+                      value: option.value,
+                      child: Text(option.label),
+                    ),
+                  ),
+                ],
+                onChanged: (value) {
+                  final next = Map<String, String>.from(query.filters);
+                  if (value == null || value.isEmpty) {
+                    next.remove(filter.id);
+                  } else {
+                    next[filter.id] = value;
+                  }
+                  onFilterChanged(next);
+                },
+              ),
+            );
+          }),
+          ...toolbarActions,
+        ],
+      ),
     );
   }
 }

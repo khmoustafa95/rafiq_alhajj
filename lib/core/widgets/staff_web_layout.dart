@@ -252,6 +252,55 @@ class ResponsiveFormGrid extends StatelessWidget {
   }
 }
 
+/// Compact left-aligned form action buttons (shared by web + mobile footers).
+class StaffFormActionButtons extends StatelessWidget {
+  const StaffFormActionButtons({
+    required this.primaryLabel,
+    required this.onPrimary,
+    this.secondaryLabel,
+    this.onSecondary,
+    this.isLoading = false,
+    super.key,
+  });
+
+  final String primaryLabel;
+  final VoidCallback? onPrimary;
+  final String? secondaryLabel;
+  final VoidCallback? onSecondary;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        FilledButton(
+          onPressed: isLoading ? null : onPrimary,
+          style: staffFormActionFilledButtonStyle(context),
+          child: isLoading
+              ? SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                )
+              : Text(primaryLabel),
+        ),
+        if (secondaryLabel != null && onSecondary != null) ...[
+          SizedBox(width: sw(12)),
+          OutlinedButton(
+            onPressed: isLoading ? null : onSecondary,
+            style: staffFormActionOutlinedButtonStyle(context),
+            child: Text(secondaryLabel!),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
 /// Sticky footer bar for primary form actions on web.
 class StaffFormActionsBar extends StatelessWidget {
   const StaffFormActionsBar({
@@ -271,8 +320,7 @@ class StaffFormActionsBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 14.h),
+    return DecoratedBox(
       decoration: const BoxDecoration(
         color: AppColors.surface,
         border: Border(top: BorderSide(color: AppColors.border)),
@@ -286,39 +334,61 @@ class StaffFormActionsBar extends StatelessWidget {
       ),
       child: SafeArea(
         top: false,
-        child: Align(
-          child: ConstrainedBox(
-            constraints:
-                const BoxConstraints(maxWidth: StaffWebPage.maxContentWidth),
-            child: Row(
-              children: [
-                if (secondaryLabel != null && onSecondary != null) ...[
-                  OutlinedButton(
-                    onPressed: isLoading ? null : onSecondary,
-                    style: staffRowOutlinedButtonStyle(context),
-                    child: Text(secondaryLabel!),
-                  ),
-                  SizedBox(width: 12.w),
-                ],
-                const Spacer(),
-                FilledButton(
-                  onPressed: isLoading ? null : onPrimary,
-                  style: staffRowFilledButtonStyle(context).copyWith(
-                    minimumSize: WidgetStatePropertyAll(Size(160.w, 44.h)),
-                  ),
-                child: isLoading
-                    ? SizedBox(
-                        height: 22,
-                        width: 22,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
-                      )
-                    : Text(primaryLabel),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: sw(24), vertical: sh(12)),
+          child: Center(
+            child: ConstrainedBox(
+              constraints:
+                  const BoxConstraints(maxWidth: StaffWebPage.maxContentWidth),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: StaffFormActionButtons(
+                  primaryLabel: primaryLabel,
+                  onPrimary: onPrimary,
+                  secondaryLabel: secondaryLabel,
+                  onSecondary: onSecondary,
+                  isLoading: isLoading,
                 ),
-              ],
+              ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Mobile scaffold footer matching [StaffFormActionsBar] alignment.
+class StaffFormMobileActionsBar extends StatelessWidget {
+  const StaffFormMobileActionsBar({
+    required this.primaryLabel,
+    required this.onPrimary,
+    this.secondaryLabel,
+    this.onSecondary,
+    this.isLoading = false,
+    super.key,
+  });
+
+  final String primaryLabel;
+  final VoidCallback? onPrimary;
+  final String? secondaryLabel;
+  final VoidCallback? onSecondary;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: StaffFormActionButtons(
+            primaryLabel: primaryLabel,
+            onPrimary: onPrimary,
+            secondaryLabel: secondaryLabel,
+            onSecondary: onSecondary,
+            isLoading: isLoading,
           ),
         ),
       ),

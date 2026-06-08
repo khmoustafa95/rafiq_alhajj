@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
+import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/routing/staff_navigation.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
@@ -57,6 +58,10 @@ class _OperatorPilgrimDetailScreenState
     _transportController.text = record.transportationDetails ?? '';
     _travelDate = record.travelDate;
     _initialized = true;
+  }
+
+  void _cancel() {
+    staffNavigateBack(context, fallbackRoute: AppRoutes.operatorPilgrims);
   }
 
   Future<void> _save() async {
@@ -298,7 +303,7 @@ class _OperatorPilgrimDetailScreenState
               primaryLabel: l10n.operatorPilgrimSave,
               onPrimary: _save,
               secondaryLabel: l10n.dialogCancel,
-              onSecondary: _isSaving ? null : () => context.pop(),
+              onSecondary: _isSaving ? null : _cancel,
               isLoading: _isSaving,
             ),
           ),
@@ -307,12 +312,19 @@ class _OperatorPilgrimDetailScreenState
               title: Text(l10n.operatorPilgrimDetailTitle),
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
-                onPressed: _isSaving ? null : () => context.pop(),
+                onPressed: _isSaving ? null : _cancel,
               ),
             ),
             body: SingleChildScrollView(
               padding: EdgeInsets.all(16.w),
               child: form,
+            ),
+            bottomNavigationBar: StaffFormMobileActionsBar(
+              primaryLabel: l10n.operatorPilgrimSave,
+              onPrimary: _save,
+              secondaryLabel: l10n.dialogCancel,
+              onSecondary: _isSaving ? null : _cancel,
+              isLoading: _isSaving,
             ),
           ),
         );

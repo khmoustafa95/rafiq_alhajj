@@ -108,10 +108,21 @@ class _AdminCompetitionsListScreenState
     );
   }
 
+  List<Widget> _toolbarActions(AppLocalizations l10n) {
+    return [
+      FilledButton.icon(
+        onPressed: _openNew,
+        icon: const Icon(Icons.add_rounded),
+        label: Text(l10n.adminCompetitionAdd),
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final listAsync = ref.watch(adminCompetitionListProvider);
+    final toolbarActions = _toolbarActions(l10n);
 
     final body = listAsync.when(
       skipLoadingOnReload: true,
@@ -124,6 +135,7 @@ class _AdminCompetitionsListScreenState
               onQueryChanged: (query) => setState(() => _query = query),
               searchHint: l10n.staffTableSearchCompetitions,
               filters: _filters(l10n),
+              toolbarActions: toolbarActions,
               isLoading: true,
               emptyMessage: l10n.adminCompetitionsEmpty,
               emptyIcon: Icons.emoji_events_outlined,
@@ -148,6 +160,7 @@ class _AdminCompetitionsListScreenState
             onQueryChanged: (query) => setState(() => _query = query),
             searchHint: l10n.staffTableSearchCompetitions,
             filters: _filters(l10n),
+            toolbarActions: toolbarActions,
             isLoading: listAsync.isLoading,
             onRowTap: (competition) => _openEdit(competition.id),
             trailingBuilder: (context, competition) => StaffTableRowActions(
@@ -199,13 +212,6 @@ class _AdminCompetitionsListScreenState
       web: StaffWebPage(
         title: l10n.adminCompetitionsTitle,
         scrollable: false,
-        actions: [
-          FilledButton.icon(
-            onPressed: _openNew,
-            icon: const Icon(Icons.add_rounded),
-            label: Text(l10n.adminCompetitionAdd),
-          ),
-        ],
         body: body,
       ),
       mobile: Scaffold(

@@ -454,17 +454,16 @@ class StaffWebHeader extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(width: sw(8)),
-            Flexible(
-              child: Wrap(
-                spacing: sw(8),
-                runSpacing: sh(8),
-                children: [
-                  const NotificationBellButton(),
-                  const LanguageSwitcherAppBarAction(compact: true),
-                  ...actions,
-                ],
-              ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const NotificationBellButton(),
+                SizedBox(width: sw(8)),
+                const LanguageSwitcherAppBarAction(compact: true),
+                ...actions.expand(
+                  (action) => [SizedBox(width: sw(8)), action],
+                ),
+              ],
             ),
           ],
         ),

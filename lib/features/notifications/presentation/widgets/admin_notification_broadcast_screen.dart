@@ -220,16 +220,13 @@ class _AdminNotificationBroadcastScreenState
           ),
           if (!AppPlatform.isWeb) ...[
             SizedBox(height: 24.h),
-            FilledButton.icon(
-              onPressed: isSending ? null : _submit,
-              icon: isSending
-                  ? SizedBox(
-                      width: 18.w,
-                      height: 18.w,
-                      child: const CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.send_outlined),
-              label: Text(l10n.adminNotificationSendButton),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: StaffFormActionButtons(
+                primaryLabel: l10n.adminNotificationSendButton,
+                onPrimary: _submit,
+                isLoading: isSending,
+              ),
             ),
           ],
         ],

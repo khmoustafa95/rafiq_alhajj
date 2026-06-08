@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/routing/staff_navigation.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
@@ -71,6 +72,10 @@ class _AdminOperatorEditScreenState extends ConsumerState<AdminOperatorEditScree
     setState(() {
       _passwordController.text = _generatePassword();
     });
+  }
+
+  void _cancel() {
+    staffNavigateBack(context, fallbackRoute: AppRoutes.adminOperators);
   }
 
   Future<void> _showCreatedDialog(String email, String password) async {
@@ -327,7 +332,7 @@ class _AdminOperatorEditScreenState extends ConsumerState<AdminOperatorEditScree
           primaryLabel: l10n.adminContentSave,
           onPrimary: _submit,
           secondaryLabel: l10n.dialogCancel,
-          onSecondary: isSaving ? null : () => context.go(AppRoutes.adminOperators),
+          onSecondary: isSaving ? null : _cancel,
           isLoading: isSaving,
         ),
       ),
@@ -336,27 +341,19 @@ class _AdminOperatorEditScreenState extends ConsumerState<AdminOperatorEditScree
           title: Text(_pageTitle(l10n)),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: isSaving ? null : () => context.pop(),
+            onPressed: isSaving ? null : _cancel,
           ),
         ),
         body: SingleChildScrollView(
           padding: EdgeInsets.all(16.w),
           child: form,
         ),
-        bottomNavigationBar: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.all(16.w),
-            child: FilledButton(
-              onPressed: isSaving ? null : _submit,
-              child: isSaving
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(l10n.adminContentSave),
-            ),
-          ),
+        bottomNavigationBar: StaffFormMobileActionsBar(
+          primaryLabel: l10n.adminContentSave,
+          onPrimary: _submit,
+          secondaryLabel: l10n.dialogCancel,
+          onSecondary: isSaving ? null : _cancel,
+          isLoading: isSaving,
         ),
       ),
     );

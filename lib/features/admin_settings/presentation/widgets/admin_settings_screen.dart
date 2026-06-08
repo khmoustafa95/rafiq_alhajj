@@ -488,15 +488,13 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           ),
           if (!AppPlatform.isWeb) ...[
             SizedBox(height: 24.h),
-            FilledButton(
-              onPressed: isSaving ? null : _submit,
-              child: isSaving
-                  ? const SizedBox(
-                      height: 22,
-                      width: 22,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(l10n.adminSettingsSave),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: StaffFormActionButtons(
+                primaryLabel: l10n.adminSettingsSave,
+                onPrimary: _submit,
+                isLoading: isSaving,
+              ),
             ),
           ],
         ],

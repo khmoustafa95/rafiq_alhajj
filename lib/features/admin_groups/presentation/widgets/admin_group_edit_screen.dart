@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/routing/staff_navigation.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
@@ -140,6 +141,10 @@ class _AdminGroupEditScreenState extends ConsumerState<AdminGroupEditScreen> {
       row.dispose();
       _memberRows.remove(row);
     });
+  }
+
+  void _cancel() {
+    staffNavigateBack(context, fallbackRoute: AppRoutes.adminGroups);
   }
 
   Future<void> _submit() async {
@@ -377,7 +382,7 @@ class _AdminGroupEditScreenState extends ConsumerState<AdminGroupEditScreen> {
           primaryLabel: l10n.adminContentSave,
           onPrimary: _submit,
           secondaryLabel: l10n.dialogCancel,
-          onSecondary: isSaving ? null : () => context.go(AppRoutes.adminGroups),
+          onSecondary: isSaving ? null : _cancel,
           isLoading: isSaving,
         ),
       ),
@@ -388,27 +393,19 @@ class _AdminGroupEditScreenState extends ConsumerState<AdminGroupEditScreen> {
           ),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: isSaving ? null : () => context.pop(),
+            onPressed: isSaving ? null : _cancel,
           ),
         ),
         body: SingleChildScrollView(
           padding: EdgeInsets.all(16.w),
           child: form,
         ),
-        bottomNavigationBar: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.all(16.w),
-            child: FilledButton(
-              onPressed: isSaving ? null : _submit,
-              child: isSaving
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(l10n.adminContentSave),
-            ),
-          ),
+        bottomNavigationBar: StaffFormMobileActionsBar(
+          primaryLabel: l10n.adminContentSave,
+          onPrimary: _submit,
+          secondaryLabel: l10n.dialogCancel,
+          onSecondary: isSaving ? null : _cancel,
+          isLoading: isSaving,
         ),
       ),
     );

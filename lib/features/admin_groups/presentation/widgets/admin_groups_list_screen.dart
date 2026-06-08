@@ -83,10 +83,21 @@ class _AdminGroupsListScreenState extends ConsumerState<AdminGroupsListScreen> {
     );
   }
 
+  List<Widget> _toolbarActions(AppLocalizations l10n) {
+    return [
+      FilledButton.icon(
+        onPressed: _openNew,
+        icon: const Icon(Icons.group_add_rounded),
+        label: Text(l10n.adminGroupAdd),
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final pageAsync = ref.watch(adminGroupListPageProvider(_query));
+    final toolbarActions = _toolbarActions(l10n);
 
     final body = pageAsync.when(
       skipLoadingOnReload: true,
@@ -98,6 +109,7 @@ class _AdminGroupsListScreenState extends ConsumerState<AdminGroupsListScreen> {
               query: _query,
               onQueryChanged: (query) => setState(() => _query = query),
               searchHint: l10n.staffTableSearchGroups,
+              toolbarActions: toolbarActions,
               isLoading: true,
               emptyMessage: l10n.adminGroupsEmpty,
               emptyIcon: Icons.groups_outlined,
@@ -127,6 +139,7 @@ class _AdminGroupsListScreenState extends ConsumerState<AdminGroupsListScreen> {
             query: _query,
             onQueryChanged: (query) => setState(() => _query = query),
             searchHint: l10n.staffTableSearchGroups,
+            toolbarActions: toolbarActions,
             isLoading: pageAsync.isLoading,
             onRowTap: (group) => _openEdit(group.id),
             trailingBuilder: (context, group) => StaffTableRowActions(
@@ -177,13 +190,6 @@ class _AdminGroupsListScreenState extends ConsumerState<AdminGroupsListScreen> {
         title: l10n.adminGroupsTitle,
         subtitle: l10n.adminGroupsSubtitle,
         scrollable: false,
-        actions: [
-          FilledButton.icon(
-            onPressed: _openNew,
-            icon: const Icon(Icons.group_add_rounded),
-            label: Text(l10n.adminGroupAdd),
-          ),
-        ],
         body: body,
       );
     }

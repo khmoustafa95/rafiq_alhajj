@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/routing/staff_navigation.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/features/admin_content/domain/models/content_editor_input.dart';
@@ -60,6 +61,10 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
     _type = item.type;
     _visibility = item.visibility;
     _loaded = true;
+  }
+
+  void _cancel() {
+    staffNavigateBack(context, fallbackRoute: AppRoutes.adminContent);
   }
 
   Future<void> _submit() async {
@@ -250,7 +255,7 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
           primaryLabel: l10n.adminContentSave,
           onPrimary: _submit,
           secondaryLabel: l10n.dialogCancel,
-          onSecondary: isSaving ? null : () => context.pop(),
+          onSecondary: isSaving ? null : _cancel,
           isLoading: isSaving,
         ),
       ),
@@ -259,7 +264,7 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
           title: Text(_pageTitle),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: isSaving ? null : () => context.pop(),
+            onPressed: isSaving ? null : _cancel,
           ),
         ),
         body: SingleChildScrollView(
@@ -268,14 +273,11 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
         ),
         bottomNavigationBar: isSaving
             ? null
-            : SafeArea(
-                child: Padding(
-                  padding: EdgeInsets.all(16.w),
-                  child: FilledButton(
-                    onPressed: _submit,
-                    child: Text(l10n.adminContentSave),
-                  ),
-                ),
+            : StaffFormMobileActionsBar(
+                primaryLabel: l10n.adminContentSave,
+                onPrimary: _submit,
+                secondaryLabel: l10n.dialogCancel,
+                onSecondary: _cancel,
               ),
       ),
     );

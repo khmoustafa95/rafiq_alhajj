@@ -109,10 +109,21 @@ class _AdminContentListScreenState extends ConsumerState<AdminContentListScreen>
     );
   }
 
+  List<Widget> _toolbarActions(AppLocalizations l10n) {
+    return [
+      FilledButton.icon(
+        onPressed: _openNew,
+        icon: const Icon(Icons.add_rounded),
+        label: Text(l10n.adminContentAdd),
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final itemsAsync = ref.watch(adminContentListProvider);
+    final toolbarActions = _toolbarActions(l10n);
 
     final content = itemsAsync.when(
       skipLoadingOnReload: true,
@@ -125,6 +136,7 @@ class _AdminContentListScreenState extends ConsumerState<AdminContentListScreen>
               onQueryChanged: (query) => setState(() => _query = query),
               searchHint: l10n.staffTableSearchContent,
               filters: _filters(l10n),
+              toolbarActions: toolbarActions,
               isLoading: true,
               emptyMessage: l10n.adminContentEmpty,
             )
@@ -158,6 +170,7 @@ class _AdminContentListScreenState extends ConsumerState<AdminContentListScreen>
             onQueryChanged: (query) => setState(() => _query = query),
             searchHint: l10n.staffTableSearchContent,
             filters: _filters(l10n),
+            toolbarActions: toolbarActions,
             isLoading: itemsAsync.isLoading,
             onRowTap: (item) => _openEdit(item.id),
             trailingBuilder: (context, item) => StaffTableRowActions(
@@ -205,13 +218,6 @@ class _AdminContentListScreenState extends ConsumerState<AdminContentListScreen>
       return StaffWebPage(
         title: l10n.adminContentListTitle,
         scrollable: false,
-        actions: [
-          FilledButton.icon(
-            onPressed: _openNew,
-            icon: const Icon(Icons.add_rounded),
-            label: Text(l10n.adminContentAdd),
-          ),
-        ],
         body: content,
       );
     }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/routing/staff_navigation.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition.dart';
@@ -70,6 +71,10 @@ class _AdminCompetitionEditScreenState
         }
       });
     }
+  }
+
+  void _cancel() {
+    staffNavigateBack(context, fallbackRoute: AppRoutes.adminCompetitions);
   }
 
   Future<void> _submit() async {
@@ -225,7 +230,7 @@ class _AdminCompetitionEditScreenState
           primaryLabel: l10n.adminContentSave,
           onPrimary: _submit,
           secondaryLabel: l10n.dialogCancel,
-          onSecondary: isSaving ? null : () => context.pop(),
+          onSecondary: isSaving ? null : _cancel,
           isLoading: isSaving,
         ),
       ),
@@ -235,20 +240,12 @@ class _AdminCompetitionEditScreenState
           padding: EdgeInsets.all(16.w),
           child: form,
         ),
-        bottomNavigationBar: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.all(16.w),
-            child: FilledButton(
-              onPressed: isSaving ? null : _submit,
-              child: isSaving
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(l10n.adminContentSave),
-            ),
-          ),
+        bottomNavigationBar: StaffFormMobileActionsBar(
+          primaryLabel: l10n.adminContentSave,
+          onPrimary: _submit,
+          secondaryLabel: l10n.dialogCancel,
+          onSecondary: isSaving ? null : _cancel,
+          isLoading: isSaving,
         ),
       ),
     );

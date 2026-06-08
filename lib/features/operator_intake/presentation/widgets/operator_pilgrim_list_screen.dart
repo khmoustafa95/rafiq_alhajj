@@ -48,6 +48,16 @@ class _OperatorPilgrimListScreenState
     final isAdmin = ref.watch(authAccessModeProvider) == AppAccessMode.admin;
     final pageAsync = ref.watch(operatorPilgrimRegistryPageProvider(_query));
 
+    final toolbarActions = isAdmin
+        ? const <Widget>[]
+        : [
+            FilledButton.icon(
+              onPressed: () => context.go(AppRoutes.operatorIntake),
+              icon: const Icon(Icons.person_add_outlined),
+              label: Text(l10n.operatorIntakeTitle),
+            ),
+          ];
+
     final listBody = pageAsync.when(
       skipLoadingOnReload: true,
       loading: () => AppPlatform.isWeb
@@ -58,6 +68,7 @@ class _OperatorPilgrimListScreenState
               query: _query,
               onQueryChanged: (query) => setState(() => _query = query),
               searchHint: l10n.operatorPilgrimSearchHint,
+              toolbarActions: toolbarActions,
               isLoading: true,
               emptyMessage: l10n.operatorPilgrimListEmpty,
               emptyIcon: Icons.people_outline,
@@ -80,6 +91,7 @@ class _OperatorPilgrimListScreenState
             query: _query,
             onQueryChanged: (query) => setState(() => _query = query),
             searchHint: l10n.operatorPilgrimSearchHint,
+            toolbarActions: toolbarActions,
             isLoading: pageAsync.isLoading,
             onRowTap: _openPilgrim,
             trailingBuilder: (_, _) => Icon(
@@ -119,21 +131,10 @@ class _OperatorPilgrimListScreenState
       },
     );
 
-    final registerAction = isAdmin
-        ? const <Widget>[]
-        : [
-            FilledButton.icon(
-              onPressed: () => context.go(AppRoutes.operatorIntake),
-              icon: const Icon(Icons.person_add_outlined),
-              label: Text(l10n.operatorIntakeTitle),
-            ),
-          ];
-
     return StaffAdaptivePage(
       web: StaffWebPage(
         title: l10n.operatorPilgrimListTitle,
         subtitle: l10n.operatorPilgrimListSubtitle,
-        actions: registerAction,
         scrollable: false,
         body: listBody,
       ),

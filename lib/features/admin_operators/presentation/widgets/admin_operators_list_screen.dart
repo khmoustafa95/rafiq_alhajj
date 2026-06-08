@@ -47,10 +47,21 @@ class _AdminOperatorsListScreenState
     }
   }
 
+  List<Widget> _toolbarActions(AppLocalizations l10n) {
+    return [
+      FilledButton.icon(
+        onPressed: () => _openNew(context),
+        icon: const Icon(Icons.person_add_alt_1_rounded),
+        label: Text(l10n.adminOperatorAdd),
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final pageAsync = ref.watch(adminOperatorListPageProvider(_query));
+    final toolbarActions = _toolbarActions(l10n);
 
     final body = pageAsync.when(
       skipLoadingOnReload: true,
@@ -63,6 +74,7 @@ class _AdminOperatorsListScreenState
               onQueryChanged: (query) => setState(() => _query = query),
               searchHint: l10n.staffTableSearchOperators,
               filters: _filters(l10n),
+              toolbarActions: toolbarActions,
               isLoading: true,
               emptyMessage: l10n.adminOperatorEmpty,
               emptyIcon: Icons.badge_outlined,
@@ -93,6 +105,7 @@ class _AdminOperatorsListScreenState
             onQueryChanged: (query) => setState(() => _query = query),
             searchHint: l10n.staffTableSearchOperators,
             filters: _filters(l10n),
+            toolbarActions: toolbarActions,
             isLoading: pageAsync.isLoading,
             onRowTap: (operator) => _openEdit(context, operator.id),
             trailingBuilder: (context, operator) => StaffTableRowActions(
@@ -138,13 +151,6 @@ class _AdminOperatorsListScreenState
         title: l10n.adminOperatorsTitle,
         subtitle: l10n.adminOperatorsSubtitle,
         scrollable: false,
-        actions: [
-          FilledButton.icon(
-            onPressed: () => _openNew(context),
-            icon: const Icon(Icons.person_add_alt_1_rounded),
-            label: Text(l10n.adminOperatorAdd),
-          ),
-        ],
         body: body,
       );
     }

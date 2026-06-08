@@ -331,16 +331,15 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
           ),
           if (!AppPlatform.isWeb) ...[
             SizedBox(height: 24.h),
-            FilledButton(
-              onPressed: isSubmitting ? null : _submit,
-              style: FilledButton.styleFrom(minimumSize: Size.fromHeight(48.h)),
-              child: isSubmitting
-                  ? const SizedBox(
-                      height: 22,
-                      width: 22,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(l10n.operatorSubmitPilgrim),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: StaffFormActionButtons(
+                primaryLabel: l10n.operatorSubmitPilgrim,
+                onPrimary: _submit,
+                secondaryLabel: l10n.operatorClearForm,
+                onSecondary: isSubmitting ? null : _clearForm,
+                isLoading: isSubmitting,
+              ),
             ),
           ],
         ],
