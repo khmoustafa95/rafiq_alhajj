@@ -45,10 +45,15 @@ abstract final class AppRoutes {
   static const String adminOperators = '/admin/operators';
   static const String adminOperatorNew = '/admin/operators/new';
   static const String adminOperatorEdit = '/admin/operators/:id/edit';
+  static const String adminGroups = '/admin/groups';
+  static const String adminGroupNew = '/admin/groups/new';
+  static const String adminGroupEdit = '/admin/groups/:id/edit';
 
   static String adminContentEditPath(String id) => '/admin/content/$id/edit';
 
   static String adminOperatorEditPath(String id) => '/admin/operators/$id/edit';
+
+  static String adminGroupEditPath(String id) => '/admin/groups/$id/edit';
 
   static String contentDetailPath(String id) => '/content/$id';
 

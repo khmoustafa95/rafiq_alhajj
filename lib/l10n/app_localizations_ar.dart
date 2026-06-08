@@ -1281,6 +1281,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get staffNavOperators => 'المشغّلون';
 
   @override
+  String get staffNavGroups => 'المجموعات';
+
+  @override
   String get staffNavContent => 'إدارة المحتوى';
 
   @override
@@ -1489,4 +1492,106 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get staffTableSearchCompetitions => 'ابحث بالعنوان أو الوصف';
+
+  @override
+  String get staffTableSearchGroups => 'ابحث باسم المجموعة أو الرئيس';
+
+  @override
+  String get adminGroupsTitle => 'إدارة المجموعات';
+
+  @override
+  String get adminGroupsSubtitle => 'أدر مجموعات الحج والقيادة وأعضاء الإدارة.';
+
+  @override
+  String get adminGroupAdd => 'إضافة مجموعة';
+
+  @override
+  String get adminGroupNewTitle => 'مجموعة جديدة';
+
+  @override
+  String get adminGroupEditTitle => 'تعديل المجموعة';
+
+  @override
+  String get adminGroupDetailsSection => 'بيانات المجموعة';
+
+  @override
+  String get adminGroupName => 'اسم المجموعة';
+
+  @override
+  String get adminGroupNameRequired => 'اسم المجموعة مطلوب';
+
+  @override
+  String get adminGroupUploadLogo => 'رفع الشعار';
+
+  @override
+  String get adminGroupPresidentName => 'اسم الرئيس';
+
+  @override
+  String get adminGroupPresidentPhone => 'هاتف الرئيس';
+
+  @override
+  String get adminGroupMembersSection => 'أعضاء الإدارة';
+
+  @override
+  String get adminGroupMembersSectionHint =>
+      'أضف المنسقين والموظفين مع أدوارهم وبيانات التواصل.';
+
+  @override
+  String get adminGroupAddMember => 'إضافة عضو';
+
+  @override
+  String get adminGroupRemoveMember => 'إزالة العضو';
+
+  @override
+  String get adminGroupMembersEmpty => 'لا يوجد أعضاء إدارة بعد.';
+
+  @override
+  String get adminGroupMemberName => 'اسم العضو';
+
+  @override
+  String get adminGroupMemberNameRequired => 'اسم العضو مطلوب';
+
+  @override
+  String get adminGroupMemberPosition => 'المنصب';
+
+  @override
+  String get adminGroupMemberContact => 'التواصل';
+
+  @override
+  String get adminGroupUploadPhoto => 'رفع الصورة';
+
+  @override
+  String get adminGroupMembersCount => 'الأعضاء';
+
+  @override
+  String get adminGroupCreateSuccess => 'تم إنشاء المجموعة';
+
+  @override
+  String get adminGroupSaveSuccess => 'تم تحديث المجموعة';
+
+  @override
+  String get adminGroupSaveError => 'تعذّر حفظ المجموعة. حاول مرة أخرى.';
+
+  @override
+  String get adminGroupsLoadError => 'تعذّر تحميل المجموعات.';
+
+  @override
+  String get adminGroupsEmpty => 'لا توجد مجموعات بعد. أضف أول مجموعة حج.';
+
+  @override
+  String get adminGroupDeleteTitle => 'حذف المجموعة؟';
+
+  @override
+  String adminGroupDeleteMessage(String name) {
+    return 'حذف \"$name\"؟ سيتم إلغاء ربط الحجاج في هذه المجموعة.';
+  }
+
+  @override
+  String get adminGroupDeleteConfirm => 'حذف';
+
+  @override
+  String get adminGroupDeleteSuccess => 'تم حذف المجموعة';
+
+  @override
+  String get adminGroupDeleteError => 'تعذّر حذف المجموعة';
 }

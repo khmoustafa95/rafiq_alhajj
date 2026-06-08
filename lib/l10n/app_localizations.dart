@@ -2473,6 +2473,12 @@ abstract class AppLocalizations {
   /// **'Operators'**
   String get staffNavOperators;
 
+  /// No description provided for @staffNavGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Groups'**
+  String get staffNavGroups;
+
   /// No description provided for @staffNavContent.
   ///
   /// In en, this message translates to:
@@ -2868,6 +2874,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search by title or description'**
   String get staffTableSearchCompetitions;
+
+  /// No description provided for @staffTableSearchGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by group or president name'**
+  String get staffTableSearchGroups;
+
+  /// No description provided for @adminGroupsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Group management'**
+  String get adminGroupsTitle;
+
+  /// No description provided for @adminGroupsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Hajj groups, leadership, and administration members.'**
+  String get adminGroupsSubtitle;
+
+  /// No description provided for @adminGroupAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add group'**
+  String get adminGroupAdd;
+
+  /// No description provided for @adminGroupNewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New group'**
+  String get adminGroupNewTitle;
+
+  /// No description provided for @adminGroupEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit group'**
+  String get adminGroupEditTitle;
+
+  /// No description provided for @adminGroupDetailsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Group details'**
+  String get adminGroupDetailsSection;
+
+  /// No description provided for @adminGroupName.
+  ///
+  /// In en, this message translates to:
+  /// **'Group name'**
+  String get adminGroupName;
+
+  /// No description provided for @adminGroupNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Group name is required'**
+  String get adminGroupNameRequired;
+
+  /// No description provided for @adminGroupUploadLogo.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload logo'**
+  String get adminGroupUploadLogo;
+
+  /// No description provided for @adminGroupPresidentName.
+  ///
+  /// In en, this message translates to:
+  /// **'President name'**
+  String get adminGroupPresidentName;
+
+  /// No description provided for @adminGroupPresidentPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'President phone'**
+  String get adminGroupPresidentPhone;
+
+  /// No description provided for @adminGroupMembersSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Administration members'**
+  String get adminGroupMembersSection;
+
+  /// No description provided for @adminGroupMembersSectionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add coordinators and staff with their roles and contact details.'**
+  String get adminGroupMembersSectionHint;
+
+  /// No description provided for @adminGroupAddMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Add member'**
+  String get adminGroupAddMember;
+
+  /// No description provided for @adminGroupRemoveMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove member'**
+  String get adminGroupRemoveMember;
+
+  /// No description provided for @adminGroupMembersEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No administration members yet.'**
+  String get adminGroupMembersEmpty;
+
+  /// No description provided for @adminGroupMemberName.
+  ///
+  /// In en, this message translates to:
+  /// **'Member name'**
+  String get adminGroupMemberName;
+
+  /// No description provided for @adminGroupMemberNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Member name is required'**
+  String get adminGroupMemberNameRequired;
+
+  /// No description provided for @adminGroupMemberPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Position'**
+  String get adminGroupMemberPosition;
+
+  /// No description provided for @adminGroupMemberContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get adminGroupMemberContact;
+
+  /// No description provided for @adminGroupUploadPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload photo'**
+  String get adminGroupUploadPhoto;
+
+  /// No description provided for @adminGroupMembersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get adminGroupMembersCount;
+
+  /// No description provided for @adminGroupCreateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Group created'**
+  String get adminGroupCreateSuccess;
+
+  /// No description provided for @adminGroupSaveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Group updated'**
+  String get adminGroupSaveSuccess;
+
+  /// No description provided for @adminGroupSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save group. Try again.'**
+  String get adminGroupSaveError;
+
+  /// No description provided for @adminGroupsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load groups.'**
+  String get adminGroupsLoadError;
+
+  /// No description provided for @adminGroupsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No groups yet. Add your first Hajj group.'**
+  String get adminGroupsEmpty;
+
+  /// No description provided for @adminGroupDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete group?'**
+  String get adminGroupDeleteTitle;
+
+  /// No description provided for @adminGroupDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"? Pilgrims in this group will be unassigned.'**
+  String adminGroupDeleteMessage(String name);
+
+  /// No description provided for @adminGroupDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get adminGroupDeleteConfirm;
+
+  /// No description provided for @adminGroupDeleteSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Group deleted'**
+  String get adminGroupDeleteSuccess;
+
+  /// No description provided for @adminGroupDeleteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete group'**
+  String get adminGroupDeleteError;
 }
 
 class _AppLocalizationsDelegate

@@ -3,23 +3,21 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
-**Staff web data tables** — reusable sort/filter/pagination for all admin list pages.
+**Admin group management** — CRUD for Hajj groups with leadership and administration members.
 
-## Recent changes (2026-06-08, tables)
-- **`StaffDataTable<T>`** (`lib/core/widgets/staff_data_table.dart`): search, column sort, dropdown filters, pagination bar.
-- **`StaffTableQuery` / `PaginatedResult`** + **`StaffTableProcessor`** for client-side paging (content, competitions).
-- **Server-side pagination** (Supabase `range` + `count`) for operators and pilgrims repositories/providers.
-- **List screens on web** now use the table: operators, pilgrims, content, competitions.
-- **Operator edit form** layout tightened (active toggle card, inline password generate, 2-col permissions).
+## Recent changes (2026-06-09, groups)
+- **Migration** `20260609120000_admin_groups_management.sql`: `groups` extended (logo, president); `group_administration_members` table; `group-assets` storage bucket; admin CRUD RLS.
+- **Flutter** `lib/features/admin_groups/`: list (`StaffDataTable`) + edit form (logo, president, dynamic member rows with photo upload).
+- **Routes:** `/admin/groups`, `/admin/groups/new`, `/admin/groups/:id/edit`; sidebar **Groups** nav item.
 
 ## Next steps
-1. Hot restart web — verify table sort/filter/pagination on all staff list pages.
-2. Deploy `manage-operator` edge function if not done (create/edit operators).
-3. Optional: enforce `operator_permissions` on operator routes.
+1. Run `supabase db reset` or `db push` to apply group migration.
+2. Hot restart web — test add/edit group with logo and members.
+3. Optional: assign pilgrims to groups from admin pilgrim detail.
 
 ## Key paths
 | Concern | Location |
 |---------|----------|
-| Reusable table | `lib/core/widgets/staff_data_table.dart` |
-| Table query model | `lib/core/models/staff_table_query.dart` |
-| Client paging helper | `lib/core/utils/staff_table_processor.dart` |
+| Group management UI | `lib/features/admin_groups/presentation/widgets/` |
+| Migration | `supabase/migrations/20260609120000_admin_groups_management.sql` |
+| Storage bucket | `group-assets` |

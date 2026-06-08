@@ -12,6 +12,7 @@ abstract final class RealtimeTables {
     'ritual_logs',
     'pilgrim_documents',
     'groups',
+    'group_administration_members',
   ];
 
   static const competitions = ['competitions', 'competition_entries'];

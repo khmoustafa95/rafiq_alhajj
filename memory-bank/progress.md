@@ -21,6 +21,7 @@
 | Admin analytics (US-07) | ✅ Web dashboard, charts, groups, live Supabase |
 | Admin content CMS (US-08) | ✅ Web `/admin/content` CRUD on `content_library` |
 | Admin operator management | ✅ Web `/admin/operators` CRUD + permissions (needs migration + edge fn deploy) |
+| Admin group management | ✅ Web `/admin/groups` CRUD + members + logo upload (needs migration apply) |
 | Operator pilgrim registry (US-09) | ✅ Web `/operator/pilgrims` list + logistics edit |
 | Competitions (US-10) | ✅ Pilgrim join/leaderboard + admin CRUD |
 | Dev one-command scripts | ✅ `npm run dev` / `scripts/*.ps1` |
@@ -60,6 +61,10 @@
 - [x] FCM push (device tokens + Edge Function)
 
 ## Changelog
+
+### 2026-06-09 — Admin group management
+- [x] Migration: group leadership fields, administration members, storage bucket, admin RLS
+- [x] Flutter `admin_groups` feature + routes + sidebar + l10n (en/ar)
 
 ### 2026-06-08 — Staff web data tables
 - [x] `StaffDataTable` reusable widget (sort, filter, pagination)

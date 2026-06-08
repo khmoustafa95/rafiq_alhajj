@@ -11,6 +11,8 @@ import 'package:rafiq_alhajj/features/admin_analytics/presentation/widgets/admin
 import 'package:rafiq_alhajj/features/admin_analytics/presentation/widgets/admin_login_screen.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/widgets/admin_content_edit_screen.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/widgets/admin_content_list_screen.dart';
+import 'package:rafiq_alhajj/features/admin_groups/presentation/widgets/admin_group_edit_screen.dart';
+import 'package:rafiq_alhajj/features/admin_groups/presentation/widgets/admin_groups_list_screen.dart';
 import 'package:rafiq_alhajj/features/admin_operators/presentation/widgets/admin_operator_edit_screen.dart';
 import 'package:rafiq_alhajj/features/admin_operators/presentation/widgets/admin_operators_list_screen.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
@@ -292,6 +294,24 @@ List<RouteBase> _mobilePilgrimRoutes() => [
           return AdminOperatorEditScreen(operatorId: id);
         },
       ),
+      GoRoute(
+        path: AppRoutes.adminGroups,
+        name: 'adminGroups',
+        builder: (context, state) => const AdminGroupsListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminGroupNew,
+        name: 'adminGroupNew',
+        builder: (context, state) => const AdminGroupEditScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminGroupEdit,
+        name: 'adminGroupEdit',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return AdminGroupEditScreen(groupId: id);
+        },
+      ),
     ];
 
 ShellRoute _staffWebShellRoute() {
@@ -381,6 +401,24 @@ ShellRoute _staffWebShellRoute() {
         builder: (context, state) {
           final id = state.pathParameters['id']!;
           return AdminOperatorEditScreen(operatorId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.adminGroups,
+        name: 'adminGroups',
+        builder: (context, state) => const AdminGroupsListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminGroupNew,
+        name: 'adminGroupNew',
+        builder: (context, state) => const AdminGroupEditScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminGroupEdit,
+        name: 'adminGroupEdit',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return AdminGroupEditScreen(groupId: id);
         },
       ),
     ],

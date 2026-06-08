@@ -1297,6 +1297,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get staffNavOperators => 'Operators';
 
   @override
+  String get staffNavGroups => 'Groups';
+
+  @override
   String get staffNavContent => 'Content Management';
 
   @override
@@ -1511,4 +1514,107 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get staffTableSearchCompetitions => 'Search by title or description';
+
+  @override
+  String get staffTableSearchGroups => 'Search by group or president name';
+
+  @override
+  String get adminGroupsTitle => 'Group management';
+
+  @override
+  String get adminGroupsSubtitle =>
+      'Manage Hajj groups, leadership, and administration members.';
+
+  @override
+  String get adminGroupAdd => 'Add group';
+
+  @override
+  String get adminGroupNewTitle => 'New group';
+
+  @override
+  String get adminGroupEditTitle => 'Edit group';
+
+  @override
+  String get adminGroupDetailsSection => 'Group details';
+
+  @override
+  String get adminGroupName => 'Group name';
+
+  @override
+  String get adminGroupNameRequired => 'Group name is required';
+
+  @override
+  String get adminGroupUploadLogo => 'Upload logo';
+
+  @override
+  String get adminGroupPresidentName => 'President name';
+
+  @override
+  String get adminGroupPresidentPhone => 'President phone';
+
+  @override
+  String get adminGroupMembersSection => 'Administration members';
+
+  @override
+  String get adminGroupMembersSectionHint =>
+      'Add coordinators and staff with their roles and contact details.';
+
+  @override
+  String get adminGroupAddMember => 'Add member';
+
+  @override
+  String get adminGroupRemoveMember => 'Remove member';
+
+  @override
+  String get adminGroupMembersEmpty => 'No administration members yet.';
+
+  @override
+  String get adminGroupMemberName => 'Member name';
+
+  @override
+  String get adminGroupMemberNameRequired => 'Member name is required';
+
+  @override
+  String get adminGroupMemberPosition => 'Position';
+
+  @override
+  String get adminGroupMemberContact => 'Contact';
+
+  @override
+  String get adminGroupUploadPhoto => 'Upload photo';
+
+  @override
+  String get adminGroupMembersCount => 'Members';
+
+  @override
+  String get adminGroupCreateSuccess => 'Group created';
+
+  @override
+  String get adminGroupSaveSuccess => 'Group updated';
+
+  @override
+  String get adminGroupSaveError => 'Could not save group. Try again.';
+
+  @override
+  String get adminGroupsLoadError => 'Could not load groups.';
+
+  @override
+  String get adminGroupsEmpty => 'No groups yet. Add your first Hajj group.';
+
+  @override
+  String get adminGroupDeleteTitle => 'Delete group?';
+
+  @override
+  String adminGroupDeleteMessage(String name) {
+    return 'Delete \"$name\"? Pilgrims in this group will be unassigned.';
+  }
+
+  @override
+  String get adminGroupDeleteConfirm => 'Delete';
+
+  @override
+  String get adminGroupDeleteSuccess => 'Group deleted';
+
+  @override
+  String get adminGroupDeleteError => 'Could not delete group';
 }
