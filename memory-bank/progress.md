@@ -63,6 +63,11 @@
 
 ## Changelog
 
+### 2026-06-09 — Pilgrims table selection + admin upsert
+- [x] Optional row selection + bulk actions on `StaffDataTable`
+- [x] Pilgrims filters (gender, group), admin add/edit, bulk group assign
+- [x] Migration admin pilgrim profile update + operator group read
+
 ### 2026-06-09 — Admin system settings
 - [x] Migration: `system_settings` global row + admin RLS + realtime
 - [x] Flutter `admin_settings` feature + route + sidebar + l10n (en/ar)

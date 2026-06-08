@@ -1500,6 +1500,54 @@ class AppLocalizationsAr extends AppLocalizations {
   String get staffTableSearchGroups => 'ابحث باسم المجموعة أو الرئيس';
 
   @override
+  String get staffTableFilterGender => 'الجنس';
+
+  @override
+  String get staffTableFilterGroup => 'المجموعة';
+
+  @override
+  String staffTableSelectedCount(int count) {
+    return '$count محدّد';
+  }
+
+  @override
+  String get staffTableClearSelection => 'مسح التحديد';
+
+  @override
+  String get pilgrimGenderMale => 'ذكر';
+
+  @override
+  String get pilgrimGenderFemale => 'أنثى';
+
+  @override
+  String get adminPilgrimAdd => 'إضافة حاج';
+
+  @override
+  String get adminPilgrimProfileSection => 'ملف الحاج';
+
+  @override
+  String get adminPilgrimBulkAssignGroup => 'تعيين مجموعة';
+
+  @override
+  String get adminPilgrimBulkClearGroup => 'إزالة المجموعة';
+
+  @override
+  String get adminPilgrimAssignGroupTitle => 'تعيين مجموعة للحجاج المحدّدين';
+
+  @override
+  String get adminPilgrimAssignGroupConfirm => 'تعيين';
+
+  @override
+  String get adminPilgrimAssignGroupSuccess =>
+      'تم تحديث مجموعة الحجاج المحدّدين';
+
+  @override
+  String get adminPilgrimAssignGroupError => 'تعذّر تحديث تعيين المجموعة';
+
+  @override
+  String get adminPilgrimNoGroups => 'لا توجد مجموعات. أنشئ مجموعة أولاً.';
+
+  @override
   String get adminGroupsTitle => 'إدارة المجموعات';
 
   @override

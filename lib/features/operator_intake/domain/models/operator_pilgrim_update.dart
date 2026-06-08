@@ -1,6 +1,9 @@
-/// Logistics fields an operator may update (not auth email / full name).
+/// Logistics and profile fields staff may update for a pilgrim.
 class OperatorPilgrimUpdate {
   const OperatorPilgrimUpdate({
+    this.fullName,
+    this.groupId,
+    this.gender,
     this.passportNumber,
     this.travelPermitNumber,
     this.medicalTestStatus,
@@ -10,6 +13,9 @@ class OperatorPilgrimUpdate {
     this.transportationDetails,
   });
 
+  final String? fullName;
+  final String? groupId;
+  final String? gender;
   final String? passportNumber;
   final String? travelPermitNumber;
   final String? medicalTestStatus;
@@ -18,7 +24,7 @@ class OperatorPilgrimUpdate {
   final String? hotelLocationUrl;
   final String? transportationDetails;
 
-  Map<String, dynamic> toDatabasePayload() {
+  Map<String, dynamic> toDetailsPayload() {
     return {
       'passport_number': _emptyToNull(passportNumber),
       'travel_permit_number': _emptyToNull(travelPermitNumber),
@@ -27,7 +33,15 @@ class OperatorPilgrimUpdate {
       'hotel_name': _emptyToNull(hotelName),
       'hotel_location_url': _emptyToNull(hotelLocationUrl),
       'transportation_details': _emptyToNull(transportationDetails),
+      'gender': _emptyToNull(gender),
       'updated_at': DateTime.now().toUtc().toIso8601String(),
+    };
+  }
+
+  Map<String, dynamic> toProfilePayload() {
+    return {
+      if (fullName != null) 'full_name': fullName!.trim(),
+      'group_id': groupId,
     };
   }
 

@@ -10,6 +10,9 @@ class OperatorPilgrimRecord {
     this.hotelName,
     this.hotelLocationUrl,
     this.transportationDetails,
+    this.gender,
+    this.groupId,
+    this.groupName,
   });
 
   final String profileId;
@@ -21,4 +24,7 @@ class OperatorPilgrimRecord {
   final String? hotelName;
   final String? hotelLocationUrl;
   final String? transportationDetails;
+  final String? gender;
+  final String? groupId;
+  final String? groupName;
 }

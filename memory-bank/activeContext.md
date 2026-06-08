@@ -3,21 +3,24 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
-**Admin system settings** — `/admin/settings` route with persisted global configuration.
+**Pilgrims table enhancements** — selectable rows, bulk actions, filters, admin upsert.
 
-## Recent changes (2026-06-09, settings)
-- **Migration** `20260609140000_system_settings.sql`: `system_settings` table (single `global` row), admin update RLS, realtime.
-- **Flutter** `lib/features/admin_settings/`: repository, service, providers, settings screen with sections (organization, operations, intake, features, notifications, shortcuts, integrations).
-- **Routes:** `/admin/settings`; sidebar **Settings** nav item (last in admin menu).
+## Recent changes (2026-06-09)
+- **StaffDataTable** optional selection: checkboxes, select-all, bulk action bar (`selectable`, `rowKey`, `bulkActions`).
+- **Pilgrims list:** gender + group filters, gender/group columns, admin Add pilgrim, bulk assign/clear group.
+- **Pilgrim detail:** admin can edit full name, gender, group + logistics.
+- **Migration** `20260609160000_admin_pilgrim_management.sql`: admin profile update RLS, operators read groups.
+- **Router:** admin can access `/operator/intake` for pilgrim creation.
 
 ## Next steps
-1. Run `supabase db reset` or `db push` to apply `system_settings` migration.
-2. Hot restart web — open **Settings**, edit and save.
-3. Optional: enforce settings in operator intake, maintenance banner, feature toggles.
+1. Apply migration: `supabase db reset` or `db push`.
+2. Hot restart web — test pilgrim filters, selection, bulk assign, admin edit/create.
+3. Optional: use selection on other tables (operators delete, etc.).
 
 ## Key paths
 | Concern | Location |
 |---------|----------|
-| Settings UI | `lib/features/admin_settings/presentation/widgets/admin_settings_screen.dart` |
-| Migration | `supabase/migrations/20260609140000_system_settings.sql` |
-| Providers | `lib/features/admin_settings/presentation/providers/system_settings_providers.dart` |
+| Table selection API | `lib/core/widgets/staff_data_table.dart` |
+| Pilgrims list | `lib/features/operator_intake/presentation/widgets/operator_pilgrim_list_screen.dart` |
+| Pilgrim detail (upsert) | `lib/features/operator_intake/presentation/widgets/operator_pilgrim_detail_screen.dart` |
+| Registry repo | `lib/features/operator_intake/data/repositories/operator_registry_repository.dart` |

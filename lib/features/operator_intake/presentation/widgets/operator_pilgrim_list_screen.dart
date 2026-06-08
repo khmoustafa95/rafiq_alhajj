@@ -15,6 +15,7 @@ import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/controllers/sign_out_controller.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:rafiq_alhajj/features/operator_intake/data/repositories/operator_registry_repository.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_summary.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/operator_registry_providers.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
@@ -42,93 +43,261 @@ class _OperatorPilgrimListScreenState
     }
   }
 
+  void _openIntake() {
+    if (AppPlatform.isWeb) {
+      context.go(AppRoutes.operatorIntake);
+    } else {
+      unawaited(context.push(AppRoutes.operatorIntake));
+    }
+  }
+
+  List<Widget> _toolbarActions(AppLocalizations l10n, bool isAdmin) {
+    return [
+      FilledButton.icon(
+        onPressed: _openIntake,
+        icon: const Icon(Icons.person_add_outlined),
+        label: Text(isAdmin ? l10n.adminPilgrimAdd : l10n.operatorIntakeTitle),
+      ),
+    ];
+  }
+
+  List<StaffTableFilter> _filters(
+    AppLocalizations l10n,
+    List<PilgrimGroupOption> groups,
+  ) {
+    return [
+      StaffTableFilter(
+        id: 'gender',
+        label: l10n.staffTableFilterGender,
+        allLabel: l10n.staffTableFilterAll,
+        options: [
+          StaffTableFilterOption(
+            value: 'male',
+            label: l10n.pilgrimGenderMale,
+          ),
+          StaffTableFilterOption(
+            value: 'female',
+            label: l10n.pilgrimGenderFemale,
+          ),
+        ],
+      ),
+      StaffTableFilter(
+        id: 'group_id',
+        label: l10n.staffTableFilterGroup,
+        allLabel: l10n.staffTableFilterAll,
+        options: groups
+            .map(
+              (group) => StaffTableFilterOption(
+                value: group.id,
+                label: group.name,
+              ),
+            )
+            .toList(),
+      ),
+    ];
+  }
+
+  List<StaffTableBulkAction<OperatorPilgrimSummary>> _bulkActions(
+    AppLocalizations l10n,
+    List<PilgrimGroupOption> groups,
+  ) {
+    return [
+      StaffTableBulkAction(
+        label: l10n.adminPilgrimBulkAssignGroup,
+        icon: Icons.groups_outlined,
+        onPressed: (items) => unawaited(
+          _showAssignGroupDialog(l10n, groups, items),
+        ),
+      ),
+      StaffTableBulkAction(
+        label: l10n.adminPilgrimBulkClearGroup,
+        icon: Icons.group_off_outlined,
+        onPressed: (items) => unawaited(
+          _bulkAssignGroup(
+            l10n,
+            items.map((item) => item.profileId).toList(),
+            groupId: null,
+          ),
+        ),
+      ),
+    ];
+  }
+
+  Future<void> _showAssignGroupDialog(
+    AppLocalizations l10n,
+    List<PilgrimGroupOption> groups,
+    List<OperatorPilgrimSummary> items,
+  ) async {
+    if (groups.isEmpty) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.adminPilgrimNoGroups)),
+      );
+      return;
+    }
+
+    var selectedGroupId = groups.first.id;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.adminPilgrimAssignGroupTitle),
+        content: DropdownButtonFormField<String>(
+          initialValue: selectedGroupId,
+          decoration: InputDecoration(labelText: l10n.staffTableFilterGroup),
+          items: groups
+              .map(
+                (group) => DropdownMenuItem(
+                  value: group.id,
+                  child: Text(group.name),
+                ),
+              )
+              .toList(),
+          onChanged: (value) {
+            if (value != null) {
+              selectedGroupId = value;
+            }
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.dialogCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.adminPilgrimAssignGroupConfirm),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) {
+      return;
+    }
+
+    await _bulkAssignGroup(
+      l10n,
+      items.map((item) => item.profileId).toList(),
+      groupId: selectedGroupId,
+    );
+  }
+
+  Future<void> _bulkAssignGroup(
+    AppLocalizations l10n,
+    List<String> profileIds, {
+    required String? groupId,
+  }) async {
+    final ok = await ref.read(pilgrimBulkAssignGroupProvider.notifier).assign(
+          profileIds: profileIds,
+          groupId: groupId,
+        );
+
+    if (!mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          ok ? l10n.adminPilgrimAssignGroupSuccess : l10n.adminPilgrimAssignGroupError,
+        ),
+      ),
+    );
+  }
+
+  String _genderLabel(AppLocalizations l10n, String? gender) {
+    return switch (gender) {
+      'male' => l10n.pilgrimGenderMale,
+      'female' => l10n.pilgrimGenderFemale,
+      _ => '—',
+    };
+  }
+
+  StaffDataTable<OperatorPilgrimSummary> _buildTable({
+    required AppLocalizations l10n,
+    required bool isAdmin,
+    required List<PilgrimGroupOption> groups,
+    required List<OperatorPilgrimSummary> rows,
+    required int totalCount,
+    required bool isLoading,
+  }) {
+    return StaffDataTable<OperatorPilgrimSummary>(
+      columns: _columns(l10n),
+      rows: rows,
+      totalCount: totalCount,
+      query: _query,
+      onQueryChanged: (query) => setState(() => _query = query),
+      searchHint: l10n.operatorPilgrimSearchHint,
+      filters: _filters(l10n, groups),
+      toolbarActions: _toolbarActions(l10n, isAdmin),
+      isLoading: isLoading,
+      onRowTap: _openPilgrim,
+      trailingBuilder: (context, item) => StaffTableRowActions(
+        children: [
+          StaffTableRowActions.iconButton(
+            icon: Icons.edit_outlined,
+            onPressed: () => _openPilgrim(item),
+          ),
+        ],
+      ),
+      selectable: isAdmin,
+      rowKey: (item) => item.profileId,
+      bulkActions: isAdmin ? _bulkActions(l10n, groups) : const [],
+      emptyMessage: l10n.operatorPilgrimListEmpty,
+      emptyIcon: Icons.people_outline,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final isAdmin = ref.watch(authAccessModeProvider) == AppAccessMode.admin;
     final pageAsync = ref.watch(operatorPilgrimRegistryPageProvider(_query));
+    final groupsAsync = ref.watch(pilgrimGroupFilterOptionsProvider);
 
-    final toolbarActions = isAdmin
-        ? const <Widget>[]
-        : [
-            FilledButton.icon(
-              onPressed: () => context.go(AppRoutes.operatorIntake),
-              icon: const Icon(Icons.person_add_outlined),
-              label: Text(l10n.operatorIntakeTitle),
-            ),
-          ];
-
-    final listBody = pageAsync.when(
-      skipLoadingOnReload: true,
+    final listBody = groupsAsync.when(
       loading: () => AppPlatform.isWeb
-          ? StaffDataTable<OperatorPilgrimSummary>(
-              columns: _columns(context, l10n),
-              rows: const [],
-              totalCount: 0,
-              query: _query,
-              onQueryChanged: (query) => setState(() => _query = query),
-              searchHint: l10n.operatorPilgrimSearchHint,
-              toolbarActions: toolbarActions,
-              isLoading: true,
-              emptyMessage: l10n.operatorPilgrimListEmpty,
-              emptyIcon: Icons.people_outline,
-            )
-          : const Center(child: CircularProgressIndicator()),
+          ? const Center(child: CircularProgressIndicator())
+          : pageAsync.when(
+              skipLoadingOnReload: true,
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (_, _) => _errorState(l10n),
+              data: (page) => _mobileList(l10n, isAdmin, page.items),
+            ),
       error: (_, _) => StaffEmptyState(
-        message: l10n.operatorPilgrimListLoadError,
-        icon: Icons.error_outline,
+        message: l10n.adminGroupsLoadError,
         actionLabel: l10n.retry,
-        onAction: () {
-          ref.invalidate(operatorPilgrimRegistryPageProvider(_query));
+        onAction: () => ref.invalidate(pilgrimGroupFilterOptionsProvider),
+      ),
+      data: (groups) => pageAsync.when(
+        skipLoadingOnReload: true,
+        loading: () => AppPlatform.isWeb
+            ? _buildTable(
+                l10n: l10n,
+                isAdmin: isAdmin,
+                groups: groups,
+                rows: const [],
+                totalCount: 0,
+                isLoading: true,
+              )
+            : const Center(child: CircularProgressIndicator()),
+        error: (_, _) => _errorState(l10n),
+        data: (page) {
+          if (AppPlatform.isWeb) {
+            return _buildTable(
+              l10n: l10n,
+              isAdmin: isAdmin,
+              groups: groups,
+              rows: page.items,
+              totalCount: page.totalCount,
+              isLoading: pageAsync.isLoading,
+            );
+          }
+          return _mobileList(l10n, isAdmin, page.items);
         },
       ),
-      data: (page) {
-        if (AppPlatform.isWeb) {
-          return StaffDataTable<OperatorPilgrimSummary>(
-            columns: _columns(context, l10n),
-            rows: page.items,
-            totalCount: page.totalCount,
-            query: _query,
-            onQueryChanged: (query) => setState(() => _query = query),
-            searchHint: l10n.operatorPilgrimSearchHint,
-            toolbarActions: toolbarActions,
-            isLoading: pageAsync.isLoading,
-            onRowTap: _openPilgrim,
-            trailingBuilder: (_, _) => Icon(
-              Icons.chevron_right,
-              color: AppColors.textSecondary,
-              size: ss(20),
-            ),
-            emptyMessage: l10n.operatorPilgrimListEmpty,
-            emptyIcon: Icons.people_outline,
-          );
-        }
-
-        if (page.items.isEmpty) {
-          return StaffEmptyState(
-            message: l10n.operatorPilgrimListEmpty,
-            icon: Icons.people_outline,
-            actionLabel: isAdmin ? null : l10n.operatorIntakeTitle,
-            onAction:
-                isAdmin ? null : () => context.go(AppRoutes.operatorIntake),
-          );
-        }
-
-        return ListView.separated(
-          padding: EdgeInsets.all(sw(16)),
-          itemCount: page.items.length,
-          separatorBuilder: (_, _) => SizedBox(height: sh(10)),
-          itemBuilder: (context, index) {
-            final item = page.items[index];
-            return _PilgrimCard(
-              item: item,
-              l10n: l10n,
-              subtitle: _subtitle(l10n, item),
-              onTap: () => _openPilgrim(item),
-            );
-          },
-        );
-      },
     );
 
     return StaffAdaptivePage(
@@ -148,12 +317,11 @@ class _OperatorPilgrimListScreenState
             ),
           ),
           actions: [
-            if (!isAdmin)
-              IconButton(
-                onPressed: () => context.go(AppRoutes.operatorIntake),
-                icon: const Icon(Icons.person_add_outlined),
-                tooltip: l10n.operatorIntakeTitle,
-              ),
+            IconButton(
+              onPressed: _openIntake,
+              icon: const Icon(Icons.person_add_outlined),
+              tooltip: isAdmin ? l10n.adminPilgrimAdd : l10n.operatorIntakeTitle,
+            ),
             IconButton(
               onPressed: ref.read(signOutControllerProvider.notifier).signOut,
               tooltip: l10n.signOut,
@@ -166,8 +334,48 @@ class _OperatorPilgrimListScreenState
     );
   }
 
+  Widget _errorState(AppLocalizations l10n) {
+    return StaffEmptyState(
+      message: l10n.operatorPilgrimListLoadError,
+      icon: Icons.error_outline,
+      actionLabel: l10n.retry,
+      onAction: () {
+        ref.invalidate(operatorPilgrimRegistryPageProvider(_query));
+      },
+    );
+  }
+
+  Widget _mobileList(
+    AppLocalizations l10n,
+    bool isAdmin,
+    List<OperatorPilgrimSummary> items,
+  ) {
+    if (items.isEmpty) {
+      return StaffEmptyState(
+        message: l10n.operatorPilgrimListEmpty,
+        icon: Icons.people_outline,
+        actionLabel: l10n.adminPilgrimAdd,
+        onAction: _openIntake,
+      );
+    }
+
+    return ListView.separated(
+      padding: EdgeInsets.all(sw(16)),
+      itemCount: items.length,
+      separatorBuilder: (_, _) => SizedBox(height: sh(10)),
+      itemBuilder: (context, index) {
+        final item = items[index];
+        return _PilgrimCard(
+          item: item,
+          l10n: l10n,
+          subtitle: _subtitle(l10n, item),
+          onTap: () => _openPilgrim(item),
+        );
+      },
+    );
+  }
+
   List<StaffTableColumn<OperatorPilgrimSummary>> _columns(
-    BuildContext context,
     AppLocalizations l10n,
   ) {
     return [
@@ -203,6 +411,25 @@ class _OperatorPilgrimListScreenState
         ),
       ),
       StaffTableColumn(
+        id: 'gender',
+        label: l10n.staffTableFilterGender,
+        cellBuilder: (context, item) => Text(
+          _genderLabel(l10n, item.gender),
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      ),
+      StaffTableColumn(
+        id: 'group',
+        label: l10n.staffTableFilterGroup,
+        flex: 2,
+        cellBuilder: (context, item) => Text(
+          item.groupName ?? '—',
+          style: Theme.of(context).textTheme.bodyMedium,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      StaffTableColumn(
         id: 'passport',
         label: l10n.operatorPassport,
         flex: 2,
@@ -223,22 +450,17 @@ class _OperatorPilgrimListScreenState
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ),
-      StaffTableColumn(
-        id: 'hotel',
-        label: l10n.pilgrimHotel,
-        flex: 2,
-        cellBuilder: (context, item) => Text(
-          item.hotelName ?? '—',
-          style: Theme.of(context).textTheme.bodyMedium,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
     ];
   }
 
   String _subtitle(AppLocalizations l10n, OperatorPilgrimSummary item) {
     final parts = <String>[];
+    if (item.gender != null) {
+      parts.add(_genderLabel(l10n, item.gender));
+    }
+    if (item.groupName != null) {
+      parts.add(item.groupName!);
+    }
     if (item.passportNumber != null) {
       parts.add('${l10n.operatorPassport}: ${item.passportNumber}');
     }
@@ -247,9 +469,6 @@ class _OperatorPilgrimListScreenState
         '${l10n.pilgrimTravelDate}: '
         '${MaterialLocalizations.of(context).formatMediumDate(item.travelDate!)}',
       );
-    }
-    if (item.hotelName != null) {
-      parts.add(item.hotelName!);
     }
     return parts.isEmpty ? l10n.operatorPilgrimNoLogisticsYet : parts.join(' · ');
   }

@@ -25,6 +25,11 @@ OperatorRegistryService operatorRegistryService(Ref ref) {
 }
 
 @riverpod
+Future<List<PilgrimGroupOption>> pilgrimGroupFilterOptions(Ref ref) async {
+  return ref.read(operatorRegistryServiceProvider).listGroupOptions();
+}
+
+@riverpod
 Future<PaginatedResult<OperatorPilgrimSummary>> operatorPilgrimRegistryPage(
   Ref ref,
   StaffTableQuery query,
@@ -57,11 +62,14 @@ class OperatorPilgrimDetail extends _$OperatorPilgrimDetail {
 
   Future<bool> save({
     required OperatorPilgrimUpdate update,
+    bool includeProfileFields = false,
   }) async {
     try {
-      await ref
-          .read(operatorRegistryServiceProvider)
-          .saveLogistics(profileId: profileId, update: update);
+      await ref.read(operatorRegistryServiceProvider).savePilgrim(
+            profileId: profileId,
+            update: update,
+            includeProfileFields: includeProfileFields,
+          );
       ref.invalidateSelf();
       ref.invalidate(operatorPilgrimRegistryPageProvider);
       await future;
@@ -69,5 +77,26 @@ class OperatorPilgrimDetail extends _$OperatorPilgrimDetail {
     } on OperatorRegistryException {
       return false;
     }
+  }
+}
+
+@riverpod
+class PilgrimBulkAssignGroup extends _$PilgrimBulkAssignGroup {
+  @override
+  FutureOr<void> build() {}
+
+  Future<bool> assign({
+    required List<String> profileIds,
+    required String? groupId,
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await ref.read(operatorRegistryServiceProvider).bulkAssignGroup(
+            profileIds: profileIds,
+            groupId: groupId,
+          );
+      ref.invalidate(operatorPilgrimRegistryPageProvider);
+    });
+    return !state.hasError;
   }
 }

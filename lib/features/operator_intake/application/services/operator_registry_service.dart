@@ -17,12 +17,26 @@ class OperatorRegistryService {
   ) =>
       _repository.fetchPage(query);
 
+  Future<List<PilgrimGroupOption>> listGroupOptions() =>
+      _repository.fetchGroupOptions();
+
   Future<OperatorPilgrimRecord?> loadPilgrim(String profileId) =>
       _repository.fetchById(profileId);
 
-  Future<void> saveLogistics({
+  Future<void> savePilgrim({
     required String profileId,
     required OperatorPilgrimUpdate update,
+    bool includeProfileFields = false,
   }) =>
-      _repository.updateLogistics(profileId: profileId, update: update);
+      _repository.savePilgrim(
+        profileId: profileId,
+        update: update,
+        includeProfileFields: includeProfileFields,
+      );
+
+  Future<void> bulkAssignGroup({
+    required List<String> profileIds,
+    required String? groupId,
+  }) =>
+      _repository.bulkAssignGroup(profileIds: profileIds, groupId: groupId);
 }

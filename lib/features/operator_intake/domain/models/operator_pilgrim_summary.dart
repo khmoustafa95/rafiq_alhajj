@@ -8,6 +8,9 @@ class OperatorPilgrimSummary {
     this.medicalTestStatus,
     this.travelDate,
     this.hotelName,
+    this.gender,
+    this.groupId,
+    this.groupName,
   });
 
   final String profileId;
@@ -17,4 +20,7 @@ class OperatorPilgrimSummary {
   final String? medicalTestStatus;
   final DateTime? travelDate;
   final String? hotelName;
+  final String? gender;
+  final String? groupId;
+  final String? groupName;
 }

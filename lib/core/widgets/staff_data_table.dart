@@ -53,6 +53,21 @@ class StaffTableColumn<T> {
 /// Width reserved for trailing row actions (e.g. two compact icon buttons).
 const double staffTableActionsColumnWidth = 88;
 
+/// Width reserved for optional selection checkbox column.
+const double staffTableSelectionColumnWidth = 48;
+
+class StaffTableBulkAction<T> {
+  const StaffTableBulkAction({
+    required this.label,
+    required this.onPressed,
+    this.icon,
+  });
+
+  final String label;
+  final IconData? icon;
+  final void Function(List<T> items) onPressed;
+}
+
 class StaffDataTable<T> extends StatefulWidget {
   const StaffDataTable({
     required this.columns,
@@ -68,6 +83,9 @@ class StaffDataTable<T> extends StatefulWidget {
     this.emptyMessage,
     this.emptyIcon = Icons.inbox_outlined,
     this.toolbarActions = const [],
+    this.selectable = false,
+    this.rowKey,
+    this.bulkActions = const [],
     super.key,
   });
 
@@ -84,6 +102,9 @@ class StaffDataTable<T> extends StatefulWidget {
   final String? emptyMessage;
   final IconData emptyIcon;
   final List<Widget> toolbarActions;
+  final bool selectable;
+  final String Function(T item)? rowKey;
+  final List<StaffTableBulkAction<T>> bulkActions;
 
   @override
   State<StaffDataTable<T>> createState() => _StaffDataTableState<T>();
@@ -92,6 +113,10 @@ class StaffDataTable<T> extends StatefulWidget {
 class _StaffDataTableState<T> extends State<StaffDataTable<T>> {
   late final TextEditingController _searchController;
   Timer? _searchDebounce;
+  final Set<String> _selectedKeys = {};
+
+  bool get _isSelectable =>
+      widget.selectable && widget.rowKey != null && widget.bulkActions.isNotEmpty;
 
   @override
   void initState() {
@@ -104,6 +129,11 @@ class _StaffDataTableState<T> extends State<StaffDataTable<T>> {
     super.didUpdateWidget(oldWidget);
     if (widget.query.search != _searchController.text) {
       _searchController.text = widget.query.search;
+    }
+    if (oldWidget.query.page != widget.query.page ||
+        oldWidget.query.search != widget.query.search ||
+        oldWidget.query.filters != widget.query.filters) {
+      _selectedKeys.clear();
     }
   }
 
@@ -143,6 +173,63 @@ class _StaffDataTableState<T> extends State<StaffDataTable<T>> {
     return (widget.totalCount / widget.query.pageSize).ceil();
   }
 
+  List<T> get _selectedItems {
+    if (!_isSelectable) {
+      return const [];
+    }
+    final keyOf = widget.rowKey!;
+    return widget.rows.where((row) => _selectedKeys.contains(keyOf(row))).toList();
+  }
+
+  bool? get _headerCheckboxValue {
+    if (!_isSelectable || widget.rows.isEmpty) {
+      return false;
+    }
+    final keys = widget.rows.map(widget.rowKey!).toSet();
+    final selectedOnPage = keys.intersection(_selectedKeys);
+    if (selectedOnPage.isEmpty) {
+      return false;
+    }
+    if (selectedOnPage.length == keys.length) {
+      return true;
+    }
+    return null;
+  }
+
+  void _toggleRow(String key, bool selected) {
+    setState(() {
+      if (selected) {
+        _selectedKeys.add(key);
+      } else {
+        _selectedKeys.remove(key);
+      }
+    });
+  }
+
+  void _toggleAll(bool? value) {
+    if (!_isSelectable) {
+      return;
+    }
+    setState(() {
+      if (value != true) {
+        for (final row in widget.rows) {
+          _selectedKeys.remove(widget.rowKey!(row));
+        }
+        return;
+      }
+      for (final row in widget.rows) {
+        _selectedKeys.add(widget.rowKey!(row));
+      }
+    });
+  }
+
+  void _clearSelection() {
+    if (_selectedKeys.isEmpty) {
+      return;
+    }
+    setState(_selectedKeys.clear);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -162,6 +249,16 @@ class _StaffDataTableState<T> extends State<StaffDataTable<T>> {
             _updateQuery(widget.query.copyWith(filters: filters, page: 0));
           },
         ),
+        if (_isSelectable && _selectedKeys.isNotEmpty) ...[
+          SizedBox(height: sh(8)),
+          _SelectionBar<T>(
+            l10n: l10n,
+            selectedCount: _selectedKeys.length,
+            bulkActions: widget.bulkActions,
+            selectedItems: _selectedItems,
+            onClear: _clearSelection,
+          ),
+        ],
         SizedBox(height: sh(12)),
         Expanded(
           child: DecoratedBox(
@@ -181,6 +278,9 @@ class _StaffDataTableState<T> extends State<StaffDataTable<T>> {
                               columns: widget.columns,
                               query: widget.query,
                               hasTrailing: widget.trailingBuilder != null,
+                              selectable: _isSelectable,
+                              headerCheckboxValue: _headerCheckboxValue,
+                              onToggleAll: _toggleAll,
                               onSort: _toggleSort,
                             ),
                             const Divider(height: 1, color: AppColors.border),
@@ -193,6 +293,9 @@ class _StaffDataTableState<T> extends State<StaffDataTable<T>> {
                                 ),
                                 itemBuilder: (context, index) {
                                   final item = widget.rows[index];
+                                  final key = _isSelectable
+                                      ? widget.rowKey!(item)
+                                      : null;
                                   return _DataRow<T>(
                                     item: item,
                                     columns: widget.columns,
@@ -201,6 +304,13 @@ class _StaffDataTableState<T> extends State<StaffDataTable<T>> {
                                     onTap: widget.onRowTap == null
                                         ? null
                                         : () => widget.onRowTap!(item),
+                                    selectable: _isSelectable,
+                                    selected: key != null &&
+                                        _selectedKeys.contains(key),
+                                    onSelectedChanged: key == null
+                                        ? null
+                                        : (value) =>
+                                            _toggleRow(key, value ?? false),
                                   );
                                 },
                               ),
@@ -339,12 +449,18 @@ class _HeaderRow extends StatelessWidget {
     required this.query,
     required this.hasTrailing,
     required this.onSort,
+    this.selectable = false,
+    this.headerCheckboxValue,
+    this.onToggleAll,
   });
 
   final List<StaffTableColumn<dynamic>> columns;
   final StaffTableQuery query;
   final bool hasTrailing;
   final ValueChanged<String> onSort;
+  final bool selectable;
+  final bool? headerCheckboxValue;
+  final ValueChanged<bool?>? onToggleAll;
 
   @override
   Widget build(BuildContext context) {
@@ -359,6 +475,17 @@ class _HeaderRow extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: sw(16), vertical: sh(12)),
         child: Row(
           children: [
+            if (selectable) ...[
+              SizedBox(
+                width: staffTableSelectionColumnWidth,
+                child: Checkbox(
+                  tristate: true,
+                  value: headerCheckboxValue,
+                  onChanged: onToggleAll,
+                  visualDensity: VisualDensity.compact,
+                ),
+              ),
+            ],
             ...columns.map((column) {
               final isActive = query.sortColumnId == column.id;
               return Expanded(
@@ -419,17 +546,25 @@ class _DataRow<T> extends StatelessWidget {
     required this.columns,
     required this.trailing,
     required this.onTap,
+    this.selectable = false,
+    this.selected = false,
+    this.onSelectedChanged,
   });
 
   final T item;
   final List<StaffTableColumn<T>> columns;
   final Widget? trailing;
   final VoidCallback? onTap;
+  final bool selectable;
+  final bool selected;
+  final ValueChanged<bool?>? onSelectedChanged;
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.surface,
+      color: selected
+          ? AppColors.primary.withValues(alpha: 0.06)
+          : AppColors.surface,
       child: InkWell(
         onTap: onTap,
         hoverColor: AppColors.primary.withValues(alpha: 0.04),
@@ -437,6 +572,16 @@ class _DataRow<T> extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: sw(16), vertical: sh(12)),
           child: Row(
             children: [
+              if (selectable) ...[
+                SizedBox(
+                  width: staffTableSelectionColumnWidth,
+                  child: Checkbox(
+                    value: selected,
+                    onChanged: onSelectedChanged,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ),
+              ],
               ...columns.map(
                 (column) => Expanded(
                   flex: column.flex,
@@ -454,6 +599,77 @@ class _DataRow<T> extends StatelessWidget {
                     child: trailing,
                   ),
                 ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SelectionBar<T> extends StatelessWidget {
+  const _SelectionBar({
+    required this.l10n,
+    required this.selectedCount,
+    required this.bulkActions,
+    required this.selectedItems,
+    required this.onClear,
+  });
+
+  final AppLocalizations l10n;
+  final int selectedCount;
+  final List<StaffTableBulkAction<T>> bulkActions;
+  final List<T> selectedItems;
+  final VoidCallback onClear;
+
+  @override
+  Widget build(BuildContext context) {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        filledButtonTheme: FilledButtonThemeData(
+          style: staffRowFilledButtonStyle(context),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: staffRowOutlinedButtonStyle(context),
+        ),
+      ),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: AppColors.primary.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: sw(16), vertical: sh(10)),
+          child: Wrap(
+            spacing: sw(12),
+            runSpacing: sh(8),
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text(
+                l10n.staffTableSelectedCount(selectedCount),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              ...bulkActions.map(
+                (action) => action.icon == null
+                    ? FilledButton.tonal(
+                        onPressed: selectedItems.isEmpty
+                            ? null
+                            : () => action.onPressed(selectedItems),
+                        child: Text(action.label),
+                      )
+                    : FilledButton.tonalIcon(
+                        onPressed: selectedItems.isEmpty
+                            ? null
+                            : () => action.onPressed(selectedItems),
+                        icon: Icon(action.icon, size: 18),
+                        label: Text(action.label),
+                      ),
+              ),
+              TextButton(onPressed: onClear, child: Text(l10n.staffTableClearSelection)),
             ],
           ),
         ),

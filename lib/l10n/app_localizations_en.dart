@@ -1522,6 +1522,57 @@ class AppLocalizationsEn extends AppLocalizations {
   String get staffTableSearchGroups => 'Search by group or president name';
 
   @override
+  String get staffTableFilterGender => 'Gender';
+
+  @override
+  String get staffTableFilterGroup => 'Group';
+
+  @override
+  String staffTableSelectedCount(int count) {
+    return '$count selected';
+  }
+
+  @override
+  String get staffTableClearSelection => 'Clear selection';
+
+  @override
+  String get pilgrimGenderMale => 'Male';
+
+  @override
+  String get pilgrimGenderFemale => 'Female';
+
+  @override
+  String get adminPilgrimAdd => 'Add pilgrim';
+
+  @override
+  String get adminPilgrimProfileSection => 'Pilgrim profile';
+
+  @override
+  String get adminPilgrimBulkAssignGroup => 'Assign group';
+
+  @override
+  String get adminPilgrimBulkClearGroup => 'Clear group';
+
+  @override
+  String get adminPilgrimAssignGroupTitle =>
+      'Assign group to selected pilgrims';
+
+  @override
+  String get adminPilgrimAssignGroupConfirm => 'Assign';
+
+  @override
+  String get adminPilgrimAssignGroupSuccess =>
+      'Group updated for selected pilgrims';
+
+  @override
+  String get adminPilgrimAssignGroupError =>
+      'Could not update group assignment';
+
+  @override
+  String get adminPilgrimNoGroups =>
+      'No groups available. Create a group first.';
+
+  @override
   String get adminGroupsTitle => 'Group management';
 
   @override

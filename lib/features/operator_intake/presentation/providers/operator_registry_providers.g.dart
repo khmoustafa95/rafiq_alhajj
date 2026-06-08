@@ -106,6 +106,48 @@ final class OperatorRegistryServiceProvider
 String _$operatorRegistryServiceHash() =>
     r'ca271565c452da087ea3a3a3482a8e595a90359a';
 
+@ProviderFor(pilgrimGroupFilterOptions)
+final pilgrimGroupFilterOptionsProvider = PilgrimGroupFilterOptionsProvider._();
+
+final class PilgrimGroupFilterOptionsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<PilgrimGroupOption>>,
+          List<PilgrimGroupOption>,
+          FutureOr<List<PilgrimGroupOption>>
+        >
+    with
+        $FutureModifier<List<PilgrimGroupOption>>,
+        $FutureProvider<List<PilgrimGroupOption>> {
+  PilgrimGroupFilterOptionsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'pilgrimGroupFilterOptionsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$pilgrimGroupFilterOptionsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<PilgrimGroupOption>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<PilgrimGroupOption>> create(Ref ref) {
+    return pilgrimGroupFilterOptions(ref);
+  }
+}
+
+String _$pilgrimGroupFilterOptionsHash() =>
+    r'e20c8f0e570d6e6878608325e8e746e4c9a78137';
+
 @ProviderFor(operatorPilgrimRegistryPage)
 final operatorPilgrimRegistryPageProvider =
     OperatorPilgrimRegistryPageFamily._();
@@ -232,7 +274,7 @@ final class OperatorPilgrimDetailProvider
 }
 
 String _$operatorPilgrimDetailHash() =>
-    r'eb6ca66f194aed5fa0e402f3a6b475a6992430b6';
+    r'ee3e827853be82b5b9976fa9226b859a6308f2f1';
 
 final class OperatorPilgrimDetailFamily extends $Family
     with
@@ -283,5 +325,50 @@ abstract class _$OperatorPilgrimDetail
               Object?
             >;
     element.handleCreate(ref, () => build(_$args));
+  }
+}
+
+@ProviderFor(PilgrimBulkAssignGroup)
+final pilgrimBulkAssignGroupProvider = PilgrimBulkAssignGroupProvider._();
+
+final class PilgrimBulkAssignGroupProvider
+    extends $AsyncNotifierProvider<PilgrimBulkAssignGroup, void> {
+  PilgrimBulkAssignGroupProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'pilgrimBulkAssignGroupProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$pilgrimBulkAssignGroupHash();
+
+  @$internal
+  @override
+  PilgrimBulkAssignGroup create() => PilgrimBulkAssignGroup();
+}
+
+String _$pilgrimBulkAssignGroupHash() =>
+    r'99097a00f789a7f68d1938075a93a04da7385244';
+
+abstract class _$PilgrimBulkAssignGroup extends $AsyncNotifier<void> {
+  FutureOr<void> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<void>, void>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<void>, void>,
+              AsyncValue<void>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
   }
 }

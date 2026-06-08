@@ -2887,6 +2887,96 @@ abstract class AppLocalizations {
   /// **'Search by group or president name'**
   String get staffTableSearchGroups;
 
+  /// No description provided for @staffTableFilterGender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get staffTableFilterGender;
+
+  /// No description provided for @staffTableFilterGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get staffTableFilterGroup;
+
+  /// No description provided for @staffTableSelectedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected'**
+  String staffTableSelectedCount(int count);
+
+  /// No description provided for @staffTableClearSelection.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear selection'**
+  String get staffTableClearSelection;
+
+  /// No description provided for @pilgrimGenderMale.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get pilgrimGenderMale;
+
+  /// No description provided for @pilgrimGenderFemale.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get pilgrimGenderFemale;
+
+  /// No description provided for @adminPilgrimAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add pilgrim'**
+  String get adminPilgrimAdd;
+
+  /// No description provided for @adminPilgrimProfileSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Pilgrim profile'**
+  String get adminPilgrimProfileSection;
+
+  /// No description provided for @adminPilgrimBulkAssignGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign group'**
+  String get adminPilgrimBulkAssignGroup;
+
+  /// No description provided for @adminPilgrimBulkClearGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear group'**
+  String get adminPilgrimBulkClearGroup;
+
+  /// No description provided for @adminPilgrimAssignGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign group to selected pilgrims'**
+  String get adminPilgrimAssignGroupTitle;
+
+  /// No description provided for @adminPilgrimAssignGroupConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign'**
+  String get adminPilgrimAssignGroupConfirm;
+
+  /// No description provided for @adminPilgrimAssignGroupSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Group updated for selected pilgrims'**
+  String get adminPilgrimAssignGroupSuccess;
+
+  /// No description provided for @adminPilgrimAssignGroupError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update group assignment'**
+  String get adminPilgrimAssignGroupError;
+
+  /// No description provided for @adminPilgrimNoGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'No groups available. Create a group first.'**
+  String get adminPilgrimNoGroups;
+
   /// No description provided for @adminGroupsTitle.
   ///
   /// In en, this message translates to:

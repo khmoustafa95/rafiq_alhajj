@@ -442,7 +442,8 @@ bool _isAdminStaffWebRoute(String location) {
     return true;
   }
   return location == AppRoutes.operatorPilgrims ||
-      location.startsWith('${AppRoutes.operatorPilgrims}/');
+      location.startsWith('${AppRoutes.operatorPilgrims}/') ||
+      location == AppRoutes.operatorIntake;
 }
 
 List<RouteBase> _webRoutes() => [

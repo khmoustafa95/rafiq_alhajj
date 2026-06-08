@@ -20,7 +20,8 @@ PilgrimIntakeService pilgrimIntakeService(Ref ref) {
 
 @riverpod
 String? operatorUserId(Ref ref) {
-  if (ref.watch(authAccessModeProvider) != AppAccessMode.operator) {
+  final mode = ref.watch(authAccessModeProvider);
+  if (mode != AppAccessMode.operator && mode != AppAccessMode.admin) {
     return null;
   }
   return ref.watch(authProfileIdProvider);

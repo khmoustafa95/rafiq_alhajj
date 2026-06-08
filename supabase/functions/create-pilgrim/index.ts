@@ -16,6 +16,8 @@ type PilgrimPayload = {
   hotel_name?: string;
   hotel_location_url?: string;
   transportation_details?: string;
+  gender?: string;
+  group_id?: string;
 };
 
 function generatePassword(length = 12): string {
@@ -124,6 +126,7 @@ Deno.serve(async (req) => {
         hotel_name: body.hotel_name ?? null,
         hotel_location_url: body.hotel_location_url ?? null,
         transportation_details: body.transportation_details ?? null,
+        gender: body.gender ?? null,
         updated_at: new Date().toISOString(),
       })
       .eq("profile_id", profileId);
@@ -133,6 +136,20 @@ Deno.serve(async (req) => {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
+
+    if (body.group_id) {
+      const { error: groupError } = await supabaseAdmin
+        .from("profiles")
+        .update({ group_id: body.group_id })
+        .eq("id", profileId);
+
+      if (groupError) {
+        return new Response(JSON.stringify({ error: groupError.message }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     return new Response(
