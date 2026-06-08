@@ -34,6 +34,7 @@ abstract final class AppRoutes {
       '/operator/pilgrims/$profileId';
   static const String fieldOperatorLogin = '/operator/field/login';
   static const String fieldOperatorHome = '/operator/field';
+  static const String fieldOperatorPilgrims = '/operator/field/pilgrims';
   static const String fieldOperatorPilgrim = '/operator/field/:profileId';
   static const String adminLogin = '/admin/login';
   static const String adminDashboard = '/admin/dashboard';

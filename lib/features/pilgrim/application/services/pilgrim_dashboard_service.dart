@@ -1,19 +1,21 @@
 import 'package:rafiq_alhajj/features/pilgrim/data/local/ritual_progress_cache.dart';
+import 'package:rafiq_alhajj/features/pilgrim/data/repositories/pilgrim_registry_repository.dart';
 import 'package:rafiq_alhajj/features/pilgrim/data/repositories/pilgrim_remote_repository.dart';
+import 'package:rafiq_alhajj/features/pilgrim/domain/models/pilgrim.dart';
 import 'package:rafiq_alhajj/features/pilgrim/domain/models/pilgrim_dashboard.dart';
-import 'package:rafiq_alhajj/features/pilgrim/domain/models/pilgrim_details.dart';
 import 'package:rafiq_alhajj/features/pilgrim/domain/models/ritual_progress.dart';
 import 'package:rafiq_alhajj/features/pilgrim/domain/models/ritual_step_definition.dart';
 import 'package:rafiq_alhajj/features/pilgrim/domain/models/ritual_step_status.dart';
 
 class PilgrimDashboardService {
-  PilgrimDashboardService(this._remote);
+  PilgrimDashboardService(this._remote, this._registry);
 
   final PilgrimRemoteRepository _remote;
+  final PilgrimRegistryRepository _registry;
 
   Future<PilgrimDashboard> loadDashboard(String pilgrimId) async {
     var local = await RitualProgressCache.read(pilgrimId);
-    PilgrimDetails? logistics;
+    Pilgrim? registry;
 
     if (_remote.isAvailable) {
       try {
@@ -21,7 +23,7 @@ class PilgrimDashboardService {
         local = _mergeProgress(local, remoteLogs);
         await RitualProgressCache.write(pilgrimId, local);
 
-        logistics = await _remote.fetchDetails(pilgrimId);
+        registry = await _tryFetchRegistry(pilgrimId);
       } on PilgrimRemoteException {
         // Keep local-only state when offline or remote fails.
       }
@@ -31,7 +33,7 @@ class PilgrimDashboardService {
     final hasPendingSync = local.values.any((p) => p.pendingSync);
 
     return PilgrimDashboard(
-      logistics: logistics,
+      registry: registry,
       rituals: rituals,
       hasPendingSync: hasPendingSync,
     );
@@ -66,7 +68,7 @@ class PilgrimDashboardService {
     }
 
     return PilgrimDashboard(
-      logistics: await _tryFetchLogistics(pilgrimId),
+      registry: await _tryFetchRegistry(pilgrimId),
       rituals: _buildRitualStatuses(updated),
       hasPendingSync: updated.values.any((p) => p.pendingSync),
     );
@@ -124,10 +126,14 @@ class PilgrimDashboardService {
     }).toList();
   }
 
-  Future<PilgrimDetails?> _tryFetchLogistics(String pilgrimId) async {
+  Future<Pilgrim?> _tryFetchRegistry(String pilgrimId) async {
+    if (!_registry.isAvailable) {
+      return null;
+    }
+
     try {
-      return await _remote.fetchDetails(pilgrimId);
-    } on PilgrimRemoteException {
+      return await _registry.fetchByProfileId(pilgrimId);
+    } on PilgrimRegistryException {
       return null;
     }
   }

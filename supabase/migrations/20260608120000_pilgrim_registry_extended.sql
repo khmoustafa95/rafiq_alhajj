@@ -1,0 +1,71 @@
+-- US-06 extended pilgrim registry (Excel / Kobo fields)
+
+alter table public.pilgrim_details
+  add column if not exists registry_id serial,
+  add column if not exists kobo_id text,
+  add column if not exists sequence text,
+  add column if not exists cluster text,
+  add column if not exists coordinator_name text,
+  add column if not exists sticker_number text,
+  add column if not exists visa_number text,
+  add column if not exists barcode_number text,
+  add column if not exists full_name_ar text,
+  add column if not exists mother_name_ar text,
+  add column if not exists birth_date text,
+  add column if not exists first_name_en text,
+  add column if not exists last_name_en text,
+  add column if not exists father_name_en text,
+  add column if not exists mother_name_en text,
+  add column if not exists passport_expiry_date text,
+  add column if not exists passport_issue_date text,
+  add column if not exists gender text,
+  add column if not exists body_size text,
+  add column if not exists group_name text,
+  add column if not exists companion_name text,
+  add column if not exists relation text,
+  add column if not exists request_type text,
+  add column if not exists housing_type text,
+  add column if not exists hady_status text,
+  add column if not exists residence text,
+  add column if not exists health_status text,
+  add column if not exists needs_wheelchair boolean default false,
+  add column if not exists is_smoking boolean default false,
+  add column if not exists health_card boolean default false,
+  add column if not exists is_vaccinated boolean default false,
+  add column if not exists makkah_hotel text,
+  add column if not exists makkah_floor text,
+  add column if not exists makkah_room text,
+  add column if not exists madinah_travel_date text,
+  add column if not exists madinah_hotel text,
+  add column if not exists madinah_floor text,
+  add column if not exists madinah_room text,
+  add column if not exists departure_airport text,
+  add column if not exists departure_airline text,
+  add column if not exists departure_flight_no text,
+  add column if not exists departure_date text,
+  add column if not exists departure_time text,
+  add column if not exists return_airport text,
+  add column if not exists return_airline text,
+  add column if not exists return_flight_no text,
+  add column if not exists return_date text,
+  add column if not exists return_time text,
+  add column if not exists service_center_name text,
+  add column if not exists service_center_arafat text,
+  add column if not exists service_center_mina text,
+  add column if not exists bus_arafat text,
+  add column if not exists bus_mina text,
+  add column if not exists tent_arafat text,
+  add column if not exists tent_mina text,
+  add column if not exists phone_number text,
+  add column if not exists whatsapp_number text,
+  add column if not exists syrian_phone_number text,
+  add column if not exists notes text;
+
+create index if not exists pilgrim_details_field_status_idx
+  on public.pilgrim_details (field_status);
+
+create index if not exists pilgrim_details_group_name_idx
+  on public.pilgrim_details (group_name);
+
+create index if not exists pilgrim_details_sticker_number_idx
+  on public.pilgrim_details (sticker_number);

@@ -1,7 +1,9 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_refresh.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/features/pilgrim/application/services/pilgrim_dashboard_service.dart';
+import 'package:rafiq_alhajj/features/pilgrim/data/repositories/pilgrim_registry_repository.dart';
 import 'package:rafiq_alhajj/features/pilgrim/data/repositories/pilgrim_remote_repository.dart';
 import 'package:rafiq_alhajj/features/pilgrim/domain/models/pilgrim_dashboard.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -17,8 +19,18 @@ PilgrimRemoteRepository pilgrimRemoteRepository(Ref ref) {
 }
 
 @Riverpod(keepAlive: true)
+PilgrimRegistryRepository pilgrimRegistryRepository(Ref ref) {
+  return PilgrimRegistryRepository(
+    AppConfig.hasSupabase ? Supabase.instance.client : null,
+  );
+}
+
+@Riverpod(keepAlive: true)
 PilgrimDashboardService pilgrimDashboardService(Ref ref) {
-  return PilgrimDashboardService(ref.watch(pilgrimRemoteRepositoryProvider));
+  return PilgrimDashboardService(
+    ref.watch(pilgrimRemoteRepositoryProvider),
+    ref.watch(pilgrimRegistryRepositoryProvider),
+  );
 }
 
 @riverpod
@@ -37,6 +49,21 @@ class PilgrimDashboardState extends _$PilgrimDashboardState {
     if (pilgrimId == null) {
       throw const PilgrimAccessDeniedException();
     }
+
+    watchSupabaseTable(
+      ref,
+      client: AppConfig.hasSupabase ? Supabase.instance.client : null,
+      table: 'pilgrim_details',
+      eqColumn: 'profile_id',
+      eqValue: pilgrimId,
+    );
+    watchSupabaseTable(
+      ref,
+      client: AppConfig.hasSupabase ? Supabase.instance.client : null,
+      table: 'ritual_logs',
+      eqColumn: 'pilgrim_id',
+      eqValue: pilgrimId,
+    );
 
     final dashboard =
         await ref.read(pilgrimDashboardServiceProvider).loadDashboard(pilgrimId);

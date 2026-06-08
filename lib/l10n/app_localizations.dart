@@ -854,6 +854,60 @@ abstract class AppLocalizations {
   /// **'Pilgrims in the field'**
   String get fieldOperatorHomeTitle;
 
+  /// No description provided for @fieldOperatorDashboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Field dashboard'**
+  String get fieldOperatorDashboardTitle;
+
+  /// No description provided for @fieldOperatorPilgrimsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pilgrims'**
+  String get fieldOperatorPilgrimsTitle;
+
+  /// No description provided for @fieldOperatorNavHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get fieldOperatorNavHome;
+
+  /// No description provided for @fieldOperatorNavPilgrims.
+  ///
+  /// In en, this message translates to:
+  /// **'Pilgrims'**
+  String get fieldOperatorNavPilgrims;
+
+  /// No description provided for @fieldOperatorStatsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a card to open the filtered pilgrim list.'**
+  String get fieldOperatorStatsHint;
+
+  /// No description provided for @fieldOperatorWelcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome, {name}'**
+  String fieldOperatorWelcome(String name);
+
+  /// No description provided for @fieldOperatorWelcomeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{total} pilgrims registered in your groups.'**
+  String fieldOperatorWelcomeSubtitle(int total);
+
+  /// No description provided for @fieldOperatorProgressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Completion overview'**
+  String get fieldOperatorProgressTitle;
+
+  /// No description provided for @fieldOperatorProgressSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{completed} completed · {inProgress} in progress · {total} total'**
+  String fieldOperatorProgressSummary(int completed, int inProgress, int total);
+
   /// No description provided for @fieldOperatorSearchHint.
   ///
   /// In en, this message translates to:
@@ -984,6 +1038,474 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Completed'**
   String get fieldStatusCompleted;
+
+  /// No description provided for @fieldOperatorStatsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Field overview'**
+  String get fieldOperatorStatsTitle;
+
+  /// No description provided for @fieldOperatorStatsTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total pilgrims'**
+  String get fieldOperatorStatsTotal;
+
+  /// No description provided for @fieldOperatorStatsWheelchair.
+  ///
+  /// In en, this message translates to:
+  /// **'Wheelchair'**
+  String get fieldOperatorStatsWheelchair;
+
+  /// No description provided for @fieldOperatorFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get fieldOperatorFilterAll;
+
+  /// No description provided for @fieldOperatorSearchHintExtended.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name, passport, visa, sticker, or phone'**
+  String get fieldOperatorSearchHintExtended;
+
+  /// No description provided for @pilgrimProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My registration profile'**
+  String get pilgrimProfileTitle;
+
+  /// No description provided for @pilgrimProfileEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Your registration details are not available yet.'**
+  String get pilgrimProfileEmpty;
+
+  /// No description provided for @pilgrimYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get pilgrimYes;
+
+  /// No description provided for @pilgrimNo.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get pilgrimNo;
+
+  /// No description provided for @pilgrimNotProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'Not provided'**
+  String get pilgrimNotProvided;
+
+  /// No description provided for @pilgrimSectionIdentity.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity & registration'**
+  String get pilgrimSectionIdentity;
+
+  /// No description provided for @pilgrimSectionTravelDocs.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel documents'**
+  String get pilgrimSectionTravelDocs;
+
+  /// No description provided for @pilgrimSectionPersonal.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal information'**
+  String get pilgrimSectionPersonal;
+
+  /// No description provided for @pilgrimSectionHousing.
+  ///
+  /// In en, this message translates to:
+  /// **'Request & housing'**
+  String get pilgrimSectionHousing;
+
+  /// No description provided for @pilgrimSectionHealth.
+  ///
+  /// In en, this message translates to:
+  /// **'Health'**
+  String get pilgrimSectionHealth;
+
+  /// No description provided for @pilgrimSectionMakkah.
+  ///
+  /// In en, this message translates to:
+  /// **'Makkah accommodation'**
+  String get pilgrimSectionMakkah;
+
+  /// No description provided for @pilgrimSectionMadinah.
+  ///
+  /// In en, this message translates to:
+  /// **'Madinah accommodation'**
+  String get pilgrimSectionMadinah;
+
+  /// No description provided for @pilgrimSectionDepartureFlight.
+  ///
+  /// In en, this message translates to:
+  /// **'Outbound flight'**
+  String get pilgrimSectionDepartureFlight;
+
+  /// No description provided for @pilgrimSectionReturnFlight.
+  ///
+  /// In en, this message translates to:
+  /// **'Return flight'**
+  String get pilgrimSectionReturnFlight;
+
+  /// No description provided for @pilgrimSectionHolySites.
+  ///
+  /// In en, this message translates to:
+  /// **'Holy sites (Mina & Arafat)'**
+  String get pilgrimSectionHolySites;
+
+  /// No description provided for @pilgrimSectionContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get pilgrimSectionContact;
+
+  /// No description provided for @pilgrimSectionNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get pilgrimSectionNotes;
+
+  /// No description provided for @pilgrimLabelSequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Sequence'**
+  String get pilgrimLabelSequence;
+
+  /// No description provided for @pilgrimLabelCluster.
+  ///
+  /// In en, this message translates to:
+  /// **'Cluster'**
+  String get pilgrimLabelCluster;
+
+  /// No description provided for @pilgrimLabelCoordinator.
+  ///
+  /// In en, this message translates to:
+  /// **'Coordinator'**
+  String get pilgrimLabelCoordinator;
+
+  /// No description provided for @pilgrimLabelSticker.
+  ///
+  /// In en, this message translates to:
+  /// **'Sticker no.'**
+  String get pilgrimLabelSticker;
+
+  /// No description provided for @pilgrimLabelVisa.
+  ///
+  /// In en, this message translates to:
+  /// **'Visa no.'**
+  String get pilgrimLabelVisa;
+
+  /// No description provided for @pilgrimLabelBarcode.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode'**
+  String get pilgrimLabelBarcode;
+
+  /// No description provided for @pilgrimLabelFullNameAr.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name (Arabic)'**
+  String get pilgrimLabelFullNameAr;
+
+  /// No description provided for @pilgrimLabelMotherAr.
+  ///
+  /// In en, this message translates to:
+  /// **'Mother\'s name (Arabic)'**
+  String get pilgrimLabelMotherAr;
+
+  /// No description provided for @pilgrimLabelBirthDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of birth'**
+  String get pilgrimLabelBirthDate;
+
+  /// No description provided for @pilgrimLabelFirstNameEn.
+  ///
+  /// In en, this message translates to:
+  /// **'First name (English)'**
+  String get pilgrimLabelFirstNameEn;
+
+  /// No description provided for @pilgrimLabelLastNameEn.
+  ///
+  /// In en, this message translates to:
+  /// **'Last name (English)'**
+  String get pilgrimLabelLastNameEn;
+
+  /// No description provided for @pilgrimLabelFatherEn.
+  ///
+  /// In en, this message translates to:
+  /// **'Father\'s name (English)'**
+  String get pilgrimLabelFatherEn;
+
+  /// No description provided for @pilgrimLabelMotherEn.
+  ///
+  /// In en, this message translates to:
+  /// **'Mother\'s name (English)'**
+  String get pilgrimLabelMotherEn;
+
+  /// No description provided for @pilgrimLabelPassportIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Passport issue date'**
+  String get pilgrimLabelPassportIssue;
+
+  /// No description provided for @pilgrimLabelPassportExpiry.
+  ///
+  /// In en, this message translates to:
+  /// **'Passport expiry date'**
+  String get pilgrimLabelPassportExpiry;
+
+  /// No description provided for @pilgrimLabelGender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get pilgrimLabelGender;
+
+  /// No description provided for @pilgrimLabelBodySize.
+  ///
+  /// In en, this message translates to:
+  /// **'Body size'**
+  String get pilgrimLabelBodySize;
+
+  /// No description provided for @pilgrimLabelGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get pilgrimLabelGroup;
+
+  /// No description provided for @pilgrimLabelCompanion.
+  ///
+  /// In en, this message translates to:
+  /// **'Companion'**
+  String get pilgrimLabelCompanion;
+
+  /// No description provided for @pilgrimLabelRelation.
+  ///
+  /// In en, this message translates to:
+  /// **'Relation'**
+  String get pilgrimLabelRelation;
+
+  /// No description provided for @pilgrimLabelRequestType.
+  ///
+  /// In en, this message translates to:
+  /// **'Request type'**
+  String get pilgrimLabelRequestType;
+
+  /// No description provided for @pilgrimLabelHousingType.
+  ///
+  /// In en, this message translates to:
+  /// **'Housing type'**
+  String get pilgrimLabelHousingType;
+
+  /// No description provided for @pilgrimLabelHadyStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Hady status'**
+  String get pilgrimLabelHadyStatus;
+
+  /// No description provided for @pilgrimLabelResidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Residence'**
+  String get pilgrimLabelResidence;
+
+  /// No description provided for @pilgrimLabelHealthStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Health status'**
+  String get pilgrimLabelHealthStatus;
+
+  /// No description provided for @pilgrimLabelWheelchair.
+  ///
+  /// In en, this message translates to:
+  /// **'Wheelchair needed'**
+  String get pilgrimLabelWheelchair;
+
+  /// No description provided for @pilgrimLabelSmoking.
+  ///
+  /// In en, this message translates to:
+  /// **'Smoking'**
+  String get pilgrimLabelSmoking;
+
+  /// No description provided for @pilgrimLabelHealthCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Health card'**
+  String get pilgrimLabelHealthCard;
+
+  /// No description provided for @pilgrimLabelVaccinated.
+  ///
+  /// In en, this message translates to:
+  /// **'Vaccinated'**
+  String get pilgrimLabelVaccinated;
+
+  /// No description provided for @pilgrimLabelMakkahHotel.
+  ///
+  /// In en, this message translates to:
+  /// **'Makkah hotel'**
+  String get pilgrimLabelMakkahHotel;
+
+  /// No description provided for @pilgrimLabelMakkahFloor.
+  ///
+  /// In en, this message translates to:
+  /// **'Makkah floor'**
+  String get pilgrimLabelMakkahFloor;
+
+  /// No description provided for @pilgrimLabelMakkahRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Makkah room'**
+  String get pilgrimLabelMakkahRoom;
+
+  /// No description provided for @pilgrimLabelMadinahTravel.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel date to Madinah'**
+  String get pilgrimLabelMadinahTravel;
+
+  /// No description provided for @pilgrimLabelMadinahHotel.
+  ///
+  /// In en, this message translates to:
+  /// **'Madinah hotel'**
+  String get pilgrimLabelMadinahHotel;
+
+  /// No description provided for @pilgrimLabelMadinahFloor.
+  ///
+  /// In en, this message translates to:
+  /// **'Madinah floor'**
+  String get pilgrimLabelMadinahFloor;
+
+  /// No description provided for @pilgrimLabelMadinahRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Madinah room'**
+  String get pilgrimLabelMadinahRoom;
+
+  /// No description provided for @pilgrimLabelDepartureAirport.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure airport'**
+  String get pilgrimLabelDepartureAirport;
+
+  /// No description provided for @pilgrimLabelDepartureAirline.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure airline'**
+  String get pilgrimLabelDepartureAirline;
+
+  /// No description provided for @pilgrimLabelDepartureFlight.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure flight no.'**
+  String get pilgrimLabelDepartureFlight;
+
+  /// No description provided for @pilgrimLabelDepartureDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure date'**
+  String get pilgrimLabelDepartureDate;
+
+  /// No description provided for @pilgrimLabelDepartureTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure time'**
+  String get pilgrimLabelDepartureTime;
+
+  /// No description provided for @pilgrimLabelReturnAirport.
+  ///
+  /// In en, this message translates to:
+  /// **'Return airport'**
+  String get pilgrimLabelReturnAirport;
+
+  /// No description provided for @pilgrimLabelReturnAirline.
+  ///
+  /// In en, this message translates to:
+  /// **'Return airline'**
+  String get pilgrimLabelReturnAirline;
+
+  /// No description provided for @pilgrimLabelReturnFlight.
+  ///
+  /// In en, this message translates to:
+  /// **'Return flight no.'**
+  String get pilgrimLabelReturnFlight;
+
+  /// No description provided for @pilgrimLabelReturnDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Return date'**
+  String get pilgrimLabelReturnDate;
+
+  /// No description provided for @pilgrimLabelReturnTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Return time'**
+  String get pilgrimLabelReturnTime;
+
+  /// No description provided for @pilgrimLabelServiceCenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Service center'**
+  String get pilgrimLabelServiceCenter;
+
+  /// No description provided for @pilgrimLabelCenterArafat.
+  ///
+  /// In en, this message translates to:
+  /// **'Arafat service center'**
+  String get pilgrimLabelCenterArafat;
+
+  /// No description provided for @pilgrimLabelCenterMina.
+  ///
+  /// In en, this message translates to:
+  /// **'Mina service center'**
+  String get pilgrimLabelCenterMina;
+
+  /// No description provided for @pilgrimLabelBusArafat.
+  ///
+  /// In en, this message translates to:
+  /// **'Arafat bus'**
+  String get pilgrimLabelBusArafat;
+
+  /// No description provided for @pilgrimLabelBusMina.
+  ///
+  /// In en, this message translates to:
+  /// **'Mina bus'**
+  String get pilgrimLabelBusMina;
+
+  /// No description provided for @pilgrimLabelTentArafat.
+  ///
+  /// In en, this message translates to:
+  /// **'Arafat tent'**
+  String get pilgrimLabelTentArafat;
+
+  /// No description provided for @pilgrimLabelTentMina.
+  ///
+  /// In en, this message translates to:
+  /// **'Mina tent'**
+  String get pilgrimLabelTentMina;
+
+  /// No description provided for @pilgrimLabelPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get pilgrimLabelPhone;
+
+  /// No description provided for @pilgrimLabelWhatsapp.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get pilgrimLabelWhatsapp;
+
+  /// No description provided for @pilgrimLabelSyrianPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Syrian phone'**
+  String get pilgrimLabelSyrianPhone;
 
   /// No description provided for @operatorGoAdminLogin.
   ///

@@ -1,4 +1,6 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_refresh.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_tables.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/application/services/admin_analytics_service.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/data/repositories/admin_analytics_repository.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/domain/models/admin_dashboard_stats.dart';
@@ -23,6 +25,12 @@ AdminAnalyticsService adminAnalyticsService(Ref ref) {
 class AdminDashboard extends _$AdminDashboard {
   @override
   Future<AdminDashboardStats> build() {
+    watchSupabaseTables(
+      ref,
+      client: AppConfig.hasSupabase ? Supabase.instance.client : null,
+      tables: RealtimeTables.adminAnalytics,
+    );
+
     return ref.read(adminAnalyticsServiceProvider).loadDashboard();
   }
 

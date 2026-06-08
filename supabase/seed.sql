@@ -52,39 +52,9 @@ values
     'pilgrim_only'
   );
 
--- Demo logistics for pilgrim profiles (run after creating demo auth user)
-insert into public.pilgrim_details (
-  profile_id,
-  passport_number,
-  travel_permit_number,
-  medical_test_status,
-  field_status,
-  travel_date,
-  hotel_name,
-  hotel_location_url,
-  transportation_details
-)
-select
-  id,
-  'P1234567',
-  'TP-2026-001',
-  'Approved',
-  'pending',
-  '2026-06-01'::date,
-  'Makkah Towers Hotel',
-  'https://maps.google.com/?q=Makkah+Towers',
-  'Group bus A — departs Mina 07:00 daily'
-from public.profiles
-where role = 'pilgrim'
-on conflict (profile_id) do update set
-  passport_number = excluded.passport_number,
-  travel_permit_number = excluded.travel_permit_number,
-  medical_test_status = excluded.medical_test_status,
-  field_status = excluded.field_status,
-  travel_date = excluded.travel_date,
-  hotel_name = excluded.hotel_name,
-  hotel_location_url = excluded.hotel_location_url,
-  transportation_details = excluded.transportation_details;
+-- Pilgrim registry demo data: 12 pilgrims (all field_status values) are seeded by
+--   npm run setup:users
+-- after auth users exist. Source: scripts/fake-pilgrim-registry.json
 
 -- US-10: Demo competitions
 insert into public.competitions (title, description, starts_at, ends_at, is_active)

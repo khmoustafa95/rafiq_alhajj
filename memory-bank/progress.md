@@ -17,7 +17,7 @@
 | Islamic tools (US-02) | ✅ Prayer, Qibla, Quran, Adhkar (offline) |
 | Pilgrim dashboard (US-04) | ✅ Rituals + logistics, offline sync |
 | Operator intake (US-05) | ✅ Web login, form, storage, create-pilgrim |
-| Field operator (US-06) | ✅ Mobile search, status updates, share copy |
+| Field operator (US-06) | ✅ Stats dashboard, filters, full pilgrim profile, status updates |
 | Admin analytics (US-07) | ✅ Web dashboard, charts, groups, live Supabase |
 | Admin content CMS (US-08) | ✅ Web `/admin/content` CRUD on `content_library` |
 | Operator pilgrim registry (US-09) | ✅ Web `/operator/pilgrims` list + logistics edit |
@@ -28,7 +28,8 @@
 | CI (analyze + test) | ✅ `.github/workflows/flutter_ci.yml` |
 | Auth (US-03) | ✅ Login, pilgrim session, guest/pilgrim home |
 | Supabase migrations | ✅ profiles + RLS (local) |
-| In-app notifications (inbox) | ✅ Inbox, badge, Realtime, broadcast, triggers, SnackBar |
+| In-app notifications (inbox) | ✅ Inbox, badge, Realtime stream, broadcast, triggers, SnackBar |
+| Supabase Realtime (live data) | ✅ pilgrim registry, content, admin, competitions, rituals |
 | FCM push (phase 3) | ✅ device_tokens, Edge Function, Flutter registration (needs Firebase project) |
 
 ## Completed
@@ -58,6 +59,10 @@
 - [x] FCM push (device tokens + Edge Function)
 
 ## Changelog
+
+### 2026-06-08
+- **Fake pilgrim data:** 12 demo pilgrims (`pilgrim@demo.local` … `pilgrim12@demo.local`) with full registry in `scripts/fake-pilgrim-registry.json`; seeded via `seed-fake-pilgrim-registry.mjs` (all 5 `field_status` values, varied clusters/groups/health/hotels).
+- **US-06 extended registry:** `Pilgrim` model with full Excel/Kobo field set; migration `20260608120000_pilgrim_registry_extended.sql`; `PilgrimRegistryRepository`; field operator home stats + status filters + redesigned list; operator/pilgrim full profile sections (`PilgrimProfileSections`); seed demo data updated.
 
 ### 2026-06-06
 - **Auth fix:** Added 15s timeout for Supabase `signInWithPassword` and profile fetch in `SupabaseAuthRepository`; timeout now maps to `network` error so login loading does not hang on bad config/network.

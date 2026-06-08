@@ -4,7 +4,95 @@
     "password": "demo123456",
     "metadata": {
       "role": "pilgrim",
-      "full_name": "أحمد الحاج"
+      "full_name": "أحمد محمد الحاج"
+    }
+  },
+  {
+    "email": "pilgrim2@demo.local",
+    "password": "demo123456",
+    "metadata": {
+      "role": "pilgrim",
+      "full_name": "فاطمة حسن الزهراني"
+    }
+  },
+  {
+    "email": "pilgrim3@demo.local",
+    "password": "demo123456",
+    "metadata": {
+      "role": "pilgrim",
+      "full_name": "خالد عبد الله المنشاوي"
+    }
+  },
+  {
+    "email": "pilgrim4@demo.local",
+    "password": "demo123456",
+    "metadata": {
+      "role": "pilgrim",
+      "full_name": "سارة إبراهيم العودة"
+    }
+  },
+  {
+    "email": "pilgrim5@demo.local",
+    "password": "demo123456",
+    "metadata": {
+      "role": "pilgrim",
+      "full_name": "محمد ياسين الشامي"
+    }
+  },
+  {
+    "email": "pilgrim6@demo.local",
+    "password": "demo123456",
+    "metadata": {
+      "role": "pilgrim",
+      "full_name": "نور الدين الهاشمي"
+    }
+  },
+  {
+    "email": "pilgrim7@demo.local",
+    "password": "demo123456",
+    "metadata": {
+      "role": "pilgrim",
+      "full_name": "عمر خالد الحلبي"
+    }
+  },
+  {
+    "email": "pilgrim8@demo.local",
+    "password": "demo123456",
+    "metadata": {
+      "role": "pilgrim",
+      "full_name": "ليلى أحمد الموصلي"
+    }
+  },
+  {
+    "email": "pilgrim9@demo.local",
+    "password": "demo123456",
+    "metadata": {
+      "role": "pilgrim",
+      "full_name": "يوسف سالم الديري"
+    }
+  },
+  {
+    "email": "pilgrim10@demo.local",
+    "password": "demo123456",
+    "metadata": {
+      "role": "pilgrim",
+      "full_name": "ريم كاظم القادسية"
+    }
+  },
+  {
+    "email": "pilgrim11@demo.local",
+    "password": "demo123456",
+    "metadata": {
+      "role": "pilgrim",
+      "full_name": "حسين علي البصري"
+    }
+  },
+  {
+    "email": "pilgrim12@demo.local",
+    "password": "demo123456",
+    "metadata": {
+      "role": "pilgrim",
+      "full_name": "مريم طلال الأنصاري"
     }
   },
   {

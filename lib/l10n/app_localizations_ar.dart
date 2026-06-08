@@ -430,6 +430,44 @@ class AppLocalizationsAr extends AppLocalizations {
   String get fieldOperatorHomeTitle => 'الحجاج في الميدان';
 
   @override
+  String get fieldOperatorDashboardTitle => 'لوحة الميدان';
+
+  @override
+  String get fieldOperatorPilgrimsTitle => 'الحجاج';
+
+  @override
+  String get fieldOperatorNavHome => 'الرئيسية';
+
+  @override
+  String get fieldOperatorNavPilgrims => 'الحجاج';
+
+  @override
+  String get fieldOperatorStatsHint =>
+      'اضغط على البطاقة لفتح قائمة الحجاج المفلترة.';
+
+  @override
+  String fieldOperatorWelcome(String name) {
+    return 'مرحباً، $name';
+  }
+
+  @override
+  String fieldOperatorWelcomeSubtitle(int total) {
+    return '$total حاج مسجل في مجموعاتك.';
+  }
+
+  @override
+  String get fieldOperatorProgressTitle => 'نظرة على الإنجاز';
+
+  @override
+  String fieldOperatorProgressSummary(
+    int completed,
+    int inProgress,
+    int total,
+  ) {
+    return '$completed مكتمل · $inProgress قيد المتابعة · $total الإجمالي';
+  }
+
+  @override
   String get fieldOperatorSearchHint =>
       'ابحث بالاسم أو رقم الجواز أو إذن السفر';
 
@@ -499,6 +537,241 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get fieldStatusCompleted => 'مكتمل';
+
+  @override
+  String get fieldOperatorStatsTitle => 'نظرة عامة على الميدان';
+
+  @override
+  String get fieldOperatorStatsTotal => 'إجمالي الحجاج';
+
+  @override
+  String get fieldOperatorStatsWheelchair => 'كرسي عجزة';
+
+  @override
+  String get fieldOperatorFilterAll => 'الكل';
+
+  @override
+  String get fieldOperatorSearchHintExtended =>
+      'ابحث بالاسم أو الجواز أو التأشيرة أو اللصاقة أو الهاتف';
+
+  @override
+  String get pilgrimProfileTitle => 'ملف التسجيل';
+
+  @override
+  String get pilgrimProfileEmpty => 'بيانات التسجيل غير متوفرة بعد.';
+
+  @override
+  String get pilgrimYes => 'نعم';
+
+  @override
+  String get pilgrimNo => 'لا';
+
+  @override
+  String get pilgrimNotProvided => 'غير متوفر';
+
+  @override
+  String get pilgrimSectionIdentity => 'بيانات التعريف والتسجيل';
+
+  @override
+  String get pilgrimSectionTravelDocs => 'وثائق السفر';
+
+  @override
+  String get pilgrimSectionPersonal => 'معلومات شخصية';
+
+  @override
+  String get pilgrimSectionHousing => 'الطلب والسكن';
+
+  @override
+  String get pilgrimSectionHealth => 'الحالة الصحية';
+
+  @override
+  String get pilgrimSectionMakkah => 'سكن مكة';
+
+  @override
+  String get pilgrimSectionMadinah => 'سكن المدينة';
+
+  @override
+  String get pilgrimSectionDepartureFlight => 'رحلة الذهاب';
+
+  @override
+  String get pilgrimSectionReturnFlight => 'رحلة العودة';
+
+  @override
+  String get pilgrimSectionHolySites => 'المشاعر المقدسة (منى وعرفات)';
+
+  @override
+  String get pilgrimSectionContact => 'التواصل';
+
+  @override
+  String get pilgrimSectionNotes => 'ملاحظات';
+
+  @override
+  String get pilgrimLabelSequence => 'التسلسل';
+
+  @override
+  String get pilgrimLabelCluster => 'التكتل';
+
+  @override
+  String get pilgrimLabelCoordinator => 'المنسق';
+
+  @override
+  String get pilgrimLabelSticker => 'رقم اللصاقة';
+
+  @override
+  String get pilgrimLabelVisa => 'رقم التأشيرة';
+
+  @override
+  String get pilgrimLabelBarcode => 'رقم الباركود';
+
+  @override
+  String get pilgrimLabelFullNameAr => 'الاسم الثلاثي';
+
+  @override
+  String get pilgrimLabelMotherAr => 'اسم الأم';
+
+  @override
+  String get pilgrimLabelBirthDate => 'تاريخ الميلاد';
+
+  @override
+  String get pilgrimLabelFirstNameEn => 'الاسم (إنجليزي)';
+
+  @override
+  String get pilgrimLabelLastNameEn => 'الكنية (إنجليزي)';
+
+  @override
+  String get pilgrimLabelFatherEn => 'اسم الأب (إنجليزي)';
+
+  @override
+  String get pilgrimLabelMotherEn => 'اسم الأم (إنجليزي)';
+
+  @override
+  String get pilgrimLabelPassportIssue => 'تاريخ إصدار الجواز';
+
+  @override
+  String get pilgrimLabelPassportExpiry => 'تاريخ انتهاء الجواز';
+
+  @override
+  String get pilgrimLabelGender => 'الجنس';
+
+  @override
+  String get pilgrimLabelBodySize => 'قياس البدن';
+
+  @override
+  String get pilgrimLabelGroup => 'المجموعة';
+
+  @override
+  String get pilgrimLabelCompanion => 'المرافق';
+
+  @override
+  String get pilgrimLabelRelation => 'صلة القرابة';
+
+  @override
+  String get pilgrimLabelRequestType => 'نوع الطلب';
+
+  @override
+  String get pilgrimLabelHousingType => 'نوع السكن';
+
+  @override
+  String get pilgrimLabelHadyStatus => 'حالة الهدي';
+
+  @override
+  String get pilgrimLabelResidence => 'مكان الإقامة';
+
+  @override
+  String get pilgrimLabelHealthStatus => 'الحالة الصحية';
+
+  @override
+  String get pilgrimLabelWheelchair => 'كرسي عجزة';
+
+  @override
+  String get pilgrimLabelSmoking => 'التدخين';
+
+  @override
+  String get pilgrimLabelHealthCard => 'البطاقة الصحية';
+
+  @override
+  String get pilgrimLabelVaccinated => 'التطعيم';
+
+  @override
+  String get pilgrimLabelMakkahHotel => 'فندق مكة';
+
+  @override
+  String get pilgrimLabelMakkahFloor => 'طابق مكة';
+
+  @override
+  String get pilgrimLabelMakkahRoom => 'غرفة مكة';
+
+  @override
+  String get pilgrimLabelMadinahTravel => 'تاريخ السفر للمدينة';
+
+  @override
+  String get pilgrimLabelMadinahHotel => 'فندق المدينة';
+
+  @override
+  String get pilgrimLabelMadinahFloor => 'طابق المدينة';
+
+  @override
+  String get pilgrimLabelMadinahRoom => 'غرفة المدينة';
+
+  @override
+  String get pilgrimLabelDepartureAirport => 'مطار الذهاب';
+
+  @override
+  String get pilgrimLabelDepartureAirline => 'شركة طيران الذهاب';
+
+  @override
+  String get pilgrimLabelDepartureFlight => 'رقم رحلة الذهاب';
+
+  @override
+  String get pilgrimLabelDepartureDate => 'تاريخ الذهاب';
+
+  @override
+  String get pilgrimLabelDepartureTime => 'وقت إقلاع الذهاب';
+
+  @override
+  String get pilgrimLabelReturnAirport => 'مطار العودة';
+
+  @override
+  String get pilgrimLabelReturnAirline => 'شركة طيران العودة';
+
+  @override
+  String get pilgrimLabelReturnFlight => 'رقم رحلة العودة';
+
+  @override
+  String get pilgrimLabelReturnDate => 'تاريخ العودة';
+
+  @override
+  String get pilgrimLabelReturnTime => 'وقت إقلاع العودة';
+
+  @override
+  String get pilgrimLabelServiceCenter => 'مركز الخدمات';
+
+  @override
+  String get pilgrimLabelCenterArafat => 'مركز الخدمة عرفات';
+
+  @override
+  String get pilgrimLabelCenterMina => 'مركز الخدمة منى';
+
+  @override
+  String get pilgrimLabelBusArafat => 'باص عرفات';
+
+  @override
+  String get pilgrimLabelBusMina => 'باص منى';
+
+  @override
+  String get pilgrimLabelTentArafat => 'خيمة عرفات';
+
+  @override
+  String get pilgrimLabelTentMina => 'خيمة منى';
+
+  @override
+  String get pilgrimLabelPhone => 'الهاتف';
+
+  @override
+  String get pilgrimLabelWhatsapp => 'واتساب';
+
+  @override
+  String get pilgrimLabelSyrianPhone => 'هاتف سوري';
 
   @override
   String get operatorGoAdminLogin => 'دخول المسؤول — التقارير';

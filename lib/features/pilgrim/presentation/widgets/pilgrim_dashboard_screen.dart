@@ -8,7 +8,7 @@ import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_bell_button.dart';
 import 'package:rafiq_alhajj/features/pilgrim/presentation/providers/pilgrim_providers.dart';
-import 'package:rafiq_alhajj/features/pilgrim/presentation/widgets/pilgrim_logistics_card.dart';
+import 'package:rafiq_alhajj/features/pilgrim/presentation/widgets/pilgrim_profile_sections.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 class PilgrimDashboardScreen extends ConsumerWidget {
@@ -124,11 +124,19 @@ class PilgrimDashboardScreen extends ConsumerWidget {
                 }),
                 SizedBox(height: 24.h),
                 Text(
-                  l10n.pilgrimLogisticsTitle,
+                  l10n.pilgrimProfileTitle,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 SizedBox(height: 8.h),
-                PilgrimLogisticsCard(details: dashboard.logistics),
+                if (dashboard.registry != null)
+                  PilgrimProfileSections(pilgrim: dashboard.registry!)
+                else
+                  Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(16.w),
+                      child: Text(l10n.pilgrimProfileEmpty),
+                    ),
+                  ),
               ],
             ),
           );

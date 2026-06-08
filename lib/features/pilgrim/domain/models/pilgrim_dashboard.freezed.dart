@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PilgrimDashboard {
 
- PilgrimDetails? get logistics; List<RitualStepStatus> get rituals; bool get hasPendingSync;
+ Pilgrim? get registry; List<RitualStepStatus> get rituals; bool get hasPendingSync;
 /// Create a copy of PilgrimDashboard
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $PilgrimDashboardCopyWith<PilgrimDashboard> get copyWith => _$PilgrimDashboardCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PilgrimDashboard&&(identical(other.logistics, logistics) || other.logistics == logistics)&&const DeepCollectionEquality().equals(other.rituals, rituals)&&(identical(other.hasPendingSync, hasPendingSync) || other.hasPendingSync == hasPendingSync));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PilgrimDashboard&&(identical(other.registry, registry) || other.registry == registry)&&const DeepCollectionEquality().equals(other.rituals, rituals)&&(identical(other.hasPendingSync, hasPendingSync) || other.hasPendingSync == hasPendingSync));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,logistics,const DeepCollectionEquality().hash(rituals),hasPendingSync);
+int get hashCode => Object.hash(runtimeType,registry,const DeepCollectionEquality().hash(rituals),hasPendingSync);
 
 @override
 String toString() {
-  return 'PilgrimDashboard(logistics: $logistics, rituals: $rituals, hasPendingSync: $hasPendingSync)';
+  return 'PilgrimDashboard(registry: $registry, rituals: $rituals, hasPendingSync: $hasPendingSync)';
 }
 
 
@@ -45,11 +45,11 @@ abstract mixin class $PilgrimDashboardCopyWith<$Res>  {
   factory $PilgrimDashboardCopyWith(PilgrimDashboard value, $Res Function(PilgrimDashboard) _then) = _$PilgrimDashboardCopyWithImpl;
 @useResult
 $Res call({
- PilgrimDetails? logistics, List<RitualStepStatus> rituals, bool hasPendingSync
+ Pilgrim? registry, List<RitualStepStatus> rituals, bool hasPendingSync
 });
 
 
-$PilgrimDetailsCopyWith<$Res>? get logistics;
+$PilgrimCopyWith<$Res>? get registry;
 
 }
 /// @nodoc
@@ -62,10 +62,10 @@ class _$PilgrimDashboardCopyWithImpl<$Res>
 
 /// Create a copy of PilgrimDashboard
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? logistics = freezed,Object? rituals = null,Object? hasPendingSync = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? registry = freezed,Object? rituals = null,Object? hasPendingSync = null,}) {
   return _then(_self.copyWith(
-logistics: freezed == logistics ? _self.logistics : logistics // ignore: cast_nullable_to_non_nullable
-as PilgrimDetails?,rituals: null == rituals ? _self.rituals : rituals // ignore: cast_nullable_to_non_nullable
+registry: freezed == registry ? _self.registry : registry // ignore: cast_nullable_to_non_nullable
+as Pilgrim?,rituals: null == rituals ? _self.rituals : rituals // ignore: cast_nullable_to_non_nullable
 as List<RitualStepStatus>,hasPendingSync: null == hasPendingSync ? _self.hasPendingSync : hasPendingSync // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
@@ -74,13 +74,13 @@ as bool,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$PilgrimDetailsCopyWith<$Res>? get logistics {
-    if (_self.logistics == null) {
+$PilgrimCopyWith<$Res>? get registry {
+    if (_self.registry == null) {
     return null;
   }
 
-  return $PilgrimDetailsCopyWith<$Res>(_self.logistics!, (value) {
-    return _then(_self.copyWith(logistics: value));
+  return $PilgrimCopyWith<$Res>(_self.registry!, (value) {
+    return _then(_self.copyWith(registry: value));
   });
 }
 }
@@ -164,10 +164,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( PilgrimDetails? logistics,  List<RitualStepStatus> rituals,  bool hasPendingSync)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Pilgrim? registry,  List<RitualStepStatus> rituals,  bool hasPendingSync)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PilgrimDashboard() when $default != null:
-return $default(_that.logistics,_that.rituals,_that.hasPendingSync);case _:
+return $default(_that.registry,_that.rituals,_that.hasPendingSync);case _:
   return orElse();
 
 }
@@ -185,10 +185,10 @@ return $default(_that.logistics,_that.rituals,_that.hasPendingSync);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( PilgrimDetails? logistics,  List<RitualStepStatus> rituals,  bool hasPendingSync)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Pilgrim? registry,  List<RitualStepStatus> rituals,  bool hasPendingSync)  $default,) {final _that = this;
 switch (_that) {
 case _PilgrimDashboard():
-return $default(_that.logistics,_that.rituals,_that.hasPendingSync);case _:
+return $default(_that.registry,_that.rituals,_that.hasPendingSync);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -205,10 +205,10 @@ return $default(_that.logistics,_that.rituals,_that.hasPendingSync);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( PilgrimDetails? logistics,  List<RitualStepStatus> rituals,  bool hasPendingSync)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Pilgrim? registry,  List<RitualStepStatus> rituals,  bool hasPendingSync)?  $default,) {final _that = this;
 switch (_that) {
 case _PilgrimDashboard() when $default != null:
-return $default(_that.logistics,_that.rituals,_that.hasPendingSync);case _:
+return $default(_that.registry,_that.rituals,_that.hasPendingSync);case _:
   return null;
 
 }
@@ -220,10 +220,10 @@ return $default(_that.logistics,_that.rituals,_that.hasPendingSync);case _:
 
 
 class _PilgrimDashboard extends PilgrimDashboard {
-  const _PilgrimDashboard({required this.logistics, required final  List<RitualStepStatus> rituals, required this.hasPendingSync}): _rituals = rituals,super._();
+  const _PilgrimDashboard({required this.registry, required final  List<RitualStepStatus> rituals, required this.hasPendingSync}): _rituals = rituals,super._();
   
 
-@override final  PilgrimDetails? logistics;
+@override final  Pilgrim? registry;
  final  List<RitualStepStatus> _rituals;
 @override List<RitualStepStatus> get rituals {
   if (_rituals is EqualUnmodifiableListView) return _rituals;
@@ -243,16 +243,16 @@ _$PilgrimDashboardCopyWith<_PilgrimDashboard> get copyWith => __$PilgrimDashboar
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PilgrimDashboard&&(identical(other.logistics, logistics) || other.logistics == logistics)&&const DeepCollectionEquality().equals(other._rituals, _rituals)&&(identical(other.hasPendingSync, hasPendingSync) || other.hasPendingSync == hasPendingSync));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PilgrimDashboard&&(identical(other.registry, registry) || other.registry == registry)&&const DeepCollectionEquality().equals(other._rituals, _rituals)&&(identical(other.hasPendingSync, hasPendingSync) || other.hasPendingSync == hasPendingSync));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,logistics,const DeepCollectionEquality().hash(_rituals),hasPendingSync);
+int get hashCode => Object.hash(runtimeType,registry,const DeepCollectionEquality().hash(_rituals),hasPendingSync);
 
 @override
 String toString() {
-  return 'PilgrimDashboard(logistics: $logistics, rituals: $rituals, hasPendingSync: $hasPendingSync)';
+  return 'PilgrimDashboard(registry: $registry, rituals: $rituals, hasPendingSync: $hasPendingSync)';
 }
 
 
@@ -263,11 +263,11 @@ abstract mixin class _$PilgrimDashboardCopyWith<$Res> implements $PilgrimDashboa
   factory _$PilgrimDashboardCopyWith(_PilgrimDashboard value, $Res Function(_PilgrimDashboard) _then) = __$PilgrimDashboardCopyWithImpl;
 @override @useResult
 $Res call({
- PilgrimDetails? logistics, List<RitualStepStatus> rituals, bool hasPendingSync
+ Pilgrim? registry, List<RitualStepStatus> rituals, bool hasPendingSync
 });
 
 
-@override $PilgrimDetailsCopyWith<$Res>? get logistics;
+@override $PilgrimCopyWith<$Res>? get registry;
 
 }
 /// @nodoc
@@ -280,10 +280,10 @@ class __$PilgrimDashboardCopyWithImpl<$Res>
 
 /// Create a copy of PilgrimDashboard
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? logistics = freezed,Object? rituals = null,Object? hasPendingSync = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? registry = freezed,Object? rituals = null,Object? hasPendingSync = null,}) {
   return _then(_PilgrimDashboard(
-logistics: freezed == logistics ? _self.logistics : logistics // ignore: cast_nullable_to_non_nullable
-as PilgrimDetails?,rituals: null == rituals ? _self._rituals : rituals // ignore: cast_nullable_to_non_nullable
+registry: freezed == registry ? _self.registry : registry // ignore: cast_nullable_to_non_nullable
+as Pilgrim?,rituals: null == rituals ? _self._rituals : rituals // ignore: cast_nullable_to_non_nullable
 as List<RitualStepStatus>,hasPendingSync: null == hasPendingSync ? _self.hasPendingSync : hasPendingSync // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
@@ -293,13 +293,13 @@ as bool,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$PilgrimDetailsCopyWith<$Res>? get logistics {
-    if (_self.logistics == null) {
+$PilgrimCopyWith<$Res>? get registry {
+    if (_self.registry == null) {
     return null;
   }
 
-  return $PilgrimDetailsCopyWith<$Res>(_self.logistics!, (value) {
-    return _then(_self.copyWith(logistics: value));
+  return $PilgrimCopyWith<$Res>(_self.registry!, (value) {
+    return _then(_self.copyWith(registry: value));
   });
 }
 }

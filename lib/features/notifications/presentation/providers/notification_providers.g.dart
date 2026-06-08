@@ -115,7 +115,7 @@ final class NotificationInboxProvider
   NotificationInbox create() => NotificationInbox();
 }
 
-String _$notificationInboxHash() => r'a66bfad7ffc0d81df575611ec1b8878e185ca1e3';
+String _$notificationInboxHash() => r'3d8390fbae453dc02f3fc12ebe83dd14ea8a47fb';
 
 abstract class _$NotificationInbox
     extends $AsyncNotifier<List<InboxNotification>> {

@@ -37,9 +37,21 @@ class SupabaseAuthRepository implements AuthRepository {
 
   @override
   Stream<AuthSessionState> watchSessionState() async* {
-    yield await getCurrentSessionState();
+    yield await _safeCurrentSessionState();
     await for (final _ in _client.auth.onAuthStateChange) {
-      yield await getCurrentSessionState();
+      yield await _safeCurrentSessionState();
+    }
+  }
+
+  Future<AuthSessionState> _safeCurrentSessionState() async {
+    try {
+      return await getCurrentSessionState().timeout(_requestTimeout);
+    } on TimeoutException {
+      return const AuthSessionState.guest();
+    } on PostgrestException {
+      return const AuthSessionState.guest();
+    } on SocketException {
+      return const AuthSessionState.guest();
     }
   }
 

@@ -14,7 +14,7 @@ Write-Host "Seeding demo Auth users..." -ForegroundColor Cyan
 
 Write-Host ""
 Write-Host "Demo accounts (password: demo123456):" -ForegroundColor Yellow
-Write-Host "  pilgrim@demo.local"
+Write-Host "  pilgrim@demo.local … pilgrim12@demo.local (12 pilgrims, varied field status)"
 Write-Host "  operator@demo.local"
 Write-Host "  admin@demo.local"
 Write-Host ""

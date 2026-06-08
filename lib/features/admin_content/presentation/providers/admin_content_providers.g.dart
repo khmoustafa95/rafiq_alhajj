@@ -129,7 +129,7 @@ final class AdminContentListProvider
   AdminContentList create() => AdminContentList();
 }
 
-String _$adminContentListHash() => r'd08bbc5bc40587a9a8aad12c79ca96147ff37557';
+String _$adminContentListHash() => r'b1e08731522b70f88072984b6829b1e323340535';
 
 abstract class _$AdminContentList extends $AsyncNotifier<List<ContentItem>> {
   FutureOr<List<ContentItem>> build();

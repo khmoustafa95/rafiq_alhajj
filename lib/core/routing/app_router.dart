@@ -20,9 +20,11 @@ import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competit
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competitions_list_screen.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_detail_screen.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_list_screen.dart';
-import 'package:rafiq_alhajj/features/field_operator/presentation/widgets/field_operator_home_screen.dart';
+import 'package:rafiq_alhajj/features/field_operator/presentation/widgets/field_operator_dashboard_screen.dart';
 import 'package:rafiq_alhajj/features/field_operator/presentation/widgets/field_operator_login_screen.dart';
 import 'package:rafiq_alhajj/features/field_operator/presentation/widgets/field_operator_pilgrim_screen.dart';
+import 'package:rafiq_alhajj/features/field_operator/presentation/widgets/field_operator_pilgrims_screen.dart';
+import 'package:rafiq_alhajj/features/field_operator/presentation/widgets/field_operator_shell_screen.dart';
 import 'package:rafiq_alhajj/features/home/presentation/widgets/home_screen.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/widgets/adhkar_screen.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/widgets/islamic_tools_hub_screen.dart';
@@ -82,6 +84,34 @@ List<RouteBase> _toolsChildRoutes() => [
         builder: (context, state) => const VirtualTourScreen(),
       ),
     ];
+
+StatefulShellRoute _fieldOperatorShellRoute() {
+  return StatefulShellRoute.indexedStack(
+    builder: (context, state, navigationShell) {
+      return FieldOperatorShellScreen(navigationShell: navigationShell);
+    },
+    branches: [
+      StatefulShellBranch(
+        routes: [
+          GoRoute(
+            path: AppRoutes.fieldOperatorHome,
+            name: 'fieldOperatorHome',
+            builder: (context, state) => const FieldOperatorDashboardScreen(),
+          ),
+        ],
+      ),
+      StatefulShellBranch(
+        routes: [
+          GoRoute(
+            path: AppRoutes.fieldOperatorPilgrims,
+            name: 'fieldOperatorPilgrims',
+            builder: (context, state) => const FieldOperatorPilgrimsScreen(),
+          ),
+        ],
+      ),
+    ],
+  );
+}
 
 StatefulShellRoute _pilgrimShellRoute() {
   return StatefulShellRoute.indexedStack(
@@ -182,11 +212,7 @@ List<RouteBase> _mobilePilgrimRoutes() => [
         name: 'fieldOperatorLogin',
         builder: (context, state) => const FieldOperatorLoginScreen(),
       ),
-      GoRoute(
-        path: AppRoutes.fieldOperatorHome,
-        name: 'fieldOperatorHome',
-        builder: (context, state) => const FieldOperatorHomeScreen(),
-      ),
+      _fieldOperatorShellRoute(),
       GoRoute(
         path: AppRoutes.fieldOperatorPilgrim,
         name: 'fieldOperatorPilgrim',

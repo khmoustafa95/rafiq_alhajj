@@ -55,7 +55,7 @@ final class FieldOperatorRepositoryProvider
 }
 
 String _$fieldOperatorRepositoryHash() =>
-    r'93bf945eb44229265c9e3eefd2138d7be82c28e1';
+    r'4001b730135be6ffb7336ee128aea0b13526b69d';
 
 @ProviderFor(fieldOperatorService)
 final fieldOperatorServiceProvider = FieldOperatorServiceProvider._();
@@ -105,6 +105,48 @@ final class FieldOperatorServiceProvider
 String _$fieldOperatorServiceHash() =>
     r'0e0cf63ab7527bae9dcd68b1fef007c3221296bc';
 
+@ProviderFor(fieldOperatorStats)
+final fieldOperatorStatsProvider = FieldOperatorStatsProvider._();
+
+final class FieldOperatorStatsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<FieldOperatorStats>,
+          FieldOperatorStats,
+          FutureOr<FieldOperatorStats>
+        >
+    with
+        $FutureModifier<FieldOperatorStats>,
+        $FutureProvider<FieldOperatorStats> {
+  FieldOperatorStatsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'fieldOperatorStatsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$fieldOperatorStatsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<FieldOperatorStats> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<FieldOperatorStats> create(Ref ref) {
+    return fieldOperatorStats(ref);
+  }
+}
+
+String _$fieldOperatorStatsHash() =>
+    r'6d0d583ce1894f9ea5306213dfa5c3edc7e651ee';
+
 @ProviderFor(FieldOperatorSearch)
 final fieldOperatorSearchProvider = FieldOperatorSearchProvider._();
 
@@ -131,7 +173,7 @@ final class FieldOperatorSearchProvider
 }
 
 String _$fieldOperatorSearchHash() =>
-    r'9f40f038740ef59a1ccea02636712aab350c2419';
+    r'8429d54fa514b0dbbc135916ed4c1c3e30cbed9f';
 
 abstract class _$FieldOperatorSearch
     extends $AsyncNotifier<List<PilgrimSearchItem>> {
@@ -164,11 +206,7 @@ abstract class _$FieldOperatorSearch
 final fieldOperatorPilgrimDetailProvider = FieldOperatorPilgrimDetailFamily._();
 
 final class FieldOperatorPilgrimDetailProvider
-    extends
-        $AsyncNotifierProvider<
-          FieldOperatorPilgrimDetail,
-          PilgrimFieldRecord?
-        > {
+    extends $AsyncNotifierProvider<FieldOperatorPilgrimDetail, Pilgrim?> {
   FieldOperatorPilgrimDetailProvider._({
     required FieldOperatorPilgrimDetailFamily super.from,
     required String super.argument,
@@ -207,15 +245,15 @@ final class FieldOperatorPilgrimDetailProvider
 }
 
 String _$fieldOperatorPilgrimDetailHash() =>
-    r'e172f988c1ce3293d5c2d3158516becd7dfaed88';
+    r'c164f59b9212a760f41fe41c1aebde4ce46f1ab9';
 
 final class FieldOperatorPilgrimDetailFamily extends $Family
     with
         $ClassFamilyOverride<
           FieldOperatorPilgrimDetail,
-          AsyncValue<PilgrimFieldRecord?>,
-          PilgrimFieldRecord?,
-          FutureOr<PilgrimFieldRecord?>,
+          AsyncValue<Pilgrim?>,
+          Pilgrim?,
+          FutureOr<Pilgrim?>,
           String
         > {
   FieldOperatorPilgrimDetailFamily._()
@@ -234,22 +272,20 @@ final class FieldOperatorPilgrimDetailFamily extends $Family
   String toString() => r'fieldOperatorPilgrimDetailProvider';
 }
 
-abstract class _$FieldOperatorPilgrimDetail
-    extends $AsyncNotifier<PilgrimFieldRecord?> {
+abstract class _$FieldOperatorPilgrimDetail extends $AsyncNotifier<Pilgrim?> {
   late final _$args = ref.$arg as String;
   String get profileId => _$args;
 
-  FutureOr<PilgrimFieldRecord?> build(String profileId);
+  FutureOr<Pilgrim?> build(String profileId);
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref =
-        this.ref as $Ref<AsyncValue<PilgrimFieldRecord?>, PilgrimFieldRecord?>;
+    final ref = this.ref as $Ref<AsyncValue<Pilgrim?>, Pilgrim?>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<PilgrimFieldRecord?>, PilgrimFieldRecord?>,
-              AsyncValue<PilgrimFieldRecord?>,
+              AnyNotifier<AsyncValue<Pilgrim?>, Pilgrim?>,
+              AsyncValue<Pilgrim?>,
               Object?,
               Object?
             >;

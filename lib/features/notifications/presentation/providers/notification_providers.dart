@@ -1,4 +1,5 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_refresh.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/features/notifications/data/repositories/notification_repository.dart';
 import 'package:rafiq_alhajj/features/notifications/domain/models/inbox_notification.dart';
@@ -48,6 +49,14 @@ class NotificationInbox extends _$NotificationInbox {
     if (profileId == null) {
       return Future.value([]);
     }
+
+    watchSupabaseTable(
+      ref,
+      client: AppConfig.hasSupabase ? Supabase.instance.client : null,
+      table: 'notifications',
+      eqColumn: 'recipient_id',
+      eqValue: profileId,
+    );
 
     return ref.read(notificationRepositoryProvider).fetchInbox(
           recipientId: profileId,

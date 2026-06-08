@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:rafiq_alhajj/features/pilgrim/domain/models/pilgrim_details.dart';
+import 'package:rafiq_alhajj/features/pilgrim/domain/models/pilgrim.dart';
 import 'package:rafiq_alhajj/features/pilgrim/domain/models/ritual_step_status.dart';
 
 part 'pilgrim_dashboard.freezed.dart';
@@ -7,7 +7,7 @@ part 'pilgrim_dashboard.freezed.dart';
 @freezed
 abstract class PilgrimDashboard with _$PilgrimDashboard {
   const factory PilgrimDashboard({
-    required PilgrimDetails? logistics,
+    required Pilgrim? registry,
     required List<RitualStepStatus> rituals,
     required bool hasPendingSync,
   }) = _PilgrimDashboard;

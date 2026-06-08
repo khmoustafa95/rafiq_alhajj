@@ -1,4 +1,6 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_refresh.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_tables.dart';
 import 'package:rafiq_alhajj/features/admin_content/application/services/admin_content_service.dart';
 import 'package:rafiq_alhajj/features/admin_content/data/repositories/admin_content_repository.dart';
 import 'package:rafiq_alhajj/features/admin_content/domain/models/content_editor_input.dart';
@@ -24,6 +26,12 @@ AdminContentService adminContentService(Ref ref) {
 class AdminContentList extends _$AdminContentList {
   @override
   Future<List<ContentItem>> build() {
+    watchSupabaseTables(
+      ref,
+      client: AppConfig.hasSupabase ? Supabase.instance.client : null,
+      tables: RealtimeTables.contentFeed,
+    );
+
     return ref.read(adminContentServiceProvider).listAll();
   }
 

@@ -135,7 +135,7 @@ final class OperatorPilgrimRegistryProvider
 }
 
 String _$operatorPilgrimRegistryHash() =>
-    r'663d6668078ffc40b56e3c7b8a653e11e9731da5';
+    r'1bb0024ef1146ae10ce76695072947f28218471b';
 
 abstract class _$OperatorPilgrimRegistry
     extends $AsyncNotifier<List<OperatorPilgrimSummary>> {
@@ -207,7 +207,7 @@ final class OperatorPilgrimDetailProvider
 }
 
 String _$operatorPilgrimDetailHash() =>
-    r'8c4bdb4825f32d9d131458b86dca974fcf2949ea';
+    r'fa5cb89f640c8d4ec0199c929f7c09cea956d1b4';
 
 final class OperatorPilgrimDetailFamily extends $Family
     with

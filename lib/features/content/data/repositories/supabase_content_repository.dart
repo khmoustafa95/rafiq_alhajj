@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:rafiq_alhajj/features/content/data/dtos/content_item_dto.dart';
 import 'package:rafiq_alhajj/features/content/data/repositories/content_repository.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_item.dart';
@@ -14,6 +17,7 @@ class SupabaseContentRepository implements ContentRepository {
   SupabaseContentRepository(this._client);
 
   final SupabaseClient _client;
+  static const Duration _requestTimeout = Duration(seconds: 15);
 
   @override
   Future<PublicContentFeed> fetchBrowsableFeed({
@@ -25,7 +29,8 @@ class SupabaseContentRepository implements ContentRepository {
           .select(
             'id, title, description, media_url, type, visibility, created_at',
           )
-          .order('created_at', ascending: false);
+          .order('created_at', ascending: false)
+          .timeout(_requestTimeout);
 
       final items = (rows as List<dynamic>)
           .map(
@@ -58,6 +63,10 @@ class SupabaseContentRepository implements ContentRepository {
       );
     } on PostgrestException {
       throw const ContentFetchException();
+    } on SocketException {
+      throw const ContentFetchException();
+    } on TimeoutException {
+      throw const ContentFetchException();
     }
   }
 
@@ -70,7 +79,8 @@ class SupabaseContentRepository implements ContentRepository {
             'id, title, description, media_url, type, visibility, created_at',
           )
           .eq('id', id)
-          .maybeSingle();
+          .maybeSingle()
+          .timeout(_requestTimeout);
 
       if (row == null) {
         return null;
@@ -78,6 +88,10 @@ class SupabaseContentRepository implements ContentRepository {
 
       return ContentItemDto.fromJson(Map<String, dynamic>.from(row)).toDomain();
     } on PostgrestException {
+      throw const ContentFetchException();
+    } on SocketException {
+      throw const ContentFetchException();
+    } on TimeoutException {
       throw const ContentFetchException();
     }
   }

@@ -439,6 +439,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fieldOperatorHomeTitle => 'Pilgrims in the field';
 
   @override
+  String get fieldOperatorDashboardTitle => 'Field dashboard';
+
+  @override
+  String get fieldOperatorPilgrimsTitle => 'Pilgrims';
+
+  @override
+  String get fieldOperatorNavHome => 'Home';
+
+  @override
+  String get fieldOperatorNavPilgrims => 'Pilgrims';
+
+  @override
+  String get fieldOperatorStatsHint =>
+      'Tap a card to open the filtered pilgrim list.';
+
+  @override
+  String fieldOperatorWelcome(String name) {
+    return 'Welcome, $name';
+  }
+
+  @override
+  String fieldOperatorWelcomeSubtitle(int total) {
+    return '$total pilgrims registered in your groups.';
+  }
+
+  @override
+  String get fieldOperatorProgressTitle => 'Completion overview';
+
+  @override
+  String fieldOperatorProgressSummary(
+    int completed,
+    int inProgress,
+    int total,
+  ) {
+    return '$completed completed · $inProgress in progress · $total total';
+  }
+
+  @override
   String get fieldOperatorSearchHint =>
       'Search by name, passport, or permit number';
 
@@ -509,6 +547,242 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fieldStatusCompleted => 'Completed';
+
+  @override
+  String get fieldOperatorStatsTitle => 'Field overview';
+
+  @override
+  String get fieldOperatorStatsTotal => 'Total pilgrims';
+
+  @override
+  String get fieldOperatorStatsWheelchair => 'Wheelchair';
+
+  @override
+  String get fieldOperatorFilterAll => 'All';
+
+  @override
+  String get fieldOperatorSearchHintExtended =>
+      'Search by name, passport, visa, sticker, or phone';
+
+  @override
+  String get pilgrimProfileTitle => 'My registration profile';
+
+  @override
+  String get pilgrimProfileEmpty =>
+      'Your registration details are not available yet.';
+
+  @override
+  String get pilgrimYes => 'Yes';
+
+  @override
+  String get pilgrimNo => 'No';
+
+  @override
+  String get pilgrimNotProvided => 'Not provided';
+
+  @override
+  String get pilgrimSectionIdentity => 'Identity & registration';
+
+  @override
+  String get pilgrimSectionTravelDocs => 'Travel documents';
+
+  @override
+  String get pilgrimSectionPersonal => 'Personal information';
+
+  @override
+  String get pilgrimSectionHousing => 'Request & housing';
+
+  @override
+  String get pilgrimSectionHealth => 'Health';
+
+  @override
+  String get pilgrimSectionMakkah => 'Makkah accommodation';
+
+  @override
+  String get pilgrimSectionMadinah => 'Madinah accommodation';
+
+  @override
+  String get pilgrimSectionDepartureFlight => 'Outbound flight';
+
+  @override
+  String get pilgrimSectionReturnFlight => 'Return flight';
+
+  @override
+  String get pilgrimSectionHolySites => 'Holy sites (Mina & Arafat)';
+
+  @override
+  String get pilgrimSectionContact => 'Contact';
+
+  @override
+  String get pilgrimSectionNotes => 'Notes';
+
+  @override
+  String get pilgrimLabelSequence => 'Sequence';
+
+  @override
+  String get pilgrimLabelCluster => 'Cluster';
+
+  @override
+  String get pilgrimLabelCoordinator => 'Coordinator';
+
+  @override
+  String get pilgrimLabelSticker => 'Sticker no.';
+
+  @override
+  String get pilgrimLabelVisa => 'Visa no.';
+
+  @override
+  String get pilgrimLabelBarcode => 'Barcode';
+
+  @override
+  String get pilgrimLabelFullNameAr => 'Full name (Arabic)';
+
+  @override
+  String get pilgrimLabelMotherAr => 'Mother\'s name (Arabic)';
+
+  @override
+  String get pilgrimLabelBirthDate => 'Date of birth';
+
+  @override
+  String get pilgrimLabelFirstNameEn => 'First name (English)';
+
+  @override
+  String get pilgrimLabelLastNameEn => 'Last name (English)';
+
+  @override
+  String get pilgrimLabelFatherEn => 'Father\'s name (English)';
+
+  @override
+  String get pilgrimLabelMotherEn => 'Mother\'s name (English)';
+
+  @override
+  String get pilgrimLabelPassportIssue => 'Passport issue date';
+
+  @override
+  String get pilgrimLabelPassportExpiry => 'Passport expiry date';
+
+  @override
+  String get pilgrimLabelGender => 'Gender';
+
+  @override
+  String get pilgrimLabelBodySize => 'Body size';
+
+  @override
+  String get pilgrimLabelGroup => 'Group';
+
+  @override
+  String get pilgrimLabelCompanion => 'Companion';
+
+  @override
+  String get pilgrimLabelRelation => 'Relation';
+
+  @override
+  String get pilgrimLabelRequestType => 'Request type';
+
+  @override
+  String get pilgrimLabelHousingType => 'Housing type';
+
+  @override
+  String get pilgrimLabelHadyStatus => 'Hady status';
+
+  @override
+  String get pilgrimLabelResidence => 'Residence';
+
+  @override
+  String get pilgrimLabelHealthStatus => 'Health status';
+
+  @override
+  String get pilgrimLabelWheelchair => 'Wheelchair needed';
+
+  @override
+  String get pilgrimLabelSmoking => 'Smoking';
+
+  @override
+  String get pilgrimLabelHealthCard => 'Health card';
+
+  @override
+  String get pilgrimLabelVaccinated => 'Vaccinated';
+
+  @override
+  String get pilgrimLabelMakkahHotel => 'Makkah hotel';
+
+  @override
+  String get pilgrimLabelMakkahFloor => 'Makkah floor';
+
+  @override
+  String get pilgrimLabelMakkahRoom => 'Makkah room';
+
+  @override
+  String get pilgrimLabelMadinahTravel => 'Travel date to Madinah';
+
+  @override
+  String get pilgrimLabelMadinahHotel => 'Madinah hotel';
+
+  @override
+  String get pilgrimLabelMadinahFloor => 'Madinah floor';
+
+  @override
+  String get pilgrimLabelMadinahRoom => 'Madinah room';
+
+  @override
+  String get pilgrimLabelDepartureAirport => 'Departure airport';
+
+  @override
+  String get pilgrimLabelDepartureAirline => 'Departure airline';
+
+  @override
+  String get pilgrimLabelDepartureFlight => 'Departure flight no.';
+
+  @override
+  String get pilgrimLabelDepartureDate => 'Departure date';
+
+  @override
+  String get pilgrimLabelDepartureTime => 'Departure time';
+
+  @override
+  String get pilgrimLabelReturnAirport => 'Return airport';
+
+  @override
+  String get pilgrimLabelReturnAirline => 'Return airline';
+
+  @override
+  String get pilgrimLabelReturnFlight => 'Return flight no.';
+
+  @override
+  String get pilgrimLabelReturnDate => 'Return date';
+
+  @override
+  String get pilgrimLabelReturnTime => 'Return time';
+
+  @override
+  String get pilgrimLabelServiceCenter => 'Service center';
+
+  @override
+  String get pilgrimLabelCenterArafat => 'Arafat service center';
+
+  @override
+  String get pilgrimLabelCenterMina => 'Mina service center';
+
+  @override
+  String get pilgrimLabelBusArafat => 'Arafat bus';
+
+  @override
+  String get pilgrimLabelBusMina => 'Mina bus';
+
+  @override
+  String get pilgrimLabelTentArafat => 'Arafat tent';
+
+  @override
+  String get pilgrimLabelTentMina => 'Mina tent';
+
+  @override
+  String get pilgrimLabelPhone => 'Phone';
+
+  @override
+  String get pilgrimLabelWhatsapp => 'WhatsApp';
+
+  @override
+  String get pilgrimLabelSyrianPhone => 'Syrian phone';
 
   @override
   String get operatorGoAdminLogin => 'Admin analytics sign in';

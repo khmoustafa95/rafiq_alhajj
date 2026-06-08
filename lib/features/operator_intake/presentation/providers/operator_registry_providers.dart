@@ -1,4 +1,6 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_refresh.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_tables.dart';
 import 'package:rafiq_alhajj/features/operator_intake/application/services/operator_registry_service.dart';
 import 'package:rafiq_alhajj/features/operator_intake/data/repositories/operator_registry_repository.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_record.dart';
@@ -27,6 +29,12 @@ class OperatorPilgrimRegistry extends _$OperatorPilgrimRegistry {
 
   @override
   Future<List<OperatorPilgrimSummary>> build() async {
+    watchSupabaseTables(
+      ref,
+      client: AppConfig.hasSupabase ? Supabase.instance.client : null,
+      tables: RealtimeTables.pilgrimRegistry,
+    );
+
     _all = await ref.read(operatorRegistryServiceProvider).listPilgrims();
     return _all;
   }
@@ -58,6 +66,14 @@ class OperatorPilgrimRegistry extends _$OperatorPilgrimRegistry {
 class OperatorPilgrimDetail extends _$OperatorPilgrimDetail {
   @override
   Future<OperatorPilgrimRecord?> build(String profileId) {
+    watchSupabaseTable(
+      ref,
+      client: AppConfig.hasSupabase ? Supabase.instance.client : null,
+      table: 'pilgrim_details',
+      eqColumn: 'profile_id',
+      eqValue: profileId,
+    );
+
     return ref.read(operatorRegistryServiceProvider).loadPilgrim(profileId);
   }
 

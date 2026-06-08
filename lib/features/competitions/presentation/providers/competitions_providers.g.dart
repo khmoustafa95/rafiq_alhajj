@@ -146,7 +146,7 @@ final class ActiveCompetitionsProvider
 }
 
 String _$activeCompetitionsHash() =>
-    r'7f2af2d0ba4e41e7d2056d74c9328afae9566ac6';
+    r'd81cde4e7ebae5e670bffdb8b658be8f783334b6';
 
 @ProviderFor(CompetitionDetail)
 final competitionDetailProvider = CompetitionDetailFamily._();
@@ -189,7 +189,7 @@ final class CompetitionDetailProvider
   }
 }
 
-String _$competitionDetailHash() => r'eaeb475861dd8da0654657bbd7714ccd2fdd5d42';
+String _$competitionDetailHash() => r'a6dcb669a72d5ddfcc8e20c73dd90c2e9e994e41';
 
 final class CompetitionDetailFamily extends $Family
     with
@@ -271,7 +271,7 @@ final class AdminCompetitionListProvider
 }
 
 String _$adminCompetitionListHash() =>
-    r'ad1fc194a3ad15a7e8b7dbb5194adb889b5ebb2a';
+    r'b70f2cc5ed2243b8fb94c3809174b9b084f0e18c';
 
 abstract class _$AdminCompetitionList
     extends $AsyncNotifier<List<Competition>> {

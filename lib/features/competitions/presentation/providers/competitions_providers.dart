@@ -1,4 +1,6 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_refresh.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_tables.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/features/competitions/data/repositories/admin_competitions_repository.dart';
 import 'package:rafiq_alhajj/features/competitions/data/repositories/competitions_repository.dart';
@@ -8,6 +10,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'competitions_providers.g.dart';
+
+SupabaseClient? _realtimeClient() =>
+    AppConfig.hasSupabase ? Supabase.instance.client : null;
 
 @Riverpod(keepAlive: true)
 CompetitionsRepository competitionsRepository(Ref ref) {
@@ -25,6 +30,12 @@ AdminCompetitionsRepository adminCompetitionsRepository(Ref ref) {
 
 @riverpod
 Future<List<Competition>> activeCompetitions(Ref ref) {
+  watchSupabaseTables(
+    ref,
+    client: _realtimeClient(),
+    tables: RealtimeTables.competitions,
+  );
+
   return ref.read(competitionsRepositoryProvider).fetchActive();
 }
 
@@ -32,6 +43,21 @@ Future<List<Competition>> activeCompetitions(Ref ref) {
 class CompetitionDetail extends _$CompetitionDetail {
   @override
   Future<CompetitionWithEntries?> build(String competitionId) {
+    watchSupabaseTable(
+      ref,
+      client: _realtimeClient(),
+      table: 'competitions',
+      eqColumn: 'id',
+      eqValue: competitionId,
+    );
+    watchSupabaseTable(
+      ref,
+      client: _realtimeClient(),
+      table: 'competition_entries',
+      eqColumn: 'competition_id',
+      eqValue: competitionId,
+    );
+
     final profileId = ref.watch(authProfileIdProvider);
     return ref.read(competitionsRepositoryProvider).fetchWithEntries(
           competitionId,
@@ -83,6 +109,12 @@ class CompetitionDetail extends _$CompetitionDetail {
 class AdminCompetitionList extends _$AdminCompetitionList {
   @override
   Future<List<Competition>> build() {
+    watchSupabaseTables(
+      ref,
+      client: _realtimeClient(),
+      tables: RealtimeTables.competitions,
+    );
+
     return ref.read(adminCompetitionsRepositoryProvider).fetchAll();
   }
 

@@ -57,6 +57,54 @@ final class PilgrimRemoteRepositoryProvider
 String _$pilgrimRemoteRepositoryHash() =>
     r'224a4d47d82c048d02c7f12e2fcc3fe2499ee1e3';
 
+@ProviderFor(pilgrimRegistryRepository)
+final pilgrimRegistryRepositoryProvider = PilgrimRegistryRepositoryProvider._();
+
+final class PilgrimRegistryRepositoryProvider
+    extends
+        $FunctionalProvider<
+          PilgrimRegistryRepository,
+          PilgrimRegistryRepository,
+          PilgrimRegistryRepository
+        >
+    with $Provider<PilgrimRegistryRepository> {
+  PilgrimRegistryRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'pilgrimRegistryRepositoryProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$pilgrimRegistryRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<PilgrimRegistryRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  PilgrimRegistryRepository create(Ref ref) {
+    return pilgrimRegistryRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(PilgrimRegistryRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<PilgrimRegistryRepository>(value),
+    );
+  }
+}
+
+String _$pilgrimRegistryRepositoryHash() =>
+    r'0e52bca9ea6be746061e04032d7cea0c9af54f9a';
+
 @ProviderFor(pilgrimDashboardService)
 final pilgrimDashboardServiceProvider = PilgrimDashboardServiceProvider._();
 
@@ -103,7 +151,7 @@ final class PilgrimDashboardServiceProvider
 }
 
 String _$pilgrimDashboardServiceHash() =>
-    r'ae7abf172f5d72b57afb661aa51c923168da1700';
+    r'bb357aa676ab4fa81ba759a8db7cdb2564f241a1';
 
 @ProviderFor(pilgrimUserId)
 final pilgrimUserIdProvider = PilgrimUserIdProvider._();
@@ -171,7 +219,7 @@ final class PilgrimDashboardStateProvider
 }
 
 String _$pilgrimDashboardStateHash() =>
-    r'd3e16b40c23fdc3d32e5c5216ee771cc7a0da205';
+    r'6dc53f7fa17e8f2b77af947d91d45b7272aef095';
 
 abstract class _$PilgrimDashboardState
     extends $AsyncNotifier<PilgrimDashboard> {
