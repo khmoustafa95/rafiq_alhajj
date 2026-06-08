@@ -3,6 +3,9 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
+**Auth login robustness** — Supabase sign-in/profile fetch now time out (15s) and surface a network error instead of leaving login stuck in loading when config/network is wrong.
+
+## Previous focus
 **Haram guide v2** — Flutter tabs: ritual guide (landmarks + steps), OSM map (`flutter_map`), Pannellum panorama (real Makkah CC0 image); bundled Wikimedia photos.
 
 ## Previous focus

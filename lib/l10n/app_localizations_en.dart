@@ -209,7 +209,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get toolsVirtualTourPanoramaHint =>
-      'Drag to look around — aerial Makkah panorama from Abraj Al-Bait (CC0).';
+      'Aerial Makkah panorama from Abraj Al-Bait — drag and pinch to explore.';
+
+  @override
+  String get toolsVirtualTourPanoramaGestures =>
+      'Drag with one finger or pinch to zoom';
 
   @override
   String get toolsVirtualTourPanoramaCredit =>

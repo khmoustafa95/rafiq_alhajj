@@ -207,7 +207,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get toolsVirtualTourPanoramaHint =>
-      'اسحب للنظر حولك — بانوراما جوية لمكة من برج الساعة (CC0).';
+      'بانوراما جوية لمكة من برج الساعة — اسحب وقرّب للاستكشاف.';
+
+  @override
+  String get toolsVirtualTourPanoramaGestures =>
+      'اسحب بإصبعك أو قرّب بالقرص للتكبير';
 
   @override
   String get toolsVirtualTourPanoramaCredit =>

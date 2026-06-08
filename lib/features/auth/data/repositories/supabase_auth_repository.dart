@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:rafiq_alhajj/features/auth/data/dtos/profile_dto.dart';
@@ -32,6 +33,7 @@ class SupabaseAuthRepository implements AuthRepository {
   SupabaseAuthRepository(this._client);
 
   final SupabaseClient _client;
+  static const Duration _requestTimeout = Duration(seconds: 15);
 
   @override
   Stream<AuthSessionState> watchSessionState() async* {
@@ -65,7 +67,7 @@ class SupabaseAuthRepository implements AuthRepository {
       final response = await _client.auth.signInWithPassword(
         email: email.trim(),
         password: password,
-      );
+      ).timeout(_requestTimeout);
 
       final user = response.user;
       if (user == null) {
@@ -90,6 +92,8 @@ class SupabaseAuthRepository implements AuthRepository {
       throw const PilgrimAuthException(PilgrimAuthErrorCode.network);
     } on SocketException {
       throw const PilgrimAuthException(PilgrimAuthErrorCode.network);
+    } on TimeoutException {
+      throw const PilgrimAuthException(PilgrimAuthErrorCode.network);
     }
   }
 
@@ -102,7 +106,7 @@ class SupabaseAuthRepository implements AuthRepository {
       final response = await _client.auth.signInWithPassword(
         email: email.trim(),
         password: password,
-      );
+      ).timeout(_requestTimeout);
 
       final user = response.user;
       if (user == null) {
@@ -127,6 +131,8 @@ class SupabaseAuthRepository implements AuthRepository {
       throw const PilgrimAuthException(PilgrimAuthErrorCode.network);
     } on SocketException {
       throw const PilgrimAuthException(PilgrimAuthErrorCode.network);
+    } on TimeoutException {
+      throw const PilgrimAuthException(PilgrimAuthErrorCode.network);
     }
   }
 
@@ -139,7 +145,7 @@ class SupabaseAuthRepository implements AuthRepository {
       final response = await _client.auth.signInWithPassword(
         email: email.trim(),
         password: password,
-      );
+      ).timeout(_requestTimeout);
 
       final user = response.user;
       if (user == null) {
@@ -164,6 +170,8 @@ class SupabaseAuthRepository implements AuthRepository {
       throw const PilgrimAuthException(PilgrimAuthErrorCode.network);
     } on SocketException {
       throw const PilgrimAuthException(PilgrimAuthErrorCode.network);
+    } on TimeoutException {
+      throw const PilgrimAuthException(PilgrimAuthErrorCode.network);
     }
   }
 
@@ -177,7 +185,8 @@ class SupabaseAuthRepository implements AuthRepository {
         .from('profiles')
         .select('id, full_name, role')
         .eq('id', userId)
-        .maybeSingle();
+        .maybeSingle()
+        .timeout(_requestTimeout);
 
     if (data == null) {
       return null;

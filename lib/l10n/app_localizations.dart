@@ -467,8 +467,14 @@ abstract class AppLocalizations {
   /// No description provided for @toolsVirtualTourPanoramaHint.
   ///
   /// In en, this message translates to:
-  /// **'Drag to look around — aerial Makkah panorama from Abraj Al-Bait (CC0).'**
+  /// **'Aerial Makkah panorama from Abraj Al-Bait — drag and pinch to explore.'**
   String get toolsVirtualTourPanoramaHint;
+
+  /// No description provided for @toolsVirtualTourPanoramaGestures.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag with one finger or pinch to zoom'**
+  String get toolsVirtualTourPanoramaGestures;
 
   /// No description provided for @toolsVirtualTourPanoramaCredit.
   ///

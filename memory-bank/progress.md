@@ -60,6 +60,7 @@
 ## Changelog
 
 ### 2026-06-06
+- **Auth fix:** Added 15s timeout for Supabase `signInWithPassword` and profile fetch in `SupabaseAuthRepository`; timeout now maps to `network` error so login loading does not hang on bad config/network.
 - **Haram guide v2:** Ritual guide cards (Tawaf/Sa'i/Zamzam steps), `flutter_map` OSM around Kaaba, Pannellum + real Makkah CC0 panorama + Kaaba photo (Wikimedia); renamed «دليل الحرم».
 - **Home previews:** `QuickActionTiles` horizontal scroll (4 tools from `islamicToolsCatalog`) + see all; `ContentSection` `maxItems`/`onSeeAll`; `ContentListScreen` routes for full videos/news lists.
 - **Runtime fix:** `AppTypography` uses bundled `ThemeData` text theme (no `google_fonts` CDN); `runZonedGuarded` error callback logs only — fixes Zone mismatch + offline emulator crash.

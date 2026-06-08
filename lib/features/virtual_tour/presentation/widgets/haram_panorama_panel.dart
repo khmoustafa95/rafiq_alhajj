@@ -1,59 +1,14 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
-class HaramPanoramaPanel extends StatefulWidget {
+/// Panoramic image viewer — Flutter-native (no WebView) for reliable Android loading.
+class HaramPanoramaPanel extends StatelessWidget {
   const HaramPanoramaPanel({super.key});
 
-  @override
-  State<HaramPanoramaPanel> createState() => _HaramPanoramaPanelState();
-}
-
-class _HaramPanoramaPanelState extends State<HaramPanoramaPanel> {
-  static const _assetPath = 'assets/virtual_tour/panorama.html';
-
-  final WebViewController _controller = WebViewController();
-  var _isLoading = true;
-  var _hasError = false;
-
-  @override
-  void initState() {
-    super.initState();
-    unawaited(_initWebView());
-  }
-
-  Future<void> _initWebView() async {
-    await _controller.setJavaScriptMode(JavaScriptMode.unrestricted);
-    await _controller.setBackgroundColor(const Color(0xFF111827));
-    await _controller.setNavigationDelegate(
-      NavigationDelegate(
-        onPageFinished: (_) {
-          if (mounted) setState(() => _isLoading = false);
-        },
-        onWebResourceError: (_) {
-          if (mounted) {
-            setState(() {
-              _hasError = true;
-              _isLoading = false;
-            });
-          }
-        },
-      ),
-    );
-    await _controller.loadFlutterAsset(_assetPath);
-  }
-
-  Future<void> _reload() async {
-    setState(() {
-      _hasError = false;
-      _isLoading = true;
-    });
-    await _controller.loadFlutterAsset(_assetPath);
-  }
+  static const _panoramaAsset =
+      'assets/virtual_tour/images/makkah_panorama.jpg';
 
   @override
   Widget build(BuildContext context) {
@@ -66,9 +21,9 @@ class _HaramPanoramaPanelState extends State<HaramPanoramaPanel> {
           padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 0),
           child: Text(
             l10n.toolsVirtualTourPanoramaHint,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
           ),
         ),
         Padding(
@@ -76,37 +31,67 @@ class _HaramPanoramaPanelState extends State<HaramPanoramaPanel> {
           child: Text(
             l10n.toolsVirtualTourPanoramaCredit,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textSecondary,
-                  fontSize: 10.sp,
-                ),
+              color: AppColors.textSecondary,
+              fontSize: 10.sp,
+            ),
           ),
         ),
         Expanded(
-          child: Stack(
-            children: [
-              if (!_hasError) WebViewWidget(controller: _controller),
-              if (_isLoading && !_hasError)
-                const Center(child: CircularProgressIndicator()),
-              if (_hasError)
-                Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(24.w),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          l10n.toolsVirtualTourLoadError,
-                          textAlign: TextAlign.center,
+          child: Padding(
+            padding: EdgeInsets.all(16.w),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: ColoredBox(
+                color: const Color(0xFF111827),
+                child: InteractiveViewer(
+                  maxScale: 5,
+                  child: Center(
+                    child: Image.asset(
+                      _panoramaAsset,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, _, _) => Padding(
+                        padding: EdgeInsets.all(24.w),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.broken_image_outlined,
+                              size: 48.sp,
+                              color: AppColors.textSecondary,
+                            ),
+                            SizedBox(height: 12.h),
+                            Text(
+                              l10n.toolsVirtualTourLoadError,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 12.h),
-                        FilledButton(
-                          onPressed: _reload,
-                          child: Text(l10n.retry),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 12.h),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.swipe_rounded,
+                size: 16.sp,
+                color: AppColors.textSecondary,
+              ),
+              SizedBox(width: 6.w),
+              Text(
+                l10n.toolsVirtualTourPanoramaGestures,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+              ),
             ],
           ),
         ),
