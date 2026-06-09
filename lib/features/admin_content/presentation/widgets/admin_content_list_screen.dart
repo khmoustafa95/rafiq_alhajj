@@ -8,6 +8,7 @@ import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_async_table_body.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_data_table.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_table_definition_cache.dart';
@@ -107,6 +108,10 @@ class _AdminContentListScreenState extends ConsumerState<AdminContentListScreen>
     ];
   }
 
+  void _onQueryChanged(StaffTableQuery query) {
+    setState(() => _query = query);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -115,41 +120,18 @@ class _AdminContentListScreenState extends ConsumerState<AdminContentListScreen>
     final columns = _tableDefs.columns(context);
     final filters = _tableDefs.filters(context);
 
-    final content = pageAsync.when(
-      skipLoadingOnReload: true,
-      loading: () => AppPlatform.isWeb
-          ? StaffDataTable<ContentItem>(
-              columns: columns,
-              rows: const [],
-              totalCount: 0,
-              query: _query,
-              onQueryChanged: (query) => setState(() => _query = query),
-              searchHint: l10n.staffTableSearchContent,
-              filters: filters,
-              toolbarActions: toolbarActions,
-              isLoading: true,
-              emptyMessage: l10n.adminContentEmpty,
-            )
-          : const Center(child: CircularProgressIndicator()),
-      error: (error, _) => Center(
-        child: StaffErrorView.fromError(
-          l10n,
-          error: error,
-          onRetry: () => ref.invalidate(adminContentListPageProvider(_query)),
-        ),
-      ),
-      data: (page) {
-        if (AppPlatform.isWeb) {
-          return StaffDataTable<ContentItem>(
-            columns: columns,
-            rows: page.items,
-            totalCount: page.totalCount,
+    final content = AppPlatform.isWeb
+        ? StaffAsyncTableBody<ContentItem>(
+            tableKey: const ValueKey('admin-content-table'),
+            pageAsync: pageAsync,
             query: _query,
-            onQueryChanged: (query) => setState(() => _query = query),
+            onQueryChanged: _onQueryChanged,
+            columns: columns,
             searchHint: l10n.staffTableSearchContent,
             filters: filters,
             toolbarActions: toolbarActions,
             isLoading: pageAsync.isLoading,
+            onRetry: () => ref.invalidate(adminContentListPageProvider(_query)),
             onRowTap: (item) => _openEdit(item.id),
             trailingBuilder: (context, item) => StaffTableRowActions(
               children: [
@@ -165,32 +147,39 @@ class _AdminContentListScreenState extends ConsumerState<AdminContentListScreen>
             ),
             emptyMessage: l10n.adminContentEmpty,
             emptyIcon: Icons.article_outlined,
-          );
-        }
+          )
+        : pageAsync.when(
+            skipLoadingOnReload: true,
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, _) => StaffErrorView.fromError(
+              l10n,
+              error: error,
+              onRetry: () => ref.invalidate(adminContentListPageProvider(_query)),
+            ),
+            data: (page) {
+              if (page.items.isEmpty) {
+                return StaffEmptyState(
+                  message: l10n.adminContentEmpty,
+                  icon: Icons.article_outlined,
+                  actionLabel: l10n.adminContentAdd,
+                  onAction: _openNew,
+                );
+              }
 
-        if (page.items.isEmpty) {
-          return StaffEmptyState(
-            message: l10n.adminContentEmpty,
-            icon: Icons.article_outlined,
-            actionLabel: l10n.adminContentAdd,
-            onAction: _openNew,
+              return ListView.builder(
+                padding: EdgeInsets.all(sw(16)),
+                itemCount: page.items.length,
+                itemBuilder: (context, index) {
+                  final item = page.items[index];
+                  return ListTile(
+                    title: Text(item.title),
+                    subtitle: Text(contentTypeLabel(l10n, item.type)),
+                    onTap: () => _openEdit(item.id),
+                  );
+                },
+              );
+            },
           );
-        }
-
-        return ListView.builder(
-          padding: EdgeInsets.all(sw(16)),
-          itemCount: page.items.length,
-          itemBuilder: (context, index) {
-            final item = page.items[index];
-            return ListTile(
-              title: Text(item.title),
-              subtitle: Text(contentTypeLabel(l10n, item.type)),
-              onTap: () => _openEdit(item.id),
-            );
-          },
-        );
-      },
-    );
 
     if (AppPlatform.isWeb) {
       return StaffWebPage(

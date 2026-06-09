@@ -64,6 +64,58 @@ class OperatorRegistryRepository {
     }
   }
 
+  Future<Set<String>> _profileIdsMatchingDetailsSearch(String term) async {
+    final rows = await _client!
+        .from('pilgrim_details')
+        .select('profile_id')
+        .or(
+          'passport_number.ilike.%$term%,travel_permit_number.ilike.%$term%',
+        );
+
+    return (rows as List<dynamic>)
+        .map((row) => (row as Map)['profile_id'] as String)
+        .toSet();
+  }
+
+  PostgrestFilterBuilder<PostgrestList> _applyPilgrimSearch(
+    PostgrestFilterBuilder<PostgrestList> request,
+    String term,
+    Set<String> detailProfileIds,
+  ) {
+    if (detailProfileIds.isEmpty) {
+      return request.ilike('full_name', '%$term%');
+    }
+
+    final idList = detailProfileIds.join(',');
+    return request.or('full_name.ilike.%$term%,id.in.($idList)');
+  }
+
+  PostgrestTransformBuilder<PostgrestList> _applyPilgrimSort(
+    PostgrestFilterBuilder<PostgrestList> request,
+    StaffTableQuery query,
+  ) {
+    return switch (query.sortColumnId) {
+      'passport' => request.order(
+          'pilgrim_details(passport_number)',
+          ascending: query.sortAscending,
+        ),
+      'travel_date' => request.order(
+          'pilgrim_details(travel_date)',
+          ascending: query.sortAscending,
+        ),
+      'gender' => request.order(
+          'pilgrim_details(gender)',
+          ascending: query.sortAscending,
+        ),
+      'group' => request.order(
+          'name',
+          ascending: query.sortAscending,
+          referencedTable: 'groups',
+        ),
+      _ => request.order('full_name', ascending: query.sortAscending),
+    };
+  }
+
   Future<PaginatedResult<OperatorPilgrimSummary>> fetchPage(
     StaffTableQuery query,
   ) async {
@@ -72,19 +124,25 @@ class OperatorRegistryRepository {
     }
 
     try {
+      var select = _profileSelect;
+      final gender = query.filters['gender'];
+      if (gender != null && gender.isNotEmpty) {
+        select = select.replaceFirst(
+          'pilgrim_details(',
+          'pilgrim_details!inner(',
+        );
+      }
+
       var request = _client!
           .from('profiles')
-          .select(_profileSelect)
+          .select(select)
           .eq('role', 'pilgrim');
 
       final search = query.search.trim();
       if (search.isNotEmpty) {
         final term = sanitizePostgrestSearchTerm(search);
-        request = request.or(
-          'full_name.ilike.%$term%,'
-          'pilgrim_details.passport_number.ilike.%$term%,'
-          'pilgrim_details.travel_permit_number.ilike.%$term%',
-        );
+        final detailProfileIds = await _profileIdsMatchingDetailsSearch(term);
+        request = _applyPilgrimSearch(request, term, detailProfileIds);
       }
 
       final groupId = query.filters['group_id'];
@@ -92,13 +150,11 @@ class OperatorRegistryRepository {
         request = request.eq('group_id', groupId);
       }
 
-      final gender = query.filters['gender'];
       if (gender != null && gender.isNotEmpty) {
         request = request.eq('pilgrim_details.gender', gender);
       }
 
-      final response = await request
-          .order('full_name', ascending: query.sortAscending)
+      final response = await _applyPilgrimSort(request, query)
           .range(query.from, query.to)
           .count(CountOption.exact);
 

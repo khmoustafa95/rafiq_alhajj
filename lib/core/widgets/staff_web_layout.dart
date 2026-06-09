@@ -459,29 +459,22 @@ class StaffEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
-        padding: EdgeInsets.all(32.w),
+      child: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: sw(24), vertical: sh(16)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              padding: EdgeInsets.all(20.w),
-              decoration: const BoxDecoration(
-                color: AppColors.surfaceMuted,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, size: 40.sp, color: AppColors.textSecondary),
-            ),
-            SizedBox(height: 16.h),
+            Icon(icon, size: ss(40), color: AppColors.textSecondary),
+            SizedBox(height: sh(12)),
             Text(
               message,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppColors.textSecondary,
                   ),
               textAlign: TextAlign.center,
             ),
             if (actionLabel != null && onAction != null) ...[
-              SizedBox(height: 20.h),
+              SizedBox(height: sh(16)),
               FilledButton.tonal(onPressed: onAction, child: Text(actionLabel!)),
             ],
           ],

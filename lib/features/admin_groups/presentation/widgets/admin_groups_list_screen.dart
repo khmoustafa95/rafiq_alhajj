@@ -9,6 +9,7 @@ import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_async_table_body.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_data_table.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_table_definition_cache.dart';
@@ -100,6 +101,10 @@ class _AdminGroupsListScreenState extends ConsumerState<AdminGroupsListScreen> {
     ];
   }
 
+  void _onQueryChanged(StaffTableQuery query) {
+    setState(() => _query = query);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -107,40 +112,17 @@ class _AdminGroupsListScreenState extends ConsumerState<AdminGroupsListScreen> {
     final toolbarActions = _toolbarActions(l10n);
     final columns = _tableDefs.columns(context);
 
-    final body = pageAsync.when(
-      skipLoadingOnReload: true,
-      loading: () => AppPlatform.isWeb
-          ? StaffDataTable<HajjGroup>(
-              columns: columns,
-              rows: const [],
-              totalCount: 0,
-              query: _query,
-              onQueryChanged: (query) => setState(() => _query = query),
-              searchHint: l10n.staffTableSearchGroups,
-              toolbarActions: toolbarActions,
-              isLoading: true,
-              emptyMessage: l10n.adminGroupsEmpty,
-              emptyIcon: Icons.groups_outlined,
-            )
-          : const Center(child: CircularProgressIndicator()),
-      error: (error, _) => Center(
-        child: StaffErrorView.fromError(
-          l10n,
-          error: error,
-          onRetry: () => ref.invalidate(adminGroupListPageProvider(_query)),
-        ),
-      ),
-      data: (page) {
-        if (AppPlatform.isWeb) {
-          return StaffDataTable<HajjGroup>(
-            columns: columns,
-            rows: page.items,
-            totalCount: page.totalCount,
+    final body = AppPlatform.isWeb
+        ? StaffAsyncTableBody<HajjGroup>(
+            tableKey: const ValueKey('admin-groups-table'),
+            pageAsync: pageAsync,
             query: _query,
-            onQueryChanged: (query) => setState(() => _query = query),
+            onQueryChanged: _onQueryChanged,
+            columns: columns,
             searchHint: l10n.staffTableSearchGroups,
             toolbarActions: toolbarActions,
             isLoading: pageAsync.isLoading,
+            onRetry: () => ref.invalidate(adminGroupListPageProvider(_query)),
             onRowTap: (group) => _openEdit(group.id),
             trailingBuilder: (context, group) => StaffTableRowActions(
               children: [
@@ -156,34 +138,41 @@ class _AdminGroupsListScreenState extends ConsumerState<AdminGroupsListScreen> {
             ),
             emptyMessage: l10n.adminGroupsEmpty,
             emptyIcon: Icons.groups_outlined,
-          );
-        }
+          )
+        : pageAsync.when(
+            skipLoadingOnReload: true,
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, _) => StaffErrorView.fromError(
+              l10n,
+              error: error,
+              onRetry: () => ref.invalidate(adminGroupListPageProvider(_query)),
+            ),
+            data: (page) {
+              if (page.items.isEmpty) {
+                return StaffEmptyState(
+                  message: l10n.adminGroupsEmpty,
+                  icon: Icons.groups_outlined,
+                  actionLabel: l10n.adminGroupAdd,
+                  onAction: _openNew,
+                );
+              }
 
-        if (page.items.isEmpty) {
-          return StaffEmptyState(
-            message: l10n.adminGroupsEmpty,
-            icon: Icons.groups_outlined,
-            actionLabel: l10n.adminGroupAdd,
-            onAction: _openNew,
+              return ListView.separated(
+                padding: EdgeInsets.all(sw(16)),
+                itemCount: page.items.length,
+                separatorBuilder: (_, _) => SizedBox(height: sh(10)),
+                itemBuilder: (context, index) {
+                  final group = page.items[index];
+                  return ListTile(
+                    leading: _GroupLogo(logoUrl: group.logoUrl, size: sr(22)),
+                    title: Text(group.name),
+                    subtitle: Text(group.presidentName ?? '—'),
+                    onTap: () => _openEdit(group.id),
+                  );
+                },
+              );
+            },
           );
-        }
-
-        return ListView.separated(
-          padding: EdgeInsets.all(sw(16)),
-          itemCount: page.items.length,
-          separatorBuilder: (_, _) => SizedBox(height: sh(10)),
-          itemBuilder: (context, index) {
-            final group = page.items[index];
-            return ListTile(
-              leading: _GroupLogo(logoUrl: group.logoUrl, size: sr(22)),
-              title: Text(group.name),
-              subtitle: Text(group.presidentName ?? '—'),
-              onTap: () => _openEdit(group.id),
-            );
-          },
-        );
-      },
-    );
 
     if (AppPlatform.isWeb) {
       return StaffWebPage(

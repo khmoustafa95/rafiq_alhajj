@@ -9,6 +9,7 @@ import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_async_table_body.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_data_table.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_table_definition_cache.dart';
@@ -65,6 +66,10 @@ class _AdminOperatorsListScreenState
     ];
   }
 
+  void _onQueryChanged(StaffTableQuery query) {
+    setState(() => _query = query);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -73,42 +78,19 @@ class _AdminOperatorsListScreenState
     final columns = _tableDefs.columns(context);
     final filters = _tableDefs.filters(context);
 
-    final body = pageAsync.when(
-      skipLoadingOnReload: true,
-      loading: () => AppPlatform.isWeb
-          ? StaffDataTable<OperatorAccount>(
-              columns: columns,
-              rows: const [],
-              totalCount: 0,
-              query: _query,
-              onQueryChanged: (query) => setState(() => _query = query),
-              searchHint: l10n.staffTableSearchOperators,
-              filters: filters,
-              toolbarActions: toolbarActions,
-              isLoading: true,
-              emptyMessage: l10n.adminOperatorEmpty,
-              emptyIcon: Icons.badge_outlined,
-            )
-          : const Center(child: CircularProgressIndicator()),
-      error: (error, _) => Center(
-        child: StaffErrorView.fromError(
-          l10n,
-          error: error,
-          onRetry: () => ref.invalidate(adminOperatorListPageProvider(_query)),
-        ),
-      ),
-      data: (page) {
-        if (AppPlatform.isWeb) {
-          return StaffDataTable<OperatorAccount>(
-            columns: columns,
-            rows: page.items,
-            totalCount: page.totalCount,
+    final body = AppPlatform.isWeb
+        ? StaffAsyncTableBody<OperatorAccount>(
+            tableKey: const ValueKey('admin-operators-table'),
+            pageAsync: pageAsync,
             query: _query,
-            onQueryChanged: (query) => setState(() => _query = query),
+            onQueryChanged: _onQueryChanged,
+            columns: columns,
             searchHint: l10n.staffTableSearchOperators,
             filters: filters,
             toolbarActions: toolbarActions,
             isLoading: pageAsync.isLoading,
+            onRetry: () =>
+                ref.invalidate(adminOperatorListPageProvider(_query)),
             onRowTap: (operator) => _openEdit(context, operator.id),
             trailingBuilder: (context, operator) => StaffTableRowActions(
               children: [
@@ -120,33 +102,41 @@ class _AdminOperatorsListScreenState
             ),
             emptyMessage: l10n.adminOperatorEmpty,
             emptyIcon: Icons.badge_outlined,
-          );
-        }
+          )
+        : pageAsync.when(
+            skipLoadingOnReload: true,
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, _) => StaffErrorView.fromError(
+              l10n,
+              error: error,
+              onRetry: () =>
+                  ref.invalidate(adminOperatorListPageProvider(_query)),
+            ),
+            data: (page) {
+              if (page.items.isEmpty) {
+                return StaffEmptyState(
+                  message: l10n.adminOperatorEmpty,
+                  icon: Icons.badge_outlined,
+                  actionLabel: l10n.adminOperatorAdd,
+                  onAction: () => _openNew(context),
+                );
+              }
 
-        if (page.items.isEmpty) {
-          return StaffEmptyState(
-            message: l10n.adminOperatorEmpty,
-            icon: Icons.badge_outlined,
-            actionLabel: l10n.adminOperatorAdd,
-            onAction: () => _openNew(context),
+              return ListView.separated(
+                padding: EdgeInsets.all(sw(16)),
+                itemCount: page.items.length,
+                separatorBuilder: (_, _) => SizedBox(height: sh(10)),
+                itemBuilder: (context, index) {
+                  final operator = page.items[index];
+                  return _MobileOperatorTile(
+                    operator: operator,
+                    l10n: l10n,
+                    onTap: () => _openEdit(context, operator.id),
+                  );
+                },
+              );
+            },
           );
-        }
-
-        return ListView.separated(
-          padding: EdgeInsets.all(sw(16)),
-          itemCount: page.items.length,
-          separatorBuilder: (_, _) => SizedBox(height: sh(10)),
-          itemBuilder: (context, index) {
-            final operator = page.items[index];
-            return _MobileOperatorTile(
-              operator: operator,
-              l10n: l10n,
-              onTap: () => _openEdit(context, operator.id),
-            );
-          },
-        );
-      },
-    );
 
     if (AppPlatform.isWeb) {
       return StaffWebPage(

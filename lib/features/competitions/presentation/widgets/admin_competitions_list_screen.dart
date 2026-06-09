@@ -9,6 +9,7 @@ import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/utils/staff_table_processor.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_async_table_body.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_data_table.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_table_definition_cache.dart';
@@ -126,6 +127,10 @@ class _AdminCompetitionsListScreenState
     ];
   }
 
+  void _onQueryChanged(StaffTableQuery query) {
+    setState(() => _query = query);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -134,44 +139,26 @@ class _AdminCompetitionsListScreenState
     final columns = _tableDefs.columns(context);
     final filters = _tableDefs.filters(context);
 
-    final body = listAsync.when(
-      skipLoadingOnReload: true,
-      loading: () => AppPlatform.isWeb
-          ? StaffDataTable<Competition>(
-              columns: columns,
-              rows: const [],
-              totalCount: 0,
-              query: _query,
-              onQueryChanged: (query) => setState(() => _query = query),
-              searchHint: l10n.staffTableSearchCompetitions,
-              filters: filters,
-              toolbarActions: toolbarActions,
-              isLoading: true,
-              emptyMessage: l10n.adminCompetitionsEmpty,
-              emptyIcon: Icons.emoji_events_outlined,
-            )
-          : const Center(child: CircularProgressIndicator()),
-      error: (error, _) => StaffErrorView.fromError(
-        l10n,
-        error: error,
-        onRetry: () {
-          unawaited(ref.read(adminCompetitionListProvider.notifier).refresh());
-        },
-      ),
-      data: (items) {
-        final page = _pageFrom(items);
+    final pageAsync = listAsync.when<AsyncValue<PaginatedResult<Competition>>>(
+      data: (items) => AsyncData(_pageFrom(items)),
+      loading: () => const AsyncLoading(),
+      error: (error, stackTrace) => AsyncError(error, stackTrace),
+    );
 
-        if (AppPlatform.isWeb) {
-          return StaffDataTable<Competition>(
-            columns: columns,
-            rows: page.items,
-            totalCount: page.totalCount,
+    final body = AppPlatform.isWeb
+        ? StaffAsyncTableBody<Competition>(
+            tableKey: const ValueKey('admin-competitions-table'),
+            pageAsync: pageAsync,
             query: _query,
-            onQueryChanged: (query) => setState(() => _query = query),
+            onQueryChanged: _onQueryChanged,
+            columns: columns,
             searchHint: l10n.staffTableSearchCompetitions,
             filters: filters,
             toolbarActions: toolbarActions,
             isLoading: listAsync.isLoading,
+            onRetry: () {
+              unawaited(ref.read(adminCompetitionListProvider.notifier).refresh());
+            },
             onRowTap: (competition) => _openEdit(competition.id),
             trailingBuilder: (context, competition) => StaffTableRowActions(
               children: [
@@ -187,36 +174,48 @@ class _AdminCompetitionsListScreenState
             ),
             emptyMessage: l10n.adminCompetitionsEmpty,
             emptyIcon: Icons.emoji_events_outlined,
-          );
-        }
+          )
+        : listAsync.when(
+            skipLoadingOnReload: true,
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, _) => StaffErrorView.fromError(
+              l10n,
+              error: error,
+              onRetry: () {
+                unawaited(
+                  ref.read(adminCompetitionListProvider.notifier).refresh(),
+                );
+              },
+            ),
+            data: (items) {
+              final page = _pageFrom(items);
+              if (page.items.isEmpty) {
+                return StaffEmptyState(
+                  message: l10n.adminCompetitionsEmpty,
+                  icon: Icons.emoji_events_outlined,
+                  actionLabel: l10n.adminCompetitionAdd,
+                  onAction: _openNew,
+                );
+              }
 
-        if (page.items.isEmpty) {
-          return StaffEmptyState(
-            message: l10n.adminCompetitionsEmpty,
-            icon: Icons.emoji_events_outlined,
-            actionLabel: l10n.adminCompetitionAdd,
-            onAction: _openNew,
+              return ListView.builder(
+                padding: EdgeInsets.all(sw(16)),
+                itemCount: page.items.length,
+                itemBuilder: (context, index) {
+                  final competition = page.items[index];
+                  return ListTile(
+                    title: Text(competition.title),
+                    subtitle: Text(
+                      competition.isActive
+                          ? l10n.adminCompetitionActiveLabel
+                          : l10n.adminCompetitionInactive,
+                    ),
+                    onTap: () => _openEdit(competition.id),
+                  );
+                },
+              );
+            },
           );
-        }
-
-        return ListView.builder(
-          padding: EdgeInsets.all(sw(16)),
-          itemCount: page.items.length,
-          itemBuilder: (context, index) {
-            final competition = page.items[index];
-            return ListTile(
-              title: Text(competition.title),
-              subtitle: Text(
-                competition.isActive
-                    ? l10n.adminCompetitionActiveLabel
-                    : l10n.adminCompetitionInactive,
-              ),
-              onTap: () => _openEdit(competition.id),
-            );
-          },
-        );
-      },
-    );
 
     return StaffAdaptivePage(
       web: StaffWebPage(

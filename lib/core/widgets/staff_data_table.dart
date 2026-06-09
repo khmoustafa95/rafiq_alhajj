@@ -111,48 +111,28 @@ class StaffDataTable<T> extends StatefulWidget {
 }
 
 class _StaffDataTableState<T> extends State<StaffDataTable<T>> {
-  late final TextEditingController _searchController;
-  Timer? _searchDebounce;
   final Set<String> _selectedKeys = {};
 
   bool get _isSelectable =>
       widget.selectable && widget.rowKey != null && widget.bulkActions.isNotEmpty;
 
   @override
-  void initState() {
-    super.initState();
-    _searchController = TextEditingController(text: widget.query.search);
-  }
-
-  @override
   void didUpdateWidget(covariant StaffDataTable<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.query.search != _searchController.text) {
-      _searchController.text = widget.query.search;
-    }
     if (oldWidget.query.page != widget.query.page ||
-        oldWidget.query.search != widget.query.search ||
-        oldWidget.query.filters != widget.query.filters) {
+        oldWidget.query.filters != widget.query.filters ||
+        (oldWidget.query.search != widget.query.search &&
+            oldWidget.query.sortColumnId != widget.query.sortColumnId)) {
       _selectedKeys.clear();
     }
-  }
-
-  @override
-  void dispose() {
-    _searchDebounce?.cancel();
-    _searchController.dispose();
-    super.dispose();
   }
 
   void _updateQuery(StaffTableQuery query) {
     widget.onQueryChanged(query);
   }
 
-  void _onSearchChanged(String value) {
-    _searchDebounce?.cancel();
-    _searchDebounce = Timer(const Duration(milliseconds: 300), () {
-      _updateQuery(widget.query.copyWith(search: value, page: 0));
-    });
+  void _onSearchCommitted(String value) {
+    _updateQuery(widget.query.copyWith(search: value, page: 0));
   }
 
   void _toggleSort(String columnId) {
@@ -238,13 +218,14 @@ class _StaffDataTableState<T> extends State<StaffDataTable<T>> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _Toolbar(
-          searchController: _searchController,
+        _StaffTableToolbar(
+          key: const ValueKey('staff-table-toolbar'),
+          committedSearch: widget.query.search,
           searchHint: widget.searchHint,
           filters: widget.filters,
           query: widget.query,
           toolbarActions: widget.toolbarActions,
-          onSearchChanged: _onSearchChanged,
+          onSearchCommitted: _onSearchCommitted,
           onFilterChanged: (filters) {
             _updateQuery(widget.query.copyWith(filters: filters, page: 0));
           },
@@ -342,8 +323,87 @@ class _StaffDataTableState<T> extends State<StaffDataTable<T>> {
   }
 }
 
-class _Toolbar extends StatelessWidget {
-  const _Toolbar({
+class _StaffTableToolbar extends StatefulWidget {
+  const _StaffTableToolbar({
+    super.key,
+    required this.committedSearch,
+    required this.searchHint,
+    required this.filters,
+    required this.query,
+    required this.onSearchCommitted,
+    required this.onFilterChanged,
+    this.toolbarActions = const [],
+  });
+
+  final String committedSearch;
+  final String searchHint;
+  final List<StaffTableFilter> filters;
+  final StaffTableQuery query;
+  final ValueChanged<String> onSearchCommitted;
+  final ValueChanged<Map<String, String>> onFilterChanged;
+  final List<Widget> toolbarActions;
+
+  @override
+  State<_StaffTableToolbar> createState() => _StaffTableToolbarState();
+}
+
+class _StaffTableToolbarState extends State<_StaffTableToolbar> {
+  late final TextEditingController _searchController;
+  Timer? _searchDebounce;
+  String _lastEmittedSearch = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _lastEmittedSearch = widget.committedSearch;
+    _searchController = TextEditingController(text: widget.committedSearch);
+  }
+
+  @override
+  void didUpdateWidget(covariant _StaffTableToolbar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.committedSearch == oldWidget.committedSearch) {
+      return;
+    }
+    // Parent updated search externally (not from our debounced emit).
+    if (widget.committedSearch != _lastEmittedSearch) {
+      _searchDebounce?.cancel();
+      _lastEmittedSearch = widget.committedSearch;
+      _searchController.text = widget.committedSearch;
+    }
+  }
+
+  @override
+  void dispose() {
+    _searchDebounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String value) {
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 350), () {
+      _lastEmittedSearch = value;
+      widget.onSearchCommitted(value);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _ToolbarLayout(
+      searchController: _searchController,
+      searchHint: widget.searchHint,
+      filters: widget.filters,
+      query: widget.query,
+      toolbarActions: widget.toolbarActions,
+      onSearchChanged: _onSearchChanged,
+      onFilterChanged: widget.onFilterChanged,
+    );
+  }
+}
+
+class _ToolbarLayout extends StatelessWidget {
+  const _ToolbarLayout({
     required this.searchController,
     required this.searchHint,
     required this.filters,
@@ -361,83 +421,59 @@ class _Toolbar extends StatelessWidget {
   final ValueChanged<Map<String, String>> onFilterChanged;
   final List<Widget> toolbarActions;
 
+  Widget _toolbarTheme(BuildContext context, Widget child) {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        filledButtonTheme: FilledButtonThemeData(
+          style: staffRowFilledButtonStyle(context),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: staffRowOutlinedButtonStyle(context),
+        ),
+      ),
+      child: child,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final compact = constraints.maxWidth < 720;
-        final searchField = SizedBox(
-          width: compact ? constraints.maxWidth : sw(320),
-          child: TextField(
-            controller: searchController,
-            decoration: InputDecoration(
-              hintText: searchHint,
-              prefixIcon: const Icon(Icons.search, size: 20),
-              filled: true,
-              fillColor: AppColors.surface,
-              isDense: true,
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: sw(12),
-                vertical: sh(12),
-              ),
+        final maxWidth = constraints.maxWidth;
+        final stackSearch = maxWidth < 1100;
+        final compact = maxWidth < 720;
+
+        final searchField = TextField(
+          controller: searchController,
+          decoration: InputDecoration(
+            hintText: searchHint,
+            prefixIcon: const Icon(Icons.search, size: 20),
+            filled: true,
+            fillColor: AppColors.surface,
+            isDense: true,
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: sw(12),
+              vertical: sh(12),
             ),
-            onChanged: onSearchChanged,
+          ),
+          onChanged: onSearchChanged,
+        );
+
+        final filterWidgets = filters.map(
+          (filter) => _FilterDropdown(
+            filter: filter,
+            current: query.filters[filter.id] ?? '',
+            fullWidth: compact,
+            maxWidth: maxWidth,
+            onChanged: onFilterChanged,
+            query: query,
           ),
         );
 
-        final filterWidgets = filters.map((filter) {
-          final current = query.filters[filter.id] ?? '';
-          return SizedBox(
-            width: compact ? constraints.maxWidth : sw(180),
-            child: DropdownButtonFormField<String>(
-              key: ValueKey('${filter.id}-$current'),
-              initialValue: current.isEmpty ? null : current,
-              decoration: InputDecoration(
-                labelText: filter.label,
-                filled: true,
-                fillColor: AppColors.surface,
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: sw(12),
-                  vertical: sh(10),
-                ),
-              ),
-              items: [
-                DropdownMenuItem(
-                  value: '',
-                  child: Text(filter.allLabel ?? '—'),
-                ),
-                ...filter.options.map(
-                  (option) => DropdownMenuItem(
-                    value: option.value,
-                    child: Text(option.label),
-                  ),
-                ),
-              ],
-              onChanged: (value) {
-                final next = Map<String, String>.from(query.filters);
-                if (value == null || value.isEmpty) {
-                  next.remove(filter.id);
-                } else {
-                  next[filter.id] = value;
-                }
-                onFilterChanged(next);
-              },
-            ),
-          );
-        });
-
         if (compact) {
-          return Theme(
-            data: Theme.of(context).copyWith(
-              filledButtonTheme: FilledButtonThemeData(
-                style: staffRowFilledButtonStyle(context),
-              ),
-              outlinedButtonTheme: OutlinedButtonThemeData(
-                style: staffRowOutlinedButtonStyle(context),
-              ),
-            ),
-            child: Column(
+          return _toolbarTheme(
+            context,
+            Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 searchField,
@@ -458,27 +494,121 @@ class _Toolbar extends StatelessWidget {
           );
         }
 
-        return Theme(
-          data: Theme.of(context).copyWith(
-            filledButtonTheme: FilledButtonThemeData(
-              style: staffRowFilledButtonStyle(context),
+        if (stackSearch) {
+          return _toolbarTheme(
+            context,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                searchField,
+                SizedBox(height: sh(10)),
+                Wrap(
+                  spacing: sw(12),
+                  runSpacing: sh(10),
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    ...filterWidgets,
+                    ...toolbarActions,
+                  ],
+                ),
+              ],
             ),
-            outlinedButtonTheme: OutlinedButtonThemeData(
-              style: staffRowOutlinedButtonStyle(context),
-            ),
-          ),
-          child: Wrap(
+          );
+        }
+
+        return _toolbarTheme(
+          context,
+          Wrap(
             spacing: sw(12),
             runSpacing: sh(10),
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              searchField,
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  minWidth: sw(200),
+                  maxWidth: sw(360),
+                ),
+                child: searchField,
+              ),
               ...filterWidgets,
               ...toolbarActions,
             ],
           ),
         );
       },
+    );
+  }
+}
+
+class _FilterDropdown extends StatelessWidget {
+  const _FilterDropdown({
+    required this.filter,
+    required this.current,
+    required this.fullWidth,
+    required this.maxWidth,
+    required this.onChanged,
+    required this.query,
+  });
+
+  final StaffTableFilter filter;
+  final String current;
+  final bool fullWidth;
+  final double maxWidth;
+  final ValueChanged<Map<String, String>> onChanged;
+  final StaffTableQuery query;
+
+  @override
+  Widget build(BuildContext context) {
+    final dropdown = DropdownButtonFormField<String>(
+      key: ValueKey('${filter.id}-$current'),
+      isExpanded: true,
+      initialValue: current.isEmpty ? null : current,
+      decoration: InputDecoration(
+        labelText: filter.label,
+        filled: true,
+        fillColor: AppColors.surface,
+        isDense: true,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: sw(12),
+          vertical: sh(10),
+        ),
+      ),
+      items: [
+        DropdownMenuItem(
+          value: '',
+          child: Text(
+            filter.allLabel ?? '—',
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        ...filter.options.map(
+          (option) => DropdownMenuItem(
+            value: option.value,
+            child: Text(
+              option.label,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+      ],
+      onChanged: (value) {
+        final next = Map<String, String>.from(query.filters);
+        if (value == null || value.isEmpty) {
+          next.remove(filter.id);
+        } else {
+          next[filter.id] = value;
+        }
+        onChanged(next);
+      },
+    );
+
+    if (fullWidth) {
+      return SizedBox(width: maxWidth, child: dropdown);
+    }
+
+    return SizedBox(
+      width: sw(180),
+      child: dropdown,
     );
   }
 }
@@ -868,8 +998,8 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
-        padding: EdgeInsets.all(sw(32)),
+      child: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: sw(24), vertical: sh(16)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
