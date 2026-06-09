@@ -155,7 +155,6 @@ class _AdminCompetitionsListScreenState
             searchHint: l10n.staffTableSearchCompetitions,
             filters: filters,
             toolbarActions: toolbarActions,
-            isLoading: listAsync.isLoading,
             onRetry: () {
               unawaited(ref.read(adminCompetitionListProvider.notifier).refresh());
             },

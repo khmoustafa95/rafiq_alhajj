@@ -88,7 +88,6 @@ class _AdminOperatorsListScreenState
             searchHint: l10n.staffTableSearchOperators,
             filters: filters,
             toolbarActions: toolbarActions,
-            isLoading: pageAsync.isLoading,
             onRetry: () =>
                 ref.invalidate(adminOperatorListPageProvider(_query)),
             onRowTap: (operator) => _openEdit(context, operator.id),

@@ -130,7 +130,6 @@ class _AdminContentListScreenState extends ConsumerState<AdminContentListScreen>
             searchHint: l10n.staffTableSearchContent,
             filters: filters,
             toolbarActions: toolbarActions,
-            isLoading: pageAsync.isLoading,
             onRetry: () => ref.invalidate(adminContentListPageProvider(_query)),
             onRowTap: (item) => _openEdit(item.id),
             trailingBuilder: (context, item) => StaffTableRowActions(

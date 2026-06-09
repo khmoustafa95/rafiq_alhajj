@@ -79,7 +79,9 @@ class StaffAsyncTableBody<T> extends StatelessWidget {
       searchHint: searchHint,
       filters: filters,
       toolbarActions: toolbarActions,
-      isLoading: isLoading || (pageAsync.isLoading && page == null),
+      // Only show loading UI on the first fetch — not on realtime refetches
+      // while previous page data is still on screen (avoids flickering bar).
+      isLoading: isLoading || (pageAsync.isLoading && !pageAsync.hasValue),
       onRowTap: onRowTap,
       trailingBuilder: trailingBuilder,
       emptyMessage: emptyMessage,

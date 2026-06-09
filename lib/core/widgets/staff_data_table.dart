@@ -296,8 +296,6 @@ class _StaffDataTableState<T> extends State<StaffDataTable<T>> {
                                 },
                               ),
                             ),
-                            if (widget.isLoading)
-                              const LinearProgressIndicator(minHeight: 2),
                           ],
                         ),
             ),

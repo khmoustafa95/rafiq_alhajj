@@ -121,7 +121,6 @@ class _AdminGroupsListScreenState extends ConsumerState<AdminGroupsListScreen> {
             columns: columns,
             searchHint: l10n.staffTableSearchGroups,
             toolbarActions: toolbarActions,
-            isLoading: pageAsync.isLoading,
             onRetry: () => ref.invalidate(adminGroupListPageProvider(_query)),
             onRowTap: (group) => _openEdit(group.id),
             trailingBuilder: (context, group) => StaffTableRowActions(

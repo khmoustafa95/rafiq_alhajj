@@ -18,6 +18,13 @@ abstract final class AppConfig {
   static bool get routerDebugLogDiagnostics =>
       kDebugMode && routerDebugLog;
 
+  /// Opt-in Riverpod + widget rebuild logs:
+  /// `--dart-define=REBUILD_DEBUG_LOG=true` (debug builds only).
+  static const bool rebuildDebugLog = bool.fromEnvironment('REBUILD_DEBUG_LOG');
+
+  static bool get rebuildDebugLogDiagnostics =>
+      kDebugMode && rebuildDebugLog;
+
   static const String firebaseProjectId =
       String.fromEnvironment('FIREBASE_PROJECT_ID');
 

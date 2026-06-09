@@ -369,7 +369,6 @@ class _OperatorPilgrimListScreenState
               searchHint: l10n.operatorPilgrimSearchHint,
               filters: _filtersFor(l10n, groups),
               toolbarActions: _toolbarActions(l10n, isAdmin, hiddenColumnIds),
-              isLoading: pageAsync.isLoading,
               onRetry: () =>
                   ref.invalidate(operatorPilgrimRegistryPageProvider(_query)),
               onRowTap: _openPilgrim,

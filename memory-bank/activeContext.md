@@ -5,6 +5,10 @@
 ## Current focus
 **Pilgrim registry table** — full column set + user-controlled column visibility persisted across sessions.
 
+## Recent changes (2026-06-08, pm)
+- **Table loading flicker:** Removed bottom `LinearProgressIndicator` on staff tables; loading UI only on first fetch (`!hasValue`), not on realtime refetches.
+- **Rebuild debug:** `REBUILD_DEBUG_LOG=true` dart-define enables `RiverpodDebugObserver` + optional `debugPrintRebuildDirtyWidgets`.
+
 ## Recent changes (2026-06-08)
 - **Pilgrim table columns:** Added travel permit, medical test, and hotel columns; server-side sort for new columns in `operator_registry_repository`.
 - **Column visibility:** `StaffTableColumnVisibilityStorage` + column picker dialog; `pilgrimTableColumnVisibilityProvider` persists hidden column ids via `SharedPreferences` (works on web and mobile).

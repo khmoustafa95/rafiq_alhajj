@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/telemetry/crash_reporter.dart';
+import 'package:rafiq_alhajj/core/telemetry/riverpod_debug_observer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Thrown when application startup fails.
@@ -27,7 +28,15 @@ abstract final class AppBootstrap {
 
     await _initializeSupabase();
 
-    final container = ProviderContainer();
+    if (AppConfig.rebuildDebugLogDiagnostics) {
+      enableWidgetRebuildLogging();
+    }
+
+    final container = ProviderContainer(
+      observers: AppConfig.rebuildDebugLogDiagnostics
+          ? const [RiverpodDebugObserver()]
+          : const [],
+    );
     return container;
   }
 
