@@ -11,6 +11,8 @@ import 'package:rafiq_alhajj/features/admin_analytics/presentation/widgets/admin
 import 'package:rafiq_alhajj/features/admin_analytics/presentation/widgets/admin_login_screen.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/widgets/admin_content_edit_screen.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/widgets/admin_content_list_screen.dart';
+import 'package:rafiq_alhajj/features/admin_content/presentation/widgets/admin_content_topic_edit_screen.dart';
+import 'package:rafiq_alhajj/features/admin_content/presentation/widgets/admin_content_topics_list_screen.dart';
 import 'package:rafiq_alhajj/features/admin_groups/presentation/widgets/admin_group_edit_screen.dart';
 import 'package:rafiq_alhajj/features/admin_groups/presentation/widgets/admin_groups_list_screen.dart';
 import 'package:rafiq_alhajj/features/admin_operators/presentation/widgets/admin_operator_edit_screen.dart';
@@ -26,6 +28,8 @@ import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competit
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competitions_list_screen.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_detail_screen.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_list_screen.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/content_topic_detail_screen.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/content_topics_list_screen.dart';
 import 'package:rafiq_alhajj/features/field_operator/presentation/widgets/field_operator_dashboard_screen.dart';
 import 'package:rafiq_alhajj/features/field_operator/presentation/widgets/field_operator_login_screen.dart';
 import 'package:rafiq_alhajj/features/field_operator/presentation/widgets/field_operator_pilgrim_screen.dart';
@@ -189,9 +193,20 @@ List<RouteBase> _mobilePilgrimRoutes() => [
       GoRoute(
         path: AppRoutes.contentVideosList,
         name: 'contentVideosList',
-        builder: (context, state) => const ContentListScreen(
-          category: ContentListCategory.videos,
-        ),
+        redirect: (context, state) => AppRoutes.contentTopicsList,
+      ),
+      GoRoute(
+        path: AppRoutes.contentTopicsList,
+        name: 'contentTopicsList',
+        builder: (context, state) => const ContentTopicsListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.contentTopicDetail,
+        name: 'contentTopicDetail',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return ContentTopicDetailScreen(topicId: id);
+        },
       ),
       GoRoute(
         path: AppRoutes.contentNewsList,
@@ -292,6 +307,24 @@ List<RouteBase> _mobilePilgrimRoutes() => [
         builder: (context, state) {
           final id = state.pathParameters['id']!;
           return AdminContentEditScreen(contentId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.adminContentTopics,
+        name: 'adminContentTopics',
+        builder: (context, state) => const AdminContentTopicsListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminContentTopicNew,
+        name: 'adminContentTopicNew',
+        builder: (context, state) => const AdminContentTopicEditScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminContentTopicEdit,
+        name: 'adminContentTopicEdit',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return AdminContentTopicEditScreen(topicId: id);
         },
       ),
       GoRoute(
@@ -422,6 +455,24 @@ ShellRoute _staffWebShellRoute() {
         },
       ),
       GoRoute(
+        path: AppRoutes.adminContentTopics,
+        name: 'adminContentTopics',
+        builder: (context, state) => const AdminContentTopicsListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminContentTopicNew,
+        name: 'adminContentTopicNew',
+        builder: (context, state) => const AdminContentTopicEditScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminContentTopicEdit,
+        name: 'adminContentTopicEdit',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return AdminContentTopicEditScreen(topicId: id);
+        },
+      ),
+      GoRoute(
         path: AppRoutes.adminCompetitions,
         name: 'adminCompetitions',
         builder: (context, state) => const AdminCompetitionsListScreen(),
@@ -526,9 +577,20 @@ List<RouteBase> _webRoutes() => [
       GoRoute(
         path: AppRoutes.contentVideosList,
         name: 'contentVideosListWeb',
-        builder: (context, state) => const ContentListScreen(
-          category: ContentListCategory.videos,
-        ),
+        redirect: (context, state) => AppRoutes.contentTopicsList,
+      ),
+      GoRoute(
+        path: AppRoutes.contentTopicsList,
+        name: 'contentTopicsListWeb',
+        builder: (context, state) => const ContentTopicsListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.contentTopicDetail,
+        name: 'contentTopicDetailWeb',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return ContentTopicDetailScreen(topicId: id);
+        },
       ),
       GoRoute(
         path: AppRoutes.contentNewsList,

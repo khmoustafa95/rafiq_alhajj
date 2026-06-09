@@ -4,7 +4,11 @@ abstract final class RealtimeTables {
 
   static const pilgrimDashboard = ['pilgrim_details', 'ritual_logs'];
 
-  static const contentFeed = ['content_library'];
+  static const contentFeed = [
+    'content_library',
+    'content_topics',
+    'content_topic_media',
+  ];
 
   static const adminAnalytics = [
     'profiles',

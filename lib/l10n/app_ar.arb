@@ -12,8 +12,31 @@
   "homeSignInAsPilgrim": "تسجيل دخول كحاج",
   "homePilgrimWelcome": "تم تسجيل دخولك. تصفّح المحتوى العام والحصري أدناه.",
   "contentVideosSection": "فيديوهات توعوية",
+  "contentTopicsSection": "مواضيع تعليمية",
   "contentNewsSection": "أخبار وإعلانات",
   "contentVideosEmpty": "لا توجد فيديوهات عامة حالياً.",
+  "contentTopicsEmpty": "لا توجد مواضيع تعليمية حالياً.",
+  "contentTopicNotFound": "لم يُعثر على هذا الموضوع.",
+  "contentTopicMediaTitle": "سلسلة الوسائط",
+  "contentTopicNoMedia": "لا توجد وسائط بعد.",
+  "contentTopicVideoCount": "{count} فيديو",
+  "@contentTopicVideoCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "contentTopicAudioCount": "{count} صوت",
+  "@contentTopicAudioCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "contentTopicImageCount": "{count} صورة",
+  "@contentTopicImageCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "contentNewsEmpty": "لا توجد أخبار أو إعلانات حالياً.",
   "contentLoadError": "تعذر تحميل المحتوى. اسحب للتحديث.",
   "contentSupabaseRequired": "فعّل Supabase لتحميل الفيديوهات والأخبار من الخادم.",
@@ -682,6 +705,69 @@
   },
   "hajjJourneySlideshowStart": "تشغيل السلايدات",
   "hajjJourneySlideshowStop": "إيقاف السلايدات",
+  "educationalMediaTitle": "وسائط تعليمية",
+  "educationalMediaEmpty": "لا توجد وسائط متاحة.",
+  "educationalMediaVideo": "فيديو",
+  "educationalMediaAudio": "صوت",
+  "educationalMediaImage": "صورة",
+  "educationalMediaImageCounter": "{current} / {total}",
+  "@educationalMediaImageCounter": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "educationalMediaSlideshowStart": "تشغيل السلايدات",
+  "educationalMediaSlideshowStop": "إيقاف السلايدات",
+  "adminContentTopicsManage": "المواضيع التعليمية",
+  "adminContentTopicsListTitle": "مواضيع المحتوى",
+  "adminContentTopicAdd": "إضافة موضوع",
+  "adminContentTopicEmpty": "لا توجد مواضيع بعد.",
+  "adminContentTopicMediaItems": "وسائط",
+  "adminContentTopicLoadError": "تعذر تحميل المواضيع.",
+  "adminContentTopicDeleteTitle": "حذف الموضوع",
+  "adminContentTopicDeleteMessage": "هل تريد حذف «{title}»؟",
+  "@adminContentTopicDeleteMessage": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "adminContentTopicDeleteSuccess": "تم حذف الموضوع.",
+  "adminContentTopicDeleteError": "تعذر حذف الموضوع.",
+  "adminContentTopicEditTitle": "تعديل الموضوع",
+  "adminContentTopicNewTitle": "موضوع جديد",
+  "adminContentTopicTitleRequired": "أدخل عنوان الموضوع.",
+  "adminContentTopicDescription": "الوصف",
+  "adminContentTopicCoverUrl": "رابط صورة الغلاف",
+  "adminContentTopicMediaSection": "سلسلة الوسائط",
+  "adminContentTopicSaveSuccess": "تم حفظ الموضوع.",
+  "adminContentTopicSaveError": "تعذر حفظ الموضوع.",
+  "adminContentTopicUploadCover": "رفع صورة الغلاف",
+  "adminContentTopicUploadMedia": "رفع ملف",
+  "adminContentTopicUploadSuccess": "تم رفع الملف بنجاح.",
+  "adminContentTopicUploadError": "تعذر رفع الملف.",
+  "adminContentTopicMediaPreview": "معاينة الوسائط",
+  "contentOfflineTitle": "المحتوى دون إنترنت",
+  "contentOfflineSubtitle": "حمّل المواضيع التعليمية (صوت وصور) للاستماع والمشاهدة بدون اتصال.",
+  "contentOfflineEnable": "تفعيل التحميل التلقائي",
+  "contentOfflineDownloading": "جاري التحميل في الخلفية…",
+  "contentOfflineCachedCount": "{count} ملف محفوظ محلياً",
+  "@contentOfflineCachedCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "contentOfflineClearCache": "مسح المحتوى المحفوظ",
+  "contentTopicOfflineTitle": "الاستخدام دون إنترنت",
+  "contentTopicOfflineProgress": "{cached} / {total} ملفات جاهزة",
+  "@contentTopicOfflineProgress": {
+    "placeholders": {
+      "cached": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "contentTopicOfflineDownload": "تحميل",
+  "contentTopicOfflineStarted": "بدأ التحميل في الخلفية.",
   "hajjJourneyMarkComplete": "تم الإنجاز",
   "hajjJourneyAlreadyCompleted": "مكتمل — العودة للمسار",
   "hajjJourneyCompletedSnack": "بارك الله فيك! تم إنجاز النسك.",

@@ -47,10 +47,40 @@ class AppLocalizationsAr extends AppLocalizations {
   String get contentVideosSection => 'فيديوهات توعوية';
 
   @override
+  String get contentTopicsSection => 'مواضيع تعليمية';
+
+  @override
   String get contentNewsSection => 'أخبار وإعلانات';
 
   @override
   String get contentVideosEmpty => 'لا توجد فيديوهات عامة حالياً.';
+
+  @override
+  String get contentTopicsEmpty => 'لا توجد مواضيع تعليمية حالياً.';
+
+  @override
+  String get contentTopicNotFound => 'لم يُعثر على هذا الموضوع.';
+
+  @override
+  String get contentTopicMediaTitle => 'سلسلة الوسائط';
+
+  @override
+  String get contentTopicNoMedia => 'لا توجد وسائط بعد.';
+
+  @override
+  String contentTopicVideoCount(int count) {
+    return '$count فيديو';
+  }
+
+  @override
+  String contentTopicAudioCount(int count) {
+    return '$count صوت';
+  }
+
+  @override
+  String contentTopicImageCount(int count) {
+    return '$count صورة';
+  }
 
   @override
   String get contentNewsEmpty => 'لا توجد أخبار أو إعلانات حالياً.';
@@ -2135,6 +2165,138 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get hajjJourneySlideshowStop => 'إيقاف السلايدات';
+
+  @override
+  String get educationalMediaTitle => 'وسائط تعليمية';
+
+  @override
+  String get educationalMediaEmpty => 'لا توجد وسائط متاحة.';
+
+  @override
+  String get educationalMediaVideo => 'فيديو';
+
+  @override
+  String get educationalMediaAudio => 'صوت';
+
+  @override
+  String get educationalMediaImage => 'صورة';
+
+  @override
+  String educationalMediaImageCounter(int current, int total) {
+    return '$current / $total';
+  }
+
+  @override
+  String get educationalMediaSlideshowStart => 'تشغيل السلايدات';
+
+  @override
+  String get educationalMediaSlideshowStop => 'إيقاف السلايدات';
+
+  @override
+  String get adminContentTopicsManage => 'المواضيع التعليمية';
+
+  @override
+  String get adminContentTopicsListTitle => 'مواضيع المحتوى';
+
+  @override
+  String get adminContentTopicAdd => 'إضافة موضوع';
+
+  @override
+  String get adminContentTopicEmpty => 'لا توجد مواضيع بعد.';
+
+  @override
+  String get adminContentTopicMediaItems => 'وسائط';
+
+  @override
+  String get adminContentTopicLoadError => 'تعذر تحميل المواضيع.';
+
+  @override
+  String get adminContentTopicDeleteTitle => 'حذف الموضوع';
+
+  @override
+  String adminContentTopicDeleteMessage(String title) {
+    return 'هل تريد حذف «$title»؟';
+  }
+
+  @override
+  String get adminContentTopicDeleteSuccess => 'تم حذف الموضوع.';
+
+  @override
+  String get adminContentTopicDeleteError => 'تعذر حذف الموضوع.';
+
+  @override
+  String get adminContentTopicEditTitle => 'تعديل الموضوع';
+
+  @override
+  String get adminContentTopicNewTitle => 'موضوع جديد';
+
+  @override
+  String get adminContentTopicTitleRequired => 'أدخل عنوان الموضوع.';
+
+  @override
+  String get adminContentTopicDescription => 'الوصف';
+
+  @override
+  String get adminContentTopicCoverUrl => 'رابط صورة الغلاف';
+
+  @override
+  String get adminContentTopicMediaSection => 'سلسلة الوسائط';
+
+  @override
+  String get adminContentTopicSaveSuccess => 'تم حفظ الموضوع.';
+
+  @override
+  String get adminContentTopicSaveError => 'تعذر حفظ الموضوع.';
+
+  @override
+  String get adminContentTopicUploadCover => 'رفع صورة الغلاف';
+
+  @override
+  String get adminContentTopicUploadMedia => 'رفع ملف';
+
+  @override
+  String get adminContentTopicUploadSuccess => 'تم رفع الملف بنجاح.';
+
+  @override
+  String get adminContentTopicUploadError => 'تعذر رفع الملف.';
+
+  @override
+  String get adminContentTopicMediaPreview => 'معاينة الوسائط';
+
+  @override
+  String get contentOfflineTitle => 'المحتوى دون إنترنت';
+
+  @override
+  String get contentOfflineSubtitle =>
+      'حمّل المواضيع التعليمية (صوت وصور) للاستماع والمشاهدة بدون اتصال.';
+
+  @override
+  String get contentOfflineEnable => 'تفعيل التحميل التلقائي';
+
+  @override
+  String get contentOfflineDownloading => 'جاري التحميل في الخلفية…';
+
+  @override
+  String contentOfflineCachedCount(int count) {
+    return '$count ملف محفوظ محلياً';
+  }
+
+  @override
+  String get contentOfflineClearCache => 'مسح المحتوى المحفوظ';
+
+  @override
+  String get contentTopicOfflineTitle => 'الاستخدام دون إنترنت';
+
+  @override
+  String contentTopicOfflineProgress(int cached, int total) {
+    return '$cached / $total ملفات جاهزة';
+  }
+
+  @override
+  String get contentTopicOfflineDownload => 'تحميل';
+
+  @override
+  String get contentTopicOfflineStarted => 'بدأ التحميل في الخلفية.';
 
   @override
   String get hajjJourneyMarkComplete => 'تم الإنجاز';

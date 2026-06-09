@@ -9,7 +9,10 @@ class UnavailableContentRepository implements ContentRepository {
   Future<PublicContentFeed> fetchBrowsableFeed({
     required bool includePilgrimOnly,
   }) async {
-    return const PublicContentFeed(videos: [], newsAndAnnouncements: []);
+    return const PublicContentFeed(
+      topics: [],
+      newsAndAnnouncements: [],
+    );
   }
 
   @override

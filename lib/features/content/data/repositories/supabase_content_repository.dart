@@ -29,6 +29,7 @@ class SupabaseContentRepository implements ContentRepository {
           .select(
             'id, title, description, media_url, type, visibility, created_at',
           )
+          .inFilter('type', ['news', 'announcement'])
           .order('created_at', ascending: false)
           .timeout(_requestTimeout);
 
@@ -40,26 +41,17 @@ class SupabaseContentRepository implements ContentRepository {
           )
           .where(
             (item) =>
-                item.visibility == ContentVisibility.public ||
-                (includePilgrimOnly &&
-                    item.visibility == ContentVisibility.pilgrimOnly),
-          )
-          .toList();
-
-      final videos = items
-          .where((item) => item.type == ContentType.video)
-          .toList();
-      final newsAndAnnouncements = items
-          .where(
-            (item) =>
-                item.type == ContentType.news ||
-                item.type == ContentType.announcement,
+                (item.type == ContentType.news ||
+                    item.type == ContentType.announcement) &&
+                (item.visibility == ContentVisibility.public ||
+                    (includePilgrimOnly &&
+                        item.visibility == ContentVisibility.pilgrimOnly)),
           )
           .toList();
 
       return PublicContentFeed(
-        videos: videos,
-        newsAndAnnouncements: newsAndAnnouncements,
+        topics: const [],
+        newsAndAnnouncements: items,
       );
     } on PostgrestException {
       throw const ContentFetchException();

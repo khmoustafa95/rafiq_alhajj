@@ -20,7 +20,7 @@ void main() {
           ),
           homeContentFeedProvider(AppAccessMode.guest).overrideWith(
             (ref) async => const PublicContentFeed(
-              videos: [],
+              topics: [],
               newsAndAnnouncements: [],
             ),
           ),

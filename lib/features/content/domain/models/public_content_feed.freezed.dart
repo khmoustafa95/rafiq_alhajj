@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PublicContentFeed {
 
- List<ContentItem> get videos; List<ContentItem> get newsAndAnnouncements;
+ List<ContentTopic> get topics; List<ContentItem> get newsAndAnnouncements;
 /// Create a copy of PublicContentFeed
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $PublicContentFeedCopyWith<PublicContentFeed> get copyWith => _$PublicContentFee
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PublicContentFeed&&const DeepCollectionEquality().equals(other.videos, videos)&&const DeepCollectionEquality().equals(other.newsAndAnnouncements, newsAndAnnouncements));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PublicContentFeed&&const DeepCollectionEquality().equals(other.topics, topics)&&const DeepCollectionEquality().equals(other.newsAndAnnouncements, newsAndAnnouncements));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(videos),const DeepCollectionEquality().hash(newsAndAnnouncements));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(topics),const DeepCollectionEquality().hash(newsAndAnnouncements));
 
 @override
 String toString() {
-  return 'PublicContentFeed(videos: $videos, newsAndAnnouncements: $newsAndAnnouncements)';
+  return 'PublicContentFeed(topics: $topics, newsAndAnnouncements: $newsAndAnnouncements)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $PublicContentFeedCopyWith<$Res>  {
   factory $PublicContentFeedCopyWith(PublicContentFeed value, $Res Function(PublicContentFeed) _then) = _$PublicContentFeedCopyWithImpl;
 @useResult
 $Res call({
- List<ContentItem> videos, List<ContentItem> newsAndAnnouncements
+ List<ContentTopic> topics, List<ContentItem> newsAndAnnouncements
 });
 
 
@@ -62,10 +62,10 @@ class _$PublicContentFeedCopyWithImpl<$Res>
 
 /// Create a copy of PublicContentFeed
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? videos = null,Object? newsAndAnnouncements = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? topics = null,Object? newsAndAnnouncements = null,}) {
   return _then(_self.copyWith(
-videos: null == videos ? _self.videos : videos // ignore: cast_nullable_to_non_nullable
-as List<ContentItem>,newsAndAnnouncements: null == newsAndAnnouncements ? _self.newsAndAnnouncements : newsAndAnnouncements // ignore: cast_nullable_to_non_nullable
+topics: null == topics ? _self.topics : topics // ignore: cast_nullable_to_non_nullable
+as List<ContentTopic>,newsAndAnnouncements: null == newsAndAnnouncements ? _self.newsAndAnnouncements : newsAndAnnouncements // ignore: cast_nullable_to_non_nullable
 as List<ContentItem>,
   ));
 }
@@ -151,10 +151,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<ContentItem> videos,  List<ContentItem> newsAndAnnouncements)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<ContentTopic> topics,  List<ContentItem> newsAndAnnouncements)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PublicContentFeed() when $default != null:
-return $default(_that.videos,_that.newsAndAnnouncements);case _:
+return $default(_that.topics,_that.newsAndAnnouncements);case _:
   return orElse();
 
 }
@@ -172,10 +172,10 @@ return $default(_that.videos,_that.newsAndAnnouncements);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<ContentItem> videos,  List<ContentItem> newsAndAnnouncements)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<ContentTopic> topics,  List<ContentItem> newsAndAnnouncements)  $default,) {final _that = this;
 switch (_that) {
 case _PublicContentFeed():
-return $default(_that.videos,_that.newsAndAnnouncements);case _:
+return $default(_that.topics,_that.newsAndAnnouncements);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -192,10 +192,10 @@ return $default(_that.videos,_that.newsAndAnnouncements);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<ContentItem> videos,  List<ContentItem> newsAndAnnouncements)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<ContentTopic> topics,  List<ContentItem> newsAndAnnouncements)?  $default,) {final _that = this;
 switch (_that) {
 case _PublicContentFeed() when $default != null:
-return $default(_that.videos,_that.newsAndAnnouncements);case _:
+return $default(_that.topics,_that.newsAndAnnouncements);case _:
   return null;
 
 }
@@ -207,14 +207,14 @@ return $default(_that.videos,_that.newsAndAnnouncements);case _:
 
 
 class _PublicContentFeed implements PublicContentFeed {
-  const _PublicContentFeed({required final  List<ContentItem> videos, required final  List<ContentItem> newsAndAnnouncements}): _videos = videos,_newsAndAnnouncements = newsAndAnnouncements;
+  const _PublicContentFeed({required final  List<ContentTopic> topics, required final  List<ContentItem> newsAndAnnouncements}): _topics = topics,_newsAndAnnouncements = newsAndAnnouncements;
   
 
- final  List<ContentItem> _videos;
-@override List<ContentItem> get videos {
-  if (_videos is EqualUnmodifiableListView) return _videos;
+ final  List<ContentTopic> _topics;
+@override List<ContentTopic> get topics {
+  if (_topics is EqualUnmodifiableListView) return _topics;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_videos);
+  return EqualUnmodifiableListView(_topics);
 }
 
  final  List<ContentItem> _newsAndAnnouncements;
@@ -235,16 +235,16 @@ _$PublicContentFeedCopyWith<_PublicContentFeed> get copyWith => __$PublicContent
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PublicContentFeed&&const DeepCollectionEquality().equals(other._videos, _videos)&&const DeepCollectionEquality().equals(other._newsAndAnnouncements, _newsAndAnnouncements));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PublicContentFeed&&const DeepCollectionEquality().equals(other._topics, _topics)&&const DeepCollectionEquality().equals(other._newsAndAnnouncements, _newsAndAnnouncements));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_videos),const DeepCollectionEquality().hash(_newsAndAnnouncements));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_topics),const DeepCollectionEquality().hash(_newsAndAnnouncements));
 
 @override
 String toString() {
-  return 'PublicContentFeed(videos: $videos, newsAndAnnouncements: $newsAndAnnouncements)';
+  return 'PublicContentFeed(topics: $topics, newsAndAnnouncements: $newsAndAnnouncements)';
 }
 
 
@@ -255,7 +255,7 @@ abstract mixin class _$PublicContentFeedCopyWith<$Res> implements $PublicContent
   factory _$PublicContentFeedCopyWith(_PublicContentFeed value, $Res Function(_PublicContentFeed) _then) = __$PublicContentFeedCopyWithImpl;
 @override @useResult
 $Res call({
- List<ContentItem> videos, List<ContentItem> newsAndAnnouncements
+ List<ContentTopic> topics, List<ContentItem> newsAndAnnouncements
 });
 
 
@@ -272,10 +272,10 @@ class __$PublicContentFeedCopyWithImpl<$Res>
 
 /// Create a copy of PublicContentFeed
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? videos = null,Object? newsAndAnnouncements = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? topics = null,Object? newsAndAnnouncements = null,}) {
   return _then(_PublicContentFeed(
-videos: null == videos ? _self._videos : videos // ignore: cast_nullable_to_non_nullable
-as List<ContentItem>,newsAndAnnouncements: null == newsAndAnnouncements ? _self._newsAndAnnouncements : newsAndAnnouncements // ignore: cast_nullable_to_non_nullable
+topics: null == topics ? _self._topics : topics // ignore: cast_nullable_to_non_nullable
+as List<ContentTopic>,newsAndAnnouncements: null == newsAndAnnouncements ? _self._newsAndAnnouncements : newsAndAnnouncements // ignore: cast_nullable_to_non_nullable
 as List<ContentItem>,
   ));
 }

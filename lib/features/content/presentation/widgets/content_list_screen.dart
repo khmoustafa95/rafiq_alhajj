@@ -14,7 +14,7 @@ import 'package:rafiq_alhajj/features/content/presentation/providers/public_cont
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_card.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
-enum ContentListCategory { videos, news }
+enum ContentListCategory { news }
 
 class ContentListScreen extends ConsumerWidget {
   const ContentListScreen({
@@ -37,30 +37,21 @@ class ContentListScreen extends ConsumerWidget {
             : AppAccessMode.guest;
     final feedAsync = ref.watch(homeContentFeedProvider(accessMode));
 
-    final title = category == ContentListCategory.videos
-        ? l10n.contentVideosSection
-        : l10n.contentNewsSection;
-    final emptyMessage = category == ContentListCategory.videos
-        ? l10n.contentVideosEmpty
-        : l10n.contentNewsEmpty;
-
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: RafiqAppBar(title: Text(title)),
+      appBar: RafiqAppBar(title: Text(l10n.contentNewsSection)),
       body: feedAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, _) => Center(child: Text(l10n.contentLoadError)),
         data: (feed) {
-          final items = category == ContentListCategory.videos
-              ? feed.videos
-              : feed.newsAndAnnouncements;
+          final items = feed.newsAndAnnouncements;
 
           if (items.isEmpty) {
             return Center(
               child: Padding(
                 padding: EdgeInsets.all(24.w),
                 child: Text(
-                  emptyMessage,
+                  l10n.contentNewsEmpty,
                   style: Theme.of(context).textTheme.bodyMedium,
                   textAlign: TextAlign.center,
                 ),
@@ -74,11 +65,9 @@ class ContentListScreen extends ConsumerWidget {
             separatorBuilder: (_, _) => SizedBox(height: 12.h),
             itemBuilder: (context, index) {
               final item = items[index];
-              final layout = category == ContentListCategory.news && index == 0
+              final layout = index == 0
                   ? ContentCardLayout.featured
-                  : category == ContentListCategory.news
-                      ? ContentCardLayout.horizontal
-                      : ContentCardLayout.compact;
+                  : ContentCardLayout.horizontal;
 
               return ContentCard(
                 item: item,

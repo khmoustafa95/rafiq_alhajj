@@ -170,6 +170,12 @@ abstract class AppLocalizations {
   /// **'Awareness videos'**
   String get contentVideosSection;
 
+  /// Home section for thematic content topics
+  ///
+  /// In en, this message translates to:
+  /// **'Educational topics'**
+  String get contentTopicsSection;
+
   /// US-01 news section title
   ///
   /// In en, this message translates to:
@@ -181,6 +187,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No public videos available yet.'**
   String get contentVideosEmpty;
+
+  /// Empty state for content topics
+  ///
+  /// In en, this message translates to:
+  /// **'No educational topics available yet.'**
+  String get contentTopicsEmpty;
+
+  /// No description provided for @contentTopicNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'This topic was not found.'**
+  String get contentTopicNotFound;
+
+  /// No description provided for @contentTopicMediaTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Media series'**
+  String get contentTopicMediaTitle;
+
+  /// No description provided for @contentTopicNoMedia.
+  ///
+  /// In en, this message translates to:
+  /// **'No media yet.'**
+  String get contentTopicNoMedia;
+
+  /// No description provided for @contentTopicVideoCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} videos'**
+  String contentTopicVideoCount(int count);
+
+  /// No description provided for @contentTopicAudioCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} audio'**
+  String contentTopicAudioCount(int count);
+
+  /// No description provided for @contentTopicImageCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} images'**
+  String contentTopicImageCount(int count);
 
   /// Empty state for news
   ///
@@ -4026,6 +4074,252 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Stop slideshow'**
   String get hajjJourneySlideshowStop;
+
+  /// No description provided for @educationalMediaTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Educational media'**
+  String get educationalMediaTitle;
+
+  /// No description provided for @educationalMediaEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No media available.'**
+  String get educationalMediaEmpty;
+
+  /// No description provided for @educationalMediaVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get educationalMediaVideo;
+
+  /// No description provided for @educationalMediaAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio'**
+  String get educationalMediaAudio;
+
+  /// No description provided for @educationalMediaImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Image'**
+  String get educationalMediaImage;
+
+  /// No description provided for @educationalMediaImageCounter.
+  ///
+  /// In en, this message translates to:
+  /// **'{current} / {total}'**
+  String educationalMediaImageCounter(int current, int total);
+
+  /// No description provided for @educationalMediaSlideshowStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start slideshow'**
+  String get educationalMediaSlideshowStart;
+
+  /// No description provided for @educationalMediaSlideshowStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop slideshow'**
+  String get educationalMediaSlideshowStop;
+
+  /// No description provided for @adminContentTopicsManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Educational topics'**
+  String get adminContentTopicsManage;
+
+  /// No description provided for @adminContentTopicsListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Content topics'**
+  String get adminContentTopicsListTitle;
+
+  /// No description provided for @adminContentTopicAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add topic'**
+  String get adminContentTopicAdd;
+
+  /// No description provided for @adminContentTopicEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No topics yet.'**
+  String get adminContentTopicEmpty;
+
+  /// No description provided for @adminContentTopicMediaItems.
+  ///
+  /// In en, this message translates to:
+  /// **'media'**
+  String get adminContentTopicMediaItems;
+
+  /// No description provided for @adminContentTopicLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load topics.'**
+  String get adminContentTopicLoadError;
+
+  /// No description provided for @adminContentTopicDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete topic'**
+  String get adminContentTopicDeleteTitle;
+
+  /// No description provided for @adminContentTopicDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{title}\"?'**
+  String adminContentTopicDeleteMessage(String title);
+
+  /// No description provided for @adminContentTopicDeleteSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Topic deleted.'**
+  String get adminContentTopicDeleteSuccess;
+
+  /// No description provided for @adminContentTopicDeleteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete topic.'**
+  String get adminContentTopicDeleteError;
+
+  /// No description provided for @adminContentTopicEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit topic'**
+  String get adminContentTopicEditTitle;
+
+  /// No description provided for @adminContentTopicNewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New topic'**
+  String get adminContentTopicNewTitle;
+
+  /// No description provided for @adminContentTopicTitleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a topic title.'**
+  String get adminContentTopicTitleRequired;
+
+  /// No description provided for @adminContentTopicDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get adminContentTopicDescription;
+
+  /// No description provided for @adminContentTopicCoverUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover image URL'**
+  String get adminContentTopicCoverUrl;
+
+  /// No description provided for @adminContentTopicMediaSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Media series'**
+  String get adminContentTopicMediaSection;
+
+  /// No description provided for @adminContentTopicSaveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Topic saved.'**
+  String get adminContentTopicSaveSuccess;
+
+  /// No description provided for @adminContentTopicSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save topic.'**
+  String get adminContentTopicSaveError;
+
+  /// No description provided for @adminContentTopicUploadCover.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload cover image'**
+  String get adminContentTopicUploadCover;
+
+  /// No description provided for @adminContentTopicUploadMedia.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload file'**
+  String get adminContentTopicUploadMedia;
+
+  /// No description provided for @adminContentTopicUploadSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'File uploaded successfully.'**
+  String get adminContentTopicUploadSuccess;
+
+  /// No description provided for @adminContentTopicUploadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not upload file.'**
+  String get adminContentTopicUploadError;
+
+  /// No description provided for @adminContentTopicMediaPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Media preview'**
+  String get adminContentTopicMediaPreview;
+
+  /// No description provided for @contentOfflineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline content'**
+  String get contentOfflineTitle;
+
+  /// No description provided for @contentOfflineSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Download educational topics (audio and images) for use without internet.'**
+  String get contentOfflineSubtitle;
+
+  /// No description provided for @contentOfflineEnable.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable automatic download'**
+  String get contentOfflineEnable;
+
+  /// No description provided for @contentOfflineDownloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading in background…'**
+  String get contentOfflineDownloading;
+
+  /// No description provided for @contentOfflineCachedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} files saved locally'**
+  String contentOfflineCachedCount(int count);
+
+  /// No description provided for @contentOfflineClearCache.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear saved content'**
+  String get contentOfflineClearCache;
+
+  /// No description provided for @contentTopicOfflineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline use'**
+  String get contentTopicOfflineTitle;
+
+  /// No description provided for @contentTopicOfflineProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{cached} / {total} files ready'**
+  String contentTopicOfflineProgress(int cached, int total);
+
+  /// No description provided for @contentTopicOfflineDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Download'**
+  String get contentTopicOfflineDownload;
+
+  /// No description provided for @contentTopicOfflineStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Background download started.'**
+  String get contentTopicOfflineStarted;
 
   /// No description provided for @hajjJourneyMarkComplete.
   ///

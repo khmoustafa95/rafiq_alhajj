@@ -48,10 +48,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contentVideosSection => 'Awareness videos';
 
   @override
+  String get contentTopicsSection => 'Educational topics';
+
+  @override
   String get contentNewsSection => 'News & announcements';
 
   @override
   String get contentVideosEmpty => 'No public videos available yet.';
+
+  @override
+  String get contentTopicsEmpty => 'No educational topics available yet.';
+
+  @override
+  String get contentTopicNotFound => 'This topic was not found.';
+
+  @override
+  String get contentTopicMediaTitle => 'Media series';
+
+  @override
+  String get contentTopicNoMedia => 'No media yet.';
+
+  @override
+  String contentTopicVideoCount(int count) {
+    return '$count videos';
+  }
+
+  @override
+  String contentTopicAudioCount(int count) {
+    return '$count audio';
+  }
+
+  @override
+  String contentTopicImageCount(int count) {
+    return '$count images';
+  }
 
   @override
   String get contentNewsEmpty => 'No news or announcements yet.';
@@ -2171,6 +2201,138 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hajjJourneySlideshowStop => 'Stop slideshow';
+
+  @override
+  String get educationalMediaTitle => 'Educational media';
+
+  @override
+  String get educationalMediaEmpty => 'No media available.';
+
+  @override
+  String get educationalMediaVideo => 'Video';
+
+  @override
+  String get educationalMediaAudio => 'Audio';
+
+  @override
+  String get educationalMediaImage => 'Image';
+
+  @override
+  String educationalMediaImageCounter(int current, int total) {
+    return '$current / $total';
+  }
+
+  @override
+  String get educationalMediaSlideshowStart => 'Start slideshow';
+
+  @override
+  String get educationalMediaSlideshowStop => 'Stop slideshow';
+
+  @override
+  String get adminContentTopicsManage => 'Educational topics';
+
+  @override
+  String get adminContentTopicsListTitle => 'Content topics';
+
+  @override
+  String get adminContentTopicAdd => 'Add topic';
+
+  @override
+  String get adminContentTopicEmpty => 'No topics yet.';
+
+  @override
+  String get adminContentTopicMediaItems => 'media';
+
+  @override
+  String get adminContentTopicLoadError => 'Could not load topics.';
+
+  @override
+  String get adminContentTopicDeleteTitle => 'Delete topic';
+
+  @override
+  String adminContentTopicDeleteMessage(String title) {
+    return 'Delete \"$title\"?';
+  }
+
+  @override
+  String get adminContentTopicDeleteSuccess => 'Topic deleted.';
+
+  @override
+  String get adminContentTopicDeleteError => 'Could not delete topic.';
+
+  @override
+  String get adminContentTopicEditTitle => 'Edit topic';
+
+  @override
+  String get adminContentTopicNewTitle => 'New topic';
+
+  @override
+  String get adminContentTopicTitleRequired => 'Enter a topic title.';
+
+  @override
+  String get adminContentTopicDescription => 'Description';
+
+  @override
+  String get adminContentTopicCoverUrl => 'Cover image URL';
+
+  @override
+  String get adminContentTopicMediaSection => 'Media series';
+
+  @override
+  String get adminContentTopicSaveSuccess => 'Topic saved.';
+
+  @override
+  String get adminContentTopicSaveError => 'Could not save topic.';
+
+  @override
+  String get adminContentTopicUploadCover => 'Upload cover image';
+
+  @override
+  String get adminContentTopicUploadMedia => 'Upload file';
+
+  @override
+  String get adminContentTopicUploadSuccess => 'File uploaded successfully.';
+
+  @override
+  String get adminContentTopicUploadError => 'Could not upload file.';
+
+  @override
+  String get adminContentTopicMediaPreview => 'Media preview';
+
+  @override
+  String get contentOfflineTitle => 'Offline content';
+
+  @override
+  String get contentOfflineSubtitle =>
+      'Download educational topics (audio and images) for use without internet.';
+
+  @override
+  String get contentOfflineEnable => 'Enable automatic download';
+
+  @override
+  String get contentOfflineDownloading => 'Downloading in background…';
+
+  @override
+  String contentOfflineCachedCount(int count) {
+    return '$count files saved locally';
+  }
+
+  @override
+  String get contentOfflineClearCache => 'Clear saved content';
+
+  @override
+  String get contentTopicOfflineTitle => 'Offline use';
+
+  @override
+  String contentTopicOfflineProgress(int cached, int total) {
+    return '$cached / $total files ready';
+  }
+
+  @override
+  String get contentTopicOfflineDownload => 'Download';
+
+  @override
+  String get contentTopicOfflineStarted => 'Background download started.';
 
   @override
   String get hajjJourneyMarkComplete => 'Mark complete';

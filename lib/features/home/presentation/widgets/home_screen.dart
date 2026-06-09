@@ -25,10 +25,11 @@ import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 
 import 'package:rafiq_alhajj/features/content/domain/models/content_item.dart';
-
+import 'package:rafiq_alhajj/features/content/domain/models/content_topic.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/public_content_feed_provider.dart';
-
+import 'package:rafiq_alhajj/features/content/presentation/widgets/content_media_widgets.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_section.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/content_topics_section.dart';
 
 import 'package:rafiq_alhajj/features/home/presentation/widgets/journey_cta_card.dart';
 
@@ -44,7 +45,7 @@ import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 abstract final class HomeFeedPreviewLimits {
 
-  static const int videos = 2;
+  static const int topics = 4;
 
   static const int news = 2;
 
@@ -63,6 +64,12 @@ class HomeScreen extends ConsumerWidget {
   void _openContent(BuildContext context, ContentItem item) {
 
     unawaited(context.push(AppRoutes.contentDetailPath(item.id)));
+
+  }
+
+  void _openTopic(BuildContext context, ContentTopic topic) {
+
+    unawaited(context.push(AppRoutes.contentTopicDetailPath(topic.id)));
 
   }
 
@@ -104,6 +111,8 @@ class HomeScreen extends ConsumerWidget {
 
       onContentTap: (item) => _openContent(context, item),
 
+      onTopicTap: (topic) => _openTopic(context, topic),
+
     );
 
   }
@@ -122,6 +131,8 @@ class _HomeBody extends ConsumerWidget {
 
     required this.onContentTap,
 
+    required this.onTopicTap,
+
   });
 
 
@@ -131,6 +142,8 @@ class _HomeBody extends ConsumerWidget {
   final String? pilgrimName;
 
   final void Function(ContentItem item) onContentTap;
+
+  final void Function(ContentTopic topic) onTopicTap;
 
 
 
@@ -149,8 +162,6 @@ class _HomeBody extends ConsumerWidget {
     final feed = feedAsync.value;
 
     final isFeedLoading = feedAsync.isLoading && feed == null;
-
-
 
     return Scaffold(
 
@@ -308,17 +319,21 @@ class _HomeBody extends ConsumerWidget {
 
                     SliverToBoxAdapter(
 
-                      child: ContentSection(
+                      child: isFeedLoading
 
-                        title: l10n.contentVideosSection,
+                          ? const ContentTopicsSectionSkeleton()
 
-                        items: feed?.videos ?? const [],
+                          : ContentTopicsSection(
 
-                        emptyMessage: l10n.contentVideosEmpty,
+                        title: l10n.contentTopicsSection,
 
-                        onItemTap: onContentTap,
+                        topics: feed?.topics ?? const [],
 
-                        maxItems: HomeFeedPreviewLimits.videos,
+                        emptyMessage: l10n.contentTopicsEmpty,
+
+                        onTopicTap: onTopicTap,
+
+                        maxItems: HomeFeedPreviewLimits.topics,
 
                         seeAllLabel: l10n.homeSeeAll,
 
@@ -328,7 +343,7 @@ class _HomeBody extends ConsumerWidget {
 
                             : () => unawaited(
 
-                                  context.push(AppRoutes.contentVideosList),
+                                  context.push(AppRoutes.contentTopicsList),
 
                                 ),
 

@@ -101,8 +101,21 @@ class _AdminContentListScreenState extends ConsumerState<AdminContentListScreen>
     }
   }
 
+  void _openTopics() {
+    if (AppPlatform.isWeb) {
+      context.go(AppRoutes.adminContentTopics);
+    } else {
+      unawaited(context.push(AppRoutes.adminContentTopics));
+    }
+  }
+
   List<Widget> _toolbarActions(AppLocalizations l10n) {
     return [
+      OutlinedButton.icon(
+        onPressed: _openTopics,
+        icon: const Icon(Icons.collections_bookmark_outlined),
+        label: Text(l10n.adminContentTopicsManage),
+      ),
       FilledButton.icon(
         onPressed: _openNew,
         icon: const Icon(Icons.add_rounded),
@@ -213,6 +226,13 @@ class _AdminContentListScreenState extends ConsumerState<AdminContentListScreen>
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go(AppRoutes.adminDashboard),
         ),
+        actions: [
+          IconButton(
+            tooltip: l10n.adminContentTopicsManage,
+            icon: const Icon(Icons.collections_bookmark_outlined),
+            onPressed: _openTopics,
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openNew,

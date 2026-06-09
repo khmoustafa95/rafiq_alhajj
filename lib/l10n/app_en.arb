@@ -48,6 +48,10 @@
   "@contentVideosSection": {
     "description": "US-01 public videos section title"
   },
+  "contentTopicsSection": "Educational topics",
+  "@contentTopicsSection": {
+    "description": "Home section for thematic content topics"
+  },
   "contentNewsSection": "News & announcements",
   "@contentNewsSection": {
     "description": "US-01 news section title"
@@ -55,6 +59,31 @@
   "contentVideosEmpty": "No public videos available yet.",
   "@contentVideosEmpty": {
     "description": "Empty state for videos"
+  },
+  "contentTopicsEmpty": "No educational topics available yet.",
+  "@contentTopicsEmpty": {
+    "description": "Empty state for content topics"
+  },
+  "contentTopicNotFound": "This topic was not found.",
+  "contentTopicMediaTitle": "Media series",
+  "contentTopicNoMedia": "No media yet.",
+  "contentTopicVideoCount": "{count} videos",
+  "@contentTopicVideoCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "contentTopicAudioCount": "{count} audio",
+  "@contentTopicAudioCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "contentTopicImageCount": "{count} images",
+  "@contentTopicImageCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
   },
   "contentNewsEmpty": "No news or announcements yet.",
   "@contentNewsEmpty": {
@@ -932,6 +961,69 @@
   },
   "hajjJourneySlideshowStart": "Start slideshow",
   "hajjJourneySlideshowStop": "Stop slideshow",
+  "educationalMediaTitle": "Educational media",
+  "educationalMediaEmpty": "No media available.",
+  "educationalMediaVideo": "Video",
+  "educationalMediaAudio": "Audio",
+  "educationalMediaImage": "Image",
+  "educationalMediaImageCounter": "{current} / {total}",
+  "@educationalMediaImageCounter": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "educationalMediaSlideshowStart": "Start slideshow",
+  "educationalMediaSlideshowStop": "Stop slideshow",
+  "adminContentTopicsManage": "Educational topics",
+  "adminContentTopicsListTitle": "Content topics",
+  "adminContentTopicAdd": "Add topic",
+  "adminContentTopicEmpty": "No topics yet.",
+  "adminContentTopicMediaItems": "media",
+  "adminContentTopicLoadError": "Could not load topics.",
+  "adminContentTopicDeleteTitle": "Delete topic",
+  "adminContentTopicDeleteMessage": "Delete \"{title}\"?",
+  "@adminContentTopicDeleteMessage": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "adminContentTopicDeleteSuccess": "Topic deleted.",
+  "adminContentTopicDeleteError": "Could not delete topic.",
+  "adminContentTopicEditTitle": "Edit topic",
+  "adminContentTopicNewTitle": "New topic",
+  "adminContentTopicTitleRequired": "Enter a topic title.",
+  "adminContentTopicDescription": "Description",
+  "adminContentTopicCoverUrl": "Cover image URL",
+  "adminContentTopicMediaSection": "Media series",
+  "adminContentTopicSaveSuccess": "Topic saved.",
+  "adminContentTopicSaveError": "Could not save topic.",
+  "adminContentTopicUploadCover": "Upload cover image",
+  "adminContentTopicUploadMedia": "Upload file",
+  "adminContentTopicUploadSuccess": "File uploaded successfully.",
+  "adminContentTopicUploadError": "Could not upload file.",
+  "adminContentTopicMediaPreview": "Media preview",
+  "contentOfflineTitle": "Offline content",
+  "contentOfflineSubtitle": "Download educational topics (audio and images) for use without internet.",
+  "contentOfflineEnable": "Enable automatic download",
+  "contentOfflineDownloading": "Downloading in background…",
+  "contentOfflineCachedCount": "{count} files saved locally",
+  "@contentOfflineCachedCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "contentOfflineClearCache": "Clear saved content",
+  "contentTopicOfflineTitle": "Offline use",
+  "contentTopicOfflineProgress": "{cached} / {total} files ready",
+  "@contentTopicOfflineProgress": {
+    "placeholders": {
+      "cached": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "contentTopicOfflineDownload": "Download",
+  "contentTopicOfflineStarted": "Background download started.",
   "hajjJourneyMarkComplete": "Mark complete",
   "hajjJourneyAlreadyCompleted": "Completed — back to path",
   "hajjJourneyCompletedSnack": "Well done! Ritual marked complete.",

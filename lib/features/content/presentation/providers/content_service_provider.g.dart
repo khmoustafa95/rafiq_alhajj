@@ -48,4 +48,4 @@ final class ContentServiceProvider
   }
 }
 
-String _$contentServiceHash() => r'9a4810d9b2ea7504854f3d4b60d666229bd5f9e6';
+String _$contentServiceHash() => r'f41d21883bf5749e24c3855fef04844a63171bd0';

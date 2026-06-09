@@ -9,6 +9,8 @@ abstract final class AppRoutes {
   static const String adminHajjJourneyEdit = '/admin/hajj-journey/:ritualKey/edit';
   static const String login = '/login';
   static const String contentVideosList = '/content/videos';
+  static const String contentTopicsList = '/content/topics';
+  static const String contentTopicDetail = '/content/topics/:id';
   static const String contentNewsList = '/content/news';
   static const String contentDetail = '/content/:id';
   static const String tools = '/tools';
@@ -48,6 +50,9 @@ abstract final class AppRoutes {
   static const String adminDashboard = '/admin/dashboard';
   static const String adminNotificationSend = '/admin/notifications/send';
   static const String adminContent = '/admin/content';
+  static const String adminContentTopics = '/admin/content/topics';
+  static const String adminContentTopicNew = '/admin/content/topics/new';
+  static const String adminContentTopicEdit = '/admin/content/topics/:id/edit';
   static const String adminContentNew = '/admin/content/new';
   static const String adminContentEdit = '/admin/content/:id/edit';
   static const String adminOperators = '/admin/operators';
@@ -65,6 +70,11 @@ abstract final class AppRoutes {
   static String adminGroupEditPath(String id) => '/admin/groups/$id/edit';
 
   static String contentDetailPath(String id) => '/content/$id';
+
+  static String contentTopicDetailPath(String id) => '/content/topics/$id';
+
+  static String adminContentTopicEditPath(String id) =>
+      '/admin/content/topics/$id/edit';
 
   static String fieldOperatorPilgrimPath(String profileId) =>
       '/operator/field/$profileId';
