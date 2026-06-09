@@ -2067,7 +2067,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get servicesHeroSubtitle =>
-      'رحلة الحج التعليمية، المسابقات، والإشعارات في مكان واحد.';
+      'رحلة الحج التعليمية والمسابقات في مكان واحد.';
 
   @override
   String get servicesJourneySubtitle =>

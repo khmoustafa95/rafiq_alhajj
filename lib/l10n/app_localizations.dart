@@ -3904,7 +3904,7 @@ abstract class AppLocalizations {
   /// No description provided for @servicesHeroSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Hajj journey, competitions, and notifications in one place.'**
+  /// **'Hajj journey and competitions in one place.'**
   String get servicesHeroSubtitle;
 
   /// No description provided for @servicesJourneySubtitle.

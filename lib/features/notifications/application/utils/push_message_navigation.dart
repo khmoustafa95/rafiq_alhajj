@@ -30,8 +30,8 @@ void navigateFromPushData(Map<String, dynamic> data) {
     case 'home':
       context.go(AppRoutes.home);
     case 'notifications':
-      unawaited(context.push(AppRoutes.notifications));
+      context.go(AppRoutes.notifications);
     default:
-      unawaited(context.push(AppRoutes.notifications));
+      context.go(AppRoutes.notifications);
   }
 }

@@ -132,15 +132,6 @@ StatefulShellRoute _pilgrimShellRoute() {
       StatefulShellBranch(
         routes: [
           GoRoute(
-            path: AppRoutes.home,
-            name: 'home',
-            builder: (context, state) => const HomeScreen(),
-          ),
-        ],
-      ),
-      StatefulShellBranch(
-        routes: [
-          GoRoute(
             path: AppRoutes.tools,
             name: 'tools',
             builder: (context, state) => const IslamicToolsHubScreen(),
@@ -154,6 +145,24 @@ StatefulShellRoute _pilgrimShellRoute() {
             path: AppRoutes.services,
             name: 'services',
             builder: (context, state) => const ServicesHubScreen(),
+          ),
+        ],
+      ),
+      StatefulShellBranch(
+        routes: [
+          GoRoute(
+            path: AppRoutes.home,
+            name: 'home',
+            builder: (context, state) => const HomeScreen(),
+          ),
+        ],
+      ),
+      StatefulShellBranch(
+        routes: [
+          GoRoute(
+            path: AppRoutes.notifications,
+            name: 'notifications',
+            builder: (context, state) => const NotificationListScreen(),
           ),
         ],
       ),
@@ -198,11 +207,6 @@ List<RouteBase> _mobilePilgrimRoutes() => [
           final id = state.pathParameters['id']!;
           return ContentDetailScreen(contentId: id);
         },
-      ),
-      GoRoute(
-        path: AppRoutes.notifications,
-        name: 'notifications',
-        builder: (context, state) => const NotificationListScreen(),
       ),
       GoRoute(
         path: AppRoutes.pilgrimDashboard,

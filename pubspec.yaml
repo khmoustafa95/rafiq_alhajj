@@ -58,6 +58,7 @@ dependencies:
   latlong2: ^0.9.1
   connectivity_plus: ^7.1.1
   web: ^1.1.1
+  animated_bottom_navigation_bar: ^1.4.0
 
 dev_dependencies:
   flutter_test:

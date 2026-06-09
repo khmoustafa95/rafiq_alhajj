@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/home_app_header.dart';
@@ -54,17 +52,12 @@ class _NotificationListScreenState extends ConsumerState<NotificationListScreen>
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => unawaited(context.push(AppRoutes.qibla)),
-        child: const Icon(Icons.explore_rounded),
-      ),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             HomeAppHeader(
               title: l10n.notificationsTitle,
-              showBackButton: Navigator.canPop(context),
               actions: const [],
             ),
             const Divider(height: 1),
@@ -95,7 +88,7 @@ class _NotificationListScreenState extends ConsumerState<NotificationListScreen>
                     onRefresh: () =>
                         ref.read(notificationInboxProvider.notifier).refresh(),
                     child: ListView(
-                      padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 88.h),
+                      padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 96.h),
                       children: [
                         _FeaturedNotificationCard(
                           notification: featured,

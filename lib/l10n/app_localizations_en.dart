@@ -2102,7 +2102,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get servicesHeroSubtitle =>
-      'Hajj journey, competitions, and notifications in one place.';
+      'Hajj journey and competitions in one place.';
 
   @override
   String get servicesJourneySubtitle =>

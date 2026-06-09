@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -35,17 +33,17 @@ class _NotificationBellWithBadge extends ConsumerWidget {
       data: (count) => _BellIcon(
         unreadCount: count,
         tooltip: l10n.notificationsOpenInbox,
-        onPressed: () => unawaited(context.push(AppRoutes.notifications)),
+        onPressed: () => context.go(AppRoutes.notifications),
       ),
       loading: () => _BellIcon(
         unreadCount: 0,
         tooltip: l10n.notificationsOpenInbox,
-        onPressed: () => unawaited(context.push(AppRoutes.notifications)),
+        onPressed: () => context.go(AppRoutes.notifications),
       ),
       error: (_, _) => _BellIcon(
         unreadCount: 0,
         tooltip: l10n.notificationsOpenInbox,
-        onPressed: () => unawaited(context.push(AppRoutes.notifications)),
+        onPressed: () => context.go(AppRoutes.notifications),
       ),
     );
   }
