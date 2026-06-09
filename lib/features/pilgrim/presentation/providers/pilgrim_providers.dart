@@ -1,5 +1,7 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
-import 'package:rafiq_alhajj/core/supabase/realtime_refresh.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_invalidation_registry.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_sync_attach.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_sync_providers.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/features/pilgrim/application/services/pilgrim_dashboard_service.dart';
@@ -50,19 +52,12 @@ class PilgrimDashboardState extends _$PilgrimDashboardState {
       throw const PilgrimAccessDeniedException();
     }
 
-    watchSupabaseTable(
+    attachRealtimeSync(
       ref,
-      client: AppConfig.hasSupabase ? Supabase.instance.client : null,
-      table: 'pilgrim_details',
-      eqColumn: 'profile_id',
-      eqValue: pilgrimId,
-    );
-    watchSupabaseTable(
-      ref,
-      client: AppConfig.hasSupabase ? Supabase.instance.client : null,
-      table: 'ritual_logs',
-      eqColumn: 'pilgrim_id',
-      eqValue: pilgrimId,
+      syncKey: RealtimeSyncKeys.pilgrimDashboard,
+      ensureSyncActive: (ref) => ref.watch(realtimeSyncPilgrimDashboardProvider),
+      handlerId: 'pilgrim_dashboard',
+      onInvalidate: (ref) => ref.invalidate(pilgrimDashboardStateProvider),
     );
 
     final dashboard =

@@ -1,6 +1,8 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
-import 'package:rafiq_alhajj/core/supabase/realtime_refresh.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_invalidation_registry.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_sync_attach.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_sync_providers.dart';
 import 'package:rafiq_alhajj/features/admin_groups/application/services/admin_groups_service.dart';
 import 'package:rafiq_alhajj/features/admin_groups/data/repositories/admin_groups_repository.dart';
 import 'package:rafiq_alhajj/features/admin_groups/domain/models/group_editor_input.dart';
@@ -27,15 +29,15 @@ Future<PaginatedResult<HajjGroup>> adminGroupListPage(
   Ref ref,
   StaffTableQuery query,
 ) async {
-  final result = await ref.read(adminGroupsServiceProvider).listPage(query);
-
-  watchSupabaseTables(
+  attachRealtimeSync(
     ref,
-    client: AppConfig.hasSupabase ? Supabase.instance.client : null,
-    tables: const ['groups', 'group_administration_members'],
+    syncKey: RealtimeSyncKeys.adminGroups,
+    ensureSyncActive: (ref) => ref.watch(realtimeSyncAdminGroupsProvider),
+    handlerId: 'admin_group_list',
+    onInvalidate: (ref) => ref.invalidate(adminGroupListPageProvider),
   );
 
-  return result;
+  return ref.read(adminGroupsServiceProvider).listPage(query);
 }
 
 @riverpod

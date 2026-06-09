@@ -1,12 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/telemetry/agent_debug_log.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 const _realtimeDebounce = Duration(milliseconds: 400);
 
+typedef _RealtimeSchedule = void Function({String? table});
+
 /// Coalesces rapid realtime events (e.g. initial snapshots on 5 tables) into one refresh.
-void Function() _debouncedCallback(
+_RealtimeSchedule _debouncedCallback(
   Ref ref, {
   void Function()? onEvent,
   Duration debounce = _realtimeDebounce,
@@ -16,9 +20,31 @@ void Function() _debouncedCallback(
 
   ref.onDispose(() => debounceTimer?.cancel());
 
-  return () {
+  return ({String? table}) {
     debounceTimer?.cancel();
-    debounceTimer = Timer(debounce, callback);
+    // #region agent log
+    if (AppConfig.rebuildDebugLog) {
+      agentDebugLog(
+        location: 'realtime_refresh.dart:schedule',
+        message: 'Realtime event scheduled',
+        hypothesisId: 'A',
+        data: {'table': table, 'debounceMs': debounce.inMilliseconds},
+      );
+    }
+    // #endregion
+    debounceTimer = Timer(debounce, () {
+      // #region agent log
+      if (AppConfig.rebuildDebugLog) {
+        agentDebugLog(
+          location: 'realtime_refresh.dart:fire',
+          message: 'Realtime debounce fired — invalidating provider',
+          hypothesisId: 'A',
+          data: {'table': table},
+        );
+      }
+      // #endregion
+      callback();
+    });
   };
 }
 
@@ -42,7 +68,14 @@ void watchSupabaseTable(
       : query;
 
   final schedule = _debouncedCallback(ref, onEvent: onEvent);
-  final subscription = stream.listen((_) => schedule());
+  var skipInitialSnapshot = true;
+  final subscription = stream.listen((_) {
+    if (skipInitialSnapshot) {
+      skipInitialSnapshot = false;
+      return;
+    }
+    schedule(table: table);
+  });
 
   ref.onDispose(() => unawaited(subscription.cancel()));
 }
@@ -62,8 +95,15 @@ void watchSupabaseTables(
   final subscriptions = <StreamSubscription<List<Map<String, dynamic>>>>[];
 
   for (final table in tables) {
+    var skipInitialSnapshot = true;
     subscriptions.add(
-      client.from(table).stream(primaryKey: ['id']).listen((_) => schedule()),
+      client.from(table).stream(primaryKey: ['id']).listen((_) {
+        if (skipInitialSnapshot) {
+          skipInitialSnapshot = false;
+          return;
+        }
+        schedule(table: table);
+      }),
     );
   }
 

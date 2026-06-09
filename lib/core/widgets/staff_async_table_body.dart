@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
+import 'package:rafiq_alhajj/core/telemetry/agent_debug_log.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_data_table.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
@@ -53,6 +55,20 @@ class StaffAsyncTableBody<T> extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final page = pageAsync.value;
     final showError = pageAsync.hasError && page == null;
+    // #region agent log
+    if (AppConfig.rebuildDebugLog) {
+      agentDebugLog(
+        location: 'staff_async_table_body.dart:build',
+        message: 'StaffAsyncTableBody rebuild',
+        hypothesisId: 'E',
+        data: {
+          'isLoading': pageAsync.isLoading,
+          'hasValue': pageAsync.hasValue,
+          'itemCount': page?.items.length ?? 0,
+        },
+      );
+    }
+    // #endregion
 
     if (showError) {
       return StaffErrorView.fromError(

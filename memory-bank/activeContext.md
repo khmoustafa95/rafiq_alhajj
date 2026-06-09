@@ -5,9 +5,13 @@
 ## Current focus
 **Pilgrim registry table** — full column set + user-controlled column visibility persisted across sessions.
 
+## Recent changes (2026-06-09)
+- **Web telemetry:** `agent_debug_log_web.dart` migrated from deprecated `dart:html` to `package:web` + `dart:js_interop` (`fetch` API).
+
 ## Recent changes (2026-06-08, pm)
+- **Realtime invalidation loop fix:** `keepAlive` sync providers in `realtime_sync_providers.dart` + `attachRealtimeSync()` — subscriptions no longer torn down on each list refetch. Skip initial Supabase stream snapshot in `realtime_refresh.dart`.
 - **Table loading flicker:** Removed bottom `LinearProgressIndicator` on staff tables; loading UI only on first fetch (`!hasValue`), not on realtime refetches.
-- **Rebuild debug:** `REBUILD_DEBUG_LOG=true` dart-define enables `RiverpodDebugObserver` + optional `debugPrintRebuildDirtyWidgets`.
+- **Rebuild debug:** `REBUILD_DEBUG_LOG=true` dart-define enables `RiverpodDebugObserver` + targeted NDJSON logs.
 
 ## Recent changes (2026-06-08)
 - **Pilgrim table columns:** Added travel permit, medical test, and hotel columns; server-side sort for new columns in `operator_registry_repository`.

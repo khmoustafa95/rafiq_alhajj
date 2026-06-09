@@ -1,7 +1,8 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
-import 'package:rafiq_alhajj/core/supabase/realtime_refresh.dart';
-import 'package:rafiq_alhajj/core/supabase/realtime_tables.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_invalidation_registry.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_sync_attach.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_sync_providers.dart';
 import 'package:rafiq_alhajj/features/admin_content/application/services/admin_content_service.dart';
 import 'package:rafiq_alhajj/features/admin_content/data/repositories/admin_content_repository.dart';
 import 'package:rafiq_alhajj/features/admin_content/domain/models/content_editor_input.dart';
@@ -27,29 +28,29 @@ AdminContentService adminContentService(Ref ref) {
 Future<PaginatedResult<ContentItem>> adminContentListPage(
   Ref ref,
   StaffTableQuery query,
-) async {
-  final result = await ref.read(adminContentServiceProvider).listPage(query);
-
-  watchSupabaseTables(
+) {
+  attachRealtimeSync(
     ref,
-    client: AppConfig.hasSupabase ? Supabase.instance.client : null,
-    tables: RealtimeTables.contentFeed,
+    syncKey: RealtimeSyncKeys.contentFeed,
+    ensureSyncActive: (ref) => ref.watch(realtimeSyncContentFeedProvider),
+    handlerId: 'admin_content_list',
+    onInvalidate: (ref) => ref.invalidate(adminContentListPageProvider),
   );
 
-  return result;
+  return ref.read(adminContentServiceProvider).listPage(query);
 }
 
 @riverpod
-Future<ContentItem?> adminContentDetail(Ref ref, String id) async {
-  final item = await ref.read(adminContentServiceProvider).getById(id);
-
-  watchSupabaseTables(
+Future<ContentItem?> adminContentDetail(Ref ref, String id) {
+  attachRealtimeSync(
     ref,
-    client: AppConfig.hasSupabase ? Supabase.instance.client : null,
-    tables: RealtimeTables.contentFeed,
+    syncKey: RealtimeSyncKeys.contentFeed,
+    ensureSyncActive: (ref) => ref.watch(realtimeSyncContentFeedProvider),
+    handlerId: 'admin_content_detail',
+    onInvalidate: (ref) => ref.invalidate(adminContentDetailProvider),
   );
 
-  return item;
+  return ref.read(adminContentServiceProvider).getById(id);
 }
 
 @riverpod

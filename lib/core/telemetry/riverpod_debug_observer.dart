@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/telemetry/agent_debug_log.dart';
 
 /// Logs Riverpod provider updates when [AppConfig.rebuildDebugLog] is enabled.
 ///
@@ -19,10 +19,23 @@ final class RiverpodDebugObserver extends ProviderObserver {
       return;
     }
 
+    final name = context.provider.name ?? context.provider.runtimeType.toString();
     debugPrint(
-      '[riverpod] ${context.provider.name ?? context.provider.runtimeType} '
+      '[riverpod] $name '
       '← ${_describeValue(previousValue)} → ${_describeValue(newValue)}',
     );
+    // #region agent log
+    agentDebugLog(
+      location: 'riverpod_debug_observer.dart:didUpdateProvider',
+      message: 'Provider updated',
+      hypothesisId: 'B',
+      data: {
+        'provider': name,
+        'previous': _describeValue(previousValue),
+        'next': _describeValue(newValue),
+      },
+    );
+    // #endregion
   }
 
   @override
@@ -64,14 +77,13 @@ final class RiverpodDebugObserver extends ProviderObserver {
   }
 }
 
-/// Enables Flutter's global dirty-widget rebuild logging (very verbose).
+/// Enables targeted rebuild instrumentation (see [agentDebugLog]).
 void enableWidgetRebuildLogging() {
   if (!kDebugMode || !AppConfig.rebuildDebugLog) {
     return;
   }
-  debugPrintRebuildDirtyWidgets = true;
   debugPrint(
-    '[rebuild] debugPrintRebuildDirtyWidgets enabled '
-    '(REBUILD_DEBUG_LOG=true)',
+    '[rebuild] Targeted NDJSON logging enabled (REBUILD_DEBUG_LOG=true). '
+    'Global debugPrintRebuildDirtyWidgets is off to reduce noise.',
   );
 }

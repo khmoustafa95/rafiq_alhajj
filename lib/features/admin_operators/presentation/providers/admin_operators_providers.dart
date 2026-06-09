@@ -1,6 +1,8 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
-import 'package:rafiq_alhajj/core/supabase/realtime_refresh.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_invalidation_registry.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_sync_attach.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_sync_providers.dart';
 import 'package:rafiq_alhajj/features/admin_operators/application/services/admin_operators_service.dart';
 import 'package:rafiq_alhajj/features/admin_operators/data/repositories/admin_operators_repository.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/created_operator_account.dart';
@@ -28,15 +30,15 @@ Future<PaginatedResult<OperatorAccount>> adminOperatorListPage(
   Ref ref,
   StaffTableQuery query,
 ) async {
-  final result = await ref.read(adminOperatorsServiceProvider).listPage(query);
-
-  watchSupabaseTables(
+  attachRealtimeSync(
     ref,
-    client: AppConfig.hasSupabase ? Supabase.instance.client : null,
-    tables: const ['profiles'],
+    syncKey: RealtimeSyncKeys.adminOperators,
+    ensureSyncActive: (ref) => ref.watch(realtimeSyncAdminOperatorsProvider),
+    handlerId: 'admin_operator_list',
+    onInvalidate: (ref) => ref.invalidate(adminOperatorListPageProvider),
   );
 
-  return result;
+  return ref.read(adminOperatorsServiceProvider).listPage(query);
 }
 
 @riverpod

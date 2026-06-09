@@ -145,7 +145,7 @@ final class FieldOperatorStatsProvider
 }
 
 String _$fieldOperatorStatsHash() =>
-    r'6d0d583ce1894f9ea5306213dfa5c3edc7e651ee';
+    r'cddb12a544cca518231675c2b09264a170e86c46';
 
 @ProviderFor(FieldOperatorSearch)
 final fieldOperatorSearchProvider = FieldOperatorSearchProvider._();
@@ -173,7 +173,7 @@ final class FieldOperatorSearchProvider
 }
 
 String _$fieldOperatorSearchHash() =>
-    r'8429d54fa514b0dbbc135916ed4c1c3e30cbed9f';
+    r'183178822dbf702ebee6809bd08b5602650bd480';
 
 abstract class _$FieldOperatorSearch
     extends $AsyncNotifier<List<PilgrimSearchItem>> {
@@ -245,7 +245,7 @@ final class FieldOperatorPilgrimDetailProvider
 }
 
 String _$fieldOperatorPilgrimDetailHash() =>
-    r'c164f59b9212a760f41fe41c1aebde4ce46f1ab9';
+    r'5bbc2c29674dcf71991a092eaa5c14b09ecb8cd4';
 
 final class FieldOperatorPilgrimDetailFamily extends $Family
     with

@@ -1,5 +1,7 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
-import 'package:rafiq_alhajj/core/supabase/realtime_refresh.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_invalidation_registry.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_sync_attach.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_sync_providers.dart';
 import 'package:rafiq_alhajj/features/admin_settings/application/services/system_settings_service.dart';
 import 'package:rafiq_alhajj/features/admin_settings/data/repositories/system_settings_repository.dart';
 import 'package:rafiq_alhajj/features/admin_settings/domain/models/system_settings.dart';
@@ -23,15 +25,15 @@ SystemSettingsService systemSettingsService(Ref ref) {
 
 @riverpod
 Future<SystemSettings> systemSettings(Ref ref) async {
-  final settings = await ref.read(systemSettingsServiceProvider).load();
-
-  watchSupabaseTables(
+  attachRealtimeSync(
     ref,
-    client: AppConfig.hasSupabase ? Supabase.instance.client : null,
-    tables: const ['system_settings'],
+    syncKey: RealtimeSyncKeys.systemSettings,
+    ensureSyncActive: (ref) => ref.watch(realtimeSyncSystemSettingsProvider),
+    handlerId: 'system_settings',
+    onInvalidate: (ref) => ref.invalidate(systemSettingsProvider),
   );
 
-  return settings;
+  return ref.read(systemSettingsServiceProvider).load();
 }
 
 @riverpod

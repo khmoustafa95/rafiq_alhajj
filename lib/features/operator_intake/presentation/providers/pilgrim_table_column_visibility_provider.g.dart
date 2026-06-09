@@ -43,7 +43,7 @@ final class PilgrimTableColumnVisibilityProvider
 }
 
 String _$pilgrimTableColumnVisibilityHash() =>
-    r'81310a9f45f02c4fa50eae8bb971bc56ca22f3b0';
+    r'3818e407deb0817107acf75e1c46278e7ffc67df';
 
 abstract class _$PilgrimTableColumnVisibility extends $Notifier<Set<String>> {
   Set<String> build();

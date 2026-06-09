@@ -63,6 +63,11 @@
 
 ## Changelog
 
+### 2026-06-08 — Realtime rebuild loop fix
+- [x] Root cause: `watchSupabaseTables` inside autoDispose providers → `invalidateSelf` → dispose/resubscribe → initial snapshot → loop.
+- [x] `realtime_sync_providers.dart` keepAlive listeners + `RealtimeInvalidationRegistry` + `attachRealtimeSync()` on all list/detail providers.
+- [x] Skip first stream emission per subscription in `realtime_refresh.dart`.
+
 ### 2026-06-08 — Pilgrim table column visibility
 - [x] Added travel permit, medical test, and hotel columns to operator/admin pilgrim registry table.
 - [x] Column picker dialog (show/hide); preferences persisted in `SharedPreferences` across app restarts.
@@ -177,6 +182,9 @@
 - **US-01:** `content_library` table, public feed on home, content detail route, seed data.
 - **US-03:** Pilgrim login (`/login`), Supabase Auth, `profiles.role`, guest vs pilgrim home UI, migration + seed docs.
 - Created Notion page **Rafiq Al-Hajj — Flutter Dev Status (Cursor sync)** under project workspace (team-visible snapshot of memory-bank).
+
+### 2026-06-09
+- Replaced deprecated `dart:html` in `agent_debug_log_web.dart` with `package:web` fetch + `dart:js_interop`; added direct `web` dependency.
 
 ### 2026-05-19
 - Added `dart_defines.local.json` / Android variant (gitignored) and example templates.

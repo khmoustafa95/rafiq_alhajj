@@ -1,6 +1,6 @@
-import 'package:rafiq_alhajj/core/config/app_config.dart';
-import 'package:rafiq_alhajj/core/supabase/realtime_refresh.dart';
-import 'package:rafiq_alhajj/core/supabase/realtime_tables.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_invalidation_registry.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_sync_attach.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_sync_providers.dart';
 import 'package:rafiq_alhajj/features/field_operator/application/services/field_operator_service.dart';
 import 'package:rafiq_alhajj/features/field_operator/data/repositories/field_operator_repository.dart';
 import 'package:rafiq_alhajj/features/field_operator/domain/models/field_operator_stats.dart';
@@ -8,12 +8,8 @@ import 'package:rafiq_alhajj/features/field_operator/domain/models/pilgrim_searc
 import 'package:rafiq_alhajj/features/pilgrim/domain/models/pilgrim.dart';
 import 'package:rafiq_alhajj/features/pilgrim/presentation/providers/pilgrim_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'field_operator_providers.g.dart';
-
-SupabaseClient? _realtimeClient() =>
-    AppConfig.hasSupabase ? Supabase.instance.client : null;
 
 @Riverpod(keepAlive: true)
 FieldOperatorRepository fieldOperatorRepository(Ref ref) {
@@ -27,10 +23,12 @@ FieldOperatorService fieldOperatorService(Ref ref) {
 
 @riverpod
 Future<FieldOperatorStats> fieldOperatorStats(Ref ref) {
-  watchSupabaseTables(
+  attachRealtimeSync(
     ref,
-    client: _realtimeClient(),
-    tables: RealtimeTables.pilgrimRegistry,
+    syncKey: RealtimeSyncKeys.pilgrimRegistry,
+    ensureSyncActive: (ref) => ref.watch(realtimeSyncPilgrimRegistryProvider),
+    handlerId: 'field_operator_stats',
+    onInvalidate: (ref) => ref.invalidate(fieldOperatorStatsProvider),
   );
 
   return ref.read(fieldOperatorServiceProvider).loadStats();
@@ -43,10 +41,12 @@ class FieldOperatorSearch extends _$FieldOperatorSearch {
 
   @override
   Future<List<PilgrimSearchItem>> build() {
-    watchSupabaseTables(
+    attachRealtimeSync(
       ref,
-      client: _realtimeClient(),
-      tables: RealtimeTables.pilgrimRegistry,
+      syncKey: RealtimeSyncKeys.pilgrimRegistry,
+      ensureSyncActive: (ref) => ref.watch(realtimeSyncPilgrimRegistryProvider),
+      handlerId: 'field_operator_search',
+      onInvalidate: (ref) => ref.invalidate(fieldOperatorSearchProvider),
     );
 
     return ref.read(fieldOperatorServiceProvider).searchPilgrims(
@@ -89,12 +89,12 @@ class FieldOperatorSearch extends _$FieldOperatorSearch {
 class FieldOperatorPilgrimDetail extends _$FieldOperatorPilgrimDetail {
   @override
   Future<Pilgrim?> build(String profileId) {
-    watchSupabaseTable(
+    attachRealtimeSync(
       ref,
-      client: _realtimeClient(),
-      table: 'pilgrim_details',
-      eqColumn: 'profile_id',
-      eqValue: profileId,
+      syncKey: RealtimeSyncKeys.pilgrimRegistry,
+      ensureSyncActive: (ref) => ref.watch(realtimeSyncPilgrimRegistryProvider),
+      handlerId: 'field_operator_pilgrim_detail',
+      onInvalidate: (ref) => ref.invalidate(fieldOperatorPilgrimDetailProvider),
     );
 
     return ref.read(fieldOperatorServiceProvider).loadPilgrim(profileId);

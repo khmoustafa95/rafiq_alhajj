@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/telemetry/agent_debug_log.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_async_table_body.dart';
@@ -30,6 +32,7 @@ class AdminContentListScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminContentListScreenState extends ConsumerState<AdminContentListScreen> {
+  int _buildCount = 0;
   StaffTableQuery _query = const StaffTableQuery(
     sortColumnId: 'title',
   );
@@ -114,8 +117,23 @@ class _AdminContentListScreenState extends ConsumerState<AdminContentListScreen>
 
   @override
   Widget build(BuildContext context) {
+    _buildCount++;
     final l10n = AppLocalizations.of(context);
     final pageAsync = ref.watch(adminContentListPageProvider(_query));
+    // #region agent log
+    if (AppConfig.rebuildDebugLog) {
+      agentDebugLog(
+        location: 'admin_content_list_screen.dart:build',
+        message: 'AdminContentListScreen rebuild',
+        hypothesisId: 'E',
+        data: {
+          'buildCount': _buildCount,
+          'pageLoading': pageAsync.isLoading,
+          'pageHasValue': pageAsync.hasValue,
+        },
+      );
+    }
+    // #endregion
     final toolbarActions = _toolbarActions(l10n);
     final columns = _tableDefs.columns(context);
     final filters = _tableDefs.filters(context);

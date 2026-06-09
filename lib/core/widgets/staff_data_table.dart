@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
+import 'package:rafiq_alhajj/core/telemetry/agent_debug_log.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_button_styles.dart';
@@ -112,6 +114,7 @@ class StaffDataTable<T> extends StatefulWidget {
 
 class _StaffDataTableState<T> extends State<StaffDataTable<T>> {
   final Set<String> _selectedKeys = {};
+  int _buildCount = 0;
 
   bool get _isSelectable =>
       widget.selectable && widget.rowKey != null && widget.bulkActions.isNotEmpty;
@@ -214,6 +217,22 @@ class _StaffDataTableState<T> extends State<StaffDataTable<T>> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    _buildCount++;
+    // #region agent log
+    if (AppConfig.rebuildDebugLog) {
+      agentDebugLog(
+        location: 'staff_data_table.dart:build',
+        message: 'StaffDataTable rebuild',
+        hypothesisId: 'D',
+        data: {
+          'buildCount': _buildCount,
+          'rowCount': widget.rows.length,
+          'isLoading': widget.isLoading,
+          'columnsHash': widget.columns.map((c) => c.id).join(','),
+        },
+      );
+    }
+    // #endregion
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

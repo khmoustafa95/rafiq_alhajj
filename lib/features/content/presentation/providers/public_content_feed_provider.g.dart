@@ -66,7 +66,7 @@ final class HomeContentFeedProvider
   }
 }
 
-String _$homeContentFeedHash() => r'9c10991b9038aec13c44a3bebf76df3bc50ad73c';
+String _$homeContentFeedHash() => r'5b1b212dec426825b9995715ce899731eb3e232a';
 
 final class HomeContentFeedFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<PublicContentFeed>, AppAccessMode> {

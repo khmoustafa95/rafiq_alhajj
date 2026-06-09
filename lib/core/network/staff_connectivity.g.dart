@@ -41,7 +41,7 @@ final class StaffConnectivityProvider
   }
 }
 
-String _$staffConnectivityHash() => r'1346b24340ff7048859f29db670d6b38ff7231f8';
+String _$staffConnectivityHash() => r'8e8111703cb81ed2b49f80f50400534f2fbf682a';
 
 abstract class _$StaffConnectivity extends $Notifier<bool> {
   bool build();

@@ -163,7 +163,7 @@ final class AdminGroupListPageProvider
 }
 
 String _$adminGroupListPageHash() =>
-    r'cc49e62fe55e92ac254493c486a7a49fe5c25661';
+    r'b7acfa2c01e49593054e180386485db8cc2a5b33';
 
 final class AdminGroupListPageFamily extends $Family
     with

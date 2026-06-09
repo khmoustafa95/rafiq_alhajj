@@ -1,7 +1,8 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
-import 'package:rafiq_alhajj/core/supabase/realtime_refresh.dart';
-import 'package:rafiq_alhajj/core/supabase/realtime_tables.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_invalidation_registry.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_sync_attach.dart';
+import 'package:rafiq_alhajj/core/supabase/realtime_sync_providers.dart';
 import 'package:rafiq_alhajj/features/operator_intake/application/services/operator_registry_service.dart';
 import 'package:rafiq_alhajj/features/operator_intake/data/repositories/operator_registry_repository.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_record.dart';
@@ -34,27 +35,30 @@ Future<PaginatedResult<OperatorPilgrimSummary>> operatorPilgrimRegistryPage(
   Ref ref,
   StaffTableQuery query,
 ) async {
-  final result = await ref.read(operatorRegistryServiceProvider).listPage(query);
-
-  watchSupabaseTables(
+  attachRealtimeSync(
     ref,
-    client: AppConfig.hasSupabase ? Supabase.instance.client : null,
-    tables: RealtimeTables.pilgrimRegistry,
+    syncKey: RealtimeSyncKeys.pilgrimRegistry,
+    ensureSyncActive: (ref) => ref.watch(realtimeSyncPilgrimRegistryProvider),
+    handlerId: 'operator_pilgrim_list',
+    onInvalidate: (ref) {
+      ref.invalidate(operatorPilgrimRegistryPageProvider);
+      ref.invalidate(pilgrimGroupFilterOptionsProvider);
+    },
   );
 
-  return result;
+  return ref.read(operatorRegistryServiceProvider).listPage(query);
 }
 
 @riverpod
 class OperatorPilgrimDetail extends _$OperatorPilgrimDetail {
   @override
   Future<OperatorPilgrimRecord?> build(String profileId) {
-    watchSupabaseTable(
+    attachRealtimeSync(
       ref,
-      client: AppConfig.hasSupabase ? Supabase.instance.client : null,
-      table: 'pilgrim_details',
-      eqColumn: 'profile_id',
-      eqValue: profileId,
+      syncKey: RealtimeSyncKeys.pilgrimRegistry,
+      ensureSyncActive: (ref) => ref.watch(realtimeSyncPilgrimRegistryProvider),
+      handlerId: 'operator_pilgrim_detail',
+      onInvalidate: (ref) => ref.invalidate(operatorPilgrimDetailProvider),
     );
 
     return ref.read(operatorRegistryServiceProvider).loadPilgrim(profileId);
