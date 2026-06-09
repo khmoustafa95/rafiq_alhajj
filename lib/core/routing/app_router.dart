@@ -31,6 +31,10 @@ import 'package:rafiq_alhajj/features/field_operator/presentation/widgets/field_
 import 'package:rafiq_alhajj/features/field_operator/presentation/widgets/field_operator_pilgrim_screen.dart';
 import 'package:rafiq_alhajj/features/field_operator/presentation/widgets/field_operator_pilgrims_screen.dart';
 import 'package:rafiq_alhajj/features/field_operator/presentation/widgets/field_operator_shell_screen.dart';
+import 'package:rafiq_alhajj/features/hajj_journey/presentation/widgets/admin_hajj_journey_edit_screen.dart';
+import 'package:rafiq_alhajj/features/hajj_journey/presentation/widgets/admin_hajj_journey_list_screen.dart';
+import 'package:rafiq_alhajj/features/hajj_journey/presentation/widgets/hajj_journey_path_screen.dart';
+import 'package:rafiq_alhajj/features/hajj_journey/presentation/widgets/hajj_ritual_detail_screen.dart';
 import 'package:rafiq_alhajj/features/home/presentation/widgets/home_screen.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/widgets/adhkar_screen.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/widgets/islamic_tools_hub_screen.dart';
@@ -44,8 +48,8 @@ import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/opera
 import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_login_screen.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_pilgrim_detail_screen.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_pilgrim_list_screen.dart';
-import 'package:rafiq_alhajj/features/pilgrim/presentation/widgets/pilgrim_dashboard_screen.dart';
 import 'package:rafiq_alhajj/features/profile/presentation/widgets/profile_screen.dart';
+import 'package:rafiq_alhajj/features/services/presentation/widgets/services_hub_screen.dart';
 import 'package:rafiq_alhajj/features/virtual_tour/presentation/widgets/virtual_tour_screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -147,9 +151,9 @@ StatefulShellRoute _pilgrimShellRoute() {
       StatefulShellBranch(
         routes: [
           GoRoute(
-            path: AppRoutes.notifications,
-            name: 'notifications',
-            builder: (context, state) => const NotificationListScreen(),
+            path: AppRoutes.services,
+            name: 'services',
+            builder: (context, state) => const ServicesHubScreen(),
           ),
         ],
       ),
@@ -196,9 +200,27 @@ List<RouteBase> _mobilePilgrimRoutes() => [
         },
       ),
       GoRoute(
+        path: AppRoutes.notifications,
+        name: 'notifications',
+        builder: (context, state) => const NotificationListScreen(),
+      ),
+      GoRoute(
         path: AppRoutes.pilgrimDashboard,
         name: 'pilgrimDashboard',
-        builder: (context, state) => const PilgrimDashboardScreen(),
+        redirect: (context, state) => AppRoutes.hajjJourney,
+      ),
+      GoRoute(
+        path: AppRoutes.hajjJourney,
+        name: 'hajjJourney',
+        builder: (context, state) => const HajjJourneyPathScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.hajjRitualDetail,
+        name: 'hajjRitualDetail',
+        builder: (context, state) {
+          final ritualKey = state.pathParameters['ritualKey']!;
+          return HajjRitualDetailScreen(ritualKey: ritualKey);
+        },
       ),
       GoRoute(
         path: AppRoutes.competitions,
@@ -284,6 +306,19 @@ List<RouteBase> _mobilePilgrimRoutes() => [
         builder: (context, state) {
           final id = state.pathParameters['id']!;
           return AdminCompetitionEditScreen(competitionId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.adminHajjJourney,
+        name: 'adminHajjJourney',
+        builder: (context, state) => const AdminHajjJourneyListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminHajjJourneyEdit,
+        name: 'adminHajjJourneyEdit',
+        builder: (context, state) {
+          final ritualKey = state.pathParameters['ritualKey']!;
+          return AdminHajjJourneyEditScreen(ritualKey: ritualKey);
         },
       ),
       GoRoute(
@@ -401,6 +436,19 @@ ShellRoute _staffWebShellRoute() {
         },
       ),
       GoRoute(
+        path: AppRoutes.adminHajjJourney,
+        name: 'adminHajjJourneyWeb',
+        builder: (context, state) => const AdminHajjJourneyListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminHajjJourneyEdit,
+        name: 'adminHajjJourneyEditWeb',
+        builder: (context, state) {
+          final ritualKey = state.pathParameters['ritualKey']!;
+          return AdminHajjJourneyEditScreen(ritualKey: ritualKey);
+        },
+      ),
+      GoRoute(
         path: AppRoutes.adminOperators,
         name: 'adminOperators',
         builder: (context, state) => const AdminOperatorsListScreen(),
@@ -496,7 +544,20 @@ List<RouteBase> _webRoutes() => [
       GoRoute(
         path: AppRoutes.pilgrimDashboard,
         name: 'pilgrimDashboard',
-        builder: (context, state) => const PilgrimDashboardScreen(),
+        redirect: (context, state) => AppRoutes.hajjJourney,
+      ),
+      GoRoute(
+        path: AppRoutes.hajjJourney,
+        name: 'hajjJourneyWeb',
+        builder: (context, state) => const HajjJourneyPathScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.hajjRitualDetail,
+        name: 'hajjRitualDetailWeb',
+        builder: (context, state) {
+          final ritualKey = state.pathParameters['ritualKey']!;
+          return HajjRitualDetailScreen(ritualKey: ritualKey);
+        },
       ),
       GoRoute(
         path: AppRoutes.operatorLogin,
@@ -648,7 +709,10 @@ GoRouter appRouter(Ref ref) {
         return AppRoutes.home;
       }
 
-      if (!isPilgrim && location == AppRoutes.pilgrimDashboard) {
+      if (!isPilgrim &&
+          (location == AppRoutes.pilgrimDashboard ||
+              location == AppRoutes.hajjJourney ||
+              location.startsWith('${AppRoutes.hajjJourney}/'))) {
         return AppRoutes.login;
       }
 

@@ -37,8 +37,19 @@ abstract final class RealtimeInvalidationRegistry {
       return;
     }
     for (final handler in handlers) {
-      // Defer so invalidation never runs during the provider build that registered.
-      scheduleMicrotask(() => handler(ref));
+      // Defer past the current build/microtask chain so invalidation never
+      // runs while a dependent provider (e.g. hajjJourneyState) is still
+      // awaiting this one's future — avoids CircularDependencyError.
+      unawaited(
+        Future<void>.delayed(Duration.zero, () => handler(ref)),
+      );
     }
+  }
+
+  /// Schedules provider invalidation on the next event-loop turn.
+  static void safeInvalidate(Ref ref, void Function(Ref ref) invalidate) {
+    unawaited(
+      Future<void>.delayed(Duration.zero, () => invalidate(ref)),
+    );
   }
 }

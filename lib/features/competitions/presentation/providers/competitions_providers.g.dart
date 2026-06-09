@@ -457,7 +457,7 @@ final class CompetitionQuizSubmitProvider
 }
 
 String _$competitionQuizSubmitHash() =>
-    r'de24b8d283e7f5f637eb137469a4a13fac8426b7';
+    r'f44fc1bae18bda08378e1ee926a761243d9f74fa';
 
 abstract class _$CompetitionQuizSubmit
     extends $AsyncNotifier<CompetitionAnswerResult?> {

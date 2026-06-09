@@ -25,6 +25,7 @@
 | Admin system settings | ✅ Web `/admin/settings` global config (needs migration apply) |
 | Operator pilgrim registry (US-09) | ✅ Web `/operator/pilgrims` list + logistics edit |
 | Competitions (US-10) | ✅ Quizzes: admin questions + pilgrim play + RPC scoring |
+| Hajj journey CMS + path | ✅ Services hub, profile split, ritual path + media (needs migration apply) |
 | Dev one-command scripts | ✅ `npm run dev` / `scripts/*.ps1` |
 | Android build stability | ✅ Gradle AGP + JVM tuning (re-verify APK on your machine) |
 | Crash reporting hook | ✅ `CrashReporter` + `CRASH_REPORTING_ENABLED` dart-define |
@@ -182,6 +183,9 @@
 - **US-01:** `content_library` table, public feed on home, content detail route, seed data.
 - **US-03:** Pilgrim login (`/login`), Supabase Auth, `profiles.role`, guest vs pilgrim home UI, migration + seed docs.
 - Created Notion page **Rafiq Al-Hajj — Flutter Dev Status (Cursor sync)** under project workspace (team-visible snapshot of memory-bank).
+
+### 2026-06-09 (continued)
+- **Hajj journey restructure:** Services hub (`/services`), profile shows registry only, Duolingo-style ritual path (`/journey`), ritual detail with video/audio/image slideshow, admin CMS (`/admin/hajj-journey`), migration `20260609210000_hajj_journey_cms.sql` with Islamic demo content.
 
 ### 2026-06-09
 - **Ordering questions:** `ordering` enum value, `submit_competition_ordering_answer` RPC, drag-reorder quiz UI + admin step editor, demo seed question.

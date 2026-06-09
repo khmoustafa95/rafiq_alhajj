@@ -57,7 +57,10 @@ class PilgrimDashboardState extends _$PilgrimDashboardState {
       syncKey: RealtimeSyncKeys.pilgrimDashboard,
       ensureSyncActive: (ref) => ref.watch(realtimeSyncPilgrimDashboardProvider),
       handlerId: 'pilgrim_dashboard',
-      onInvalidate: (ref) => ref.invalidate(pilgrimDashboardStateProvider),
+      onInvalidate: (ref) => RealtimeInvalidationRegistry.safeInvalidate(
+        ref,
+        (r) => r.invalidate(pilgrimDashboardStateProvider),
+      ),
     );
 
     final dashboard =

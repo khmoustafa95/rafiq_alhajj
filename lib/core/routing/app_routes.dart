@@ -1,7 +1,12 @@
 /// Central route path constants for [GoRouter].
 abstract final class AppRoutes {
   static const String home = '/';
+  static const String services = '/services';
   static const String notifications = '/notifications';
+  static const String hajjJourney = '/journey';
+  static const String hajjRitualDetail = '/journey/:ritualKey';
+  static const String adminHajjJourney = '/admin/hajj-journey';
+  static const String adminHajjJourneyEdit = '/admin/hajj-journey/:ritualKey/edit';
   static const String login = '/login';
   static const String contentVideosList = '/content/videos';
   static const String contentNewsList = '/content/news';
@@ -65,4 +70,9 @@ abstract final class AppRoutes {
       '/operator/field/$profileId';
 
   static String quranSurahPath(int surahNumber) => '/tools/quran/$surahNumber';
+
+  static String hajjRitualDetailPath(String ritualKey) => '/journey/$ritualKey';
+
+  static String adminHajjJourneyEditPath(String ritualKey) =>
+      '/admin/hajj-journey/$ritualKey/edit';
 }

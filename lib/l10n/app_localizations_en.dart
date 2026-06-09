@@ -2089,4 +2089,175 @@ class AppLocalizationsEn extends AppLocalizations {
   String adminSettingsLastUpdated(String date) {
     return 'Last updated $date';
   }
+
+  @override
+  String get profilePilgrimSubtitle =>
+      'Registration details entered by your operator.';
+
+  @override
+  String get servicesHeroBadge => 'Pilgrim services';
+
+  @override
+  String get servicesHeroTitle => 'Services hub';
+
+  @override
+  String get servicesHeroSubtitle =>
+      'Hajj journey, competitions, and notifications in one place.';
+
+  @override
+  String get servicesJourneySubtitle =>
+      'Learn Hajj rituals step by step with educational media.';
+
+  @override
+  String get servicesCompetitionsSubtitle =>
+      'Test your knowledge and earn points in Hajj quizzes.';
+
+  @override
+  String get servicesNotificationsSubtitle =>
+      'View your latest alerts and announcements.';
+
+  @override
+  String get hajjJourneyHeroSubtitle =>
+      'Follow a learning path through Hajj rituals from Ihram to farewell tawaf.';
+
+  @override
+  String get hajjJourneyPathTitle => 'Ritual path';
+
+  @override
+  String get hajjJourneyPathSubtitle =>
+      'Complete each ritual to unlock the next — like the competition track.';
+
+  @override
+  String get hajjJourneyEmpty => 'No journey steps available right now.';
+
+  @override
+  String get hajjJourneyLoadError => 'Could not load Hajj journey.';
+
+  @override
+  String get hajjJourneyStepLocked =>
+      'Complete the previous ritual first to unlock this one.';
+
+  @override
+  String get hajjJourneyStepNotFound => 'This ritual was not found.';
+
+  @override
+  String get hajjJourneyContinue => 'Continue your current ritual';
+
+  @override
+  String get hajjJourneyAboutRitual => 'About this ritual';
+
+  @override
+  String get hajjJourneyMediaTitle => 'Educational media';
+
+  @override
+  String get hajjJourneyNoMedia => 'No media for this ritual yet.';
+
+  @override
+  String get hajjJourneyMediaVideo => 'Video';
+
+  @override
+  String get hajjJourneyMediaAudio => 'Audio';
+
+  @override
+  String get hajjJourneyMediaImage => 'Image';
+
+  @override
+  String hajjJourneyImageCounter(int current, int total) {
+    return '$current / $total';
+  }
+
+  @override
+  String get hajjJourneySlideshowStart => 'Start slideshow';
+
+  @override
+  String get hajjJourneySlideshowStop => 'Stop slideshow';
+
+  @override
+  String get hajjJourneyMarkComplete => 'Mark complete';
+
+  @override
+  String get hajjJourneyAlreadyCompleted => 'Completed — back to path';
+
+  @override
+  String get hajjJourneyCompletedSnack => 'Well done! Ritual marked complete.';
+
+  @override
+  String get hajjJourneyNextStepTitle => 'Next ritual';
+
+  @override
+  String get hajjJourneyNextStepBody =>
+      'Would you like to go to the next ritual?';
+
+  @override
+  String get hajjJourneyStayHere => 'Stay here';
+
+  @override
+  String get hajjJourneyGoNext => 'Next ritual';
+
+  @override
+  String get adminManageHajjJourney => 'Manage Hajj journey';
+
+  @override
+  String get adminHajjJourneyTitle => 'Hajj journey';
+
+  @override
+  String get adminHajjJourneyLoadError => 'Could not load Hajj journey steps.';
+
+  @override
+  String get adminHajjJourneyEmpty =>
+      'No steps yet. Apply the database migration.';
+
+  @override
+  String adminHajjJourneyMediaCount(int count) {
+    return '$count media items';
+  }
+
+  @override
+  String get adminHajjJourneyInactive => 'Inactive';
+
+  @override
+  String get adminHajjJourneyEditTitle => 'Edit ritual';
+
+  @override
+  String get adminHajjJourneyTitleAr => 'Title (Arabic)';
+
+  @override
+  String get adminHajjJourneyTitleEn => 'Title (English)';
+
+  @override
+  String get adminHajjJourneyDescriptionAr => 'Description (Arabic)';
+
+  @override
+  String get adminHajjJourneyDescriptionEn => 'Description (English)';
+
+  @override
+  String get adminHajjJourneySortOrder => 'Display order';
+
+  @override
+  String get adminHajjJourneyActive => 'Active';
+
+  @override
+  String get adminHajjJourneyMediaSection => 'Educational media';
+
+  @override
+  String get adminHajjJourneyMediaType => 'Media type';
+
+  @override
+  String get adminHajjJourneyMediaTitle => 'Media title';
+
+  @override
+  String get adminHajjJourneyMediaUrl => 'Media URL';
+
+  @override
+  String get adminHajjJourneyRemoveMedia => 'Remove';
+
+  @override
+  String get adminHajjJourneyTitleRequired =>
+      'Arabic and English titles are required.';
+
+  @override
+  String get adminHajjJourneySaveSuccess => 'Ritual saved.';
+
+  @override
+  String get adminHajjJourneySaveError => 'Could not save ritual.';
 }

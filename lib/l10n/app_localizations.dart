@@ -3882,6 +3882,318 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Last updated {date}'**
   String adminSettingsLastUpdated(String date);
+
+  /// No description provided for @profilePilgrimSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration details entered by your operator.'**
+  String get profilePilgrimSubtitle;
+
+  /// No description provided for @servicesHeroBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Pilgrim services'**
+  String get servicesHeroBadge;
+
+  /// No description provided for @servicesHeroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Services hub'**
+  String get servicesHeroTitle;
+
+  /// No description provided for @servicesHeroSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hajj journey, competitions, and notifications in one place.'**
+  String get servicesHeroSubtitle;
+
+  /// No description provided for @servicesJourneySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn Hajj rituals step by step with educational media.'**
+  String get servicesJourneySubtitle;
+
+  /// No description provided for @servicesCompetitionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Test your knowledge and earn points in Hajj quizzes.'**
+  String get servicesCompetitionsSubtitle;
+
+  /// No description provided for @servicesNotificationsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View your latest alerts and announcements.'**
+  String get servicesNotificationsSubtitle;
+
+  /// No description provided for @hajjJourneyHeroSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow a learning path through Hajj rituals from Ihram to farewell tawaf.'**
+  String get hajjJourneyHeroSubtitle;
+
+  /// No description provided for @hajjJourneyPathTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ritual path'**
+  String get hajjJourneyPathTitle;
+
+  /// No description provided for @hajjJourneyPathSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete each ritual to unlock the next — like the competition track.'**
+  String get hajjJourneyPathSubtitle;
+
+  /// No description provided for @hajjJourneyEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No journey steps available right now.'**
+  String get hajjJourneyEmpty;
+
+  /// No description provided for @hajjJourneyLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load Hajj journey.'**
+  String get hajjJourneyLoadError;
+
+  /// No description provided for @hajjJourneyStepLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete the previous ritual first to unlock this one.'**
+  String get hajjJourneyStepLocked;
+
+  /// No description provided for @hajjJourneyStepNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'This ritual was not found.'**
+  String get hajjJourneyStepNotFound;
+
+  /// No description provided for @hajjJourneyContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue your current ritual'**
+  String get hajjJourneyContinue;
+
+  /// No description provided for @hajjJourneyAboutRitual.
+  ///
+  /// In en, this message translates to:
+  /// **'About this ritual'**
+  String get hajjJourneyAboutRitual;
+
+  /// No description provided for @hajjJourneyMediaTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Educational media'**
+  String get hajjJourneyMediaTitle;
+
+  /// No description provided for @hajjJourneyNoMedia.
+  ///
+  /// In en, this message translates to:
+  /// **'No media for this ritual yet.'**
+  String get hajjJourneyNoMedia;
+
+  /// No description provided for @hajjJourneyMediaVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get hajjJourneyMediaVideo;
+
+  /// No description provided for @hajjJourneyMediaAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio'**
+  String get hajjJourneyMediaAudio;
+
+  /// No description provided for @hajjJourneyMediaImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Image'**
+  String get hajjJourneyMediaImage;
+
+  /// No description provided for @hajjJourneyImageCounter.
+  ///
+  /// In en, this message translates to:
+  /// **'{current} / {total}'**
+  String hajjJourneyImageCounter(int current, int total);
+
+  /// No description provided for @hajjJourneySlideshowStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start slideshow'**
+  String get hajjJourneySlideshowStart;
+
+  /// No description provided for @hajjJourneySlideshowStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop slideshow'**
+  String get hajjJourneySlideshowStop;
+
+  /// No description provided for @hajjJourneyMarkComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark complete'**
+  String get hajjJourneyMarkComplete;
+
+  /// No description provided for @hajjJourneyAlreadyCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed — back to path'**
+  String get hajjJourneyAlreadyCompleted;
+
+  /// No description provided for @hajjJourneyCompletedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Well done! Ritual marked complete.'**
+  String get hajjJourneyCompletedSnack;
+
+  /// No description provided for @hajjJourneyNextStepTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Next ritual'**
+  String get hajjJourneyNextStepTitle;
+
+  /// No description provided for @hajjJourneyNextStepBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Would you like to go to the next ritual?'**
+  String get hajjJourneyNextStepBody;
+
+  /// No description provided for @hajjJourneyStayHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay here'**
+  String get hajjJourneyStayHere;
+
+  /// No description provided for @hajjJourneyGoNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next ritual'**
+  String get hajjJourneyGoNext;
+
+  /// No description provided for @adminManageHajjJourney.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Hajj journey'**
+  String get adminManageHajjJourney;
+
+  /// No description provided for @adminHajjJourneyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hajj journey'**
+  String get adminHajjJourneyTitle;
+
+  /// No description provided for @adminHajjJourneyLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load Hajj journey steps.'**
+  String get adminHajjJourneyLoadError;
+
+  /// No description provided for @adminHajjJourneyEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No steps yet. Apply the database migration.'**
+  String get adminHajjJourneyEmpty;
+
+  /// No description provided for @adminHajjJourneyMediaCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} media items'**
+  String adminHajjJourneyMediaCount(int count);
+
+  /// No description provided for @adminHajjJourneyInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get adminHajjJourneyInactive;
+
+  /// No description provided for @adminHajjJourneyEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit ritual'**
+  String get adminHajjJourneyEditTitle;
+
+  /// No description provided for @adminHajjJourneyTitleAr.
+  ///
+  /// In en, this message translates to:
+  /// **'Title (Arabic)'**
+  String get adminHajjJourneyTitleAr;
+
+  /// No description provided for @adminHajjJourneyTitleEn.
+  ///
+  /// In en, this message translates to:
+  /// **'Title (English)'**
+  String get adminHajjJourneyTitleEn;
+
+  /// No description provided for @adminHajjJourneyDescriptionAr.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (Arabic)'**
+  String get adminHajjJourneyDescriptionAr;
+
+  /// No description provided for @adminHajjJourneyDescriptionEn.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (English)'**
+  String get adminHajjJourneyDescriptionEn;
+
+  /// No description provided for @adminHajjJourneySortOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Display order'**
+  String get adminHajjJourneySortOrder;
+
+  /// No description provided for @adminHajjJourneyActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get adminHajjJourneyActive;
+
+  /// No description provided for @adminHajjJourneyMediaSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Educational media'**
+  String get adminHajjJourneyMediaSection;
+
+  /// No description provided for @adminHajjJourneyMediaType.
+  ///
+  /// In en, this message translates to:
+  /// **'Media type'**
+  String get adminHajjJourneyMediaType;
+
+  /// No description provided for @adminHajjJourneyMediaTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Media title'**
+  String get adminHajjJourneyMediaTitle;
+
+  /// No description provided for @adminHajjJourneyMediaUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Media URL'**
+  String get adminHajjJourneyMediaUrl;
+
+  /// No description provided for @adminHajjJourneyRemoveMedia.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get adminHajjJourneyRemoveMedia;
+
+  /// No description provided for @adminHajjJourneyTitleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Arabic and English titles are required.'**
+  String get adminHajjJourneyTitleRequired;
+
+  /// No description provided for @adminHajjJourneySaveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Ritual saved.'**
+  String get adminHajjJourneySaveSuccess;
+
+  /// No description provided for @adminHajjJourneySaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save ritual.'**
+  String get adminHajjJourneySaveError;
 }
 
 class _AppLocalizationsDelegate

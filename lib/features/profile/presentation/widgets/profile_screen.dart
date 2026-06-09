@@ -11,6 +11,8 @@ import 'package:rafiq_alhajj/core/widgets/home_app_header.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/controllers/sign_out_controller.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:rafiq_alhajj/features/pilgrim/presentation/providers/pilgrim_providers.dart';
+import 'package:rafiq_alhajj/features/pilgrim/presentation/widgets/pilgrim_profile_sections.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -22,6 +24,9 @@ class ProfileScreen extends ConsumerWidget {
     final isPilgrim =
         ref.watch(authAccessModeProvider) == AppAccessMode.pilgrim;
     final pilgrimName = ref.watch(authProfileFullNameProvider);
+    final dashboardAsync = isPilgrim
+        ? ref.watch(pilgrimDashboardStateProvider)
+        : const AsyncValue.data(null);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -64,28 +69,71 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                   SizedBox(height: 8.h),
                   Text(
-                    isPilgrim ? l10n.homePilgrimWelcome : l10n.profileGuestBody,
+                    isPilgrim
+                        ? l10n.profilePilgrimSubtitle
+                        : l10n.profileGuestBody,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   SizedBox(height: 24.h),
                   if (isPilgrim) ...[
-                    _ProfileTile(
-                      icon: Icons.hiking_rounded,
-                      label: l10n.homeMyHajjJourney,
-                      onTap: () =>
-                          unawaited(context.push(AppRoutes.pilgrimDashboard)),
-                    ),
-                    _ProfileTile(
-                      icon: Icons.emoji_events_outlined,
-                      label: l10n.homeCompetitions,
-                      onTap: () =>
-                          unawaited(context.push(AppRoutes.competitions)),
+                    dashboardAsync.when(
+                      loading: () => const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(24),
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                      error: (error, _) {
+                        if (error is PilgrimAccessDeniedException) {
+                          return Column(
+                            children: [
+                              Text(l10n.pilgrimSignInRequired),
+                              SizedBox(height: 12.h),
+                              FilledButton(
+                                onPressed: () =>
+                                    unawaited(context.push(AppRoutes.login)),
+                                child: Text(l10n.homeSignInAsPilgrim),
+                              ),
+                            ],
+                          );
+                        }
+                        return Text(l10n.pilgrimLoadError);
+                      },
+                      data: (dashboard) {
+                        if (dashboard == null) {
+                          return const SizedBox.shrink();
+                        }
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              l10n.pilgrimProfileTitle,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            SizedBox(height: 8.h),
+                            if (dashboard.registry != null)
+                              PilgrimProfileSections(
+                                pilgrim: dashboard.registry!,
+                              )
+                            else
+                              Card(
+                                child: Padding(
+                                  padding: EdgeInsets.all(16.w),
+                                  child: Text(l10n.pilgrimProfileEmpty),
+                                ),
+                              ),
+                            SizedBox(height: 24.h),
+                          ],
+                        );
+                      },
                     ),
                     _ProfileTile(
                       icon: Icons.logout_rounded,
                       label: l10n.signOut,
-                      onTap: ref.read(signOutControllerProvider.notifier).signOut,
+                      onTap:
+                          ref.read(signOutControllerProvider.notifier).signOut,
                       isDestructive: true,
                     ),
                   ] else ...[

@@ -134,10 +134,10 @@ int pilgrimShellBranchIndex(String location) {
   if (location.startsWith(AppRoutes.tools)) {
     return 1;
   }
-  if (location == AppRoutes.notifications) {
+  if (location == AppRoutes.services) {
     return 2;
   }
-  if (location == AppRoutes.profile || location == AppRoutes.pilgrimDashboard) {
+  if (location == AppRoutes.profile) {
     return 3;
   }
   return 0;

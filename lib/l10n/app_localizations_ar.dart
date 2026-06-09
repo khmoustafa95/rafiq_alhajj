@@ -2054,4 +2054,173 @@ class AppLocalizationsAr extends AppLocalizations {
   String adminSettingsLastUpdated(String date) {
     return 'آخر تحديث $date';
   }
+
+  @override
+  String get profilePilgrimSubtitle =>
+      'بيانات التسجيل التي أدخلها المشغّل عنك.';
+
+  @override
+  String get servicesHeroBadge => 'خدمات الحاج';
+
+  @override
+  String get servicesHeroTitle => 'مسار الخدمات';
+
+  @override
+  String get servicesHeroSubtitle =>
+      'رحلة الحج التعليمية، المسابقات، والإشعارات في مكان واحد.';
+
+  @override
+  String get servicesJourneySubtitle =>
+      'تعلّم مناسك الحج خطوة بخطوة مع وسائط تعليمية.';
+
+  @override
+  String get servicesCompetitionsSubtitle =>
+      'اختبر معلوماتك واجمع النقاط في مسابقات الحج.';
+
+  @override
+  String get servicesNotificationsSubtitle =>
+      'اطّلع على آخر الإشعارات والتنبيهات.';
+
+  @override
+  String get hajjJourneyHeroSubtitle =>
+      'اتبع مساراً تعليمياً لمناسك الحج من الإحرام إلى طواف الوداع.';
+
+  @override
+  String get hajjJourneyPathTitle => 'مسار المناسك';
+
+  @override
+  String get hajjJourneyPathSubtitle =>
+      'أكمل كل نسك لفتح التالي — مثل مسار المسابقة.';
+
+  @override
+  String get hajjJourneyEmpty => 'لا توجد خطوات متاحة حالياً.';
+
+  @override
+  String get hajjJourneyLoadError => 'تعذر تحميل رحلة الحج.';
+
+  @override
+  String get hajjJourneyStepLocked => 'أكمل النسك السابق أولاً لفتح هذا النسك.';
+
+  @override
+  String get hajjJourneyStepNotFound => 'لم يُعثر على هذا النسك.';
+
+  @override
+  String get hajjJourneyContinue => 'تابع نسكك الحالي';
+
+  @override
+  String get hajjJourneyAboutRitual => 'عن هذا النسك';
+
+  @override
+  String get hajjJourneyMediaTitle => 'وسائط تعليمية';
+
+  @override
+  String get hajjJourneyNoMedia => 'لا توجد وسائط لهذا النسك بعد.';
+
+  @override
+  String get hajjJourneyMediaVideo => 'فيديو';
+
+  @override
+  String get hajjJourneyMediaAudio => 'صوت';
+
+  @override
+  String get hajjJourneyMediaImage => 'صورة';
+
+  @override
+  String hajjJourneyImageCounter(int current, int total) {
+    return '$current / $total';
+  }
+
+  @override
+  String get hajjJourneySlideshowStart => 'تشغيل السلايدات';
+
+  @override
+  String get hajjJourneySlideshowStop => 'إيقاف السلايدات';
+
+  @override
+  String get hajjJourneyMarkComplete => 'تم الإنجاز';
+
+  @override
+  String get hajjJourneyAlreadyCompleted => 'مكتمل — العودة للمسار';
+
+  @override
+  String get hajjJourneyCompletedSnack => 'بارك الله فيك! تم إنجاز النسك.';
+
+  @override
+  String get hajjJourneyNextStepTitle => 'النسك التالي';
+
+  @override
+  String get hajjJourneyNextStepBody => 'هل تريد الانتقال إلى النسك التالي؟';
+
+  @override
+  String get hajjJourneyStayHere => 'البقاء هنا';
+
+  @override
+  String get hajjJourneyGoNext => 'النسك التالي';
+
+  @override
+  String get adminManageHajjJourney => 'إدارة رحلة الحج';
+
+  @override
+  String get adminHajjJourneyTitle => 'رحلة الحج';
+
+  @override
+  String get adminHajjJourneyLoadError => 'تعذر تحميل خطوات رحلة الحج.';
+
+  @override
+  String get adminHajjJourneyEmpty =>
+      'لا توجد خطوات بعد. طبّق ترحيل قاعدة البيانات.';
+
+  @override
+  String adminHajjJourneyMediaCount(int count) {
+    return '$count وسائط';
+  }
+
+  @override
+  String get adminHajjJourneyInactive => 'غير نشط';
+
+  @override
+  String get adminHajjJourneyEditTitle => 'تحرير النسك';
+
+  @override
+  String get adminHajjJourneyTitleAr => 'العنوان (عربي)';
+
+  @override
+  String get adminHajjJourneyTitleEn => 'العنوان (إنجليزي)';
+
+  @override
+  String get adminHajjJourneyDescriptionAr => 'الشرح (عربي)';
+
+  @override
+  String get adminHajjJourneyDescriptionEn => 'الشرح (إنجليزي)';
+
+  @override
+  String get adminHajjJourneySortOrder => 'ترتيب العرض';
+
+  @override
+  String get adminHajjJourneyActive => 'نشط';
+
+  @override
+  String get adminHajjJourneyMediaSection => 'الوسائط التعليمية';
+
+  @override
+  String get adminHajjJourneyMediaType => 'نوع الوسائط';
+
+  @override
+  String get adminHajjJourneyMediaTitle => 'عنوان الوسائط';
+
+  @override
+  String get adminHajjJourneyMediaUrl => 'رابط الوسائط';
+
+  @override
+  String get adminHajjJourneyRemoveMedia => 'إزالة';
+
+  @override
+  String get adminHajjJourneyTitleRequired =>
+      'العنوان بالعربية والإنجليزية مطلوب.';
+
+  @override
+  String get adminHajjJourneySaveSuccess => 'تم حفظ النسك.';
+
+  @override
+  String get adminHajjJourneySaveError => 'تعذر حفظ النسك.';
 }
