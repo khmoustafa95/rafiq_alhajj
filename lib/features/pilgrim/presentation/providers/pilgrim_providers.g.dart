@@ -219,7 +219,7 @@ final class PilgrimDashboardStateProvider
 }
 
 String _$pilgrimDashboardStateHash() =>
-    r'c20e0fcd0abbe9a983d056acb0fec387f96c381f';
+    r'c5c7b037a0646cbac514cd88ba2fa1c7bac2d5a7';
 
 abstract class _$PilgrimDashboardState
     extends $AsyncNotifier<PilgrimDashboard> {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Keys for shared Supabase realtime subscription groups.
@@ -35,7 +37,8 @@ abstract final class RealtimeInvalidationRegistry {
       return;
     }
     for (final handler in handlers) {
-      handler(ref);
+      // Defer so invalidation never runs during the provider build that registered.
+      scheduleMicrotask(() => handler(ref));
     }
   }
 }

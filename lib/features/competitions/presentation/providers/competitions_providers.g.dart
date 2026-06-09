@@ -106,6 +106,109 @@ final class AdminCompetitionsRepositoryProvider
 String _$adminCompetitionsRepositoryHash() =>
     r'baf4f83306a901e2a31e2e4af6ab47974d259ec8';
 
+@ProviderFor(competitionQuestionsRepository)
+final competitionQuestionsRepositoryProvider =
+    CompetitionQuestionsRepositoryProvider._();
+
+final class CompetitionQuestionsRepositoryProvider
+    extends
+        $FunctionalProvider<
+          CompetitionQuestionsRepository,
+          CompetitionQuestionsRepository,
+          CompetitionQuestionsRepository
+        >
+    with $Provider<CompetitionQuestionsRepository> {
+  CompetitionQuestionsRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'competitionQuestionsRepositoryProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$competitionQuestionsRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<CompetitionQuestionsRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  CompetitionQuestionsRepository create(Ref ref) {
+    return competitionQuestionsRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(CompetitionQuestionsRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<CompetitionQuestionsRepository>(
+        value,
+      ),
+    );
+  }
+}
+
+String _$competitionQuestionsRepositoryHash() =>
+    r'20e7dd36f2d3e1a633f3438057108b34c0e12d2f';
+
+@ProviderFor(adminCompetitionQuestionsRepository)
+final adminCompetitionQuestionsRepositoryProvider =
+    AdminCompetitionQuestionsRepositoryProvider._();
+
+final class AdminCompetitionQuestionsRepositoryProvider
+    extends
+        $FunctionalProvider<
+          AdminCompetitionQuestionsRepository,
+          AdminCompetitionQuestionsRepository,
+          AdminCompetitionQuestionsRepository
+        >
+    with $Provider<AdminCompetitionQuestionsRepository> {
+  AdminCompetitionQuestionsRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'adminCompetitionQuestionsRepositoryProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() =>
+      _$adminCompetitionQuestionsRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<AdminCompetitionQuestionsRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  AdminCompetitionQuestionsRepository create(Ref ref) {
+    return adminCompetitionQuestionsRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AdminCompetitionQuestionsRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AdminCompetitionQuestionsRepository>(
+        value,
+      ),
+    );
+  }
+}
+
+String _$adminCompetitionQuestionsRepositoryHash() =>
+    r'281005ecb127c5b563525d093951eff3ce4caded';
+
 @ProviderFor(activeCompetitions)
 final activeCompetitionsProvider = ActiveCompetitionsProvider._();
 
@@ -146,7 +249,7 @@ final class ActiveCompetitionsProvider
 }
 
 String _$activeCompetitionsHash() =>
-    r'43bd9bd609a66c3c539c84cc7313c6ee4467dce3';
+    r'5fee5ee9ac4f0260751c25f63700cefc84a762f9';
 
 @ProviderFor(CompetitionDetail)
 final competitionDetailProvider = CompetitionDetailFamily._();
@@ -189,7 +292,7 @@ final class CompetitionDetailProvider
   }
 }
 
-String _$competitionDetailHash() => r'e2f05237555391848b678c3bf2595d6c8c8b0b64';
+String _$competitionDetailHash() => r'fdb7cbda7e320a647852e9a89de3ba8ee8ae84d0';
 
 final class CompetitionDetailFamily extends $Family
     with
@@ -246,6 +349,315 @@ abstract class _$CompetitionDetail
   }
 }
 
+@ProviderFor(competitionQuizProgress)
+final competitionQuizProgressProvider = CompetitionQuizProgressFamily._();
+
+final class CompetitionQuizProgressProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<CompetitionQuizProgress>,
+          CompetitionQuizProgress,
+          FutureOr<CompetitionQuizProgress>
+        >
+    with
+        $FutureModifier<CompetitionQuizProgress>,
+        $FutureProvider<CompetitionQuizProgress> {
+  CompetitionQuizProgressProvider._({
+    required CompetitionQuizProgressFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'competitionQuizProgressProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$competitionQuizProgressHash();
+
+  @override
+  String toString() {
+    return r'competitionQuizProgressProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<CompetitionQuizProgress> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<CompetitionQuizProgress> create(Ref ref) {
+    final argument = this.argument as String;
+    return competitionQuizProgress(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CompetitionQuizProgressProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$competitionQuizProgressHash() =>
+    r'd8c60ebde3d369f175e28dec14f594d06e0c0441';
+
+final class CompetitionQuizProgressFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<CompetitionQuizProgress>, String> {
+  CompetitionQuizProgressFamily._()
+    : super(
+        retry: null,
+        name: r'competitionQuizProgressProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  CompetitionQuizProgressProvider call(String competitionId) =>
+      CompetitionQuizProgressProvider._(argument: competitionId, from: this);
+
+  @override
+  String toString() => r'competitionQuizProgressProvider';
+}
+
+@ProviderFor(CompetitionQuizSubmit)
+final competitionQuizSubmitProvider = CompetitionQuizSubmitProvider._();
+
+final class CompetitionQuizSubmitProvider
+    extends
+        $AsyncNotifierProvider<
+          CompetitionQuizSubmit,
+          CompetitionAnswerResult?
+        > {
+  CompetitionQuizSubmitProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'competitionQuizSubmitProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$competitionQuizSubmitHash();
+
+  @$internal
+  @override
+  CompetitionQuizSubmit create() => CompetitionQuizSubmit();
+}
+
+String _$competitionQuizSubmitHash() =>
+    r'de24b8d283e7f5f637eb137469a4a13fac8426b7';
+
+abstract class _$CompetitionQuizSubmit
+    extends $AsyncNotifier<CompetitionAnswerResult?> {
+  FutureOr<CompetitionAnswerResult?> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<CompetitionAnswerResult?>,
+              CompetitionAnswerResult?
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<CompetitionAnswerResult?>,
+                CompetitionAnswerResult?
+              >,
+              AsyncValue<CompetitionAnswerResult?>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
+@ProviderFor(adminCompetitionQuestions)
+final adminCompetitionQuestionsProvider = AdminCompetitionQuestionsFamily._();
+
+final class AdminCompetitionQuestionsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<CompetitionQuestion>>,
+          List<CompetitionQuestion>,
+          FutureOr<List<CompetitionQuestion>>
+        >
+    with
+        $FutureModifier<List<CompetitionQuestion>>,
+        $FutureProvider<List<CompetitionQuestion>> {
+  AdminCompetitionQuestionsProvider._({
+    required AdminCompetitionQuestionsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'adminCompetitionQuestionsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$adminCompetitionQuestionsHash();
+
+  @override
+  String toString() {
+    return r'adminCompetitionQuestionsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<CompetitionQuestion>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<CompetitionQuestion>> create(Ref ref) {
+    final argument = this.argument as String;
+    return adminCompetitionQuestions(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is AdminCompetitionQuestionsProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$adminCompetitionQuestionsHash() =>
+    r'44cea754e6e60dddbc3a1074dd5bae84d0047db1';
+
+final class AdminCompetitionQuestionsFamily extends $Family
+    with
+        $FunctionalFamilyOverride<FutureOr<List<CompetitionQuestion>>, String> {
+  AdminCompetitionQuestionsFamily._()
+    : super(
+        retry: null,
+        name: r'adminCompetitionQuestionsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  AdminCompetitionQuestionsProvider call(String competitionId) =>
+      AdminCompetitionQuestionsProvider._(argument: competitionId, from: this);
+
+  @override
+  String toString() => r'adminCompetitionQuestionsProvider';
+}
+
+@ProviderFor(AdminCompetitionQuestionSave)
+final adminCompetitionQuestionSaveProvider =
+    AdminCompetitionQuestionSaveProvider._();
+
+final class AdminCompetitionQuestionSaveProvider
+    extends $AsyncNotifierProvider<AdminCompetitionQuestionSave, void> {
+  AdminCompetitionQuestionSaveProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'adminCompetitionQuestionSaveProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$adminCompetitionQuestionSaveHash();
+
+  @$internal
+  @override
+  AdminCompetitionQuestionSave create() => AdminCompetitionQuestionSave();
+}
+
+String _$adminCompetitionQuestionSaveHash() =>
+    r'021a1a07f08dca070b4cb89fb76fb236eebf730b';
+
+abstract class _$AdminCompetitionQuestionSave extends $AsyncNotifier<void> {
+  FutureOr<void> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<void>, void>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<void>, void>,
+              AsyncValue<void>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
+@ProviderFor(AdminCompetitionQuestionDelete)
+final adminCompetitionQuestionDeleteProvider =
+    AdminCompetitionQuestionDeleteProvider._();
+
+final class AdminCompetitionQuestionDeleteProvider
+    extends $AsyncNotifierProvider<AdminCompetitionQuestionDelete, void> {
+  AdminCompetitionQuestionDeleteProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'adminCompetitionQuestionDeleteProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$adminCompetitionQuestionDeleteHash();
+
+  @$internal
+  @override
+  AdminCompetitionQuestionDelete create() => AdminCompetitionQuestionDelete();
+}
+
+String _$adminCompetitionQuestionDeleteHash() =>
+    r'a29a570726b92cd221aeab73fc2acc94b97268e2';
+
+abstract class _$AdminCompetitionQuestionDelete extends $AsyncNotifier<void> {
+  FutureOr<void> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<void>, void>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<void>, void>,
+              AsyncValue<void>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(AdminCompetitionList)
 final adminCompetitionListProvider = AdminCompetitionListProvider._();
 
@@ -271,7 +683,7 @@ final class AdminCompetitionListProvider
 }
 
 String _$adminCompetitionListHash() =>
-    r'dc2f1753ad15ecd7829f4b9fb6f6273b0007e9fb';
+    r'3e47255891ba03f0c445f450fbf986c40e20211a';
 
 abstract class _$AdminCompetitionList
     extends $AsyncNotifier<List<Competition>> {

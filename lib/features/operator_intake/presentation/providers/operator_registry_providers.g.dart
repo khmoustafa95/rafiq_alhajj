@@ -207,7 +207,7 @@ final class OperatorPilgrimRegistryPageProvider
 }
 
 String _$operatorPilgrimRegistryPageHash() =>
-    r'c85697405fccf0c2988edf123aef05f96a800a64';
+    r'2cce82f276a86be628d7167b5804763bdbf35ff9';
 
 final class OperatorPilgrimRegistryPageFamily extends $Family
     with
@@ -274,7 +274,7 @@ final class OperatorPilgrimDetailProvider
 }
 
 String _$operatorPilgrimDetailHash() =>
-    r'93a55f3913940144a9c826371dc5fd846da227e1';
+    r'f5e415961ec3ef4b376bb5f9382adec2d6d9b8ae';
 
 final class OperatorPilgrimDetailFamily extends $Family
     with

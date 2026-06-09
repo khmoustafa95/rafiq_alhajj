@@ -24,7 +24,7 @@
 | Admin group management | ✅ Web `/admin/groups` CRUD + members + logo upload (needs migration apply) |
 | Admin system settings | ✅ Web `/admin/settings` global config (needs migration apply) |
 | Operator pilgrim registry (US-09) | ✅ Web `/operator/pilgrims` list + logistics edit |
-| Competitions (US-10) | ✅ Pilgrim join/leaderboard + admin CRUD |
+| Competitions (US-10) | ✅ Quizzes: admin questions + pilgrim play + RPC scoring |
 | Dev one-command scripts | ✅ `npm run dev` / `scripts/*.ps1` |
 | Android build stability | ✅ Gradle AGP + JVM tuning (re-verify APK on your machine) |
 | Crash reporting hook | ✅ `CrashReporter` + `CRASH_REPORTING_ENABLED` dart-define |
@@ -184,6 +184,9 @@
 - Created Notion page **Rafiq Al-Hajj — Flutter Dev Status (Cursor sync)** under project workspace (team-visible snapshot of memory-bank).
 
 ### 2026-06-09
+- **Ordering questions:** `ordering` enum value, `submit_competition_ordering_answer` RPC, drag-reorder quiz UI + admin step editor, demo seed question.
+- **Competition quizzes UI:** Duolingo-style learning path, responsive list/detail/quiz screens, segmented quiz progress, option cards, feedback banner, gradient headers.
+- **Competition quizzes MVP:** `competition_questions` / options / attempts tables, `submit_competition_answer` RPC, admin question editor on competition edit, pilgrim `CompetitionQuizScreen`, demo seed questions.
 - Replaced deprecated `dart:html` in `agent_debug_log_web.dart` with `package:web` fetch + `dart:js_interop`; added direct `web` dependency.
 
 ### 2026-05-19

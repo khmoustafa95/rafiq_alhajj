@@ -499,9 +499,50 @@
   "@competitionYourScore": {
     "placeholders": {"score": {"type": "int"}}
   },
-  "competitionRecordProgress": "Record progress (+10)",
-  "competitionProgressRecorded": "Progress recorded.",
-  "competitionProgressError": "Could not update score.",
+  "competitionAnswerTrue": "True",
+  "competitionAnswerFalse": "False",
+  "competitionQuizTitle": "Quiz",
+  "competitionQuizLoadError": "Could not load quiz questions.",
+  "competitionQuizNoQuestions": "No questions have been added to this competition yet.",
+  "competitionQuizProgress": "{answered} of {total} questions answered",
+  "@competitionQuizProgress": {
+    "placeholders": {
+      "answered": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "competitionQuizStart": "Start quiz",
+  "competitionQuizContinue": "Continue quiz",
+  "competitionQuizReview": "Review answers",
+  "competitionQuizSubmit": "Check answer",
+  "competitionQuizSubmitError": "Could not submit your answer. Try again.",
+  "competitionQuizCorrect": "Correct! +{points} points",
+  "@competitionQuizCorrect": {
+    "placeholders": {"points": {"type": "int"}}
+  },
+  "competitionQuizIncorrect": "Not quite — review the explanation below.",
+  "competitionQuizComplete": "Lesson complete!",
+  "competitionQuizCompleteSummary": "You answered {count} questions in this competition.",
+  "@competitionQuizCompleteSummary": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "competitionQuizDone": "Back to competition",
+  "competitionQuizQuestionBadge": "Question {current} of {total}",
+  "@competitionQuizQuestionBadge": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "competitionPathTitle": "Learning path",
+  "competitionPathSubtitle": "Complete each lesson in order to earn points.",
+  "competitionLessonLocked": "Complete the previous lesson first.",
+  "competitionLearnBadge": "Interactive learning",
+  "competitionLearnHeroTitle": "Learn Hajj rituals playfully",
+  "competitionLearnHeroSubtitle": "Answer questions, track your progress, and climb the leaderboard.",
+  "competitionStatusOpen": "Open now",
+  "competitionStatusUpcoming": "Coming soon",
+  "competitionJoinPrompt": "Join this competition to start earning points.",
   "competitionLeaderboard": "Leaderboard",
   "competitionLeaderboardEmpty": "No participants yet.",
   "competitionAnonymous": "Pilgrim",
@@ -531,6 +572,52 @@
   "adminCompetitionDeleteConfirm": "Delete",
   "adminCompetitionDeleteSuccess": "Competition deleted.",
   "adminCompetitionDeleteError": "Could not delete competition.",
+  "adminCompetitionQuestionsTitle": "Questions",
+  "adminCompetitionQuestionAdd": "Add question",
+  "adminCompetitionQuestionsEmpty": "No questions yet. Add multiple-choice or true/false questions.",
+  "adminCompetitionQuestionsLoadError": "Could not load questions.",
+  "adminCompetitionQuestionNewTitle": "New question",
+  "adminCompetitionQuestionEditTitle": "Edit question",
+  "adminCompetitionQuestionTypeLabel": "Question type",
+  "adminCompetitionQuestionTypeMultipleChoice": "Multiple choice",
+  "adminCompetitionQuestionTypeTrueFalse": "True or false",
+  "adminCompetitionQuestionTypeOrdering": "Order the steps",
+  "adminCompetitionQuestionOrderingStepsLabel": "Steps (top = first)",
+  "adminCompetitionQuestionOrderingStepsHint": "Drag to set the correct order pilgrims should follow.",
+  "adminCompetitionQuestionStepLabel": "Step {number}",
+  "@adminCompetitionQuestionStepLabel": {
+    "placeholders": {"number": {"type": "int"}}
+  },
+  "adminCompetitionQuestionAddStep": "Add step",
+  "competitionOrderingHint": "Drag the cards into the correct order.",
+  "competitionQuizOrderingBadge": "Order · {current}/{total}",
+  "@competitionQuizOrderingBadge": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "adminCompetitionQuestionPromptLabel": "Question",
+  "adminCompetitionQuestionPromptRequired": "Question text is required.",
+  "adminCompetitionQuestionExplanationLabel": "Explanation (shown after answering)",
+  "adminCompetitionQuestionPointsLabel": "Points for correct answer",
+  "adminCompetitionQuestionPointsInvalid": "Enter a positive number of points.",
+  "adminCompetitionQuestionPoints": "{points} pts",
+  "@adminCompetitionQuestionPoints": {
+    "placeholders": {"points": {"type": "int"}}
+  },
+  "adminCompetitionQuestionOptionsLabel": "Answer options",
+  "adminCompetitionQuestionOptionLabel": "Option {number}",
+  "@adminCompetitionQuestionOptionLabel": {
+    "placeholders": {"number": {"type": "int"}}
+  },
+  "adminCompetitionQuestionOptionRequired": "Option text is required.",
+  "adminCompetitionQuestionSaveError": "Could not save question.",
+  "adminCompetitionQuestionDeleteTitle": "Delete question?",
+  "adminCompetitionQuestionDeleteMessage": "This question and its answers will be removed.",
+  "adminCompetitionQuestionDeleteConfirm": "Delete",
+  "adminCompetitionQuestionDeleteSuccess": "Question deleted.",
+  "adminCompetitionQuestionDeleteError": "Could not delete question.",
   "notificationsTitle": "Notifications",
   "notificationsOpenInbox": "Notifications",
   "notificationsEmpty": "No notifications yet.",

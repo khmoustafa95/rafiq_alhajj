@@ -3,29 +3,27 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
-**Pilgrim registry table** — full column set + user-controlled column visibility persisted across sessions.
+**Competition ordering questions** — drag-to-order steps with server-side validation.
 
-## Recent changes (2026-06-09)
-- **Web telemetry:** `agent_debug_log_web.dart` migrated from deprecated `dart:html` to `package:web` + `dart:js_interop` (`fetch` API).
+## Recent changes (2026-06-09, late)
+- **`ordering` question type:** migration `20260609200000_competition_ordering_questions.sql`, RPC `submit_competition_ordering_answer`, pilgrim `CompetitionQuizOrderingList`, admin reorderable step editor.
 
-## Recent changes (2026-06-08, pm)
-- **Realtime invalidation loop fix:** `keepAlive` sync providers in `realtime_sync_providers.dart` + `attachRealtimeSync()` — subscriptions no longer torn down on each list refetch. Skip initial Supabase stream snapshot in `realtime_refresh.dart`.
-- **Table loading flicker:** Removed bottom `LinearProgressIndicator` on staff tables; loading UI only on first fetch (`!hasValue`), not on realtime refetches.
-- **Rebuild debug:** `REBUILD_DEBUG_LOG=true` dart-define enables `RiverpodDebugObserver` + targeted NDJSON logs.
-
-## Recent changes (2026-06-08)
-- **Pilgrim table columns:** Added travel permit, medical test, and hotel columns; server-side sort for new columns in `operator_registry_repository`.
-- **Column visibility:** `StaffTableColumnVisibilityStorage` + column picker dialog; `pilgrimTableColumnVisibilityProvider` persists hidden column ids via `SharedPreferences` (works on web and mobile).
-- **UI:** "Columns" toolbar button on pilgrim list opens checkbox dialog; full name column always visible.
+## Recent changes (2026-06-09, pm)
+- **Visual learning path:** Zigzag lesson nodes (`CompetitionLearningPath`, `CompetitionLessonNode`, `CompetitionPathConnector`) with completed / current / locked states.
+- **List screen:** Hero banner + responsive 1–2 column grid cards (`CompetitionListCard`).
+- **Detail screen:** Gradient progress header with ring, path map, polished leaderboard, join CTA card.
+- **Quiz screen:** Segmented top progress, option cards A–D, animated feedback bottom banner, completion celebration.
+- **Shared:** `CompetitionPageConstraint` (max 720–960px) for tablet/web.
 
 ## Next steps
-1. Hot restart — hide columns, close app, reopen — confirm preferences persist.
-2. Optional: horizontal scroll if many columns visible on narrow viewports; reuse column visibility on other staff tables.
+1. Hot restart — verify list, detail path, and quiz flow on phone + wide web viewport.
+2. Optional: streak badge, lesson titles on path nodes, confetti animation on quiz complete.
+3. Apply migration if not yet: `supabase db reset` or `migration up`.
 
 ## Key paths
 | Concern | Location |
 |---------|----------|
-| Column visibility | `lib/core/widgets/staff_table_column_visibility.dart` |
-| Pilgrim prefs provider | `lib/features/operator_intake/presentation/providers/pilgrim_table_column_visibility_provider.dart` |
-| Pilgrim list screen | `lib/features/operator_intake/presentation/widgets/operator_pilgrim_list_screen.dart` |
-| Staff table | `lib/core/widgets/staff_data_table.dart` |
+| Learning path | `lib/features/competitions/presentation/widgets/competition_learning_path.dart` |
+| Quiz UX | `lib/features/competitions/presentation/widgets/competition_quiz_screen.dart` |
+| Detail UI | `lib/features/competitions/presentation/widgets/competition_detail_screen.dart` |
+| List UI | `lib/features/competitions/presentation/widgets/competitions_list_screen.dart` |

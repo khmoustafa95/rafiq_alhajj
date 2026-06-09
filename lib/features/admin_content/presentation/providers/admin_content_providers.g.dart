@@ -163,7 +163,7 @@ final class AdminContentListPageProvider
 }
 
 String _$adminContentListPageHash() =>
-    r'61063269d27cb2ac3480363909799fcecb1aa98d';
+    r'58a83e11ea9d056466f8065774a9cbecf0bfdb8f';
 
 final class AdminContentListPageFamily extends $Family
     with
@@ -243,7 +243,7 @@ final class AdminContentDetailProvider
 }
 
 String _$adminContentDetailHash() =>
-    r'0b9f5fcb911386b27e5b87689fed22e271f32626';
+    r'50e28d17bf99a38eb7f524ac69e882a71f05bf74';
 
 final class AdminContentDetailFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ContentItem?>, String> {

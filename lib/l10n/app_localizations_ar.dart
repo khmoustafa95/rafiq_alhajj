@@ -1012,13 +1012,92 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get competitionRecordProgress => 'تسجيل تقدم (+10)';
+  String get competitionAnswerTrue => 'صح';
 
   @override
-  String get competitionProgressRecorded => 'تم تسجيل التقدم.';
+  String get competitionAnswerFalse => 'خطأ';
 
   @override
-  String get competitionProgressError => 'تعذر تحديث النقاط.';
+  String get competitionQuizTitle => 'الاختبار';
+
+  @override
+  String get competitionQuizLoadError => 'تعذر تحميل أسئلة الاختبار.';
+
+  @override
+  String get competitionQuizNoQuestions => 'لم تُضف أسئلة لهذه المسابقة بعد.';
+
+  @override
+  String competitionQuizProgress(int answered, int total) {
+    return '$answered من $total أسئلة';
+  }
+
+  @override
+  String get competitionQuizStart => 'ابدأ الاختبار';
+
+  @override
+  String get competitionQuizContinue => 'تابع الاختبار';
+
+  @override
+  String get competitionQuizReview => 'مراجعة الإجابات';
+
+  @override
+  String get competitionQuizSubmit => 'تحقق من الإجابة';
+
+  @override
+  String get competitionQuizSubmitError => 'تعذر إرسال إجابتك. أعد المحاولة.';
+
+  @override
+  String competitionQuizCorrect(int points) {
+    return 'إجابة صحيحة! +$points نقطة';
+  }
+
+  @override
+  String get competitionQuizIncorrect =>
+      'ليست الإجابة الصحيحة — راجع الشرح أدناه.';
+
+  @override
+  String get competitionQuizComplete => 'أكملت الدرس!';
+
+  @override
+  String competitionQuizCompleteSummary(int count) {
+    return 'أجبت على $count أسئلة في هذه المسابقة.';
+  }
+
+  @override
+  String get competitionQuizDone => 'العودة للمسابقة';
+
+  @override
+  String competitionQuizQuestionBadge(int current, int total) {
+    return 'السؤال $current من $total';
+  }
+
+  @override
+  String get competitionPathTitle => 'مسار التعلّم';
+
+  @override
+  String get competitionPathSubtitle => 'أكمل كل درس بالترتيب لكسب النقاط.';
+
+  @override
+  String get competitionLessonLocked => 'أكمل الدرس السابق أولاً.';
+
+  @override
+  String get competitionLearnBadge => 'تعلّم تفاعلي';
+
+  @override
+  String get competitionLearnHeroTitle => 'تعلّم مناسك الحج بطريقة ممتعة';
+
+  @override
+  String get competitionLearnHeroSubtitle =>
+      'أجب على الأسئلة، تابع تقدمك، وتنافس على لوحة المتصدرين.';
+
+  @override
+  String get competitionStatusOpen => 'مفتوحة الآن';
+
+  @override
+  String get competitionStatusUpcoming => 'قريباً';
+
+  @override
+  String get competitionJoinPrompt => 'انضم لهذه المسابقة لبدء كسب النقاط.';
 
   @override
   String get competitionLeaderboard => 'لوحة المتصدرين';
@@ -1092,6 +1171,113 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminCompetitionDeleteError => 'تعذر حذف المسابقة.';
+
+  @override
+  String get adminCompetitionQuestionsTitle => 'الأسئلة';
+
+  @override
+  String get adminCompetitionQuestionAdd => 'إضافة سؤال';
+
+  @override
+  String get adminCompetitionQuestionsEmpty =>
+      'لا توجد أسئلة بعد. أضف أسئلة اختيار من متعدد أو صح/خطأ.';
+
+  @override
+  String get adminCompetitionQuestionsLoadError => 'تعذر تحميل الأسئلة.';
+
+  @override
+  String get adminCompetitionQuestionNewTitle => 'سؤال جديد';
+
+  @override
+  String get adminCompetitionQuestionEditTitle => 'تعديل السؤال';
+
+  @override
+  String get adminCompetitionQuestionTypeLabel => 'نوع السؤال';
+
+  @override
+  String get adminCompetitionQuestionTypeMultipleChoice => 'اختيار من متعدد';
+
+  @override
+  String get adminCompetitionQuestionTypeTrueFalse => 'صح أو خطأ';
+
+  @override
+  String get adminCompetitionQuestionTypeOrdering => 'ترتيب الخطوات';
+
+  @override
+  String get adminCompetitionQuestionOrderingStepsLabel =>
+      'الخطوات (الأعلى = الأولى)';
+
+  @override
+  String get adminCompetitionQuestionOrderingStepsHint =>
+      'اسحب لتحديد الترتيب الصحيح الذي يجب على الحاج اتباعه.';
+
+  @override
+  String adminCompetitionQuestionStepLabel(int number) {
+    return 'الخطوة $number';
+  }
+
+  @override
+  String get adminCompetitionQuestionAddStep => 'إضافة خطوة';
+
+  @override
+  String get competitionOrderingHint => 'اسحب البطاقات إلى الترتيب الصحيح.';
+
+  @override
+  String competitionQuizOrderingBadge(int current, int total) {
+    return 'ترتيب · $current/$total';
+  }
+
+  @override
+  String get adminCompetitionQuestionPromptLabel => 'نص السؤال';
+
+  @override
+  String get adminCompetitionQuestionPromptRequired => 'نص السؤال مطلوب.';
+
+  @override
+  String get adminCompetitionQuestionExplanationLabel =>
+      'شرح (يُعرض بعد الإجابة)';
+
+  @override
+  String get adminCompetitionQuestionPointsLabel => 'نقاط الإجابة الصحيحة';
+
+  @override
+  String get adminCompetitionQuestionPointsInvalid =>
+      'أدخل عدداً موجباً للنقاط.';
+
+  @override
+  String adminCompetitionQuestionPoints(int points) {
+    return '$points نقطة';
+  }
+
+  @override
+  String get adminCompetitionQuestionOptionsLabel => 'خيارات الإجابة';
+
+  @override
+  String adminCompetitionQuestionOptionLabel(int number) {
+    return 'الخيار $number';
+  }
+
+  @override
+  String get adminCompetitionQuestionOptionRequired => 'نص الخيار مطلوب.';
+
+  @override
+  String get adminCompetitionQuestionSaveError => 'تعذر حفظ السؤال.';
+
+  @override
+  String get adminCompetitionQuestionDeleteTitle => 'حذف السؤال؟';
+
+  @override
+  String get adminCompetitionQuestionDeleteMessage =>
+      'سيُحذف هذا السؤال وإجاباته.';
+
+  @override
+  String get adminCompetitionQuestionDeleteConfirm => 'حذف';
+
+  @override
+  String get adminCompetitionQuestionDeleteSuccess => 'تم حذف السؤال.';
+
+  @override
+  String get adminCompetitionQuestionDeleteError => 'تعذر حذف السؤال.';
 
   @override
   String get notificationsTitle => 'الإشعارات';

@@ -9,6 +9,7 @@ import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition_editor_input.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/providers/competitions_providers.dart';
+import 'package:rafiq_alhajj/features/competitions/presentation/widgets/admin_competition_questions_panel.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 class AdminCompetitionEditScreen extends ConsumerStatefulWidget {
@@ -177,55 +178,68 @@ class _AdminCompetitionEditScreenState
   Widget _buildForm(AppLocalizations l10n, bool isSaving) {
     final form = Form(
       key: _formKey,
-      child: StaffFormSection(
-        icon: Icons.emoji_events_outlined,
-        title: l10n.adminCompetitionsTitle,
-        child: ResponsiveFormGrid(
-          children: [
-            TextFormField(
-              controller: _titleController,
-              enabled: !isSaving,
-              decoration: InputDecoration(labelText: l10n.adminContentTitleLabel),
-              validator: (v) =>
-                  v == null || v.trim().isEmpty ? l10n.adminContentTitleRequired : null,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          StaffFormSection(
+            icon: Icons.emoji_events_outlined,
+            title: l10n.adminCompetitionsTitle,
+            child: ResponsiveFormGrid(
+              children: [
+                TextFormField(
+                  controller: _titleController,
+                  enabled: !isSaving,
+                  decoration:
+                      InputDecoration(labelText: l10n.adminContentTitleLabel),
+                  validator: (v) => v == null || v.trim().isEmpty
+                      ? l10n.adminContentTitleRequired
+                      : null,
+                ),
+                TextFormField(
+                  controller: _descriptionController,
+                  enabled: !isSaving,
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    labelText: l10n.adminContentDescriptionLabel,
+                  ),
+                ),
+                StaffDateFormField(
+                  label: l10n.adminCompetitionStartsAt,
+                  value: _startsAt,
+                  onPick: isSaving ? null : () => _pickDate(isStart: true),
+                  enabled: !isSaving,
+                ),
+                StaffDateFormField(
+                  label: l10n.adminCompetitionEndsAt,
+                  value: _endsAt,
+                  onPick: isSaving ? null : () => _pickDate(isStart: false),
+                  enabled: !isSaving,
+                ),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(l10n.adminCompetitionActive),
+                  value: _isActive,
+                  onChanged: isSaving
+                      ? null
+                      : (value) => setState(() => _isActive = value),
+                ),
+              ],
             ),
-            TextFormField(
-              controller: _descriptionController,
-              enabled: !isSaving,
-              maxLines: 4,
-              decoration: InputDecoration(
-                labelText: l10n.adminContentDescriptionLabel,
-              ),
-            ),
-            StaffDateFormField(
-              label: l10n.adminCompetitionStartsAt,
-              value: _startsAt,
-              onPick: isSaving ? null : () => _pickDate(isStart: true),
-              enabled: !isSaving,
-            ),
-            StaffDateFormField(
-              label: l10n.adminCompetitionEndsAt,
-              value: _endsAt,
-              onPick: isSaving ? null : () => _pickDate(isStart: false),
-              enabled: !isSaving,
-            ),
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(l10n.adminCompetitionActive),
-              value: _isActive,
-              onChanged: isSaving
-                  ? null
-                  : (value) => setState(() => _isActive = value),
+          ),
+          if (_isEditing && widget.competitionId != null) ...[
+            SizedBox(height: 16.h),
+            AdminCompetitionQuestionsPanel(
+              competitionId: widget.competitionId!,
             ),
           ],
-        ),
+        ],
       ),
     );
 
     return StaffAdaptivePage(
       web: StaffWebPage(
         title: _pageTitle(l10n),
-        body: form,
+        body: SingleChildScrollView(child: form),
         bottomBar: StaffFormActionsBar(
           primaryLabel: l10n.adminContentSave,
           onPrimary: _submit,

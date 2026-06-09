@@ -15,11 +15,14 @@ abstract final class AppRoutes {
   static const String virtualTour = '/tools/virtual-tour';
   static const String competitions = '/competitions';
   static const String competitionDetail = '/competitions/:id';
+  static const String competitionQuiz = '/competitions/:id/quiz';
   static const String adminCompetitions = '/admin/competitions';
   static const String adminCompetitionNew = '/admin/competitions/new';
   static const String adminCompetitionEdit = '/admin/competitions/:id/edit';
 
   static String competitionDetailPath(String id) => '/competitions/$id';
+
+  static String competitionQuizPath(String id) => '/competitions/$id/quiz';
 
   static String adminCompetitionEditPath(String id) =>
       '/admin/competitions/$id/edit';

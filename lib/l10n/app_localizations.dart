@@ -1963,23 +1963,161 @@ abstract class AppLocalizations {
   /// **'Your score: {score} points'**
   String competitionYourScore(int score);
 
-  /// No description provided for @competitionRecordProgress.
+  /// No description provided for @competitionAnswerTrue.
   ///
   /// In en, this message translates to:
-  /// **'Record progress (+10)'**
-  String get competitionRecordProgress;
+  /// **'True'**
+  String get competitionAnswerTrue;
 
-  /// No description provided for @competitionProgressRecorded.
+  /// No description provided for @competitionAnswerFalse.
   ///
   /// In en, this message translates to:
-  /// **'Progress recorded.'**
-  String get competitionProgressRecorded;
+  /// **'False'**
+  String get competitionAnswerFalse;
 
-  /// No description provided for @competitionProgressError.
+  /// No description provided for @competitionQuizTitle.
   ///
   /// In en, this message translates to:
-  /// **'Could not update score.'**
-  String get competitionProgressError;
+  /// **'Quiz'**
+  String get competitionQuizTitle;
+
+  /// No description provided for @competitionQuizLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load quiz questions.'**
+  String get competitionQuizLoadError;
+
+  /// No description provided for @competitionQuizNoQuestions.
+  ///
+  /// In en, this message translates to:
+  /// **'No questions have been added to this competition yet.'**
+  String get competitionQuizNoQuestions;
+
+  /// No description provided for @competitionQuizProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{answered} of {total} questions answered'**
+  String competitionQuizProgress(int answered, int total);
+
+  /// No description provided for @competitionQuizStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start quiz'**
+  String get competitionQuizStart;
+
+  /// No description provided for @competitionQuizContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue quiz'**
+  String get competitionQuizContinue;
+
+  /// No description provided for @competitionQuizReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Review answers'**
+  String get competitionQuizReview;
+
+  /// No description provided for @competitionQuizSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Check answer'**
+  String get competitionQuizSubmit;
+
+  /// No description provided for @competitionQuizSubmitError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not submit your answer. Try again.'**
+  String get competitionQuizSubmitError;
+
+  /// No description provided for @competitionQuizCorrect.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct! +{points} points'**
+  String competitionQuizCorrect(int points);
+
+  /// No description provided for @competitionQuizIncorrect.
+  ///
+  /// In en, this message translates to:
+  /// **'Not quite — review the explanation below.'**
+  String get competitionQuizIncorrect;
+
+  /// No description provided for @competitionQuizComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Lesson complete!'**
+  String get competitionQuizComplete;
+
+  /// No description provided for @competitionQuizCompleteSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'You answered {count} questions in this competition.'**
+  String competitionQuizCompleteSummary(int count);
+
+  /// No description provided for @competitionQuizDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to competition'**
+  String get competitionQuizDone;
+
+  /// No description provided for @competitionQuizQuestionBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Question {current} of {total}'**
+  String competitionQuizQuestionBadge(int current, int total);
+
+  /// No description provided for @competitionPathTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Learning path'**
+  String get competitionPathTitle;
+
+  /// No description provided for @competitionPathSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete each lesson in order to earn points.'**
+  String get competitionPathSubtitle;
+
+  /// No description provided for @competitionLessonLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete the previous lesson first.'**
+  String get competitionLessonLocked;
+
+  /// No description provided for @competitionLearnBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Interactive learning'**
+  String get competitionLearnBadge;
+
+  /// No description provided for @competitionLearnHeroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn Hajj rituals playfully'**
+  String get competitionLearnHeroTitle;
+
+  /// No description provided for @competitionLearnHeroSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer questions, track your progress, and climb the leaderboard.'**
+  String get competitionLearnHeroSubtitle;
+
+  /// No description provided for @competitionStatusOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open now'**
+  String get competitionStatusOpen;
+
+  /// No description provided for @competitionStatusUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get competitionStatusUpcoming;
+
+  /// No description provided for @competitionJoinPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Join this competition to start earning points.'**
+  String get competitionJoinPrompt;
 
   /// No description provided for @competitionLeaderboard.
   ///
@@ -2118,6 +2256,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not delete competition.'**
   String get adminCompetitionDeleteError;
+
+  /// No description provided for @adminCompetitionQuestionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions'**
+  String get adminCompetitionQuestionsTitle;
+
+  /// No description provided for @adminCompetitionQuestionAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add question'**
+  String get adminCompetitionQuestionAdd;
+
+  /// No description provided for @adminCompetitionQuestionsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No questions yet. Add multiple-choice or true/false questions.'**
+  String get adminCompetitionQuestionsEmpty;
+
+  /// No description provided for @adminCompetitionQuestionsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load questions.'**
+  String get adminCompetitionQuestionsLoadError;
+
+  /// No description provided for @adminCompetitionQuestionNewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New question'**
+  String get adminCompetitionQuestionNewTitle;
+
+  /// No description provided for @adminCompetitionQuestionEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit question'**
+  String get adminCompetitionQuestionEditTitle;
+
+  /// No description provided for @adminCompetitionQuestionTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Question type'**
+  String get adminCompetitionQuestionTypeLabel;
+
+  /// No description provided for @adminCompetitionQuestionTypeMultipleChoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Multiple choice'**
+  String get adminCompetitionQuestionTypeMultipleChoice;
+
+  /// No description provided for @adminCompetitionQuestionTypeTrueFalse.
+  ///
+  /// In en, this message translates to:
+  /// **'True or false'**
+  String get adminCompetitionQuestionTypeTrueFalse;
+
+  /// No description provided for @adminCompetitionQuestionTypeOrdering.
+  ///
+  /// In en, this message translates to:
+  /// **'Order the steps'**
+  String get adminCompetitionQuestionTypeOrdering;
+
+  /// No description provided for @adminCompetitionQuestionOrderingStepsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Steps (top = first)'**
+  String get adminCompetitionQuestionOrderingStepsLabel;
+
+  /// No description provided for @adminCompetitionQuestionOrderingStepsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to set the correct order pilgrims should follow.'**
+  String get adminCompetitionQuestionOrderingStepsHint;
+
+  /// No description provided for @adminCompetitionQuestionStepLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {number}'**
+  String adminCompetitionQuestionStepLabel(int number);
+
+  /// No description provided for @adminCompetitionQuestionAddStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Add step'**
+  String get adminCompetitionQuestionAddStep;
+
+  /// No description provided for @competitionOrderingHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag the cards into the correct order.'**
+  String get competitionOrderingHint;
+
+  /// No description provided for @competitionQuizOrderingBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Order · {current}/{total}'**
+  String competitionQuizOrderingBadge(int current, int total);
+
+  /// No description provided for @adminCompetitionQuestionPromptLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Question'**
+  String get adminCompetitionQuestionPromptLabel;
+
+  /// No description provided for @adminCompetitionQuestionPromptRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Question text is required.'**
+  String get adminCompetitionQuestionPromptRequired;
+
+  /// No description provided for @adminCompetitionQuestionExplanationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Explanation (shown after answering)'**
+  String get adminCompetitionQuestionExplanationLabel;
+
+  /// No description provided for @adminCompetitionQuestionPointsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Points for correct answer'**
+  String get adminCompetitionQuestionPointsLabel;
+
+  /// No description provided for @adminCompetitionQuestionPointsInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a positive number of points.'**
+  String get adminCompetitionQuestionPointsInvalid;
+
+  /// No description provided for @adminCompetitionQuestionPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'{points} pts'**
+  String adminCompetitionQuestionPoints(int points);
+
+  /// No description provided for @adminCompetitionQuestionOptionsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer options'**
+  String get adminCompetitionQuestionOptionsLabel;
+
+  /// No description provided for @adminCompetitionQuestionOptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Option {number}'**
+  String adminCompetitionQuestionOptionLabel(int number);
+
+  /// No description provided for @adminCompetitionQuestionOptionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Option text is required.'**
+  String get adminCompetitionQuestionOptionRequired;
+
+  /// No description provided for @adminCompetitionQuestionSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save question.'**
+  String get adminCompetitionQuestionSaveError;
+
+  /// No description provided for @adminCompetitionQuestionDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete question?'**
+  String get adminCompetitionQuestionDeleteTitle;
+
+  /// No description provided for @adminCompetitionQuestionDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This question and its answers will be removed.'**
+  String get adminCompetitionQuestionDeleteMessage;
+
+  /// No description provided for @adminCompetitionQuestionDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get adminCompetitionQuestionDeleteConfirm;
+
+  /// No description provided for @adminCompetitionQuestionDeleteSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Question deleted.'**
+  String get adminCompetitionQuestionDeleteSuccess;
+
+  /// No description provided for @adminCompetitionQuestionDeleteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete question.'**
+  String get adminCompetitionQuestionDeleteError;
 
   /// No description provided for @notificationsTitle.
   ///

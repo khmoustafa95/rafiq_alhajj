@@ -1028,13 +1028,96 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get competitionRecordProgress => 'Record progress (+10)';
+  String get competitionAnswerTrue => 'True';
 
   @override
-  String get competitionProgressRecorded => 'Progress recorded.';
+  String get competitionAnswerFalse => 'False';
 
   @override
-  String get competitionProgressError => 'Could not update score.';
+  String get competitionQuizTitle => 'Quiz';
+
+  @override
+  String get competitionQuizLoadError => 'Could not load quiz questions.';
+
+  @override
+  String get competitionQuizNoQuestions =>
+      'No questions have been added to this competition yet.';
+
+  @override
+  String competitionQuizProgress(int answered, int total) {
+    return '$answered of $total questions answered';
+  }
+
+  @override
+  String get competitionQuizStart => 'Start quiz';
+
+  @override
+  String get competitionQuizContinue => 'Continue quiz';
+
+  @override
+  String get competitionQuizReview => 'Review answers';
+
+  @override
+  String get competitionQuizSubmit => 'Check answer';
+
+  @override
+  String get competitionQuizSubmitError =>
+      'Could not submit your answer. Try again.';
+
+  @override
+  String competitionQuizCorrect(int points) {
+    return 'Correct! +$points points';
+  }
+
+  @override
+  String get competitionQuizIncorrect =>
+      'Not quite — review the explanation below.';
+
+  @override
+  String get competitionQuizComplete => 'Lesson complete!';
+
+  @override
+  String competitionQuizCompleteSummary(int count) {
+    return 'You answered $count questions in this competition.';
+  }
+
+  @override
+  String get competitionQuizDone => 'Back to competition';
+
+  @override
+  String competitionQuizQuestionBadge(int current, int total) {
+    return 'Question $current of $total';
+  }
+
+  @override
+  String get competitionPathTitle => 'Learning path';
+
+  @override
+  String get competitionPathSubtitle =>
+      'Complete each lesson in order to earn points.';
+
+  @override
+  String get competitionLessonLocked => 'Complete the previous lesson first.';
+
+  @override
+  String get competitionLearnBadge => 'Interactive learning';
+
+  @override
+  String get competitionLearnHeroTitle => 'Learn Hajj rituals playfully';
+
+  @override
+  String get competitionLearnHeroSubtitle =>
+      'Answer questions, track your progress, and climb the leaderboard.';
+
+  @override
+  String get competitionStatusOpen => 'Open now';
+
+  @override
+  String get competitionStatusUpcoming => 'Coming soon';
+
+  @override
+  String get competitionJoinPrompt =>
+      'Join this competition to start earning points.';
 
   @override
   String get competitionLeaderboard => 'Leaderboard';
@@ -1108,6 +1191,117 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminCompetitionDeleteError => 'Could not delete competition.';
+
+  @override
+  String get adminCompetitionQuestionsTitle => 'Questions';
+
+  @override
+  String get adminCompetitionQuestionAdd => 'Add question';
+
+  @override
+  String get adminCompetitionQuestionsEmpty =>
+      'No questions yet. Add multiple-choice or true/false questions.';
+
+  @override
+  String get adminCompetitionQuestionsLoadError => 'Could not load questions.';
+
+  @override
+  String get adminCompetitionQuestionNewTitle => 'New question';
+
+  @override
+  String get adminCompetitionQuestionEditTitle => 'Edit question';
+
+  @override
+  String get adminCompetitionQuestionTypeLabel => 'Question type';
+
+  @override
+  String get adminCompetitionQuestionTypeMultipleChoice => 'Multiple choice';
+
+  @override
+  String get adminCompetitionQuestionTypeTrueFalse => 'True or false';
+
+  @override
+  String get adminCompetitionQuestionTypeOrdering => 'Order the steps';
+
+  @override
+  String get adminCompetitionQuestionOrderingStepsLabel =>
+      'Steps (top = first)';
+
+  @override
+  String get adminCompetitionQuestionOrderingStepsHint =>
+      'Drag to set the correct order pilgrims should follow.';
+
+  @override
+  String adminCompetitionQuestionStepLabel(int number) {
+    return 'Step $number';
+  }
+
+  @override
+  String get adminCompetitionQuestionAddStep => 'Add step';
+
+  @override
+  String get competitionOrderingHint =>
+      'Drag the cards into the correct order.';
+
+  @override
+  String competitionQuizOrderingBadge(int current, int total) {
+    return 'Order · $current/$total';
+  }
+
+  @override
+  String get adminCompetitionQuestionPromptLabel => 'Question';
+
+  @override
+  String get adminCompetitionQuestionPromptRequired =>
+      'Question text is required.';
+
+  @override
+  String get adminCompetitionQuestionExplanationLabel =>
+      'Explanation (shown after answering)';
+
+  @override
+  String get adminCompetitionQuestionPointsLabel => 'Points for correct answer';
+
+  @override
+  String get adminCompetitionQuestionPointsInvalid =>
+      'Enter a positive number of points.';
+
+  @override
+  String adminCompetitionQuestionPoints(int points) {
+    return '$points pts';
+  }
+
+  @override
+  String get adminCompetitionQuestionOptionsLabel => 'Answer options';
+
+  @override
+  String adminCompetitionQuestionOptionLabel(int number) {
+    return 'Option $number';
+  }
+
+  @override
+  String get adminCompetitionQuestionOptionRequired =>
+      'Option text is required.';
+
+  @override
+  String get adminCompetitionQuestionSaveError => 'Could not save question.';
+
+  @override
+  String get adminCompetitionQuestionDeleteTitle => 'Delete question?';
+
+  @override
+  String get adminCompetitionQuestionDeleteMessage =>
+      'This question and its answers will be removed.';
+
+  @override
+  String get adminCompetitionQuestionDeleteConfirm => 'Delete';
+
+  @override
+  String get adminCompetitionQuestionDeleteSuccess => 'Question deleted.';
+
+  @override
+  String get adminCompetitionQuestionDeleteError =>
+      'Could not delete question.';
 
   @override
   String get notificationsTitle => 'Notifications';

@@ -3,10 +3,14 @@ import 'package:rafiq_alhajj/core/supabase/realtime_invalidation_registry.dart';
 import 'package:rafiq_alhajj/core/supabase/realtime_sync_attach.dart';
 import 'package:rafiq_alhajj/core/supabase/realtime_sync_providers.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:rafiq_alhajj/features/competitions/data/repositories/admin_competition_questions_repository.dart';
 import 'package:rafiq_alhajj/features/competitions/data/repositories/admin_competitions_repository.dart';
+import 'package:rafiq_alhajj/features/competitions/data/repositories/competition_questions_repository.dart';
 import 'package:rafiq_alhajj/features/competitions/data/repositories/competitions_repository.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition_editor_input.dart';
+import 'package:rafiq_alhajj/features/competitions/domain/models/competition_question.dart';
+import 'package:rafiq_alhajj/features/competitions/domain/models/competition_question_editor_input.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -22,6 +26,22 @@ CompetitionsRepository competitionsRepository(Ref ref) {
 @Riverpod(keepAlive: true)
 AdminCompetitionsRepository adminCompetitionsRepository(Ref ref) {
   return AdminCompetitionsRepository(
+    AppConfig.hasSupabase ? Supabase.instance.client : null,
+  );
+}
+
+@Riverpod(keepAlive: true)
+CompetitionQuestionsRepository competitionQuestionsRepository(Ref ref) {
+  return CompetitionQuestionsRepository(
+    AppConfig.hasSupabase ? Supabase.instance.client : null,
+  );
+}
+
+@Riverpod(keepAlive: true)
+AdminCompetitionQuestionsRepository adminCompetitionQuestionsRepository(
+  Ref ref,
+) {
+  return AdminCompetitionQuestionsRepository(
     AppConfig.hasSupabase ? Supabase.instance.client : null,
   );
 }
@@ -77,24 +97,125 @@ class CompetitionDetail extends _$CompetitionDetail {
     }
   }
 
-  Future<bool> recordProgress() async {
-    final data = state.value;
-    final entry = data?.myEntry;
-    if (entry == null) {
-      return false;
-    }
+}
 
-    try {
-      await ref.read(competitionsRepositoryProvider).addScore(
-            entryId: entry.id,
-            delta: 10,
+@riverpod
+Future<CompetitionQuizProgress> competitionQuizProgress(
+  Ref ref,
+  String competitionId,
+) {
+  attachRealtimeSync(
+    ref,
+    syncKey: RealtimeSyncKeys.competitions,
+    ensureSyncActive: (ref) => ref.watch(realtimeSyncCompetitionsProvider),
+    handlerId: 'competition_quiz_progress',
+    onInvalidate: (ref) =>
+        ref.invalidate(competitionQuizProgressProvider(competitionId)),
+  );
+
+  final profileId = ref.watch(authProfileIdProvider);
+  return ref.read(competitionQuestionsRepositoryProvider).fetchQuizProgress(
+        competitionId: competitionId,
+        profileId: profileId,
+      );
+}
+
+@riverpod
+class CompetitionQuizSubmit extends _$CompetitionQuizSubmit {
+  @override
+  FutureOr<CompetitionAnswerResult?> build() => null;
+
+  Future<CompetitionAnswerResult?> submit({
+    required String competitionId,
+    required String questionId,
+    required String optionId,
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final result = await ref
+          .read(competitionQuestionsRepositoryProvider)
+          .submitAnswer(questionId: questionId, optionId: optionId);
+      ref.invalidate(competitionQuizProgressProvider(competitionId));
+      ref.invalidate(competitionDetailProvider(competitionId));
+      return result;
+    });
+    return state.value;
+  }
+
+  Future<CompetitionAnswerResult?> submitOrdering({
+    required String competitionId,
+    required String questionId,
+    required List<String> orderedOptionIds,
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final result = await ref
+          .read(competitionQuestionsRepositoryProvider)
+          .submitOrderingAnswer(
+            questionId: questionId,
+            orderedOptionIds: orderedOptionIds,
           );
-      ref.invalidateSelf();
-      await future;
-      return true;
-    } on CompetitionsException {
-      return false;
-    }
+      ref.invalidate(competitionQuizProgressProvider(competitionId));
+      ref.invalidate(competitionDetailProvider(competitionId));
+      return result;
+    });
+    return state.value;
+  }
+}
+
+@riverpod
+Future<List<CompetitionQuestion>> adminCompetitionQuestions(
+  Ref ref,
+  String competitionId,
+) {
+  attachRealtimeSync(
+    ref,
+    syncKey: RealtimeSyncKeys.competitions,
+    ensureSyncActive: (ref) => ref.watch(realtimeSyncCompetitionsProvider),
+    handlerId: 'admin_competition_questions',
+    onInvalidate: (ref) =>
+        ref.invalidate(adminCompetitionQuestionsProvider(competitionId)),
+  );
+
+  return ref
+      .read(adminCompetitionQuestionsRepositoryProvider)
+      .fetchByCompetition(competitionId);
+}
+
+@riverpod
+class AdminCompetitionQuestionSave extends _$AdminCompetitionQuestionSave {
+  @override
+  FutureOr<void> build() {}
+
+  Future<bool> save(CompetitionQuestionEditorInput input) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await ref
+          .read(adminCompetitionQuestionsRepositoryProvider)
+          .upsert(input);
+      ref.invalidate(adminCompetitionQuestionsProvider(input.competitionId));
+    });
+    return !state.hasError;
+  }
+}
+
+@riverpod
+class AdminCompetitionQuestionDelete extends _$AdminCompetitionQuestionDelete {
+  @override
+  FutureOr<void> build() {}
+
+  Future<bool> delete({
+    required String competitionId,
+    required String questionId,
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await ref
+          .read(adminCompetitionQuestionsRepositoryProvider)
+          .delete(questionId);
+      ref.invalidate(adminCompetitionQuestionsProvider(competitionId));
+    });
+    return !state.hasError;
   }
 }
 

@@ -142,7 +142,7 @@ final class SystemSettingsProvider
   }
 }
 
-String _$systemSettingsHash() => r'11ecbc9a2e4ae2444dda0ab38c8c69ad34459435';
+String _$systemSettingsHash() => r'057268730e54999ace0f5b17219aea4f1edd70b8';
 
 @ProviderFor(SystemSettingsSave)
 final systemSettingsSaveProvider = SystemSettingsSaveProvider._();

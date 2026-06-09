@@ -22,6 +22,7 @@ import 'package:rafiq_alhajj/features/auth/presentation/widgets/login_screen.dar
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/admin_competition_edit_screen.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/admin_competitions_list_screen.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competition_detail_screen.dart';
+import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competition_quiz_screen.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competitions_list_screen.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_detail_screen.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_list_screen.dart';
@@ -210,6 +211,14 @@ List<RouteBase> _mobilePilgrimRoutes() => [
         builder: (context, state) {
           final id = state.pathParameters['id']!;
           return CompetitionDetailScreen(competitionId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.competitionQuiz,
+        name: 'competitionQuiz',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return CompetitionQuizScreen(competitionId: id);
         },
       ),
       GoRoute(
@@ -511,6 +520,14 @@ List<RouteBase> _webRoutes() => [
         builder: (context, state) {
           final id = state.pathParameters['id']!;
           return CompetitionDetailScreen(competitionId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.competitionQuiz,
+        name: 'competitionQuiz',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return CompetitionQuizScreen(competitionId: id);
         },
       ),
       GoRoute(

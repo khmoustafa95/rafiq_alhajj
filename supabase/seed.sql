@@ -73,3 +73,84 @@ values
     now() + interval '60 days',
     true
   );
+
+-- Demo quiz questions for "Hajj awareness quiz"
+do $$
+declare
+  v_competition_id uuid;
+  v_question_id uuid;
+begin
+  select id into v_competition_id
+  from public.competitions
+  where title = 'Hajj awareness quiz'
+  limit 1;
+
+  if v_competition_id is null then
+    return;
+  end if;
+
+  if exists (
+    select 1 from public.competition_questions
+    where competition_id = v_competition_id
+  ) then
+    return;
+  end if;
+
+  insert into public.competition_questions (
+    competition_id, sort_order, question_type, prompt, explanation, points
+  )
+  values (
+    v_competition_id,
+    0,
+    'true_false',
+    'Is Ihram required before entering the Miqat boundary?',
+    'Ihram is the sacred state pilgrims must enter before crossing the Miqat.',
+    10
+  )
+  returning id into v_question_id;
+
+  insert into public.competition_question_options (question_id, sort_order, label, is_correct)
+  values
+    (v_question_id, 0, 'true', true),
+    (v_question_id, 1, 'false', false);
+
+  insert into public.competition_questions (
+    competition_id, sort_order, question_type, prompt, explanation, points
+  )
+  values (
+    v_competition_id,
+    1,
+    'multiple_choice',
+    'Which ritual is performed on the 9th of Dhul Hijjah?',
+    'The Day of Arafah is the 9th of Dhul Hijjah and standing at Arafah is a pillar of Hajj.',
+    15
+  )
+  returning id into v_question_id;
+
+  insert into public.competition_question_options (question_id, sort_order, label, is_correct)
+  values
+    (v_question_id, 0, 'Standing at Arafah', true),
+    (v_question_id, 1, 'Tawaf al-Ifadah', false),
+    (v_question_id, 2, 'Sa''i between Safa and Marwa', false),
+    (v_question_id, 3, 'Stoning Jamarat', false);
+
+  insert into public.competition_questions (
+    competition_id, sort_order, question_type, prompt, explanation, points
+  )
+  values (
+    v_competition_id,
+    2,
+    'ordering',
+    'Put the main Hajj days in order (simplified):',
+    'After Arafah comes Muzdalifah, then stoning at Mina, then Tawaf al-Ifadah.',
+    20
+  )
+  returning id into v_question_id;
+
+  insert into public.competition_question_options (question_id, sort_order, label, is_correct)
+  values
+    (v_question_id, 0, 'Standing at Arafah (9th)', false),
+    (v_question_id, 1, 'Night in Muzdalifah', false),
+    (v_question_id, 2, 'Stoning Jamarat at Mina', false),
+    (v_question_id, 3, 'Tawaf al-Ifadah', false);
+end $$;
