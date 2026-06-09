@@ -476,6 +476,11 @@
     }
   },
   "staffTableFilterAll": "الكل",
+  "staffTableColumnsTitle": "أعمدة الجدول",
+  "staffTableColumnsApply": "تطبيق",
+  "staffTableColumnsShowAll": "إظهار الكل",
+  "staffTableColumnsCustomize": "الأعمدة",
+  "staffTableColumnRequired": "يظهر دائماً",
   "staffTableFilterStatus": "الحالة",
   "staffTableColumnCreated": "تاريخ الإنشاء",
   "staffTableSearchOperators": "ابحث بالاسم أو البريد",

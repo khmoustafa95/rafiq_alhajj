@@ -112,6 +112,18 @@ class OperatorRegistryRepository {
           ascending: query.sortAscending,
           referencedTable: 'groups',
         ),
+      'travel_permit' => request.order(
+          'pilgrim_details(travel_permit_number)',
+          ascending: query.sortAscending,
+        ),
+      'medical_test' => request.order(
+          'pilgrim_details(medical_test_status)',
+          ascending: query.sortAscending,
+        ),
+      'hotel' => request.order(
+          'pilgrim_details(hotel_name)',
+          ascending: query.sortAscending,
+        ),
       _ => request.order('full_name', ascending: query.sortAscending),
     };
   }

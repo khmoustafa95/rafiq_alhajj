@@ -2881,6 +2881,36 @@ abstract class AppLocalizations {
   /// **'All'**
   String get staffTableFilterAll;
 
+  /// No description provided for @staffTableColumnsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Table columns'**
+  String get staffTableColumnsTitle;
+
+  /// No description provided for @staffTableColumnsApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get staffTableColumnsApply;
+
+  /// No description provided for @staffTableColumnsShowAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all'**
+  String get staffTableColumnsShowAll;
+
+  /// No description provided for @staffTableColumnsCustomize.
+  ///
+  /// In en, this message translates to:
+  /// **'Columns'**
+  String get staffTableColumnsCustomize;
+
+  /// No description provided for @staffTableColumnRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Always visible'**
+  String get staffTableColumnRequired;
+
   /// No description provided for @staffTableFilterStatus.
   ///
   /// In en, this message translates to:

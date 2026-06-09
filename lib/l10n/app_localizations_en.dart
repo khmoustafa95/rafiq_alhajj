@@ -1522,6 +1522,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get staffTableFilterAll => 'All';
 
   @override
+  String get staffTableColumnsTitle => 'Table columns';
+
+  @override
+  String get staffTableColumnsApply => 'Apply';
+
+  @override
+  String get staffTableColumnsShowAll => 'Show all';
+
+  @override
+  String get staffTableColumnsCustomize => 'Columns';
+
+  @override
+  String get staffTableColumnRequired => 'Always visible';
+
+  @override
   String get staffTableFilterStatus => 'Status';
 
   @override

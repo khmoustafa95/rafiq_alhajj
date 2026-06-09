@@ -12,6 +12,7 @@ import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_async_table_body.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_data_table.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_table_column_visibility.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_table_definition_cache.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
@@ -21,6 +22,7 @@ import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_p
 import 'package:rafiq_alhajj/features/operator_intake/data/repositories/operator_registry_repository.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_summary.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/operator_registry_providers.dart';
+import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/pilgrim_table_column_visibility_provider.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 class OperatorPilgrimListScreen extends ConsumerStatefulWidget {
@@ -79,8 +81,87 @@ class _OperatorPilgrimListScreenState
     }
   }
 
-  List<Widget> _toolbarActions(AppLocalizations l10n, bool isAdmin) {
+  List<StaffTableColumn<OperatorPilgrimSummary>> _visibleColumns(
+    BuildContext context,
+    Set<String> hiddenColumnIds,
+  ) {
+    return filterVisibleStaffColumns<OperatorPilgrimSummary>(
+      allColumns: _columnCache.columns(context),
+      hiddenColumnIds: hiddenColumnIds,
+      essentialColumnIds: PilgrimTableColumns.essential,
+    );
+  }
+
+  List<StaffTableColumnOption> _columnPickerOptions(AppLocalizations l10n) {
     return [
+      StaffTableColumnOption(
+        id: 'full_name',
+        label: l10n.operatorFullName,
+        essential: true,
+      ),
+      StaffTableColumnOption(
+        id: 'gender',
+        label: l10n.staffTableFilterGender,
+      ),
+      StaffTableColumnOption(
+        id: 'group',
+        label: l10n.staffTableFilterGroup,
+      ),
+      StaffTableColumnOption(
+        id: 'passport',
+        label: l10n.operatorPassport,
+      ),
+      StaffTableColumnOption(
+        id: 'travel_permit',
+        label: l10n.operatorTravelPermit,
+      ),
+      StaffTableColumnOption(
+        id: 'medical_test',
+        label: l10n.pilgrimMedicalStatus,
+      ),
+      StaffTableColumnOption(
+        id: 'travel_date',
+        label: l10n.pilgrimTravelDate,
+      ),
+      StaffTableColumnOption(
+        id: 'hotel',
+        label: l10n.pilgrimHotel,
+      ),
+    ];
+  }
+
+  Future<void> _openColumnPicker(
+    AppLocalizations l10n,
+    Set<String> hiddenColumnIds,
+  ) async {
+    await showStaffTableColumnPicker(
+      context: context,
+      options: _columnPickerOptions(l10n),
+      hiddenColumnIds: hiddenColumnIds,
+      onChanged: (hidden) {
+        unawaited(
+          ref.read(pilgrimTableColumnVisibilityProvider.notifier).setHidden(hidden),
+        );
+        if (hidden.contains(_query.sortColumnId)) {
+          _onQueryChanged(
+            _query.copyWith(sortColumnId: 'full_name', sortAscending: true),
+          );
+        }
+      },
+    );
+  }
+
+  List<Widget> _toolbarActions(
+    AppLocalizations l10n,
+    bool isAdmin,
+    Set<String> hiddenColumnIds,
+  ) {
+    return [
+      OutlinedButton.icon(
+        onPressed: () => unawaited(_openColumnPicker(l10n, hiddenColumnIds)),
+        icon: const Icon(Icons.view_column_outlined),
+        label: Text(l10n.staffTableColumnsCustomize),
+      ),
       FilledButton.icon(
         onPressed: _openIntake,
         icon: const Icon(Icons.person_add_outlined),
@@ -251,6 +332,8 @@ class _OperatorPilgrimListScreenState
     );
     final pageAsync = ref.watch(operatorPilgrimRegistryPageProvider(_query));
     final groupsAsync = ref.watch(pilgrimGroupFilterOptionsProvider);
+    final hiddenColumnIds = ref.watch(pilgrimTableColumnVisibilityProvider);
+    final visibleColumns = _visibleColumns(context, hiddenColumnIds);
 
     Widget listBody;
     if (groupsAsync.hasError && !groupsAsync.hasValue) {
@@ -266,9 +349,9 @@ class _OperatorPilgrimListScreenState
               pageAsync: pageAsync,
               query: _query,
               onQueryChanged: _onQueryChanged,
-              columns: _columnCache.columns(context),
+              columns: visibleColumns,
               searchHint: l10n.operatorPilgrimSearchHint,
-              toolbarActions: _toolbarActions(l10n, isAdmin),
+              toolbarActions: _toolbarActions(l10n, isAdmin, hiddenColumnIds),
               isLoading: true,
               emptyMessage: l10n.operatorPilgrimListEmpty,
               emptyIcon: Icons.people_outline,
@@ -282,10 +365,10 @@ class _OperatorPilgrimListScreenState
               pageAsync: pageAsync,
               query: _query,
               onQueryChanged: _onQueryChanged,
-              columns: _columnCache.columns(context),
+              columns: visibleColumns,
               searchHint: l10n.operatorPilgrimSearchHint,
               filters: _filtersFor(l10n, groups),
-              toolbarActions: _toolbarActions(l10n, isAdmin),
+              toolbarActions: _toolbarActions(l10n, isAdmin, hiddenColumnIds),
               isLoading: pageAsync.isLoading,
               onRetry: () =>
                   ref.invalidate(operatorPilgrimRegistryPageProvider(_query)),
@@ -453,6 +536,26 @@ class _OperatorPilgrimListScreenState
         ),
       ),
       StaffTableColumn(
+        id: 'travel_permit',
+        label: l10n.operatorTravelPermit,
+        flex: 2,
+        sortable: true,
+        cellBuilder: (context, item) => Text(
+          item.travelPermitNumber ?? '—',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      ),
+      StaffTableColumn(
+        id: 'medical_test',
+        label: l10n.pilgrimMedicalStatus,
+        flex: 2,
+        sortable: true,
+        cellBuilder: (context, item) => Text(
+          item.medicalTestStatus ?? '—',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      ),
+      StaffTableColumn(
         id: 'travel_date',
         label: l10n.pilgrimTravelDate,
         flex: 2,
@@ -463,6 +566,18 @@ class _OperatorPilgrimListScreenState
               : MaterialLocalizations.of(context)
                   .formatMediumDate(item.travelDate!),
           style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      ),
+      StaffTableColumn(
+        id: 'hotel',
+        label: l10n.pilgrimHotel,
+        flex: 2,
+        sortable: true,
+        cellBuilder: (context, item) => Text(
+          item.hotelName ?? '—',
+          style: Theme.of(context).textTheme.bodyMedium,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
     ];

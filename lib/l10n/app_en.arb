@@ -693,6 +693,11 @@
     }
   },
   "staffTableFilterAll": "All",
+  "staffTableColumnsTitle": "Table columns",
+  "staffTableColumnsApply": "Apply",
+  "staffTableColumnsShowAll": "Show all",
+  "staffTableColumnsCustomize": "Columns",
+  "staffTableColumnRequired": "Always visible",
   "staffTableFilterStatus": "Status",
   "staffTableColumnCreated": "Created",
   "staffTableSearchOperators": "Search by name or email",

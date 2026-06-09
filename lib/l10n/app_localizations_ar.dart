@@ -1499,6 +1499,21 @@ class AppLocalizationsAr extends AppLocalizations {
   String get staffTableFilterAll => 'الكل';
 
   @override
+  String get staffTableColumnsTitle => 'أعمدة الجدول';
+
+  @override
+  String get staffTableColumnsApply => 'تطبيق';
+
+  @override
+  String get staffTableColumnsShowAll => 'إظهار الكل';
+
+  @override
+  String get staffTableColumnsCustomize => 'الأعمدة';
+
+  @override
+  String get staffTableColumnRequired => 'يظهر دائماً';
+
+  @override
   String get staffTableFilterStatus => 'الحالة';
 
   @override

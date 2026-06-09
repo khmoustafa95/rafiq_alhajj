@@ -63,6 +63,11 @@
 
 ## Changelog
 
+### 2026-06-08 — Pilgrim table column visibility
+- [x] Added travel permit, medical test, and hotel columns to operator/admin pilgrim registry table.
+- [x] Column picker dialog (show/hide); preferences persisted in `SharedPreferences` across app restarts.
+- [x] Server-side sort for `travel_permit`, `medical_test`, `hotel` columns.
+
 ### 2026-06-09 — Content server pagination + table cache
 - [x] Content CMS server-side pagination (`fetchPage`, `adminContentListPageProvider`)
 - [x] `StaffTableDefinitionCache` on all staff list screens (locale-aware column/filter caching)
