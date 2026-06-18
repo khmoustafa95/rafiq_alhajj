@@ -35,6 +35,7 @@ Future<void> main() async {
 
 Future<void> _launchApp() async {
   try {
+    
     final container = await AppBootstrap.initialize();
 
     runApp(

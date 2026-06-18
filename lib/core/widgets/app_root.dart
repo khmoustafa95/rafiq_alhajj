@@ -21,10 +21,7 @@ class AppRoot extends ConsumerWidget {
     final locale = ref.watch(localeControllerProvider);
 
     return ScreenUtilInit(
-      designSize: const Size(
-        AppConfig.designWidth,
-        AppConfig.designHeight,
-      ),
+      designSize: const Size(AppConfig.designWidth, AppConfig.designHeight),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
@@ -35,12 +32,14 @@ class AppRoot extends ConsumerWidget {
           darkTheme: AppTheme.dark,
           locale: locale,
           localeResolutionCallback: (deviceLocale, supportedLocales) {
-            for (final supported in supportedLocales) {
-              if (supported.languageCode == locale.languageCode) {
-                return supported;
-              }
-            }
-            return AppLocaleSettings.defaultLocale;
+            if (deviceLocale == null) return AppLocaleSettings.defaultLocale;
+
+            // البحث عن تطابق لغة جهاز المستخدم مع اللغات التي يدعمها التطبيق
+            return supportedLocales.firstWhere(
+              (supported) =>
+                  supported.languageCode == deviceLocale.languageCode,
+              orElse: () => AppLocaleSettings.defaultLocale,
+            );
           },
           localizationsDelegates: const [
             AppLocalizations.delegate,
