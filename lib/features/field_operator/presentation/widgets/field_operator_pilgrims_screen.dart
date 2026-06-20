@@ -12,6 +12,7 @@ import 'package:rafiq_alhajj/features/field_operator/domain/models/pilgrim_searc
 import 'package:rafiq_alhajj/features/field_operator/presentation/providers/field_operator_providers.dart';
 import 'package:rafiq_alhajj/features/field_operator/presentation/utils/field_status_l10n.dart';
 import 'package:rafiq_alhajj/features/field_operator/presentation/widgets/pilgrim_list_tile.dart';
+import 'package:rafiq_alhajj/features/trips/presentation/widgets/trip_selector.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 class FieldOperatorPilgrimsScreen extends ConsumerStatefulWidget {
@@ -59,6 +60,10 @@ class _FieldOperatorPilgrimsScreenState
       appBar: RafiqAppBar(
         title: Text(l10n.fieldOperatorPilgrimsTitle),
         actions: [
+          const Padding(
+            padding: EdgeInsetsDirectional.only(end: 8),
+            child: Center(child: TripSelector()),
+          ),
           IconButton(
             onPressed: () {
               unawaited(

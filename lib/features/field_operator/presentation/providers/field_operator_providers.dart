@@ -7,6 +7,7 @@ import 'package:rafiq_alhajj/features/field_operator/domain/models/field_operato
 import 'package:rafiq_alhajj/features/field_operator/domain/models/pilgrim_search_item.dart';
 import 'package:rafiq_alhajj/features/pilgrim/domain/models/pilgrim.dart';
 import 'package:rafiq_alhajj/features/pilgrim/presentation/providers/pilgrim_providers.dart';
+import 'package:rafiq_alhajj/features/trips/presentation/providers/trips_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'field_operator_providers.g.dart';
@@ -22,7 +23,7 @@ FieldOperatorService fieldOperatorService(Ref ref) {
 }
 
 @riverpod
-Future<FieldOperatorStats> fieldOperatorStats(Ref ref) {
+Future<FieldOperatorStats> fieldOperatorStats(Ref ref) async {
   attachRealtimeSync(
     ref,
     syncKey: RealtimeSyncKeys.pilgrimRegistry,
@@ -31,7 +32,8 @@ Future<FieldOperatorStats> fieldOperatorStats(Ref ref) {
     onInvalidate: (ref) => ref.invalidate(fieldOperatorStatsProvider),
   );
 
-  return ref.read(fieldOperatorServiceProvider).loadStats();
+  final tripId = await ref.watch(activeTripProvider.future);
+  return ref.read(fieldOperatorServiceProvider).loadStats(tripId: tripId);
 }
 
 @riverpod
@@ -40,7 +42,7 @@ class FieldOperatorSearch extends _$FieldOperatorSearch {
   String? _statusFilter;
 
   @override
-  Future<List<PilgrimSearchItem>> build() {
+  Future<List<PilgrimSearchItem>> build() async {
     attachRealtimeSync(
       ref,
       syncKey: RealtimeSyncKeys.pilgrimRegistry,
@@ -49,30 +51,36 @@ class FieldOperatorSearch extends _$FieldOperatorSearch {
       onInvalidate: (ref) => ref.invalidate(fieldOperatorSearchProvider),
     );
 
+    final tripId = await ref.watch(activeTripProvider.future);
     return ref.read(fieldOperatorServiceProvider).searchPilgrims(
           query: _query,
           fieldStatusFilter: _statusFilter,
+          tripId: tripId,
         );
   }
 
   Future<void> search(String query) async {
     _query = query;
+    final tripId = await ref.read(activeTripProvider.future);
     state = const AsyncLoading();
     state = await AsyncValue.guard(
       () => ref.read(fieldOperatorServiceProvider).searchPilgrims(
             query: _query,
             fieldStatusFilter: _statusFilter,
+            tripId: tripId,
           ),
     );
   }
 
   Future<void> filterByStatus(String? status) async {
     _statusFilter = status;
+    final tripId = await ref.read(activeTripProvider.future);
     state = const AsyncLoading();
     state = await AsyncValue.guard(
       () => ref.read(fieldOperatorServiceProvider).searchPilgrims(
             query: _query,
             fieldStatusFilter: _statusFilter,
+            tripId: tripId,
           ),
     );
   }

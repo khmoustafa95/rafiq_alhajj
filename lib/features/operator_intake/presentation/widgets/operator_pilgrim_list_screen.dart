@@ -65,7 +65,7 @@ class _OperatorPilgrimListScreenState
   }
 
   void _openPilgrim(OperatorPilgrimSummary item) {
-    final path = AppRoutes.operatorPilgrimDetailPath(item.profileId);
+    final path = AppRoutes.operatorPilgrimDetailPath(item.pilgrimId);
     if (AppPlatform.isWeb) {
       context.go(path);
     } else {
@@ -224,7 +224,7 @@ class _OperatorPilgrimListScreenState
         onPressed: (items) => unawaited(
           _bulkAssignGroup(
             l10n,
-            items.map((item) => item.profileId).toList(),
+            items.map((item) => item.pilgrimId).toList(),
             groupId: null,
           ),
         ),
@@ -288,18 +288,18 @@ class _OperatorPilgrimListScreenState
 
     await _bulkAssignGroup(
       l10n,
-      items.map((item) => item.profileId).toList(),
+      items.map((item) => item.pilgrimId).toList(),
       groupId: selectedGroupId,
     );
   }
 
   Future<void> _bulkAssignGroup(
     AppLocalizations l10n,
-    List<String> profileIds, {
+    List<String> pilgrimIds, {
     required String? groupId,
   }) async {
     final ok = await ref.read(pilgrimBulkAssignGroupProvider.notifier).assign(
-          profileIds: profileIds,
+          pilgrimIds: pilgrimIds,
           groupId: groupId,
         );
 
@@ -381,7 +381,7 @@ class _OperatorPilgrimListScreenState
                 ],
               ),
               selectable: isAdmin,
-              rowKey: (item) => item.profileId,
+              rowKey: (item) => item.pilgrimId,
               bulkActions: isAdmin ? _bulkActions(l10n, groups) : const [],
               emptyMessage: l10n.operatorPilgrimListEmpty,
               emptyIcon: Icons.people_outline,

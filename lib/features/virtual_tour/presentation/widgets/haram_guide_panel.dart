@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rafiq_alhajj/core/gen/assets.gen.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/features/virtual_tour/domain/data/haram_landmarks.dart';
@@ -18,8 +19,7 @@ class HaramGuidePanel extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
-          child: Image.asset(
-            'assets/virtual_tour/images/kaaba.jpg',
+          child: Assets.virtualTour.images.kaaba.image(
             height: 180.h,
             width: double.infinity,
             fit: BoxFit.cover,

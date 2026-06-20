@@ -5,6 +5,7 @@ import 'package:rafiq_alhajj/features/competitions/domain/models/competition_que
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition_question_editor_input.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/providers/competitions_providers.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 
 class AdminCompetitionQuestionEditorDialog extends ConsumerStatefulWidget {
   const AdminCompetitionQuestionEditorDialog({
@@ -25,10 +26,7 @@ class AdminCompetitionQuestionEditorDialog extends ConsumerStatefulWidget {
 
 class _AdminCompetitionQuestionEditorDialogState
     extends ConsumerState<AdminCompetitionQuestionEditorDialog> {
-  final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _promptController;
-  late final TextEditingController _explanationController;
-  late final TextEditingController _pointsController;
+  late final FormGroup _form;
   late CompetitionQuestionType _questionType;
   late List<_OptionField> _optionFields;
 
@@ -38,24 +36,72 @@ class _AdminCompetitionQuestionEditorDialogState
   void initState() {
     super.initState();
     final question = widget.question;
-    _promptController = TextEditingController(text: question?.prompt ?? '');
-    _explanationController =
-        TextEditingController(text: question?.explanation ?? '');
-    _pointsController = TextEditingController(
-      text: '${question?.points ?? 10}',
-    );
     _questionType =
         question?.questionType ?? CompetitionQuestionType.multipleChoice;
     _optionFields = _buildOptionFields(question);
+    _form = FormGroup({
+      'prompt': FormControl<String>(
+        value: question?.prompt ?? '',
+        validators: [Validators.required],
+      ),
+      'explanation': FormControl<String>(value: question?.explanation ?? ''),
+      'points': FormControl<int>(
+        value: question?.points ?? 10,
+        validators: [Validators.delegate(_validatePoints)],
+      ),
+      'questionType': FormControl<CompetitionQuestionType>(value: _questionType),
+    });
+  }
+
+  Map<String, dynamic>? _validatePoints(AbstractControl<dynamic> control) {
+    final value = control.value as int?;
+    return (value == null || value <= 0) ? {'pointsInvalid': true} : null;
+  }
+
+  Map<String, dynamic>? _validateOption(AbstractControl<dynamic> control) {
+    final value = control.value as String?;
+    return (value == null || value.trim().isEmpty)
+        ? {'optionRequired': true}
+        : null;
+  }
+
+  _OptionField _optionField(String text, {required bool isCorrect}) {
+    return _OptionField(
+      control: FormControl<String>(
+        value: text,
+        validators: [Validators.delegate(_validateOption)],
+      ),
+      isCorrect: isCorrect,
+    );
+  }
+
+  void _syncEnabled(bool isSaving) {
+    if (isSaving) {
+      if (_form.enabled) {
+        _form.markAsDisabled();
+      }
+      for (final field in _optionFields) {
+        if (field.control.enabled) {
+          field.control.markAsDisabled();
+        }
+      }
+    } else {
+      if (_form.disabled) {
+        _form.markAsEnabled();
+      }
+      for (final field in _optionFields) {
+        if (field.control.disabled) {
+          field.control.markAsEnabled();
+        }
+      }
+    }
   }
 
   @override
   void dispose() {
-    _promptController.dispose();
-    _explanationController.dispose();
-    _pointsController.dispose();
+    _form.dispose();
     for (final field in _optionFields) {
-      field.controller.dispose();
+      field.control.dispose();
     }
     super.dispose();
   }
@@ -75,9 +121,7 @@ class _AdminCompetitionQuestionEditorDialogState
       return;
     }
     setState(() {
-      _optionFields.add(
-        _OptionField(controller: TextEditingController(), isCorrect: false),
-      );
+      _optionFields.add(_optionField('', isCorrect: false));
     });
   }
 
@@ -86,7 +130,7 @@ class _AdminCompetitionQuestionEditorDialogState
       return;
     }
     setState(() {
-      _optionFields.removeAt(index).controller.dispose();
+      _optionFields.removeAt(index).control.dispose();
     });
   }
 
@@ -96,20 +140,15 @@ class _AdminCompetitionQuestionEditorDialogState
         ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
       return sorted
           .map(
-            (option) => _OptionField(
-              controller: TextEditingController(text: option.label),
-              isCorrect: option.isCorrect,
-            ),
+            (option) =>
+                _optionField(option.label, isCorrect: option.isCorrect),
           )
           .toList();
     }
 
     return CompetitionQuestionEditorInput.defaultMultipleChoiceOptions()
         .map(
-          (option) => _OptionField(
-            controller: TextEditingController(text: option.label),
-            isCorrect: option.isCorrect,
-          ),
+          (option) => _optionField(option.label, isCorrect: option.isCorrect),
         )
         .toList();
   }
@@ -122,35 +161,21 @@ class _AdminCompetitionQuestionEditorDialogState
     setState(() {
       _questionType = value;
       for (final field in _optionFields) {
-        field.controller.dispose();
+        field.control.dispose();
       }
       _optionFields = switch (value) {
         CompetitionQuestionType.trueFalse => [
-            _OptionField(
-              controller: TextEditingController(text: 'true'),
-              isCorrect: true,
-            ),
-            _OptionField(
-              controller: TextEditingController(text: 'false'),
-              isCorrect: false,
-            ),
+            _optionField('true', isCorrect: true),
+            _optionField('false', isCorrect: false),
           ],
         CompetitionQuestionType.ordering =>
           CompetitionQuestionEditorInput.defaultOrderingOptions()
-              .map(
-                (option) => _OptionField(
-                  controller: TextEditingController(),
-                  isCorrect: false,
-                ),
-              )
+              .map((option) => _optionField('', isCorrect: false))
               .toList(),
         CompetitionQuestionType.multipleChoice =>
           CompetitionQuestionEditorInput.defaultMultipleChoiceOptions()
               .map(
-                (option) => _OptionField(
-                  controller: TextEditingController(),
-                  isCorrect: option.isCorrect,
-                ),
+                (option) => _optionField('', isCorrect: option.isCorrect),
               )
               .toList(),
       };
@@ -166,12 +191,17 @@ class _AdminCompetitionQuestionEditorDialogState
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) {
+    final optionsValid = _optionFields.every((field) => field.control.valid);
+    if (!_form.valid || !optionsValid) {
+      _form.markAllAsTouched();
+      for (final field in _optionFields) {
+        field.control.markAllAsTouched();
+      }
       return;
     }
 
-    final points = int.tryParse(_pointsController.text.trim());
-    if (points == null || points <= 0) {
+    final points = _form.control('points').value as int;
+    if (points <= 0) {
       return;
     }
 
@@ -183,7 +213,7 @@ class _AdminCompetitionQuestionEditorDialogState
         CompetitionQuestionOptionInput(
           label: _questionType == CompetitionQuestionType.trueFalse
               ? (i == 0 ? 'true' : 'false')
-              : field.controller.text,
+              : field.control.value ?? '',
           isCorrect: _questionType == CompetitionQuestionType.ordering
               ? false
               : field.isCorrect,
@@ -197,8 +227,8 @@ class _AdminCompetitionQuestionEditorDialogState
             id: widget.question?.id,
             competitionId: widget.competitionId,
             questionType: _questionType,
-            prompt: _promptController.text,
-            explanation: _explanationController.text,
+            prompt: _form.control('prompt').value as String,
+            explanation: _form.control('explanation').value as String? ?? '',
             points: points,
             options: options,
             sortOrder: widget.question?.sortOrder ?? widget.sortOrder,
@@ -224,6 +254,7 @@ class _AdminCompetitionQuestionEditorDialogState
     final isSaving = ref.watch(
       adminCompetitionQuestionSaveProvider.select((state) => state.isLoading),
     );
+    _syncEnabled(isSaving);
 
     return AlertDialog(
       title: Text(
@@ -233,16 +264,15 @@ class _AdminCompetitionQuestionEditorDialogState
       ),
       content: SizedBox(
         width: 520.w,
-        child: Form(
-          key: _formKey,
+        child: ReactiveForm(
+          formGroup: _form,
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                DropdownButtonFormField<CompetitionQuestionType>(
-                  key: ValueKey(_questionType),
-                  initialValue: _questionType,
+                ReactiveDropdownField<CompetitionQuestionType>(
+                  formControlName: 'questionType',
                   decoration: InputDecoration(
                     labelText: l10n.adminCompetitionQuestionTypeLabel,
                   ),
@@ -260,43 +290,39 @@ class _AdminCompetitionQuestionEditorDialogState
                       child: Text(l10n.adminCompetitionQuestionTypeOrdering),
                     ),
                   ],
-                  onChanged: isSaving ? null : _onTypeChanged,
+                  onChanged: (control) => _onTypeChanged(control.value),
                 ),
                 SizedBox(height: 12.h),
-                TextFormField(
-                  controller: _promptController,
-                  enabled: !isSaving,
+                ReactiveTextField<String>(
+                  formControlName: 'prompt',
                   maxLines: 3,
                   decoration: InputDecoration(
                     labelText: l10n.adminCompetitionQuestionPromptLabel,
                   ),
-                  validator: (value) => value == null || value.trim().isEmpty
-                      ? l10n.adminCompetitionQuestionPromptRequired
-                      : null,
+                  validationMessages: {
+                    ValidationMessage.required: (_) =>
+                        l10n.adminCompetitionQuestionPromptRequired,
+                  },
                 ),
                 SizedBox(height: 12.h),
-                TextFormField(
-                  controller: _explanationController,
-                  enabled: !isSaving,
+                ReactiveTextField<String>(
+                  formControlName: 'explanation',
                   maxLines: 3,
                   decoration: InputDecoration(
                     labelText: l10n.adminCompetitionQuestionExplanationLabel,
                   ),
                 ),
                 SizedBox(height: 12.h),
-                TextFormField(
-                  controller: _pointsController,
-                  enabled: !isSaving,
+                ReactiveTextField<int>(
+                  formControlName: 'points',
+                  valueAccessor: IntValueAccessor(),
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     labelText: l10n.adminCompetitionQuestionPointsLabel,
                   ),
-                  validator: (value) {
-                    final points = int.tryParse(value?.trim() ?? '');
-                    if (points == null || points <= 0) {
-                      return l10n.adminCompetitionQuestionPointsInvalid;
-                    }
-                    return null;
+                  validationMessages: {
+                    'pointsInvalid': (_) =>
+                        l10n.adminCompetitionQuestionPointsInvalid,
                   },
                 ),
                 SizedBox(height: 16.h),
@@ -330,18 +356,17 @@ class _AdminCompetitionQuestionEditorDialogState
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
-                              child: TextFormField(
-                                controller: field.controller,
-                                enabled: !isSaving,
+                              child: ReactiveTextField<String>(
+                                formControl: field.control,
                                 decoration: InputDecoration(
                                   labelText: l10n.adminCompetitionQuestionStepLabel(
                                     index + 1,
                                   ),
                                 ),
-                                validator: (value) =>
-                                    value == null || value.trim().isEmpty
-                                        ? l10n.adminCompetitionQuestionOptionRequired
-                                        : null,
+                                validationMessages: {
+                                  'optionRequired': (_) => l10n
+                                      .adminCompetitionQuestionOptionRequired,
+                                },
                               ),
                             ),
                             if (_optionFields.length > 3)
@@ -401,20 +426,18 @@ class _AdminCompetitionQuestionEditorDialogState
                                   enabled: !isSaving,
                                 ),
                                 Expanded(
-                                  child: TextFormField(
-                                    controller: _optionFields[index].controller,
-                                    enabled: !isSaving,
+                                  child: ReactiveTextField<String>(
+                                    formControl: _optionFields[index].control,
                                     decoration: InputDecoration(
                                       labelText:
                                           l10n.adminCompetitionQuestionOptionLabel(
                                         index + 1,
                                       ),
                                     ),
-                                    validator: (value) =>
-                                        value == null || value.trim().isEmpty
-                                            ? l10n
-                                                .adminCompetitionQuestionOptionRequired
-                                            : null,
+                                    validationMessages: {
+                                      'optionRequired': (_) => l10n
+                                          .adminCompetitionQuestionOptionRequired,
+                                    },
                                   ),
                                 ),
                               ],
@@ -460,10 +483,10 @@ class _AdminCompetitionQuestionEditorDialogState
 
 class _OptionField {
   _OptionField({
-    required this.controller,
+    required this.control,
     required this.isCorrect,
   });
 
-  final TextEditingController controller;
+  final FormControl<String> control;
   bool isCorrect;
 }

@@ -35,7 +35,8 @@
 | CI (analyze + test) | ✅ `.github/workflows/flutter_ci.yml` |
 | Auth (US-03) | ✅ Login, pilgrim session, guest/pilgrim home |
 | Supabase migrations | ✅ profiles + RLS (local) |
-| In-app notifications (inbox) | ✅ Inbox, badge, Realtime stream, broadcast, triggers, SnackBar |
+| In-app notifications (inbox) | ✅ Inbox, badge, Realtime stream, broadcast, triggers, SnackBar; **guest public feed** |
+| Pilgrim ↔ trips restructure | ✅ Final-form migrations (no `pilgrim_details`), Arabic seed, trips feature, operator/admin/edge write paths + rituals-per-enrollment, operator→group permissions; `db reset` + analyze clean (live RLS = manual QA) |
 | Supabase Realtime (live data) | ✅ pilgrim registry, content, admin, competitions, rituals |
 | FCM push (phase 3) | ✅ device_tokens, Edge Function, Flutter registration (needs Firebase project) |
 
@@ -66,6 +67,31 @@
 - [x] FCM push (device tokens + Edge Function)
 
 ## Changelog
+
+### 2026-06-20 — `.cursorrules` conformance audit + rollout
+- [x] **Audit** of codebase vs updated `.cursorrules`; `flutter analyze` already clean.
+- [x] **`.cursorrules`** updated: blessed `AppColors` tokens (wired into `ColorScheme`) + banned raw `Color(0x…)` in widgets; fixed outdated `AppLocalizations.of(context)!` example.
+- [x] **Deps:** added `reactive_forms` + `flutter_gen_runner`; removed unused `google_fonts`.
+- [x] **`flutter_gen`** assets: `lib/core/gen/assets.gen.dart`; declared `virtual_tour/images` + `pannellum` dirs; replaced 2 hardcoded asset paths with `Assets.*`.
+- [x] **`data_sources/` layer rolled out to ALL repositories** (~21 features): every `SupabaseClient` call (`.from`/`.rpc`/`.storage`/`.functions`/`.auth`) moved to `data/data_sources/*_remote_data_source.dart`; repos build the DS from the injected client (no provider changes) and keep mapping + try/catch. Canonical: `trips`. Verified: no repo references `_client`/`.from('`/`.rpc(`/`Supabase.instance`.
+- [x] **`reactive_forms` rolled out to all validation forms** (17 incl. trip editor): `FormGroup`/`ReactiveForm`/`ReactiveTextField`/`ReactiveDropdownField` + `Validators` + `validationMessages`. No `TextFormField`/`GlobalKey<FormState>` remain. Canonical: `trip_editor_dialog`.
+- [x] Verified: `flutter analyze` → No issues found; `build_runner` clean.
+- [ ] Residual (intentional): search fields + dynamic media-draft rows keep `TextEditingController` (not validation forms); Inter fonts under `assets/fonts/` not yet wired.
+
+### 2026-06-20 — Pilgrim ↔ trips (phase 2 + final-form migrations)
+- [x] **Migrations rewritten to final form** (dev data is disposable): dropped `pilgrim_details` + the restructure/backfill migration. `20260521140000_pilgrim_rituals.sql` now builds the whole pilgrim domain directly (`groups`, `operator_group_access`, `trips`, `trip_groups`, `pilgrims`, `trip_enrollments`, per-enrollment `ritual_logs`, RLS, view, triggers).
+- [x] New `20260521121000_rls_helpers.sql` (`is_admin`/`is_operator_or_admin`); deleted `fix_profiles_rls_recursion` + `pilgrim_registry_extended`; `operator_intake`/`field_operator`/`admin_analytics`/`admin_pilgrim_management`/`enable_realtime` retargeted to new tables.
+- [x] **Operator → group permissions:** `operator_group_access` + `operator_can_read_group()`/`operator_can_write_group()`; `trip_enrollments` RLS group-scoped for operators. Admin operator editor "Group access" section (read / read+write per group); repo loads + replaces grants; new operators default to all groups via DB trigger.
+- [x] **Phase-2 app:** operator registry keyed by `pilgrimId` (route `/operator/pilgrims/:pilgrimId`), reads view + writes `pilgrims`/`trip_enrollments`; admin analytics on new tables; rituals per `enrollment_id`; `create-pilgrim` edge fn writes `pilgrims` + active-trip enrollment; `realtime_tables.dart` updated.
+- [x] **Arabic seed** (`supabase/seed.sql`): 3 offices, 2 trips (Hajj active / Umrah planning), 8 pilgrims, 10 enrollments, Arabic content/competitions.
+- [x] Verified: `supabase db reset` clean (2 trips/3 groups/8 pilgrims/10 enrollments); `flutter analyze` clean; `build_runner` + `gen-l10n` regenerated.
+- [ ] Pending: live RLS test with demo auth users; retire/refresh `scripts/seed-fake-pilgrim-registry.mjs` (still targets `pilgrim_details`).
+
+### 2026-06-20 — Pilgrim ↔ trips restructure (phase 1)
+- [x] Migration `20260620120000_pilgrim_trips_restructure.sql`: `trips`, `trip_groups`, `pilgrims` (passport identity), `trip_enrollments` (per-trip logistics); `ritual_logs.enrollment_id`; `pilgrim_documents.pilgrim_id`/`enrollment_id`.
+- [x] Backfill legacy `pilgrim_details` → person + enrollment under stable legacy trip; `group_name` → `groups`/`trip_groups`; rituals/documents relinked. RLS for all new tables; `pilgrim_enrollment_view` (security_invoker); realtime added.
+- [x] Flutter `trips` feature: models, `TripsRepository`, providers, admin `/admin/trips` + `/admin/trips/:id/offices`, sidebar nav, `TripSelector`. `PilgrimRegistryRepository` reads the view (optional `tripId`), writes `trip_enrollments`; field operator wired to active trip. l10n en/ar; `flutter analyze` clean.
+- [ ] Pending: operator intake / `create-pilgrim` edge fn / operator + admin-analytics reads still on legacy `pilgrim_details`; rituals still keyed by profile id. Apply migration after Docker is up (`supabase db reset`).
 
 ### 2026-06-08 — Realtime rebuild loop fix
 - [x] Root cause: `watchSupabaseTables` inside autoDispose providers → `invalidateSelf` → dispose/resubscribe → initial snapshot → loop.
@@ -186,6 +212,11 @@
 - **US-01:** `content_library` table, public feed on home, content detail route, seed data.
 - **US-03:** Pilgrim login (`/login`), Supabase Auth, `profiles.role`, guest vs pilgrim home UI, migration + seed docs.
 - Created Notion page **Rafiq Al-Hajj — Flutter Dev Status (Cursor sync)** under project workspace (team-visible snapshot of memory-bank).
+
+### 2026-06-18 — Guest notifications + UX fixes
+- [x] Removed guest redirect on `/notifications` (shell/bottom nav preserved).
+- [x] `public_announcements` table + broadcast mirror; guest inbox from public content + admin broadcasts.
+- [x] Profile: single pilgrim login button; home topics carousel overflow fixed.
 
 ### 2026-06-09 — Content media storage, offline, native audio
 - [x] Migration `20260610120000_content_media_storage.sql` — `content-media` bucket + RLS.

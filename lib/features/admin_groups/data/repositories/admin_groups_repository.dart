@@ -1,8 +1,6 @@
-import 'dart:typed_data';
-
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
-import 'package:rafiq_alhajj/core/utils/postgrest_search_sanitize.dart';
+import 'package:rafiq_alhajj/features/admin_groups/data/data_sources/admin_groups_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/admin_groups/domain/models/group_administration_member.dart';
 import 'package:rafiq_alhajj/features/admin_groups/domain/models/group_editor_input.dart';
 import 'package:rafiq_alhajj/features/admin_groups/domain/models/hajj_group.dart';
@@ -18,49 +16,23 @@ class AdminGroupsException implements Exception {
 }
 
 class AdminGroupsRepository {
-  AdminGroupsRepository([SupabaseClient? client]) : _client = client;
+  AdminGroupsRepository([SupabaseClient? client])
+      : _remote = client == null ? null : AdminGroupsRemoteDataSource(client);
 
-  final SupabaseClient? _client;
+  final AdminGroupsRemoteDataSource? _remote;
 
-  bool get isAvailable => AppConfig.hasSupabase && _client != null;
-
-  static const _groupSelect =
-      'id, name, code, logo_url, president_name, president_phone, '
-      'created_at, updated_at, '
-      'group_administration_members(id, name, position, contact, photo_url, sort_order)';
+  bool get isAvailable => AppConfig.hasSupabase && _remote != null;
 
   Future<PaginatedResult<HajjGroup>> fetchPage(StaffTableQuery query) async {
     if (!isAvailable) {
       throw const AdminGroupsException('Supabase is not configured');
     }
-
+    final remote = _remote!;
     try {
-      var request = _client!.from('groups').select(_groupSelect);
-
-      final search = query.search.trim();
-      if (search.isNotEmpty) {
-        final term = sanitizePostgrestSearchTerm(search);
-        request = request.or(
-          'name.ilike.%$term%,president_name.ilike.%$term%,code.ilike.%$term%',
-        );
-      }
-
-      final sortColumn = switch (query.sortColumnId) {
-        'president_name' => 'president_name',
-        'code' => 'code',
-        'created_at' => 'created_at',
-        _ => 'name',
-      };
-
-      final response = await request
-          .order(sortColumn, ascending: query.sortAscending)
-          .range(query.from, query.to)
-          .count(CountOption.exact);
-
-      final rows = response.data as List<dynamic>;
+      final result = await remote.fetchPage(query);
       return PaginatedResult(
-        items: rows.map(_rowToGroup).toList(),
-        totalCount: response.count,
+        items: result.rows.map(_rowToGroup).toList(),
+        totalCount: result.count,
         pageSize: query.pageSize,
       );
     } on PostgrestException catch (e) {
@@ -72,14 +44,9 @@ class AdminGroupsRepository {
     if (!isAvailable) {
       throw const AdminGroupsException('Supabase is not configured');
     }
-
+    final remote = _remote!;
     try {
-      final row = await _client!
-          .from('groups')
-          .select(_groupSelect)
-          .eq('id', id)
-          .single();
-
+      final row = await remote.fetchById(id);
       return _rowToGroup(row);
     } on PostgrestException catch (e) {
       throw AdminGroupsException(e.message);
@@ -90,41 +57,33 @@ class AdminGroupsRepository {
     if (!isAvailable) {
       throw const AdminGroupsException('Supabase is not configured');
     }
-
+    final remote = _remote!;
     try {
-      final client = _client!;
       final groupId = input.id;
       String resolvedGroupId;
 
       if (groupId != null) {
-        await client
-            .from('groups')
-            .update({
-              'name': input.name.trim(),
-              'president_name': _nullableTrim(input.presidentName),
-              'president_phone': _nullableTrim(input.presidentPhone),
-              'updated_at': DateTime.now().toUtc().toIso8601String(),
-            })
-            .eq('id', groupId);
+        await remote.updateGroup(groupId, {
+          'name': input.name.trim(),
+          'president_name': _nullableTrim(input.presidentName),
+          'president_phone': _nullableTrim(input.presidentPhone),
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
+        });
         resolvedGroupId = groupId;
       } else {
-        final code = await _uniqueCode(input.name.trim());
-        final row = await client
-            .from('groups')
-            .insert({
-              'name': input.name.trim(),
-              'code': code,
-              'president_name': _nullableTrim(input.presidentName),
-              'president_phone': _nullableTrim(input.presidentPhone),
-            })
-            .select('id')
-            .single();
+        final code = await _uniqueCode(remote, input.name.trim());
+        final row = await remote.insertGroup({
+          'name': input.name.trim(),
+          'code': code,
+          'president_name': _nullableTrim(input.presidentName),
+          'president_phone': _nullableTrim(input.presidentPhone),
+        });
         resolvedGroupId = row['id'] as String;
       }
 
       var logoUrl = input.logoUrl;
       if (input.logoBytes != null && input.logoFileName != null) {
-        logoUrl = await _uploadAsset(
+        logoUrl = await remote.uploadAsset(
           groupId: resolvedGroupId,
           folder: 'logo',
           fileName: input.logoFileName!,
@@ -133,16 +92,10 @@ class AdminGroupsRepository {
       }
 
       if (logoUrl != null) {
-        await client
-            .from('groups')
-            .update({'logo_url': logoUrl})
-            .eq('id', resolvedGroupId);
+        await remote.updateGroup(resolvedGroupId, {'logo_url': logoUrl});
       }
 
-      await client
-          .from('group_administration_members')
-          .delete()
-          .eq('group_id', resolvedGroupId);
+      await remote.deleteAdministrationMembers(resolvedGroupId);
 
       final memberRows = <Map<String, dynamic>>[];
       for (var i = 0; i < input.members.length; i++) {
@@ -153,7 +106,7 @@ class AdminGroupsRepository {
 
         var photoUrl = member.photoUrl;
         if (member.photoBytes != null && member.photoFileName != null) {
-          photoUrl = await _uploadAsset(
+          photoUrl = await remote.uploadAsset(
             groupId: resolvedGroupId,
             folder: 'members/$i',
             fileName: member.photoFileName!,
@@ -173,7 +126,7 @@ class AdminGroupsRepository {
       }
 
       if (memberRows.isNotEmpty) {
-        await client.from('group_administration_members').insert(memberRows);
+        await remote.insertAdministrationMembers(memberRows);
       }
 
       return fetchById(resolvedGroupId);
@@ -190,27 +143,26 @@ class AdminGroupsRepository {
     if (!isAvailable) {
       throw const AdminGroupsException('Supabase is not configured');
     }
-
+    final remote = _remote!;
     try {
-      await _client!.from('groups').delete().eq('id', id);
+      await remote.delete(id);
       return true;
     } on PostgrestException catch (e) {
       throw AdminGroupsException(e.message);
     }
   }
 
-  Future<String> _uniqueCode(String name) async {
+  Future<String> _uniqueCode(
+    AdminGroupsRemoteDataSource remote,
+    String name,
+  ) async {
     final base = _slugify(name);
     final candidate = base.isEmpty ? 'group' : base;
     var suffix = 0;
 
     while (true) {
       final code = suffix == 0 ? candidate : '$candidate-$suffix';
-      final existing = await _client!
-          .from('groups')
-          .select('id')
-          .eq('code', code)
-          .maybeSingle();
+      final existing = await remote.findGroupByCode(code);
       if (existing == null) {
         return code;
       }
@@ -231,26 +183,6 @@ class AdminGroupsRepository {
       return null;
     }
     return trimmed;
-  }
-
-  Future<String> _uploadAsset({
-    required String groupId,
-    required String folder,
-    required String fileName,
-    required Uint8List bytes,
-  }) async {
-    final safeName = fileName.replaceAll(RegExp(r'[^\w.\-]'), '_');
-    final path =
-        '$groupId/$folder/${DateTime.now().millisecondsSinceEpoch}_$safeName';
-    final client = _client!;
-
-    await client.storage.from('group-assets').uploadBinary(
-          path,
-          bytes,
-          fileOptions: const FileOptions(upsert: true),
-        );
-
-    return client.storage.from('group-assets').getPublicUrl(path);
   }
 
   HajjGroup _rowToGroup(dynamic row) {

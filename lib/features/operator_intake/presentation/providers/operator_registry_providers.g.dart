@@ -207,7 +207,7 @@ final class OperatorPilgrimRegistryPageProvider
 }
 
 String _$operatorPilgrimRegistryPageHash() =>
-    r'2cce82f276a86be628d7167b5804763bdbf35ff9';
+    r'7eb89190a5d5ff3f36b81f8520974825da521778';
 
 final class OperatorPilgrimRegistryPageFamily extends $Family
     with
@@ -274,7 +274,7 @@ final class OperatorPilgrimDetailProvider
 }
 
 String _$operatorPilgrimDetailHash() =>
-    r'f5e415961ec3ef4b376bb5f9382adec2d6d9b8ae';
+    r'1c9123b0c10dedf63ea3d426b99786790b471c94';
 
 final class OperatorPilgrimDetailFamily extends $Family
     with
@@ -294,8 +294,8 @@ final class OperatorPilgrimDetailFamily extends $Family
         isAutoDispose: true,
       );
 
-  OperatorPilgrimDetailProvider call(String profileId) =>
-      OperatorPilgrimDetailProvider._(argument: profileId, from: this);
+  OperatorPilgrimDetailProvider call(String pilgrimId) =>
+      OperatorPilgrimDetailProvider._(argument: pilgrimId, from: this);
 
   @override
   String toString() => r'operatorPilgrimDetailProvider';
@@ -304,9 +304,9 @@ final class OperatorPilgrimDetailFamily extends $Family
 abstract class _$OperatorPilgrimDetail
     extends $AsyncNotifier<OperatorPilgrimRecord?> {
   late final _$args = ref.$arg as String;
-  String get profileId => _$args;
+  String get pilgrimId => _$args;
 
-  FutureOr<OperatorPilgrimRecord?> build(String profileId);
+  FutureOr<OperatorPilgrimRecord?> build(String pilgrimId);
   @$mustCallSuper
   @override
   void runBuild() {
@@ -353,7 +353,7 @@ final class PilgrimBulkAssignGroupProvider
 }
 
 String _$pilgrimBulkAssignGroupHash() =>
-    r'99097a00f789a7f68d1938075a93a04da7385244';
+    r'fd4c781141475fe623b08b126f9926030689de55';
 
 abstract class _$PilgrimBulkAssignGroup extends $AsyncNotifier<void> {
   FutureOr<void> build();

@@ -8,6 +8,7 @@ import 'package:rafiq_alhajj/features/operator_intake/data/repositories/operator
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_record.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_summary.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_update.dart';
+import 'package:rafiq_alhajj/features/trips/presentation/providers/trips_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -46,13 +47,14 @@ Future<PaginatedResult<OperatorPilgrimSummary>> operatorPilgrimRegistryPage(
     },
   );
 
-  return ref.read(operatorRegistryServiceProvider).listPage(query);
+  final tripId = await ref.watch(activeTripProvider.future);
+  return ref.read(operatorRegistryServiceProvider).listPage(query, tripId: tripId);
 }
 
 @riverpod
 class OperatorPilgrimDetail extends _$OperatorPilgrimDetail {
   @override
-  Future<OperatorPilgrimRecord?> build(String profileId) {
+  Future<OperatorPilgrimRecord?> build(String pilgrimId) async {
     attachRealtimeSync(
       ref,
       syncKey: RealtimeSyncKeys.pilgrimRegistry,
@@ -61,7 +63,10 @@ class OperatorPilgrimDetail extends _$OperatorPilgrimDetail {
       onInvalidate: (ref) => ref.invalidate(operatorPilgrimDetailProvider),
     );
 
-    return ref.read(operatorRegistryServiceProvider).loadPilgrim(profileId);
+    final tripId = await ref.watch(activeTripProvider.future);
+    return ref
+        .read(operatorRegistryServiceProvider)
+        .loadPilgrim(pilgrimId, tripId: tripId);
   }
 
   Future<bool> save({
@@ -69,10 +74,14 @@ class OperatorPilgrimDetail extends _$OperatorPilgrimDetail {
     bool includeProfileFields = false,
   }) async {
     try {
+      final tripId = await ref.read(activeTripProvider.future);
+      final enrollmentId = state.value?.enrollmentId;
       await ref.read(operatorRegistryServiceProvider).savePilgrim(
-            profileId: profileId,
+            pilgrimId: pilgrimId,
             update: update,
             includeProfileFields: includeProfileFields,
+            tripId: tripId,
+            enrollmentId: enrollmentId,
           );
       ref.invalidateSelf();
       ref.invalidate(operatorPilgrimRegistryPageProvider);
@@ -90,14 +99,16 @@ class PilgrimBulkAssignGroup extends _$PilgrimBulkAssignGroup {
   FutureOr<void> build() {}
 
   Future<bool> assign({
-    required List<String> profileIds,
+    required List<String> pilgrimIds,
     required String? groupId,
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
+      final tripId = await ref.read(activeTripProvider.future);
       await ref.read(operatorRegistryServiceProvider).bulkAssignGroup(
-            profileIds: profileIds,
+            pilgrimIds: pilgrimIds,
             groupId: groupId,
+            tripId: tripId,
           );
       ref.invalidate(operatorPilgrimRegistryPageProvider);
     });

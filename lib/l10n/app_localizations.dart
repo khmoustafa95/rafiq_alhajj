@@ -3151,6 +3151,36 @@ abstract class AppLocalizations {
   /// **'Upload pilgrim documents during registration.'**
   String get adminOperatorPermUploadHint;
 
+  /// No description provided for @adminOperatorGroupsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Group access'**
+  String get adminOperatorGroupsSection;
+
+  /// No description provided for @adminOperatorGroupsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which travel offices (groups) this operator can read and write.'**
+  String get adminOperatorGroupsHint;
+
+  /// No description provided for @adminOperatorGroupsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No groups available yet.'**
+  String get adminOperatorGroupsEmpty;
+
+  /// No description provided for @adminOperatorGroupRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Read'**
+  String get adminOperatorGroupRead;
+
+  /// No description provided for @adminOperatorGroupWrite.
+  ///
+  /// In en, this message translates to:
+  /// **'Read & write'**
+  String get adminOperatorGroupWrite;
+
   /// No description provided for @adminOperatorGeneratePassword.
   ///
   /// In en, this message translates to:
@@ -4488,6 +4518,276 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not save ritual.'**
   String get adminHajjJourneySaveError;
+
+  /// No description provided for @staffNavTrips.
+  ///
+  /// In en, this message translates to:
+  /// **'Trips'**
+  String get staffNavTrips;
+
+  /// No description provided for @adminTripsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip management'**
+  String get adminTripsTitle;
+
+  /// No description provided for @adminTripsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Hajj and Umrah trips per season and the offices that join them.'**
+  String get adminTripsSubtitle;
+
+  /// No description provided for @adminTripAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add trip'**
+  String get adminTripAdd;
+
+  /// No description provided for @adminTripsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No trips yet. Add your first Hajj or Umrah trip.'**
+  String get adminTripsEmpty;
+
+  /// No description provided for @adminTripsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load trips.'**
+  String get adminTripsLoadError;
+
+  /// No description provided for @adminTripNewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New trip'**
+  String get adminTripNewTitle;
+
+  /// No description provided for @adminTripEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit trip'**
+  String get adminTripEditTitle;
+
+  /// No description provided for @adminTripName.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip name'**
+  String get adminTripName;
+
+  /// No description provided for @adminTripNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip name is required'**
+  String get adminTripNameRequired;
+
+  /// No description provided for @adminTripType.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip type'**
+  String get adminTripType;
+
+  /// No description provided for @adminTripTypeHajj.
+  ///
+  /// In en, this message translates to:
+  /// **'Hajj'**
+  String get adminTripTypeHajj;
+
+  /// No description provided for @adminTripTypeUmrah.
+  ///
+  /// In en, this message translates to:
+  /// **'Umrah'**
+  String get adminTripTypeUmrah;
+
+  /// No description provided for @adminTripSeasonYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Season year'**
+  String get adminTripSeasonYear;
+
+  /// No description provided for @adminTripSeasonYearRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'A valid season year is required'**
+  String get adminTripSeasonYearRequired;
+
+  /// No description provided for @adminTripStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get adminTripStatus;
+
+  /// No description provided for @adminTripStatusPlanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Planning'**
+  String get adminTripStatusPlanning;
+
+  /// No description provided for @adminTripStatusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get adminTripStatusActive;
+
+  /// No description provided for @adminTripStatusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get adminTripStatusCompleted;
+
+  /// No description provided for @adminTripStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get adminTripStatusCancelled;
+
+  /// No description provided for @adminTripSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save trip'**
+  String get adminTripSave;
+
+  /// No description provided for @adminTripCreateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip created'**
+  String get adminTripCreateSuccess;
+
+  /// No description provided for @adminTripSaveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip updated'**
+  String get adminTripSaveSuccess;
+
+  /// No description provided for @adminTripSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save trip. Try again.'**
+  String get adminTripSaveError;
+
+  /// No description provided for @adminTripDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete trip?'**
+  String get adminTripDeleteTitle;
+
+  /// No description provided for @adminTripDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"? All enrollments in this trip will be removed.'**
+  String adminTripDeleteMessage(String name);
+
+  /// No description provided for @adminTripDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get adminTripDeleteConfirm;
+
+  /// No description provided for @adminTripDeleteSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip deleted'**
+  String get adminTripDeleteSuccess;
+
+  /// No description provided for @adminTripDeleteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete trip'**
+  String get adminTripDeleteError;
+
+  /// No description provided for @adminTripManageOffices.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage offices'**
+  String get adminTripManageOffices;
+
+  /// No description provided for @adminTripOfficesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Participating offices'**
+  String get adminTripOfficesTitle;
+
+  /// No description provided for @adminTripOfficesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add or withdraw travel offices for this trip.'**
+  String get adminTripOfficesSubtitle;
+
+  /// No description provided for @adminTripOfficesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No offices joined this trip yet.'**
+  String get adminTripOfficesEmpty;
+
+  /// No description provided for @adminTripAddOffice.
+  ///
+  /// In en, this message translates to:
+  /// **'Add office'**
+  String get adminTripAddOffice;
+
+  /// No description provided for @adminTripNoAvailableOffices.
+  ///
+  /// In en, this message translates to:
+  /// **'All offices already joined this trip.'**
+  String get adminTripNoAvailableOffices;
+
+  /// No description provided for @adminTripOfficeWithdraw.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw'**
+  String get adminTripOfficeWithdraw;
+
+  /// No description provided for @adminTripOfficeActivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Reactivate'**
+  String get adminTripOfficeActivate;
+
+  /// No description provided for @adminTripOfficeRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get adminTripOfficeRemove;
+
+  /// No description provided for @adminTripOfficeActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get adminTripOfficeActive;
+
+  /// No description provided for @adminTripOfficeWithdrawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawn'**
+  String get adminTripOfficeWithdrawn;
+
+  /// No description provided for @adminTripOfficeUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Office updated'**
+  String get adminTripOfficeUpdated;
+
+  /// No description provided for @adminTripOfficeAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Office added to trip'**
+  String get adminTripOfficeAdded;
+
+  /// No description provided for @adminTripOfficeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update office'**
+  String get adminTripOfficeError;
+
+  /// No description provided for @tripSelectorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active trip'**
+  String get tripSelectorLabel;
+
+  /// No description provided for @tripSelectorAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All trips'**
+  String get tripSelectorAll;
 }
 
 class _AppLocalizationsDelegate

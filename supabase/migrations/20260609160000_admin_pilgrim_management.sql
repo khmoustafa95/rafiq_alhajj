@@ -17,7 +17,3 @@ create policy "Admins update pilgrim profiles"
   to authenticated
   using (public.is_admin() and role = 'pilgrim')
   with check (public.is_admin() and role = 'pilgrim');
-
-create index if not exists profiles_group_id_idx on public.profiles (group_id);
-
-create index if not exists pilgrim_details_gender_idx on public.pilgrim_details (gender);

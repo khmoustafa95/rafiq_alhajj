@@ -1,6 +1,6 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/features/pilgrim/data/data_sources/pilgrim_registry_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/pilgrim/data/dtos/pilgrim_dto.dart';
-import 'package:rafiq_alhajj/features/pilgrim/data/pilgrim_registry_columns.dart';
 import 'package:rafiq_alhajj/features/pilgrim/domain/models/pilgrim.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -14,104 +14,85 @@ class PilgrimRegistryException implements Exception {
 }
 
 class PilgrimRegistryRepository {
-  PilgrimRegistryRepository([SupabaseClient? client]) : _client = client;
+  PilgrimRegistryRepository([SupabaseClient? client])
+      : _remote =
+            client == null ? null : PilgrimRegistryRemoteDataSource(client);
 
-  final SupabaseClient? _client;
+  final PilgrimRegistryRemoteDataSource? _remote;
 
-  bool get isAvailable => AppConfig.hasSupabase && _client != null;
+  bool get isAvailable => AppConfig.hasSupabase && _remote != null;
 
-  Future<List<Pilgrim>> fetchAllPilgrims() async {
+  /// Reads pilgrims through the flat [pilgrim_enrollment_view] (person + trip
+  /// enrollment joined). Optionally scoped to a single [tripId].
+  Future<List<Pilgrim>> fetchAllPilgrims({String? tripId}) async {
     if (!isAvailable) {
       return [];
     }
-
+    final remote = _remote!;
     try {
-      final rows = await _client!
-          .from('profiles')
-          .select(
-            'id, full_name, pilgrim_details(${PilgrimRegistryColumns.detailsSelect})',
-          )
-          .eq('role', 'pilgrim')
-          .order('full_name');
-
-      return (rows as List<dynamic>)
-          .map((row) => PilgrimDto.fromJoinedProfile(
-                Map<String, dynamic>.from(row as Map),
-              ))
-          .toList(growable: false);
+      final rows = await remote.fetchEnrollments(tripId: tripId);
+      return rows.map(_rowToPilgrim).toList(growable: false);
     } on PostgrestException catch (e) {
       throw PilgrimRegistryException(e.message);
     }
   }
 
-  Future<Pilgrim?> fetchByProfileId(String profileId) async {
+  Future<Pilgrim?> fetchByProfileId(String profileId, {String? tripId}) async {
     if (!isAvailable) {
       return null;
     }
-
+    final remote = _remote!;
     try {
-      final row = await _client!
-          .from('profiles')
-          .select(
-            'id, full_name, pilgrim_details(${PilgrimRegistryColumns.detailsSelect})',
-          )
-          .eq('id', profileId)
-          .eq('role', 'pilgrim')
-          .maybeSingle();
-
-      if (row == null) {
+      final rows =
+          await remote.fetchEnrollmentByProfile(profileId, tripId: tripId);
+      if (rows.isEmpty) {
         return null;
       }
 
-      return PilgrimDto.fromJoinedProfile(Map<String, dynamic>.from(row));
+      return _rowToPilgrim(rows.first);
     } on PostgrestException catch (e) {
       throw PilgrimRegistryException(e.message);
     }
   }
 
-  Future<Pilgrim?> fetchDetailsOnly(String profileId) async {
-    if (!isAvailable) {
-      return null;
-    }
-
-    try {
-      final row = await _client!
-          .from('pilgrim_details')
-          .select(PilgrimRegistryColumns.detailsSelect)
-          .eq('profile_id', profileId)
-          .maybeSingle();
-
-      if (row == null) {
-        return null;
-      }
-
-      final dto = PilgrimDto.fromJson({
-        ...Map<String, dynamic>.from(row),
-        'profile_id': profileId,
-      });
-      return dto.toDomain();
-    } on PostgrestException catch (e) {
-      throw PilgrimRegistryException(e.message);
-    }
+  Future<Pilgrim?> fetchDetailsOnly(String profileId, {String? tripId}) async {
+    return fetchByProfileId(profileId, tripId: tripId);
   }
 
+  /// Updates the field status on the pilgrim's trip enrollment(s). When
+  /// [tripId] is provided only that enrollment is updated.
   Future<void> updateFieldStatus({
     required String profileId,
     required String? fieldStatus,
     required String? medicalTestStatus,
+    String? tripId,
   }) async {
     if (!isAvailable) {
       throw const PilgrimRegistryException('Supabase is not configured');
     }
-
+    final remote = _remote!;
     try {
-      await _client!.from('pilgrim_details').update({
-        'field_status': fieldStatus,
-        'medical_test_status': medicalTestStatus,
-        'updated_at': DateTime.now().toUtc().toIso8601String(),
-      }).eq('profile_id', profileId);
+      final pilgrim = await remote.findPilgrimByProfile(profileId);
+      if (pilgrim == null) {
+        return;
+      }
+
+      await remote.updateEnrollmentFieldStatus(
+        pilgrimId: pilgrim['id'] as String,
+        payload: {
+          'field_status': fieldStatus,
+          'medical_test_status': medicalTestStatus,
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
+        },
+        tripId: tripId,
+      );
     } on PostgrestException catch (e) {
       throw PilgrimRegistryException(e.message);
     }
+  }
+
+  Pilgrim _rowToPilgrim(Map<String, dynamic> row) {
+    final dto = PilgrimDto.fromJson(row);
+    return dto.toDomain(displayName: row['full_name'] as String?);
   }
 }

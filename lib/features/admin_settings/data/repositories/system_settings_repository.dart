@@ -1,4 +1,5 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/features/admin_settings/data/data_sources/system_settings_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/admin_settings/domain/models/system_settings.dart';
 import 'package:rafiq_alhajj/features/admin_settings/domain/models/system_settings_input.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -13,51 +14,40 @@ class SystemSettingsException implements Exception {
 }
 
 class SystemSettingsRepository {
-  SystemSettingsRepository([SupabaseClient? client]) : _client = client;
+  SystemSettingsRepository([SupabaseClient? client])
+      : _remote = (AppConfig.hasSupabase && client != null)
+            ? SystemSettingsRemoteDataSource(client)
+            : null;
 
-  final SupabaseClient? _client;
+  final SystemSettingsRemoteDataSource? _remote;
 
-  static const globalId = 'global';
-
-  static const _selectColumns =
-      'organization_name, support_email, support_phone, hajj_season_label, '
-      'registration_open, maintenance_mode, maintenance_message, '
-      'require_documents_on_intake, auto_generate_pilgrim_password, '
-      'allow_operator_self_registration, enable_public_content_feed, '
-      'enable_competitions, enable_push_notifications, enable_in_app_notifications, '
-      'pilgrim_ritual_tracking_enabled, max_pilgrims_per_group, updated_at';
-
-  bool get isAvailable => AppConfig.hasSupabase && _client != null;
+  bool get isAvailable => _remote != null;
 
   Future<SystemSettings> fetch() async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       return SystemSettings.defaults();
     }
 
     try {
-      final row = await _client!
-          .from('system_settings')
-          .select(_selectColumns)
-          .eq('id', globalId)
-          .maybeSingle();
-
+      final row = await remote.fetch();
       if (row == null) {
         return SystemSettings.defaults();
       }
-
-      return _mapRow(Map<String, dynamic>.from(row));
+      return _mapRow(row);
     } on PostgrestException catch (e) {
       throw SystemSettingsException(e.message);
     }
   }
 
   Future<SystemSettings> save(SystemSettingsInput input) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       throw const SystemSettingsException('Supabase is not configured');
     }
 
     try {
-      final userId = _client!.auth.currentUser?.id;
+      final userId = remote.currentUserId;
       final payload = {
         'organization_name': input.organizationName.trim(),
         'support_email': _nullableTrim(input.supportEmail),
@@ -79,14 +69,8 @@ class SystemSettingsRepository {
         'updated_by': ?userId,
       };
 
-      final row = await _client
-          .from('system_settings')
-          .update(payload)
-          .eq('id', globalId)
-          .select(_selectColumns)
-          .single();
-
-      return _mapRow(Map<String, dynamic>.from(row));
+      final row = await remote.update(payload);
+      return _mapRow(row);
     } on PostgrestException catch (e) {
       throw SystemSettingsException(e.message);
     }

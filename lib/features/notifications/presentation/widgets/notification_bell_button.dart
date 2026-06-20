@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
-import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
@@ -12,11 +11,6 @@ class NotificationBellButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profileId = ref.watch(authProfileIdProvider);
-    if (profileId == null) {
-      return const SizedBox.shrink();
-    }
-
     return const _NotificationBellWithBadge();
   }
 }

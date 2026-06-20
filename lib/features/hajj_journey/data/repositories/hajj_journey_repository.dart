@@ -1,4 +1,5 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/features/hajj_journey/data/data_sources/hajj_journey_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/data/hajj_journey_fallback_data.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/domain/models/hajj_journey_media.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/domain/models/hajj_journey_step.dart';
@@ -14,31 +15,25 @@ class HajjJourneyException implements Exception {
 }
 
 class HajjJourneyRepository {
-  HajjJourneyRepository([SupabaseClient? client]) : _client = client;
+  HajjJourneyRepository([SupabaseClient? client])
+      : _remote = AppConfig.hasSupabase && client != null
+            ? HajjJourneyRemoteDataSource(client)
+            : null;
 
-  final SupabaseClient? _client;
+  final HajjJourneyRemoteDataSource? _remote;
 
-  bool get isAvailable => AppConfig.hasSupabase && _client != null;
+  bool get isAvailable => _remote != null;
 
   Future<List<HajjJourneyStep>> fetchActiveSteps() async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       return HajjJourneyFallbackData.steps();
     }
 
     try {
-      final rows = await _client!
-          .from('hajj_journey_steps')
-          .select(
-            'id, ritual_key, sort_order, title_ar, title_en, '
-            'description_ar, description_en, is_active, '
-            'hajj_journey_media(id, media_type, title, url, sort_order)',
-          )
-          .eq('is_active', true)
-          .order('sort_order');
+      final rows = await remote.fetchActiveSteps();
 
-      final steps = (rows as List<dynamic>)
-          .map((row) => _mapStep(Map<String, dynamic>.from(row as Map)))
-          .toList();
+      final steps = rows.map(_mapStep).toList();
 
       if (steps.isEmpty) {
         return HajjJourneyFallbackData.steps();

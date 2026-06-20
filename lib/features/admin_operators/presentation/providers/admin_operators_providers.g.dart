@@ -263,6 +263,48 @@ final class AdminOperatorDetailFamily extends $Family
   String toString() => r'adminOperatorDetailProvider';
 }
 
+@ProviderFor(adminOperatorGroupOptions)
+final adminOperatorGroupOptionsProvider = AdminOperatorGroupOptionsProvider._();
+
+final class AdminOperatorGroupOptionsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<OperatorGroupOption>>,
+          List<OperatorGroupOption>,
+          FutureOr<List<OperatorGroupOption>>
+        >
+    with
+        $FutureModifier<List<OperatorGroupOption>>,
+        $FutureProvider<List<OperatorGroupOption>> {
+  AdminOperatorGroupOptionsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'adminOperatorGroupOptionsProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$adminOperatorGroupOptionsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<OperatorGroupOption>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<OperatorGroupOption>> create(Ref ref) {
+    return adminOperatorGroupOptions(ref);
+  }
+}
+
+String _$adminOperatorGroupOptionsHash() =>
+    r'1cd15b1ce1c4e2e7abaa0316866e5d685c71195a';
+
 @ProviderFor(AdminOperatorSave)
 final adminOperatorSaveProvider = AdminOperatorSaveProvider._();
 

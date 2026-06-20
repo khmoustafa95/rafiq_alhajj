@@ -8,18 +8,20 @@ class FieldOperatorService {
 
   final FieldOperatorRepository _repository;
 
-  Future<List<Pilgrim>> loadAllPilgrims() => _repository.fetchPilgrims();
+  Future<List<Pilgrim>> loadAllPilgrims({String? tripId}) =>
+      _repository.fetchPilgrims(tripId: tripId);
 
-  Future<FieldOperatorStats> loadStats() async {
-    final pilgrims = await _repository.fetchPilgrims();
+  Future<FieldOperatorStats> loadStats({String? tripId}) async {
+    final pilgrims = await _repository.fetchPilgrims(tripId: tripId);
     return FieldOperatorStats.fromPilgrims(pilgrims);
   }
 
   Future<List<PilgrimSearchItem>> searchPilgrims({
     required String query,
     String? fieldStatusFilter,
+    String? tripId,
   }) async {
-    final all = await _repository.fetchPilgrims();
+    final all = await _repository.fetchPilgrims(tripId: tripId);
     final trimmed = query.trim().toLowerCase();
 
     final filtered = all.where((pilgrim) {
@@ -57,19 +59,21 @@ class FieldOperatorService {
         .toList(growable: false);
   }
 
-  Future<Pilgrim?> loadPilgrim(String profileId) {
-    return _repository.fetchPilgrim(profileId);
+  Future<Pilgrim?> loadPilgrim(String profileId, {String? tripId}) {
+    return _repository.fetchPilgrim(profileId, tripId: tripId);
   }
 
   Future<void> savePilgrimUpdates({
     required String profileId,
     required String? fieldStatus,
     required String? medicalTestStatus,
+    String? tripId,
   }) {
     return _repository.updatePilgrimLogistics(
       profileId: profileId,
       fieldStatus: fieldStatus,
       medicalTestStatus: medicalTestStatus,
+      tripId: tripId,
     );
   }
 }

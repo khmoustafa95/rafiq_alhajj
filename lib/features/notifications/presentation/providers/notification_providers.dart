@@ -19,12 +19,26 @@ NotificationRepository notificationRepository(Ref ref) {
 @riverpod
 Stream<int> unreadNotificationCount(Ref ref) async* {
   final profileId = ref.watch(authProfileIdProvider);
+  final repository = ref.watch(notificationRepositoryProvider);
+
   if (profileId == null) {
-    yield 0;
+    try {
+      final guestItems = await repository.fetchGuestInbox(limit: 20);
+      yield guestItems.length;
+    } on NotificationException {
+      yield 0;
+    }
+
+    await for (final _ in repository.watchGuestInboxChanges()) {
+      try {
+        final guestItems = await repository.fetchGuestInbox(limit: 20);
+        yield guestItems.length;
+      } on NotificationException {
+        yield 0;
+      }
+    }
     return;
   }
-
-  final repository = ref.watch(notificationRepositoryProvider);
 
   try {
     yield await repository.countUnread(profileId);
@@ -46,8 +60,16 @@ class NotificationInbox extends _$NotificationInbox {
   @override
   Future<List<InboxNotification>> build() {
     final profileId = ref.watch(authProfileIdProvider);
+    final repository = ref.read(notificationRepositoryProvider);
+
     if (profileId == null) {
-      return Future.value([]);
+      watchSupabaseTable(
+        ref,
+        client: AppConfig.hasSupabase ? Supabase.instance.client : null,
+        table: 'public_announcements',
+      );
+
+      return repository.fetchGuestInbox();
     }
 
     watchSupabaseTable(
@@ -58,9 +80,9 @@ class NotificationInbox extends _$NotificationInbox {
       eqValue: profileId,
     );
 
-    return ref.read(notificationRepositoryProvider).fetchInbox(
-          recipientId: profileId,
-        );
+    return repository.fetchInbox(
+      recipientId: profileId,
+    );
   }
 
   Future<void> refresh() async {
@@ -70,7 +92,7 @@ class NotificationInbox extends _$NotificationInbox {
 
   Future<void> markAsRead(String notificationId) async {
     final profileId = ref.read(authProfileIdProvider);
-    if (profileId == null) {
+    if (profileId == null || notificationId.startsWith('content-')) {
       return;
     }
 

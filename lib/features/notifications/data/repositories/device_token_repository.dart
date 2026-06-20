@@ -1,4 +1,5 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/features/notifications/data/data_sources/device_token_remote_data_source.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DeviceTokenException implements Exception {
@@ -11,30 +12,30 @@ class DeviceTokenException implements Exception {
 }
 
 class DeviceTokenRepository {
-  DeviceTokenRepository([SupabaseClient? client]) : _client = client;
+  DeviceTokenRepository([SupabaseClient? client])
+      : _remote = (AppConfig.hasSupabase && client != null)
+            ? DeviceTokenRemoteDataSource(client)
+            : null;
 
-  final SupabaseClient? _client;
+  final DeviceTokenRemoteDataSource? _remote;
 
-  bool get isAvailable => AppConfig.hasSupabase && _client != null;
+  bool get isAvailable => _remote != null;
 
   Future<void> upsertToken({
     required String profileId,
     required String token,
     required String platform,
   }) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       return;
     }
 
     try {
-      await _client!.from('device_tokens').upsert(
-        {
-          'profile_id': profileId,
-          'token': token,
-          'platform': platform,
-          'updated_at': DateTime.now().toUtc().toIso8601String(),
-        },
-        onConflict: 'profile_id,token',
+      await remote.upsertToken(
+        profileId: profileId,
+        token: token,
+        platform: platform,
       );
     } on PostgrestException catch (e) {
       throw DeviceTokenException(e.message);
@@ -45,31 +46,26 @@ class DeviceTokenRepository {
     required String profileId,
     required String token,
   }) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       return;
     }
 
     try {
-      await _client!
-          .from('device_tokens')
-          .delete()
-          .eq('profile_id', profileId)
-          .eq('token', token);
+      await remote.deleteToken(profileId: profileId, token: token);
     } on PostgrestException catch (e) {
       throw DeviceTokenException(e.message);
     }
   }
 
   Future<void> deleteAllForProfile(String profileId) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       return;
     }
 
     try {
-      await _client!
-          .from('device_tokens')
-          .delete()
-          .eq('profile_id', profileId);
+      await remote.deleteAllForProfile(profileId);
     } on PostgrestException catch (e) {
       throw DeviceTokenException(e.message);
     }

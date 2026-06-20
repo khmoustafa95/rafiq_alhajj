@@ -1,60 +1,49 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/features/hajj_journey/data/data_sources/admin_hajj_journey_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/data/repositories/hajj_journey_repository.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/domain/models/hajj_journey_media.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/domain/models/hajj_journey_step.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AdminHajjJourneyRepository {
-  AdminHajjJourneyRepository([SupabaseClient? client]) : _client = client;
+  AdminHajjJourneyRepository([SupabaseClient? client])
+      : _remote = AppConfig.hasSupabase && client != null
+            ? AdminHajjJourneyRemoteDataSource(client)
+            : null;
 
-  final SupabaseClient? _client;
+  final AdminHajjJourneyRemoteDataSource? _remote;
 
-  bool get isAvailable => AppConfig.hasSupabase && _client != null;
+  bool get isAvailable => _remote != null;
 
   Future<List<HajjJourneyStep>> fetchAll() async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       return [];
     }
 
     try {
-      final rows = await _client!
-          .from('hajj_journey_steps')
-          .select(
-            'id, ritual_key, sort_order, title_ar, title_en, '
-            'description_ar, description_en, is_active, '
-            'hajj_journey_media(id, media_type, title, url, sort_order)',
-          )
-          .order('sort_order');
+      final rows = await remote.fetchAll();
 
-      return (rows as List<dynamic>)
-          .map((row) => _mapStep(Map<String, dynamic>.from(row as Map)))
-          .toList();
+      return rows.map(_mapStep).toList();
     } on PostgrestException catch (e) {
       throw HajjJourneyException(e.message);
     }
   }
 
   Future<HajjJourneyStep?> fetchByRitualKey(String ritualKey) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       return null;
     }
 
     try {
-      final row = await _client!
-          .from('hajj_journey_steps')
-          .select(
-            'id, ritual_key, sort_order, title_ar, title_en, '
-            'description_ar, description_en, is_active, '
-            'hajj_journey_media(id, media_type, title, url, sort_order)',
-          )
-          .eq('ritual_key', ritualKey)
-          .maybeSingle();
+      final row = await remote.fetchByRitualKey(ritualKey);
 
       if (row == null) {
         return null;
       }
 
-      return _mapStep(Map<String, dynamic>.from(row));
+      return _mapStep(row);
     } on PostgrestException catch (e) {
       throw HajjJourneyException(e.message);
     }
@@ -64,24 +53,22 @@ class AdminHajjJourneyRepository {
     required String ritualKey,
     required HajjJourneyEditorInput input,
   }) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       throw const HajjJourneyException('Supabase unavailable');
     }
 
     try {
-      await _client!.from('hajj_journey_steps').upsert(
-        {
-          'ritual_key': ritualKey,
-          'sort_order': input.sortOrder,
-          'title_ar': input.titleAr,
-          'title_en': input.titleEn,
-          'description_ar': input.descriptionAr,
-          'description_en': input.descriptionEn,
-          'is_active': input.isActive,
-          'updated_at': DateTime.now().toUtc().toIso8601String(),
-        },
-        onConflict: 'ritual_key',
-      );
+      await remote.upsertStep({
+        'ritual_key': ritualKey,
+        'sort_order': input.sortOrder,
+        'title_ar': input.titleAr,
+        'title_en': input.titleEn,
+        'description_ar': input.descriptionAr,
+        'description_en': input.descriptionEn,
+        'is_active': input.isActive,
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
+      });
     } on PostgrestException catch (e) {
       throw HajjJourneyException(e.message);
     }
@@ -91,30 +78,31 @@ class AdminHajjJourneyRepository {
     required String stepId,
     required List<HajjJourneyMediaInput> media,
   }) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       throw const HajjJourneyException('Supabase unavailable');
     }
 
     try {
-      await _client!.from('hajj_journey_media').delete().eq('step_id', stepId);
+      await remote.deleteMedia(stepId);
 
       if (media.isEmpty) {
         return;
       }
 
-      await _client.from('hajj_journey_media').insert(
-            media
-                .map(
-                  (item) => {
-                    'step_id': stepId,
-                    'media_type': item.mediaTypeKey,
-                    'title': item.title,
-                    'url': item.url,
-                    'sort_order': item.sortOrder,
-                  },
-                )
-                .toList(),
-          );
+      await remote.insertMedia(
+        media
+            .map(
+              (item) => {
+                'step_id': stepId,
+                'media_type': item.mediaTypeKey,
+                'title': item.title,
+                'url': item.url,
+                'sort_order': item.sortOrder,
+              },
+            )
+            .toList(),
+      );
     } on PostgrestException catch (e) {
       throw HajjJourneyException(e.message);
     }

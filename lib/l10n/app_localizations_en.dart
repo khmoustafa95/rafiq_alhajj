@@ -1688,6 +1688,22 @@ class AppLocalizationsEn extends AppLocalizations {
       'Upload pilgrim documents during registration.';
 
   @override
+  String get adminOperatorGroupsSection => 'Group access';
+
+  @override
+  String get adminOperatorGroupsHint =>
+      'Choose which travel offices (groups) this operator can read and write.';
+
+  @override
+  String get adminOperatorGroupsEmpty => 'No groups available yet.';
+
+  @override
+  String get adminOperatorGroupRead => 'Read';
+
+  @override
+  String get adminOperatorGroupWrite => 'Read & write';
+
+  @override
   String get adminOperatorGeneratePassword => 'Generate password';
 
   @override
@@ -2422,4 +2438,145 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminHajjJourneySaveError => 'Could not save ritual.';
+
+  @override
+  String get staffNavTrips => 'Trips';
+
+  @override
+  String get adminTripsTitle => 'Trip management';
+
+  @override
+  String get adminTripsSubtitle =>
+      'Manage Hajj and Umrah trips per season and the offices that join them.';
+
+  @override
+  String get adminTripAdd => 'Add trip';
+
+  @override
+  String get adminTripsEmpty =>
+      'No trips yet. Add your first Hajj or Umrah trip.';
+
+  @override
+  String get adminTripsLoadError => 'Could not load trips.';
+
+  @override
+  String get adminTripNewTitle => 'New trip';
+
+  @override
+  String get adminTripEditTitle => 'Edit trip';
+
+  @override
+  String get adminTripName => 'Trip name';
+
+  @override
+  String get adminTripNameRequired => 'Trip name is required';
+
+  @override
+  String get adminTripType => 'Trip type';
+
+  @override
+  String get adminTripTypeHajj => 'Hajj';
+
+  @override
+  String get adminTripTypeUmrah => 'Umrah';
+
+  @override
+  String get adminTripSeasonYear => 'Season year';
+
+  @override
+  String get adminTripSeasonYearRequired => 'A valid season year is required';
+
+  @override
+  String get adminTripStatus => 'Status';
+
+  @override
+  String get adminTripStatusPlanning => 'Planning';
+
+  @override
+  String get adminTripStatusActive => 'Active';
+
+  @override
+  String get adminTripStatusCompleted => 'Completed';
+
+  @override
+  String get adminTripStatusCancelled => 'Cancelled';
+
+  @override
+  String get adminTripSave => 'Save trip';
+
+  @override
+  String get adminTripCreateSuccess => 'Trip created';
+
+  @override
+  String get adminTripSaveSuccess => 'Trip updated';
+
+  @override
+  String get adminTripSaveError => 'Could not save trip. Try again.';
+
+  @override
+  String get adminTripDeleteTitle => 'Delete trip?';
+
+  @override
+  String adminTripDeleteMessage(String name) {
+    return 'Delete \"$name\"? All enrollments in this trip will be removed.';
+  }
+
+  @override
+  String get adminTripDeleteConfirm => 'Delete';
+
+  @override
+  String get adminTripDeleteSuccess => 'Trip deleted';
+
+  @override
+  String get adminTripDeleteError => 'Could not delete trip';
+
+  @override
+  String get adminTripManageOffices => 'Manage offices';
+
+  @override
+  String get adminTripOfficesTitle => 'Participating offices';
+
+  @override
+  String get adminTripOfficesSubtitle =>
+      'Add or withdraw travel offices for this trip.';
+
+  @override
+  String get adminTripOfficesEmpty => 'No offices joined this trip yet.';
+
+  @override
+  String get adminTripAddOffice => 'Add office';
+
+  @override
+  String get adminTripNoAvailableOffices =>
+      'All offices already joined this trip.';
+
+  @override
+  String get adminTripOfficeWithdraw => 'Withdraw';
+
+  @override
+  String get adminTripOfficeActivate => 'Reactivate';
+
+  @override
+  String get adminTripOfficeRemove => 'Remove';
+
+  @override
+  String get adminTripOfficeActive => 'Active';
+
+  @override
+  String get adminTripOfficeWithdrawn => 'Withdrawn';
+
+  @override
+  String get adminTripOfficeUpdated => 'Office updated';
+
+  @override
+  String get adminTripOfficeAdded => 'Office added to trip';
+
+  @override
+  String get adminTripOfficeError => 'Could not update office';
+
+  @override
+  String get tripSelectorLabel => 'Active trip';
+
+  @override
+  String get tripSelectorAll => 'All trips';
 }

@@ -14,6 +14,7 @@ import 'package:rafiq_alhajj/features/content/domain/models/content_visibility.d
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_media_providers.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_topic_offline_actions.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 
 class AdminContentTopicEditScreen extends ConsumerStatefulWidget {
   const AdminContentTopicEditScreen({this.topicId, super.key});
@@ -48,22 +49,29 @@ class _MediaDraft {
 
 class _AdminContentTopicEditScreenState
     extends ConsumerState<AdminContentTopicEditScreen> {
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _coverUrlController = TextEditingController();
-  final _sortOrderController = TextEditingController(text: '1');
-  ContentVisibility _visibility = ContentVisibility.public;
+  late final FormGroup _form;
   bool _isActive = true;
   final List<_MediaDraft> _media = [];
   bool _initialized = false;
   bool _isUploading = false;
 
   @override
+  void initState() {
+    super.initState();
+    _form = FormGroup({
+      'title': FormControl<String>(value: ''),
+      'description': FormControl<String>(value: ''),
+      'coverUrl': FormControl<String>(value: ''),
+      'sortOrder': FormControl<String>(value: '1'),
+      'visibility': FormControl<ContentVisibility>(
+        value: ContentVisibility.public,
+      ),
+    });
+  }
+
+  @override
   void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
-    _coverUrlController.dispose();
-    _sortOrderController.dispose();
+    _form.dispose();
     for (final item in _media) {
       item.urlController.dispose();
       item.titleController.dispose();
@@ -75,11 +83,11 @@ class _AdminContentTopicEditScreenState
     if (_initialized) {
       return;
     }
-    _titleController.text = topic.title;
-    _descriptionController.text = topic.description ?? '';
-    _coverUrlController.text = topic.coverImageUrl ?? '';
-    _sortOrderController.text = '${topic.sortOrder}';
-    _visibility = topic.visibility;
+    _form.control('title').updateValue(topic.title);
+    _form.control('description').updateValue(topic.description ?? '');
+    _form.control('coverUrl').updateValue(topic.coverImageUrl ?? '');
+    _form.control('sortOrder').updateValue('${topic.sortOrder}');
+    _form.control('visibility').updateValue(topic.visibility);
     _isActive = topic.isActive;
     for (final m in topic.media) {
       _media.add(
@@ -111,7 +119,7 @@ class _AdminContentTopicEditScreenState
 
   Future<void> _uploadCover() async {
     await _pickAndUpload(
-      onUploaded: (url) => _coverUrlController.text = url,
+      onUploaded: (url) => _form.control('coverUrl').updateValue(url),
       folder: 'covers',
     );
   }
@@ -195,7 +203,7 @@ class _AdminContentTopicEditScreenState
 
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context);
-    final title = _titleController.text.trim();
+    final title = (_form.control('title').value as String).trim();
 
     if (title.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -204,12 +212,13 @@ class _AdminContentTopicEditScreenState
       return;
     }
 
-    final sortOrder = int.tryParse(_sortOrderController.text.trim()) ?? 1;
+    final sortOrder =
+        int.tryParse((_form.control('sortOrder').value as String).trim()) ?? 1;
     final input = ContentTopicEditorInput(
       title: title,
-      description: _descriptionController.text.trim(),
-      coverImageUrl: _coverUrlController.text.trim(),
-      visibility: _visibility,
+      description: (_form.control('description').value as String).trim(),
+      coverImageUrl: (_form.control('coverUrl').value as String).trim(),
+      visibility: _form.control('visibility').value as ContentVisibility,
       sortOrder: sortOrder,
       isActive: _isActive,
     );
@@ -281,18 +290,20 @@ class _AdminContentTopicEditScreenState
             _populate(topic);
           }
 
-          return ListView(
+          return ReactiveForm(
+            formGroup: _form,
+            child: ListView(
             padding: EdgeInsets.all(16.w),
             children: [
-              TextField(
-                controller: _titleController,
+              ReactiveTextField<String>(
+                formControlName: 'title',
                 decoration: InputDecoration(
                   labelText: l10n.adminContentTitleLabel,
                 ),
               ),
               SizedBox(height: 12.h),
-              TextField(
-                controller: _descriptionController,
+              ReactiveTextField<String>(
+                formControlName: 'description',
                 decoration: InputDecoration(
                   labelText: l10n.adminContentTopicDescription,
                 ),
@@ -300,8 +311,8 @@ class _AdminContentTopicEditScreenState
                 maxLines: 6,
               ),
               SizedBox(height: 12.h),
-              TextField(
-                controller: _coverUrlController,
+              ReactiveTextField<String>(
+                formControlName: 'coverUrl',
                 decoration: InputDecoration(
                   labelText: l10n.adminContentTopicCoverUrl,
                 ),
@@ -316,16 +327,16 @@ class _AdminContentTopicEditScreenState
                 ),
               ),
               SizedBox(height: 12.h),
-              TextField(
-                controller: _sortOrderController,
+              ReactiveTextField<String>(
+                formControlName: 'sortOrder',
                 decoration: InputDecoration(
                   labelText: l10n.adminHajjJourneySortOrder,
                 ),
                 keyboardType: TextInputType.number,
               ),
               SizedBox(height: 8.h),
-              DropdownButtonFormField<ContentVisibility>(
-                initialValue: _visibility,
+              ReactiveDropdownField<ContentVisibility>(
+                formControlName: 'visibility',
                 decoration: InputDecoration(
                   labelText: l10n.adminContentVisibilityLabel,
                 ),
@@ -337,11 +348,6 @@ class _AdminContentTopicEditScreenState
                       ),
                     )
                     .toList(),
-                onChanged: (v) {
-                  if (v != null) {
-                    setState(() => _visibility = v);
-                  }
-                },
               ),
               SizedBox(height: 8.h),
               SwitchListTile(
@@ -439,6 +445,7 @@ class _AdminContentTopicEditScreenState
                 AdminContentMediaPreview(media: _previewMedia),
               ],
             ],
+            ),
           );
         },
       ),

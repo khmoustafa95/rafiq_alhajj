@@ -1,4 +1,5 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/features/competitions/data/data_sources/admin_competition_questions_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/competitions/data/repositories/competitions_repository.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition_question.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition_question_editor_input.dart';
@@ -6,30 +7,26 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AdminCompetitionQuestionsRepository {
   AdminCompetitionQuestionsRepository([SupabaseClient? client])
-      : _client = client;
+      : _remote = AppConfig.hasSupabase && client != null
+            ? AdminCompetitionQuestionsRemoteDataSource(client)
+            : null;
 
-  final SupabaseClient? _client;
+  final AdminCompetitionQuestionsRemoteDataSource? _remote;
 
-  bool get isAvailable => AppConfig.hasSupabase && _client != null;
+  bool get isAvailable => _remote != null;
 
   Future<List<CompetitionQuestion>> fetchByCompetition(
     String competitionId,
   ) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       throw const CompetitionsException('Supabase is not configured');
     }
 
     try {
-      final rows = await _client!
-          .from('competition_questions')
-          .select(
-            'id, competition_id, sort_order, question_type, prompt, explanation, points, '
-            'competition_question_options(id, question_id, sort_order, label, is_correct)',
-          )
-          .eq('competition_id', competitionId)
-          .order('sort_order');
+      final rows = await remote.fetchByCompetition(competitionId);
 
-      return _mapQuestions(rows as List<dynamic>);
+      return _mapQuestions(rows);
     } on PostgrestException catch (e) {
       throw CompetitionsException(e.message);
     }
@@ -41,15 +38,13 @@ class AdminCompetitionQuestionsRepository {
   }
 
   Future<void> delete(String questionId) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       throw const CompetitionsException('Supabase is not configured');
     }
 
     try {
-      await _client!
-          .from('competition_questions')
-          .delete()
-          .eq('id', questionId);
+      await remote.deleteQuestion(questionId);
     } on PostgrestException catch (e) {
       throw CompetitionsException(e.message);
     }
@@ -89,7 +84,8 @@ class AdminCompetitionQuestionsRepository {
   Future<CompetitionQuestion> _upsertValidated(
     CompetitionQuestionEditorInput input,
   ) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       throw const CompetitionsException('Supabase is not configured');
     }
 
@@ -106,24 +102,12 @@ class AdminCompetitionQuestionsRepository {
       late final String questionId;
 
       if (input.id != null) {
-        final row = await _client!
-            .from('competition_questions')
-            .update(questionPayload)
-            .eq('id', input.id!)
-            .select('id')
-            .single();
+        final row = await remote.updateQuestion(input.id!, questionPayload);
         questionId = row['id'] as String;
 
-        await _client
-            .from('competition_question_options')
-            .delete()
-            .eq('question_id', questionId);
+        await remote.deleteOptions(questionId);
       } else {
-        final row = await _client!
-            .from('competition_questions')
-            .insert(questionPayload)
-            .select('id')
-            .single();
+        final row = await remote.insertQuestion(questionPayload);
         questionId = row['id'] as String;
       }
 
@@ -139,9 +123,7 @@ class AdminCompetitionQuestionsRepository {
           .toList();
 
       if (optionPayloads.isNotEmpty) {
-        await _client
-            .from('competition_question_options')
-            .insert(optionPayloads);
+        await remote.insertOptions(optionPayloads);
       }
 
       final items = await fetchByCompetition(input.competitionId);

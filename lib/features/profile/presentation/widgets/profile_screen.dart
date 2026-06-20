@@ -139,17 +139,11 @@ class ProfileScreen extends ConsumerWidget {
                           ref.read(signOutControllerProvider.notifier).signOut,
                       isDestructive: true,
                     ),
-                  ] else ...[
+                  ] else
                     FilledButton(
                       onPressed: () => unawaited(context.push(AppRoutes.login)),
                       child: Text(l10n.homeSignInAsPilgrim),
                     ),
-                    SizedBox(height: 12.h),
-                    OutlinedButton(
-                      onPressed: () => unawaited(context.push(AppRoutes.login)),
-                      child: Text(l10n.loginTitle),
-                    ),
-                  ],
                 ],
               ),
             ),

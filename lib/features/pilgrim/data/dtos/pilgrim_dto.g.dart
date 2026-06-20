@@ -9,6 +9,11 @@ part of 'pilgrim_dto.dart';
 PilgrimDto _$PilgrimDtoFromJson(Map<String, dynamic> json) => PilgrimDto(
   registryId: (json['registry_id'] as num?)?.toInt(),
   profileId: json['profile_id'] as String?,
+  enrollmentId: json['enrollment_id'] as String?,
+  pilgrimId: json['pilgrim_id'] as String?,
+  tripId: json['trip_id'] as String?,
+  tripType: json['trip_type'] as String?,
+  groupId: json['group_id'] as String?,
   koboId: json['kobo_id'] as String?,
   sequence: json['sequence'] as String?,
   cluster: json['cluster'] as String?,
@@ -83,6 +88,11 @@ Map<String, dynamic> _$PilgrimDtoToJson(PilgrimDto instance) =>
     <String, dynamic>{
       'registry_id': instance.registryId,
       'profile_id': instance.profileId,
+      'enrollment_id': instance.enrollmentId,
+      'pilgrim_id': instance.pilgrimId,
+      'trip_id': instance.tripId,
+      'trip_type': instance.tripType,
+      'group_id': instance.groupId,
       'kobo_id': instance.koboId,
       'sequence': instance.sequence,
       'cluster': instance.cluster,

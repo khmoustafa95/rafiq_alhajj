@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rafiq_alhajj/core/gen/assets.gen.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 /// Panoramic image viewer — Flutter-native (no WebView) for reliable Android loading.
 class HaramPanoramaPanel extends StatelessWidget {
   const HaramPanoramaPanel({super.key});
-
-  static const _panoramaAsset =
-      'assets/virtual_tour/images/makkah_panorama.jpg';
 
   @override
   Widget build(BuildContext context) {
@@ -42,12 +40,11 @@ class HaramPanoramaPanel extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: ColoredBox(
-                color: const Color(0xFF111827),
+                color: AppColors.textPrimary,
                 child: InteractiveViewer(
                   maxScale: 5,
                   child: Center(
-                    child: Image.asset(
-                      _panoramaAsset,
+                    child: Assets.virtualTour.images.makkahPanorama.image(
                       fit: BoxFit.contain,
                       errorBuilder: (_, _, _) => Padding(
                         padding: EdgeInsets.all(24.w),

@@ -18,6 +18,7 @@ type PilgrimPayload = {
   transportation_details?: string;
   gender?: string;
   group_id?: string;
+  trip_id?: string;
 };
 
 function generatePassword(length = 12): string {
@@ -116,26 +117,100 @@ Deno.serve(async (req) => {
 
     const profileId = created.user.id;
 
-    const { error: detailsError } = await supabaseAdmin
-      .from("pilgrim_details")
+    // The auth trigger creates the profile, the pilgrim identity, and an
+    // enrollment into the active trip. Resolve the pilgrim id (fallback insert).
+    let pilgrimId: string | null = null;
+    const { data: pilgrimRow } = await supabaseAdmin
+      .from("pilgrims")
+      .select("id")
+      .eq("profile_id", profileId)
+      .maybeSingle();
+    pilgrimId = pilgrimRow?.id ?? null;
+
+    if (!pilgrimId) {
+      const { data: inserted, error: insertError } = await supabaseAdmin
+        .from("pilgrims")
+        .insert({ profile_id: profileId })
+        .select("id")
+        .single();
+      if (insertError || !inserted) {
+        return new Response(
+          JSON.stringify({ error: insertError?.message ?? "Create pilgrim failed" }),
+          {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          },
+        );
+      }
+      pilgrimId = inserted.id;
+    }
+
+    const { error: personError } = await supabaseAdmin
+      .from("pilgrims")
       .update({
         passport_number: body.passport_number ?? null,
+        full_name_ar: body.full_name.trim(),
+        gender: body.gender ?? null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", pilgrimId);
+
+    if (personError) {
+      return new Response(JSON.stringify({ error: personError.message }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Determine the target trip (explicit, else most recent active trip).
+    let tripId = body.trip_id ?? null;
+    if (!tripId) {
+      const { data: trip } = await supabaseAdmin
+        .from("trips")
+        .select("id")
+        .eq("status", "active")
+        .order("season_year", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      tripId = trip?.id ?? null;
+    }
+
+    if (tripId) {
+      const enrollmentPayload = {
         travel_permit_number: body.travel_permit_number ?? null,
         medical_test_status: body.medical_test_status ?? null,
         travel_date: body.travel_date ?? null,
         hotel_name: body.hotel_name ?? null,
         hotel_location_url: body.hotel_location_url ?? null,
         transportation_details: body.transportation_details ?? null,
-        gender: body.gender ?? null,
+        group_id: body.group_id ?? null,
         updated_at: new Date().toISOString(),
-      })
-      .eq("profile_id", profileId);
+      };
 
-    if (detailsError) {
-      return new Response(JSON.stringify({ error: detailsError.message }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      const { data: existing } = await supabaseAdmin
+        .from("trip_enrollments")
+        .select("id")
+        .eq("pilgrim_id", pilgrimId)
+        .eq("trip_id", tripId)
+        .maybeSingle();
+
+      const enrollmentError = existing
+        ? (await supabaseAdmin
+            .from("trip_enrollments")
+            .update(enrollmentPayload)
+            .eq("id", existing.id)).error
+        : (await supabaseAdmin.from("trip_enrollments").insert({
+            pilgrim_id: pilgrimId,
+            trip_id: tripId,
+            ...enrollmentPayload,
+          })).error;
+
+      if (enrollmentError) {
+        return new Response(JSON.stringify({ error: enrollmentError.message }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     if (body.group_id) {

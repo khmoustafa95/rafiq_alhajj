@@ -16,6 +16,7 @@ import 'package:rafiq_alhajj/features/content/domain/models/content_item.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_type.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_visibility.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 
 class AdminContentEditScreen extends ConsumerStatefulWidget {
   const AdminContentEditScreen({this.contentId, super.key});
@@ -28,13 +29,7 @@ class AdminContentEditScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _mediaUrlController = TextEditingController();
-
-  ContentType _type = ContentType.news;
-  ContentVisibility _visibility = ContentVisibility.public;
+  late final FormGroup _form;
   bool _loaded = false;
 
   bool get _isEditing => widget.contentId != null;
@@ -45,10 +40,22 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
   }
 
   @override
+  void initState() {
+    super.initState();
+    _form = FormGroup({
+      'title': FormControl<String>(value: '', validators: [Validators.required]),
+      'mediaUrl': FormControl<String>(value: ''),
+      'description': FormControl<String>(value: ''),
+      'type': FormControl<ContentType>(value: ContentType.news),
+      'visibility': FormControl<ContentVisibility>(
+        value: ContentVisibility.public,
+      ),
+    });
+  }
+
+  @override
   void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
-    _mediaUrlController.dispose();
+    _form.dispose();
     super.dispose();
   }
 
@@ -56,11 +63,11 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
     if (_loaded) {
       return;
     }
-    _titleController.text = item.title;
-    _descriptionController.text = item.description ?? '';
-    _mediaUrlController.text = item.mediaUrl ?? '';
-    _type = item.type;
-    _visibility = item.visibility;
+    _form.control('title').updateValue(item.title);
+    _form.control('description').updateValue(item.description ?? '');
+    _form.control('mediaUrl').updateValue(item.mediaUrl ?? '');
+    _form.control('type').updateValue(item.type);
+    _form.control('visibility').updateValue(item.visibility);
     _loaded = true;
   }
 
@@ -69,18 +76,19 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) {
+    if (!_form.valid) {
+      _form.markAllAsTouched();
       return;
     }
 
     final l10n = AppLocalizations.of(context);
     final input = ContentEditorInput(
       id: widget.contentId,
-      title: _titleController.text,
-      description: _descriptionController.text,
-      mediaUrl: _mediaUrlController.text,
-      type: _type,
-      visibility: _visibility,
+      title: _form.control('title').value as String,
+      description: _form.control('description').value as String,
+      mediaUrl: _form.control('mediaUrl').value as String,
+      type: _form.control('type').value as ContentType,
+      visibility: _form.control('visibility').value as ContentVisibility,
     );
 
     final ok = await ref.read(adminContentSaveProvider.notifier).save(input);
@@ -141,6 +149,17 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
       adminContentSaveProvider.select((state) => state.isLoading),
     );
 
+    ref.listen(
+      adminContentSaveProvider.select((state) => state.isLoading),
+      (previous, isLoading) {
+        if (isLoading) {
+          _form.markAsDisabled();
+        } else {
+          _form.markAsEnabled();
+        }
+      },
+    );
+
     if (_isEditing) {
       final contentId = widget.contentId!;
       final detailAsync = ref.watch(adminContentDetailProvider(contentId));
@@ -175,43 +194,37 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
   }
 
   Widget _buildForm(AppLocalizations l10n, bool isSaving) {
-    final form = Form(
-      key: _formKey,
+    final form = ReactiveForm(
+      formGroup: _form,
       child: StaffFormSection(
         icon: Icons.article_outlined,
         title: l10n.adminContentListTitle,
         child: ResponsiveFormGrid(
           children: [
-            TextFormField(
-              controller: _titleController,
-              enabled: !isSaving,
+            ReactiveTextField<String>(
+              formControlName: 'title',
               decoration: InputDecoration(labelText: l10n.adminContentTitleLabel),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return l10n.adminContentTitleRequired;
-                }
-                return null;
+              validationMessages: {
+                ValidationMessage.required: (_) =>
+                    l10n.adminContentTitleRequired,
               },
             ),
-            TextFormField(
-              controller: _mediaUrlController,
-              enabled: !isSaving,
+            ReactiveTextField<String>(
+              formControlName: 'mediaUrl',
               decoration: InputDecoration(
                 labelText: l10n.adminContentMediaUrlLabel,
               ),
               keyboardType: TextInputType.url,
             ),
-            TextFormField(
-              controller: _descriptionController,
-              enabled: !isSaving,
+            ReactiveTextField<String>(
+              formControlName: 'description',
               maxLines: 4,
               decoration: InputDecoration(
                 labelText: l10n.adminContentDescriptionLabel,
               ),
             ),
-            DropdownButtonFormField<ContentType>(
-              key: ValueKey(_type),
-              initialValue: _type,
+            ReactiveDropdownField<ContentType>(
+              formControlName: 'type',
               decoration: InputDecoration(labelText: l10n.adminContentTypeLabel),
               items: ContentType.values
                   .map(
@@ -221,17 +234,9 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
                     ),
                   )
                   .toList(),
-              onChanged: isSaving
-                  ? null
-                  : (value) {
-                      if (value != null) {
-                        setState(() => _type = value);
-                      }
-                    },
             ),
-            DropdownButtonFormField<ContentVisibility>(
-              key: ValueKey(_visibility),
-              initialValue: _visibility,
+            ReactiveDropdownField<ContentVisibility>(
+              formControlName: 'visibility',
               decoration: InputDecoration(
                 labelText: l10n.adminContentVisibilityLabel,
               ),
@@ -243,13 +248,6 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
                     ),
                   )
                   .toList(),
-              onChanged: isSaving
-                  ? null
-                  : (value) {
-                      if (value != null) {
-                        setState(() => _visibility = value);
-                      }
-                    },
             ),
           ],
         ),

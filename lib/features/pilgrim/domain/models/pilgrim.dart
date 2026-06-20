@@ -21,6 +21,13 @@ abstract class Pilgrim with _$Pilgrim {
     int? id,
     String? koboId,
 
+    // ربط الحاج بالرحلة (النموذج الجديد)
+    String? enrollmentId,
+    String? pilgrimId,
+    String? tripId,
+    String? tripType,
+    String? groupId,
+
     // البيانات الأساسية
     String? sequence,
     String? cluster,

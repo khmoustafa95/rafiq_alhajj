@@ -1,4 +1,5 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/features/competitions/data/data_sources/competitions_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -12,28 +13,24 @@ class CompetitionsException implements Exception {
 }
 
 class CompetitionsRepository {
-  CompetitionsRepository([SupabaseClient? client]) : _client = client;
+  CompetitionsRepository([SupabaseClient? client])
+      : _remote = AppConfig.hasSupabase && client != null
+            ? CompetitionsRemoteDataSource(client)
+            : null;
 
-  final SupabaseClient? _client;
+  final CompetitionsRemoteDataSource? _remote;
 
-  bool get isAvailable => AppConfig.hasSupabase && _client != null;
+  bool get isAvailable => _remote != null;
 
   Future<List<Competition>> fetchActive() async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       return [];
     }
 
     try {
-      final rows = await _client!
-          .from('competitions')
-          .select('id, title, description, starts_at, ends_at, is_active')
-          .eq('is_active', true)
-          .gte('ends_at', DateTime.now().toUtc().toIso8601String())
-          .order('starts_at');
-
-      return (rows as List<dynamic>)
-          .map((row) => _mapCompetition(Map<String, dynamic>.from(row as Map)))
-          .toList();
+      final rows = await remote.fetchActive();
+      return rows.map(_mapCompetition).toList();
     } on PostgrestException catch (e) {
       throw CompetitionsException(e.message);
     }
@@ -43,32 +40,21 @@ class CompetitionsRepository {
     String competitionId, {
     String? currentProfileId,
   }) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       return null;
     }
 
     try {
-      final compRow = await _client!
-          .from('competitions')
-          .select('id, title, description, starts_at, ends_at, is_active')
-          .eq('id', competitionId)
-          .maybeSingle();
+      final compRow = await remote.fetchById(competitionId);
 
       if (compRow == null) {
         return null;
       }
 
-      final entryRows = await _client
-          .from('competition_entries')
-          .select(
-            'id, competition_id, profile_id, score, joined_at, '
-            'profiles(full_name)',
-          )
-          .eq('competition_id', competitionId)
-          .order('score', ascending: false)
-          .limit(20);
+      final entryRows = await remote.fetchEntries(competitionId);
 
-      final entries = _mapEntries(entryRows as List<dynamic>);
+      final entries = _mapEntries(entryRows);
       CompetitionEntry? myEntry;
       if (currentProfileId != null) {
         for (final entry in entries) {
@@ -80,7 +66,7 @@ class CompetitionsRepository {
       }
 
       return CompetitionWithEntries(
-        competition: _mapCompetition(Map<String, dynamic>.from(compRow)),
+        competition: _mapCompetition(compRow),
         entries: entries,
         myEntry: myEntry,
       );
@@ -93,24 +79,18 @@ class CompetitionsRepository {
     required String competitionId,
     required String profileId,
   }) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       throw const CompetitionsException('Supabase is not configured');
     }
 
     try {
-      final row = await _client!
-          .from('competition_entries')
-          .insert({
-            'competition_id': competitionId,
-            'profile_id': profileId,
-          })
-          .select(
-            'id, competition_id, profile_id, score, joined_at, '
-            'profiles(full_name)',
-          )
-          .single();
+      final row = await remote.insertEntry(
+        competitionId: competitionId,
+        profileId: profileId,
+      );
 
-      return _mapEntry(Map<String, dynamic>.from(row));
+      return _mapEntry(row);
     } on PostgrestException catch (e) {
       if (e.code == '23505') {
         return null;
@@ -123,31 +103,23 @@ class CompetitionsRepository {
     required String entryId,
     required int delta,
   }) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       throw const CompetitionsException('Supabase is not configured');
     }
 
     try {
-      final current = await _client!
-          .from('competition_entries')
-          .select('score')
-          .eq('id', entryId)
-          .single();
+      final current = await remote.fetchEntryScore(entryId);
 
       final newScore =
           (current['score'] as int? ?? 0) + delta;
 
-      final row = await _client
-          .from('competition_entries')
-          .update({'score': newScore})
-          .eq('id', entryId)
-          .select(
-            'id, competition_id, profile_id, score, joined_at, '
-            'profiles(full_name)',
-          )
-          .single();
+      final row = await remote.updateEntryScore(
+        entryId: entryId,
+        score: newScore,
+      );
 
-      return _mapEntry(Map<String, dynamic>.from(row));
+      return _mapEntry(row);
     } on PostgrestException catch (e) {
       throw CompetitionsException(e.message);
     }

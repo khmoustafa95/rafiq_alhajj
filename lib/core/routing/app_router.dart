@@ -54,6 +54,8 @@ import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/opera
 import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_pilgrim_list_screen.dart';
 import 'package:rafiq_alhajj/features/profile/presentation/widgets/profile_screen.dart';
 import 'package:rafiq_alhajj/features/services/presentation/widgets/services_hub_screen.dart';
+import 'package:rafiq_alhajj/features/trips/presentation/widgets/admin_trip_offices_screen.dart';
+import 'package:rafiq_alhajj/features/trips/presentation/widgets/admin_trips_list_screen.dart';
 import 'package:rafiq_alhajj/features/virtual_tour/presentation/widgets/virtual_tour_screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -395,6 +397,19 @@ List<RouteBase> _mobilePilgrimRoutes() => [
         },
       ),
       GoRoute(
+        path: AppRoutes.adminTrips,
+        name: 'adminTrips',
+        builder: (context, state) => const AdminTripsListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminTripOffices,
+        name: 'adminTripOffices',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return AdminTripOfficesScreen(tripId: id);
+        },
+      ),
+      GoRoute(
         path: AppRoutes.adminSettings,
         name: 'adminSettings',
         builder: (context, state) => const AdminSettingsScreen(),
@@ -421,8 +436,8 @@ ShellRoute _staffWebShellRoute() {
         path: AppRoutes.operatorPilgrimDetail,
         name: 'operatorPilgrimDetail',
         builder: (context, state) {
-          final profileId = state.pathParameters['profileId']!;
-          return OperatorPilgrimDetailScreen(profileId: profileId);
+          final pilgrimId = state.pathParameters['pilgrimId']!;
+          return OperatorPilgrimDetailScreen(pilgrimId: pilgrimId);
         },
       ),
       GoRoute(
@@ -537,6 +552,19 @@ ShellRoute _staffWebShellRoute() {
         builder: (context, state) {
           final id = state.pathParameters['id']!;
           return AdminGroupEditScreen(groupId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.adminTrips,
+        name: 'adminTrips',
+        builder: (context, state) => const AdminTripsListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminTripOffices,
+        name: 'adminTripOffices',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return AdminTripOfficesScreen(tripId: id);
         },
       ),
       GoRoute(
@@ -695,16 +723,6 @@ GoRouter appRouter(Ref ref) {
       final isFieldOperatorRoute = location.startsWith('/operator/field');
       final isOperatorWebRoute =
           location.startsWith('/operator') && !isFieldOperatorRoute;
-
-      if (location == AppRoutes.notifications) {
-        if (accessMode == AppAccessMode.guest) {
-          if (AppPlatform.isWeb) {
-            return AppRoutes.operatorLogin;
-          }
-          return AppRoutes.login;
-        }
-        return null;
-      }
 
       if (AppPlatform.isWeb) {
         if (isFieldOperatorRoute) {

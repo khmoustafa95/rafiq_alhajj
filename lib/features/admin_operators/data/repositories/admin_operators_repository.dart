@@ -1,9 +1,10 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
-import 'package:rafiq_alhajj/core/utils/postgrest_search_sanitize.dart';
+import 'package:rafiq_alhajj/features/admin_operators/data/data_sources/admin_operators_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/created_operator_account.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_account.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_editor_input.dart';
+import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_group_grant.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_permissions.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -17,14 +18,13 @@ class AdminOperatorsException implements Exception {
 }
 
 class AdminOperatorsRepository {
-  AdminOperatorsRepository([SupabaseClient? client]) : _client = client;
+  AdminOperatorsRepository([SupabaseClient? client])
+      : _remote =
+            client == null ? null : AdminOperatorsRemoteDataSource(client);
 
-  final SupabaseClient? _client;
+  final AdminOperatorsRemoteDataSource? _remote;
 
-  bool get isAvailable => AppConfig.hasSupabase && _client != null;
-
-  static const _operatorSelect =
-      'id, full_name, email, is_active, operator_permissions, updated_at';
+  bool get isAvailable => AppConfig.hasSupabase && _remote != null;
 
   Future<List<OperatorAccount>> fetchOperators() async {
     final page = await fetchOperatorsPage(
@@ -39,42 +39,12 @@ class AdminOperatorsRepository {
     if (!isAvailable) {
       throw const AdminOperatorsException('Supabase is not configured');
     }
-
+    final remote = _remote!;
     try {
-      var request = _client!
-          .from('profiles')
-          .select(_operatorSelect)
-          .eq('role', 'operator');
-
-      final search = query.search.trim();
-      if (search.isNotEmpty) {
-        final term = sanitizePostgrestSearchTerm(search);
-        request = request.or('full_name.ilike.%$term%,email.ilike.%$term%');
-      }
-
-      final status = query.filters['status'];
-      if (status == 'active') {
-        request = request.eq('is_active', true);
-      } else if (status == 'inactive') {
-        request = request.eq('is_active', false);
-      }
-
-      final sortColumn = switch (query.sortColumnId) {
-        'email' => 'email',
-        'is_active' => 'is_active',
-        'updated_at' => 'updated_at',
-        _ => 'full_name',
-      };
-
-      final response = await request
-          .order(sortColumn, ascending: query.sortAscending)
-          .range(query.from, query.to)
-          .count(CountOption.exact);
-
-      final rows = response.data as List<dynamic>;
+      final result = await remote.fetchOperatorsPage(query);
       return PaginatedResult(
-        items: rows.map(_rowToAccount).toList(),
-        totalCount: response.count,
+        items: result.rows.map(_rowToAccount).toList(),
+        totalCount: result.count,
         pageSize: query.pageSize,
       );
     } on PostgrestException catch (e) {
@@ -86,19 +56,66 @@ class AdminOperatorsRepository {
     if (!isAvailable) {
       throw const AdminOperatorsException('Supabase is not configured');
     }
-
+    final remote = _remote!;
     try {
-      final row = await _client!
-          .from('profiles')
-          .select(_operatorSelect)
-          .eq('id', id)
-          .eq('role', 'operator')
-          .single();
+      final row = await remote.fetchOperator(id);
 
-      return _rowToAccount(row);
+      final grants = await remote.fetchGroupGrants(id);
+      final groupAccess = grants
+          .map(
+            (raw) => OperatorGroupGrant(
+              groupId: raw['group_id'] as String,
+              canWrite: raw['can_write'] as bool? ?? false,
+            ),
+          )
+          .toList();
+
+      return _rowToAccount(row, groupAccess: groupAccess);
     } on PostgrestException catch (e) {
       throw AdminOperatorsException(e.message);
     }
+  }
+
+  Future<List<OperatorGroupOption>> fetchGroupOptions() async {
+    if (!isAvailable) {
+      return const [];
+    }
+    final remote = _remote!;
+    try {
+      final rows = await remote.fetchGroupOptions();
+      return rows
+          .map(
+            (raw) => OperatorGroupOption(
+              id: raw['id'] as String,
+              name: raw['name'] as String,
+            ),
+          )
+          .toList();
+    } on PostgrestException catch (e) {
+      throw AdminOperatorsException(e.message);
+    }
+  }
+
+  /// Replaces the operator's group grants with [grants].
+  Future<void> _setGroupAccess(
+    AdminOperatorsRemoteDataSource remote,
+    String operatorId,
+    List<OperatorGroupGrant> grants,
+  ) async {
+    await remote.deleteGroupAccess(operatorId);
+
+    if (grants.isEmpty) {
+      return;
+    }
+
+    await remote.insertGroupAccess([
+      for (final grant in grants)
+        {
+          'operator_id': operatorId,
+          'group_id': grant.groupId,
+          'can_write': grant.canWrite,
+        },
+    ]);
   }
 
   Future<CreatedOperatorAccount> createOperator(
@@ -107,20 +124,17 @@ class AdminOperatorsRepository {
     if (!isAvailable) {
       throw const AdminOperatorsException('Supabase is not configured');
     }
-
+    final remote = _remote!;
     try {
-      final response = await _client!.functions.invoke(
-        'manage-operator',
-        body: {
-          'action': 'create',
-          'email': input.email.trim(),
-          'full_name': input.fullName.trim(),
-          if (input.password?.trim().isNotEmpty ?? false)
-            'password': input.password!.trim(),
-          'is_active': input.isActive,
-          'operator_permissions': input.permissions.toJson(),
-        },
-      );
+      final response = await remote.invokeManageOperator({
+        'action': 'create',
+        'email': input.email.trim(),
+        'full_name': input.fullName.trim(),
+        if (input.password?.trim().isNotEmpty ?? false)
+          'password': input.password!.trim(),
+        'is_active': input.isActive,
+        'operator_permissions': input.permissions.toJson(),
+      });
 
       if (response.status != 200) {
         final error = response.data is Map
@@ -132,8 +146,10 @@ class AdminOperatorsRepository {
       }
 
       final data = Map<String, dynamic>.from(response.data as Map);
+      final profileId = data['profile_id'] as String;
+      await _setGroupAccess(remote, profileId, input.groupAccess);
       return CreatedOperatorAccount(
-        profileId: data['profile_id'] as String,
+        profileId: profileId,
         email: data['email'] as String,
         password: data['password'] as String,
       );
@@ -152,7 +168,7 @@ class AdminOperatorsRepository {
     if (input.id == null) {
       throw const AdminOperatorsException('Operator id is required');
     }
-
+    final remote = _remote!;
     try {
       final body = <String, dynamic>{
         'action': 'update',
@@ -167,10 +183,7 @@ class AdminOperatorsRepository {
         body['password'] = input.password!.trim();
       }
 
-      final response = await _client!.functions.invoke(
-        'manage-operator',
-        body: body,
-      );
+      final response = await remote.invokeManageOperator(body);
 
       if (response.status != 200) {
         final error = response.data is Map
@@ -180,6 +193,8 @@ class AdminOperatorsRepository {
           error ?? 'Failed to update operator account',
         );
       }
+
+      await _setGroupAccess(remote, input.id!, input.groupAccess);
     } on AdminOperatorsException {
       rethrow;
     } on FunctionException catch (e) {
@@ -187,7 +202,10 @@ class AdminOperatorsRepository {
     }
   }
 
-  OperatorAccount _rowToAccount(dynamic row) {
+  OperatorAccount _rowToAccount(
+    dynamic row, {
+    List<OperatorGroupGrant> groupAccess = const [],
+  }) {
     final map = Map<String, dynamic>.from(row as Map);
     final permsRaw = map['operator_permissions'];
     return OperatorAccount(
@@ -201,6 +219,7 @@ class AdminOperatorsRepository {
       updatedAt: map['updated_at'] != null
           ? DateTime.tryParse(map['updated_at'] as String)
           : null,
+      groupAccess: groupAccess,
     );
   }
 }

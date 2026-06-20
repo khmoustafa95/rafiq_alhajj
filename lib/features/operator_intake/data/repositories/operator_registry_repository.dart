@@ -1,6 +1,6 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
-import 'package:rafiq_alhajj/core/utils/postgrest_search_sanitize.dart';
+import 'package:rafiq_alhajj/features/operator_intake/data/data_sources/operator_registry_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_record.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_summary.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_update.dart';
@@ -23,20 +23,19 @@ class PilgrimGroupOption {
 }
 
 class OperatorRegistryRepository {
-  OperatorRegistryRepository([SupabaseClient? client]) : _client = client;
+  OperatorRegistryRepository([SupabaseClient? client])
+      : _remote =
+            client == null ? null : OperatorRegistryRemoteDataSource(client);
 
-  final SupabaseClient? _client;
+  final OperatorRegistryRemoteDataSource? _remote;
 
-  bool get isAvailable => AppConfig.hasSupabase && _client != null;
+  bool get isAvailable => AppConfig.hasSupabase && _remote != null;
 
-  static const _profileSelect =
-      'id, full_name, group_id, '
-      'groups(name), '
-      'pilgrim_details(passport_number, travel_permit_number, medical_test_status, '
-      'travel_date, hotel_name, hotel_location_url, transportation_details, gender)';
-
-  Future<List<OperatorPilgrimSummary>> fetchAll() async {
-    final page = await fetchPage(const StaffTableQuery(pageSize: 1000));
+  Future<List<OperatorPilgrimSummary>> fetchAll({String? tripId}) async {
+    final page = await fetchPage(
+      const StaffTableQuery(pageSize: 1000),
+      tripId: tripId,
+    );
     return page.items;
   }
 
@@ -44,17 +43,14 @@ class OperatorRegistryRepository {
     if (!isAvailable) {
       return const [];
     }
-
+    final remote = _remote!;
     try {
-      final rows = await _client!
-          .from('groups')
-          .select('id, name')
-          .order('name');
+      final rows = await remote.fetchGroupOptions();
 
-      return (rows as List<dynamic>)
+      return rows
           .map(
             (raw) => PilgrimGroupOption(
-              id: (raw as Map)['id'] as String,
+              id: raw['id'] as String,
               name: raw['name'] as String,
             ),
           )
@@ -64,117 +60,21 @@ class OperatorRegistryRepository {
     }
   }
 
-  Future<Set<String>> _profileIdsMatchingDetailsSearch(String term) async {
-    final rows = await _client!
-        .from('pilgrim_details')
-        .select('profile_id')
-        .or(
-          'passport_number.ilike.%$term%,travel_permit_number.ilike.%$term%',
-        );
-
-    return (rows as List<dynamic>)
-        .map((row) => (row as Map)['profile_id'] as String)
-        .toSet();
-  }
-
-  PostgrestFilterBuilder<PostgrestList> _applyPilgrimSearch(
-    PostgrestFilterBuilder<PostgrestList> request,
-    String term,
-    Set<String> detailProfileIds,
-  ) {
-    if (detailProfileIds.isEmpty) {
-      return request.ilike('full_name', '%$term%');
-    }
-
-    final idList = detailProfileIds.join(',');
-    return request.or('full_name.ilike.%$term%,id.in.($idList)');
-  }
-
-  PostgrestTransformBuilder<PostgrestList> _applyPilgrimSort(
-    PostgrestFilterBuilder<PostgrestList> request,
-    StaffTableQuery query,
-  ) {
-    return switch (query.sortColumnId) {
-      'passport' => request.order(
-          'pilgrim_details(passport_number)',
-          ascending: query.sortAscending,
-        ),
-      'travel_date' => request.order(
-          'pilgrim_details(travel_date)',
-          ascending: query.sortAscending,
-        ),
-      'gender' => request.order(
-          'pilgrim_details(gender)',
-          ascending: query.sortAscending,
-        ),
-      'group' => request.order(
-          'name',
-          ascending: query.sortAscending,
-          referencedTable: 'groups',
-        ),
-      'travel_permit' => request.order(
-          'pilgrim_details(travel_permit_number)',
-          ascending: query.sortAscending,
-        ),
-      'medical_test' => request.order(
-          'pilgrim_details(medical_test_status)',
-          ascending: query.sortAscending,
-        ),
-      'hotel' => request.order(
-          'pilgrim_details(hotel_name)',
-          ascending: query.sortAscending,
-        ),
-      _ => request.order('full_name', ascending: query.sortAscending),
-    };
-  }
-
   Future<PaginatedResult<OperatorPilgrimSummary>> fetchPage(
-    StaffTableQuery query,
-  ) async {
+    StaffTableQuery query, {
+    String? tripId,
+  }) async {
     if (!isAvailable) {
       throw const OperatorRegistryException('Supabase is not configured');
     }
-
+    final remote = _remote!;
     try {
-      var select = _profileSelect;
-      final gender = query.filters['gender'];
-      if (gender != null && gender.isNotEmpty) {
-        select = select.replaceFirst(
-          'pilgrim_details(',
-          'pilgrim_details!inner(',
-        );
-      }
+      final result = await remote.fetchPage(query, tripId: tripId);
+      final items = result.rows.map(_mapSummary).toList(growable: false);
 
-      var request = _client!
-          .from('profiles')
-          .select(select)
-          .eq('role', 'pilgrim');
-
-      final search = query.search.trim();
-      if (search.isNotEmpty) {
-        final term = sanitizePostgrestSearchTerm(search);
-        final detailProfileIds = await _profileIdsMatchingDetailsSearch(term);
-        request = _applyPilgrimSearch(request, term, detailProfileIds);
-      }
-
-      final groupId = query.filters['group_id'];
-      if (groupId != null && groupId.isNotEmpty) {
-        request = request.eq('group_id', groupId);
-      }
-
-      if (gender != null && gender.isNotEmpty) {
-        request = request.eq('pilgrim_details.gender', gender);
-      }
-
-      final response = await _applyPilgrimSort(request, query)
-          .range(query.from, query.to)
-          .count(CountOption.exact);
-
-      final rows = response.data as List<dynamic>;
-      final items = _mapSummaries(rows);
       return PaginatedResult(
         items: items,
-        totalCount: response.count,
+        totalCount: result.count,
         pageSize: query.pageSize,
       );
     } on PostgrestException catch (e) {
@@ -182,148 +82,117 @@ class OperatorRegistryRepository {
     }
   }
 
-  Future<OperatorPilgrimRecord?> fetchById(String profileId) async {
+  Future<OperatorPilgrimRecord?> fetchById(
+    String pilgrimId, {
+    String? tripId,
+  }) async {
     if (!isAvailable) {
       throw const OperatorRegistryException('Supabase is not configured');
     }
-
+    final remote = _remote!;
     try {
-      final row = await _client!
-          .from('profiles')
-          .select(_profileSelect)
-          .eq('id', profileId)
-          .eq('role', 'pilgrim')
-          .maybeSingle();
-
-      if (row == null) {
+      final rows = await remote.fetchById(pilgrimId, tripId: tripId);
+      if (rows.isEmpty) {
         return null;
       }
 
-      return _mapRecord(Map<String, dynamic>.from(row));
+      return _mapRecord(rows.first);
     } on PostgrestException catch (e) {
       throw OperatorRegistryException(e.message);
     }
   }
 
   Future<void> savePilgrim({
-    required String profileId,
+    required String pilgrimId,
     required OperatorPilgrimUpdate update,
     bool includeProfileFields = false,
+    String? tripId,
+    String? enrollmentId,
   }) async {
     if (!isAvailable) {
       throw const OperatorRegistryException('Supabase is not configured');
     }
-
+    final remote = _remote!;
     try {
-      if (includeProfileFields) {
-        await _client!
-            .from('profiles')
-            .update(update.toProfilePayload())
-            .eq('id', profileId);
-      }
+      await remote.updatePilgrimPerson(pilgrimId, update.toPersonPayload());
 
-      await _client!
-          .from('pilgrim_details')
-          .update(update.toDetailsPayload())
-          .eq('profile_id', profileId);
+      await remote.updateEnrollment(
+        pilgrimId,
+        update.toEnrollmentPayload(includeGroup: includeProfileFields),
+        enrollmentId: enrollmentId,
+        tripId: tripId,
+      );
+
+      if (includeProfileFields) {
+        final pilgrim = await remote.fetchPilgrimProfileId(pilgrimId);
+        final profileId = pilgrim?['profile_id'] as String?;
+        if (profileId != null) {
+          await remote.updateProfile(profileId, update.toProfilePayload());
+        }
+      }
     } on PostgrestException catch (e) {
       throw OperatorRegistryException(e.message);
     }
   }
 
   Future<void> bulkAssignGroup({
-    required List<String> profileIds,
+    required List<String> pilgrimIds,
     required String? groupId,
+    String? tripId,
   }) async {
     if (!isAvailable) {
       throw const OperatorRegistryException('Supabase is not configured');
     }
-    if (profileIds.isEmpty) {
+    final remote = _remote!;
+    if (pilgrimIds.isEmpty) {
       return;
     }
 
     try {
-      await _client!
-          .from('profiles')
-          .update({'group_id': groupId})
-          .inFilter('id', profileIds);
+      await remote.bulkAssignGroup(
+        pilgrimIds: pilgrimIds,
+        groupId: groupId,
+        tripId: tripId,
+      );
     } on PostgrestException catch (e) {
       throw OperatorRegistryException(e.message);
     }
   }
 
-  List<OperatorPilgrimSummary> _mapSummaries(List<dynamic> rows) {
-    final items = <OperatorPilgrimSummary>[];
-    for (final raw in rows) {
-      final row = Map<String, dynamic>.from(raw as Map);
-      final details = _detailsMap(row['pilgrim_details']);
-      final group = _groupMap(row['groups']);
-      items.add(
-        OperatorPilgrimSummary(
-          profileId: row['id'] as String,
-          fullName: (row['full_name'] as String?) ?? '',
-          passportNumber: details?['passport_number'] as String?,
-          travelPermitNumber: details?['travel_permit_number'] as String?,
-          medicalTestStatus: details?['medical_test_status'] as String?,
-          travelDate: _parseDate(details?['travel_date']),
-          hotelName: details?['hotel_name'] as String?,
-          gender: details?['gender'] as String?,
-          groupId: row['group_id'] as String?,
-          groupName: group?['name'] as String?,
-        ),
-      );
-    }
-    return items;
-  }
-
-  OperatorPilgrimRecord? _mapRecord(Map<String, dynamic> row) {
-    final details = _detailsMap(row['pilgrim_details']);
-    if (details == null) {
-      return null;
-    }
-
-    final group = _groupMap(row['groups']);
-
-    return OperatorPilgrimRecord(
-      profileId: row['id'] as String,
+  OperatorPilgrimSummary _mapSummary(Map<String, dynamic> row) {
+    return OperatorPilgrimSummary(
+      pilgrimId: row['pilgrim_id'] as String,
+      profileId: row['profile_id'] as String?,
+      enrollmentId: row['enrollment_id'] as String?,
       fullName: (row['full_name'] as String?) ?? '',
-      passportNumber: details['passport_number'] as String?,
-      travelPermitNumber: details['travel_permit_number'] as String?,
-      medicalTestStatus: details['medical_test_status'] as String?,
-      travelDate: _parseDate(details['travel_date']),
-      hotelName: details['hotel_name'] as String?,
-      hotelLocationUrl: details['hotel_location_url'] as String?,
-      transportationDetails: details['transportation_details'] as String?,
-      gender: details['gender'] as String?,
+      passportNumber: row['passport_number'] as String?,
+      travelPermitNumber: row['travel_permit_number'] as String?,
+      medicalTestStatus: row['medical_test_status'] as String?,
+      travelDate: _parseDate(row['travel_date']),
+      hotelName: row['hotel_name'] as String?,
+      gender: row['gender'] as String?,
       groupId: row['group_id'] as String?,
-      groupName: group?['name'] as String?,
+      groupName: row['group_name'] as String?,
     );
   }
 
-  Map<String, dynamic>? _detailsMap(dynamic value) {
-    if (value == null) {
-      return null;
-    }
-    if (value is List) {
-      if (value.isEmpty) {
-        return null;
-      }
-      return Map<String, dynamic>.from(value.first as Map);
-    }
-    return Map<String, dynamic>.from(value as Map);
-  }
-
-  Map<String, dynamic>? _groupMap(dynamic value) {
-    if (value == null) {
-      return null;
-    }
-    if (value is List) {
-      if (value.isEmpty) {
-        return null;
-      }
-      return Map<String, dynamic>.from(value.first as Map);
-    }
-    return Map<String, dynamic>.from(value as Map);
+  OperatorPilgrimRecord _mapRecord(Map<String, dynamic> row) {
+    return OperatorPilgrimRecord(
+      pilgrimId: row['pilgrim_id'] as String,
+      profileId: row['profile_id'] as String?,
+      enrollmentId: row['enrollment_id'] as String?,
+      fullName: (row['full_name'] as String?) ?? '',
+      passportNumber: row['passport_number'] as String?,
+      travelPermitNumber: row['travel_permit_number'] as String?,
+      medicalTestStatus: row['medical_test_status'] as String?,
+      travelDate: _parseDate(row['travel_date']),
+      hotelName: row['hotel_name'] as String?,
+      hotelLocationUrl: row['hotel_location_url'] as String?,
+      transportationDetails: row['transportation_details'] as String?,
+      gender: row['gender'] as String?,
+      groupId: row['group_id'] as String?,
+      groupName: row['group_name'] as String?,
+    );
   }
 
   DateTime? _parseDate(dynamic value) {

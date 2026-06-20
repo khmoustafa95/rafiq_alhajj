@@ -10,20 +10,23 @@ class FieldOperatorRepository {
 
   bool get isAvailable => _registry.isAvailable;
 
-  Future<List<Pilgrim>> fetchPilgrims() => _registry.fetchAllPilgrims();
+  Future<List<Pilgrim>> fetchPilgrims({String? tripId}) =>
+      _registry.fetchAllPilgrims(tripId: tripId);
 
-  Future<Pilgrim?> fetchPilgrim(String profileId) =>
-      _registry.fetchByProfileId(profileId);
+  Future<Pilgrim?> fetchPilgrim(String profileId, {String? tripId}) =>
+      _registry.fetchByProfileId(profileId, tripId: tripId);
 
   Future<void> updatePilgrimLogistics({
     required String profileId,
     required String? fieldStatus,
     required String? medicalTestStatus,
+    String? tripId,
   }) {
     return _registry.updateFieldStatus(
       profileId: profileId,
       fieldStatus: fieldStatus,
       medicalTestStatus: medicalTestStatus,
+      tripId: tripId,
     );
   }
 }

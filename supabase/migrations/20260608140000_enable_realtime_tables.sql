@@ -1,7 +1,10 @@
 -- Enable Supabase Realtime for live UI refresh across the app.
 
 alter publication supabase_realtime add table public.profiles;
-alter publication supabase_realtime add table public.pilgrim_details;
+alter publication supabase_realtime add table public.pilgrims;
+alter publication supabase_realtime add table public.trips;
+alter publication supabase_realtime add table public.trip_groups;
+alter publication supabase_realtime add table public.trip_enrollments;
 alter publication supabase_realtime add table public.ritual_logs;
 alter publication supabase_realtime add table public.content_library;
 alter publication supabase_realtime add table public.competitions;

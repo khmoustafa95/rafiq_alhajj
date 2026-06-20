@@ -1,4 +1,5 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/features/admin_analytics/data/data_sources/admin_analytics_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/domain/models/admin_dashboard_stats.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/domain/models/chart_slice.dart';
 import 'package:rafiq_alhajj/features/field_operator/domain/models/field_pilgrim_status.dart';
@@ -18,32 +19,28 @@ class AdminAnalyticsException implements Exception {
 const String kUnassignedGroupKey = '__unassigned__';
 
 class AdminAnalyticsRepository {
-  AdminAnalyticsRepository([SupabaseClient? client]) : _client = client;
+  AdminAnalyticsRepository([SupabaseClient? client])
+      : _remote =
+            client == null ? null : AdminAnalyticsRemoteDataSource(client);
 
-  final SupabaseClient? _client;
+  final AdminAnalyticsRemoteDataSource? _remote;
 
-  bool get isAvailable => AppConfig.hasSupabase && _client != null;
+  bool get isAvailable => AppConfig.hasSupabase && _remote != null;
 
   Future<AdminDashboardStats> fetchDashboardStats() async {
     if (!isAvailable) {
       throw const AdminAnalyticsException('Supabase is not configured');
     }
+    final remote = _remote!;
 
     try {
-      final client = _client!;
-
-      final results = await Future.wait<dynamic>([
-        client.from('profiles').select('id, group_id').eq('role', 'pilgrim'),
-        client.from('profiles').select('id').eq('role', 'operator'),
-        client.from('groups').select('id, name'),
-        client.from('pilgrim_details').select('profile_id, field_status'),
-        client
-            .from('ritual_logs')
-            .select('pilgrim_id, ritual_key, is_completed')
-            .eq('is_completed', true),
-        client
-            .from('pilgrim_documents')
-            .select('uploaded_by, profiles:uploaded_by(full_name)'),
+      final results = await Future.wait<List<Map<String, dynamic>>>([
+        remote.fetchPilgrims(),
+        remote.fetchOperators(),
+        remote.fetchGroups(),
+        remote.fetchEnrollments(),
+        remote.fetchCompletedRitualLogs(),
+        remote.fetchDocumentUploaders(),
       ]).timeout(
         const Duration(seconds: 30),
         onTimeout: () => throw const AdminAnalyticsException(
@@ -51,31 +48,28 @@ class AdminAnalyticsRepository {
         ),
       );
 
-      final pilgrimRows = results[0] as List<dynamic>;
-      final operatorRows = results[1] as List<dynamic>;
-      final groupRows = results[2] as List<dynamic>;
-      final detailRows = results[3] as List<dynamic>;
-      final ritualRows = results[4] as List<dynamic>;
-      final documentRows = results[5] as List<dynamic>;
+      final pilgrimRows = results[0];
+      final operatorRows = results[1];
+      final groupRows = results[2];
+      final enrollmentRows = results[3];
+      final ritualRows = results[4];
+      final documentRows = results[5];
 
       final groupNames = <String, String>{
         for (final row in groupRows)
-          (row as Map)['id'] as String: row['name'] as String,
+          row['id'] as String: row['name'] as String,
       };
 
       final groupCounts = <String, int>{};
-      for (final row in pilgrimRows) {
-        final map = Map<String, dynamic>.from(row as Map);
+      final statusCounts = <String, int>{};
+      for (final row in enrollmentRows) {
+        final map = Map<String, dynamic>.from(row);
         final groupId = map['group_id'] as String?;
         final label = groupId == null
             ? kUnassignedGroupKey
             : groupNames[groupId] ?? kUnassignedGroupKey;
         groupCounts[label] = (groupCounts[label] ?? 0) + 1;
-      }
 
-      final statusCounts = <String, int>{};
-      for (final row in detailRows) {
-        final map = Map<String, dynamic>.from(row as Map);
         final status =
             map['field_status'] as String? ?? FieldPilgrimStatus.pending;
         statusCounts[status] = (statusCounts[status] ?? 0) + 1;
@@ -83,7 +77,7 @@ class AdminAnalyticsRepository {
 
       final uploadCounts = <String, int>{};
       for (final row in documentRows) {
-        final map = Map<String, dynamic>.from(row as Map);
+        final map = Map<String, dynamic>.from(row);
         final profile = map['profiles'];
         var name = kUnknownOperatorKey;
         if (profile is Map) {
@@ -95,7 +89,7 @@ class AdminAnalyticsRepository {
       }
 
       final pilgrimCount = pilgrimRows.length;
-      final totalRitualSlots = pilgrimCount * HajjRitualSteps.all.length;
+      final totalRitualSlots = enrollmentRows.length * HajjRitualSteps.all.length;
       final completedRituals = ritualRows.length;
       final ritualPercent = totalRitualSlots == 0
           ? 0.0

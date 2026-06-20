@@ -14,6 +14,7 @@ import 'package:rafiq_alhajj/features/admin_settings/domain/models/system_settin
 import 'package:rafiq_alhajj/features/admin_settings/domain/models/system_settings_input.dart';
 import 'package:rafiq_alhajj/features/admin_settings/presentation/providers/system_settings_providers.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 
 class AdminSettingsScreen extends ConsumerStatefulWidget {
   const AdminSettingsScreen({super.key});
@@ -23,13 +24,7 @@ class AdminSettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _organizationNameController = TextEditingController();
-  final _supportEmailController = TextEditingController();
-  final _supportPhoneController = TextEditingController();
-  final _hajjSeasonController = TextEditingController();
-  final _maintenanceMessageController = TextEditingController();
-  final _maxPilgrimsController = TextEditingController();
+  late final FormGroup _form;
 
   bool _registrationOpen = true;
   bool _maintenanceMode = false;
@@ -44,14 +39,40 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
   bool _loaded = false;
 
   @override
+  void initState() {
+    super.initState();
+    _form = FormGroup({
+      'organizationName': FormControl<String>(
+        value: '',
+        validators: [Validators.required],
+      ),
+      'hajjSeason': FormControl<String>(value: ''),
+      'supportEmail': FormControl<String>(value: ''),
+      'supportPhone': FormControl<String>(value: ''),
+      'maintenanceMessage': FormControl<String>(value: ''),
+      'maxPilgrims': FormControl<String>(
+        value: '',
+        validators: [Validators.delegate(_validateMaxPilgrims)],
+      ),
+    });
+  }
+
+  @override
   void dispose() {
-    _organizationNameController.dispose();
-    _supportEmailController.dispose();
-    _supportPhoneController.dispose();
-    _hajjSeasonController.dispose();
-    _maintenanceMessageController.dispose();
-    _maxPilgrimsController.dispose();
+    _form.dispose();
     super.dispose();
+  }
+
+  Map<String, dynamic>? _validateMaxPilgrims(AbstractControl<dynamic> control) {
+    final text = (control.value as String?)?.trim() ?? '';
+    if (text.isEmpty) {
+      return null;
+    }
+    final parsed = int.tryParse(text);
+    if (parsed == null || parsed < 1) {
+      return {'invalidMaxPilgrims': true};
+    }
+    return null;
   }
 
   void _bindSettings(SystemSettings settings) {
@@ -59,13 +80,16 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       return;
     }
 
-    _organizationNameController.text = settings.organizationName;
-    _supportEmailController.text = settings.supportEmail ?? '';
-    _supportPhoneController.text = settings.supportPhone ?? '';
-    _hajjSeasonController.text = settings.hajjSeasonLabel ?? '';
-    _maintenanceMessageController.text = settings.maintenanceMessage ?? '';
-    _maxPilgrimsController.text =
-        settings.maxPilgrimsPerGroup?.toString() ?? '';
+    _form.control('organizationName').updateValue(settings.organizationName);
+    _form.control('supportEmail').updateValue(settings.supportEmail ?? '');
+    _form.control('supportPhone').updateValue(settings.supportPhone ?? '');
+    _form.control('hajjSeason').updateValue(settings.hajjSeasonLabel ?? '');
+    _form
+        .control('maintenanceMessage')
+        .updateValue(settings.maintenanceMessage ?? '');
+    _form
+        .control('maxPilgrims')
+        .updateValue(settings.maxPilgrimsPerGroup?.toString() ?? '');
 
     _registrationOpen = settings.registrationOpen;
     _maintenanceMode = settings.maintenanceMode;
@@ -81,7 +105,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
   }
 
   int? _parseMaxPilgrims() {
-    final text = _maxPilgrimsController.text.trim();
+    final text = (_form.control('maxPilgrims').value as String? ?? '').trim();
     if (text.isEmpty) {
       return null;
     }
@@ -90,13 +114,13 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
 
   SystemSettingsInput _buildInput() {
     return SystemSettingsInput(
-      organizationName: _organizationNameController.text,
-      supportEmail: _supportEmailController.text,
-      supportPhone: _supportPhoneController.text,
-      hajjSeasonLabel: _hajjSeasonController.text,
+      organizationName: _form.control('organizationName').value as String,
+      supportEmail: _form.control('supportEmail').value as String,
+      supportPhone: _form.control('supportPhone').value as String,
+      hajjSeasonLabel: _form.control('hajjSeason').value as String,
       registrationOpen: _registrationOpen,
       maintenanceMode: _maintenanceMode,
-      maintenanceMessage: _maintenanceMessageController.text,
+      maintenanceMessage: _form.control('maintenanceMessage').value as String,
       requireDocumentsOnIntake: _requireDocumentsOnIntake,
       autoGeneratePilgrimPassword: _autoGeneratePilgrimPassword,
       allowOperatorSelfRegistration: _allowOperatorSelfRegistration,
@@ -110,12 +134,16 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) {
+    if (!_form.valid) {
+      _form.markAllAsTouched();
       return;
     }
 
     final maxPilgrims = _parseMaxPilgrims();
-    if (_maxPilgrimsController.text.trim().isNotEmpty && maxPilgrims == null) {
+    if ((_form.control('maxPilgrims').value as String? ?? '')
+            .trim()
+            .isNotEmpty &&
+        maxPilgrims == null) {
       return;
     }
 
@@ -209,8 +237,8 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
   }
 
   Widget _buildForm(AppLocalizations l10n, bool isSaving, SystemSettings? settings) {
-    return Form(
-      key: _formKey,
+    return ReactiveForm(
+      formGroup: _form,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -220,37 +248,31 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
             subtitle: l10n.adminSettingsOrganizationSectionHint,
             child: ResponsiveFormGrid(
               children: [
-                TextFormField(
-                  controller: _organizationNameController,
-                  enabled: !isSaving,
+                ReactiveTextField<String>(
+                  formControlName: 'organizationName',
                   decoration: InputDecoration(
                     labelText: l10n.adminSettingsOrganizationName,
                   ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return l10n.adminSettingsOrganizationNameRequired;
-                    }
-                    return null;
+                  validationMessages: {
+                    ValidationMessage.required: (_) =>
+                        l10n.adminSettingsOrganizationNameRequired,
                   },
                 ),
-                TextFormField(
-                  controller: _hajjSeasonController,
-                  enabled: !isSaving,
+                ReactiveTextField<String>(
+                  formControlName: 'hajjSeason',
                   decoration: InputDecoration(
                     labelText: l10n.adminSettingsHajjSeason,
                   ),
                 ),
-                TextFormField(
-                  controller: _supportEmailController,
-                  enabled: !isSaving,
+                ReactiveTextField<String>(
+                  formControlName: 'supportEmail',
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     labelText: l10n.adminSettingsSupportEmail,
                   ),
                 ),
-                TextFormField(
-                  controller: _supportPhoneController,
-                  enabled: !isSaving,
+                ReactiveTextField<String>(
+                  formControlName: 'supportPhone',
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
                     labelText: l10n.adminSettingsSupportPhone,
@@ -286,9 +308,8 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                 ),
                 if (_maintenanceMode) ...[
                   SizedBox(height: 12.h),
-                  TextFormField(
-                    controller: _maintenanceMessageController,
-                    enabled: !isSaving,
+                  ReactiveTextField<String>(
+                    formControlName: 'maintenanceMessage',
                     decoration: InputDecoration(
                       labelText: l10n.adminSettingsMaintenanceMessage,
                     ),
@@ -333,25 +354,17 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                       setState(() => _allowOperatorSelfRegistration = value),
                 ),
                 SizedBox(height: 12.h),
-                TextFormField(
-                  controller: _maxPilgrimsController,
-                  enabled: !isSaving,
+                ReactiveTextField<String>(
+                  formControlName: 'maxPilgrims',
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: InputDecoration(
                     labelText: l10n.adminSettingsMaxPilgrimsPerGroup,
                     helperText: l10n.adminSettingsMaxPilgrimsPerGroupHint,
                   ),
-                  validator: (value) {
-                    final text = value?.trim() ?? '';
-                    if (text.isEmpty) {
-                      return null;
-                    }
-                    final parsed = int.tryParse(text);
-                    if (parsed == null || parsed < 1) {
-                      return l10n.adminSettingsMaxPilgrimsInvalid;
-                    }
-                    return null;
+                  validationMessages: {
+                    'invalidMaxPilgrims': (_) =>
+                        l10n.adminSettingsMaxPilgrimsInvalid,
                   },
                 ),
               ],
@@ -509,6 +522,17 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     final settingsAsync = ref.watch(systemSettingsProvider);
     final isSaving = ref.watch(
       systemSettingsSaveProvider.select((state) => state.isLoading),
+    );
+
+    ref.listen(
+      systemSettingsSaveProvider.select((state) => state.isLoading),
+      (previous, isLoading) {
+        if (isLoading) {
+          _form.markAsDisabled();
+        } else {
+          _form.markAsEnabled();
+        }
+      },
     );
 
     return settingsAsync.when(

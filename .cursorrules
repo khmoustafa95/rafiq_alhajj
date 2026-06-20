@@ -14,27 +14,32 @@ Always organize code by feature (Feature-First approach). Within each feature fo
 3. **Domain Layer**:
    - `models/`: Pure business logic models and entities.
 4. **Data Layer**:
-   - `repositories/`: Abstract repository definitions and concrete repository implementations.
-   - `dtos/`: Data Transfer Objects for serialization.
+   - `repositories/`: Abstract repository definitions and concrete repository implementations. Concrete repositories MUST map DTOs to Domain Models before returning data.
+   - `dtos/`: Data Transfer Objects for serialization/deserialization.
    - `data_sources/`: Direct data connections. Handles `SupabaseClient` calls.
 
 # Tech Stack & Packages Implementation
 - **State Management**: Riverpod using the new syntax with code generation (`@riverpod`, `Notifier`, `AsyncNotifier`).
 - **Routing**: `go_router` for declarative and strongly-typed routing.
+- **Forms & Inputs**: Use `reactive_forms` for handling all form inputs, states, and validations.
+- **Assets Management**: Use `flutter_gen_runner` to generate asset classes. NEVER hardcode asset string paths (e.g., use `Assets.images.logo.path`).
 - **Data Backend**: `supabase_flutter`. Development is run locally using Supabase CLI (v2.90.0) via Docker.
   - NOTE: When writing local database connection strings or configurations, ensure compatibility with local Docker setups (e.g., use `10.0.2.2` for Android Emulators to access localhost).
-- **Localization**: Official `flutter_localizations` using `.arb` files. NEVER hardcode strings. Always use `AppLocalizations.of(context)!.key`.
-- **Code Generation**: Use `freezed` and `json_serializable` for all Models and DTOs. Assume `build_runner` is used.
+- **Localization**: Official `flutter_localizations` using `.arb` files. NEVER hardcode strings. Always use `AppLocalizations.of(context).key` (the generated lookup is non-nullable; do NOT add a `!`).
+- **Code Generation**: Use `freezed`, `json_serializable`, and `flutter_gen` via `build_runner`.
 
-# UI, Themes & Responsiveness
-- **Theme**: Support both `darkTheme` and `lightTheme` explicitly via `ThemeData` and `ColorScheme`. Never hardcode colors; always use `Theme.of(context).colorScheme`.
+# UI, Themes, Platform & Responsiveness
+- **Platform Awareness**: Always adapt code based on target platform (Mobile vs Web). Use `kIsWeb` or platform-specific checks where behavior/capabilities differ (e.g., file I/O, download operations).
+- **Theme**: Support both `darkTheme` and `lightTheme` explicitly via `ThemeData`. The design-token class `AppColors` (`lib/core/theme/app_colors.dart`) is the single source of truth for brand colors and is also wired into each theme's `ColorScheme` in `app_theme.dart`. Use `AppColors.*` tokens (and `AppDecorations`/`AppTypography`) for brand styling, or `Theme.of(context).colorScheme` where a semantic role fits. NEVER write raw `Color(0x...)` literals in widgets — add the value to `AppColors` first.
 - **Responsiveness**: Use the `flutter_screenutil` package. 
   - All sizes, paddings, fonts, and dimensions must use extension methods (e.g., `16.w`, `24.h`, `14.sp`, `RPadding()`).
-  - Ensure layouts adapt correctly across different mobile/tablet screen aspect ratios.
+  - Ensure layouts adapt correctly across different mobile/tablet screen aspect ratios without over-stretching.
 
-# Error Handling & Code Quality
+# Error Handling, Performance & Code Quality
+- **Zero Warnings Policy**: Code must be warning-free. Address all terminal errors, warnings, and analytical info messages during code generation.
+- **Performance & Rebuilds**: Proactively optimize for rendering performance. Minimize widget rebuilds by using `const` constructors, extracting sub-widgets, and utilizing Riverpod's `.select()` filtering.
 - Never duplicate code. Extract reusable logic into extensions, helpers, or utilities.
-- Use best practices always
+- Always design with an offline-first mindset: ensure repositories handle data caching or fallback mechanisms gracefully.
 - Every widget must be in its own standalone file (One public widget per file).
 - Always wrap database/network operations in proper try-catch blocks, explicitly catching `PostgrestException` or `AuthException` from Supabase.
 

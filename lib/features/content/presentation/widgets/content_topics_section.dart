@@ -61,10 +61,7 @@ class ContentTopicsSection extends StatelessWidget {
         else
           LayoutBuilder(
             builder: (context, constraints) {
-              final listHeight = math.max(
-                220.h,
-                (130.h + 88.h * textScale).clamp(220.h, 300.h),
-              );
+              final listHeight = (130.h + 150.h * textScale).clamp(280.h, 340.h);
 
               return SizedBox(
                 height: listHeight,
@@ -81,6 +78,7 @@ class ContentTopicsSection extends StatelessWidget {
                     );
                     return SizedBox(
                       width: cardWidth,
+                      height: listHeight,
                       child: ContentTopicCard(
                         topic: topic,
                         onTap: () => onTopicTap(topic),

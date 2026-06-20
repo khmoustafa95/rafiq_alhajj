@@ -13,9 +13,14 @@
 | JSON | `json_serializable` / `json_annotation` | ^6.9.5 / ^4.11.0 |
 | L10n | `flutter_localizations` + `intl` | SDK / ^0.20.2 |
 | Responsiveness | `flutter_screenutil` | ^5.9.3 |
+| Forms | `reactive_forms` | ^18.2.2 |
+| Assets codegen | `flutter_gen_runner` (dev) → `lib/core/gen/assets.gen.dart` | ^5.14.1 |
 | Codegen runner | `build_runner` | ^2.15.0 |
 | Lints | `flutter_lints` | ^6.0.0 |
 | Push (FCM) | `firebase_core` / `firebase_messaging` | ^3.15 / ^15.2 |
+
+> **Removed:** `google_fonts` (unused — app uses the bundled system text theme via `AppTypography`).
+> **Fonts:** Inter `.ttf` files exist under `assets/fonts/` but are not currently declared/wired (system theme used).
 
 ## Dev environment
 - **OS:** Windows 10

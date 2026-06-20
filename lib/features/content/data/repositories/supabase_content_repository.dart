@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:rafiq_alhajj/features/content/data/data_sources/content_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/content/data/dtos/content_item_dto.dart';
 import 'package:rafiq_alhajj/features/content/data/repositories/content_repository.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_item.dart';
@@ -14,30 +15,21 @@ class ContentFetchException implements Exception {
 }
 
 class SupabaseContentRepository implements ContentRepository {
-  SupabaseContentRepository(this._client);
+  SupabaseContentRepository(SupabaseClient client)
+      : _remote = ContentRemoteDataSource(client);
 
-  final SupabaseClient _client;
-  static const Duration _requestTimeout = Duration(seconds: 15);
+  final ContentRemoteDataSource _remote;
 
   @override
   Future<PublicContentFeed> fetchBrowsableFeed({
     required bool includePilgrimOnly,
   }) async {
     try {
-      final rows = await _client
-          .from('content_library')
-          .select(
-            'id, title, description, media_url, type, visibility, created_at',
-          )
-          .inFilter('type', ['news', 'announcement'])
-          .order('created_at', ascending: false)
-          .timeout(_requestTimeout);
+      final rows = await _remote.fetchBrowsableFeed();
 
-      final items = (rows as List<dynamic>)
+      final items = rows
           .map(
-            (row) => ContentItemDto.fromJson(
-              Map<String, dynamic>.from(row as Map),
-            ).toDomain(),
+            (row) => ContentItemDto.fromJson(row).toDomain(),
           )
           .where(
             (item) =>
@@ -65,20 +57,13 @@ class SupabaseContentRepository implements ContentRepository {
   @override
   Future<ContentItem?> fetchById(String id) async {
     try {
-      final row = await _client
-          .from('content_library')
-          .select(
-            'id, title, description, media_url, type, visibility, created_at',
-          )
-          .eq('id', id)
-          .maybeSingle()
-          .timeout(_requestTimeout);
+      final row = await _remote.fetchById(id);
 
       if (row == null) {
         return null;
       }
 
-      return ContentItemDto.fromJson(Map<String, dynamic>.from(row)).toDomain();
+      return ContentItemDto.fromJson(row).toDomain();
     } on PostgrestException {
       throw const ContentFetchException();
     } on SocketException {

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:rafiq_alhajj/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/auth/data/dtos/profile_dto.dart';
 import 'package:rafiq_alhajj/features/auth/data/repositories/auth_repository.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
@@ -30,15 +31,16 @@ enum PilgrimAuthErrorCode {
 }
 
 class SupabaseAuthRepository implements AuthRepository {
-  SupabaseAuthRepository(this._client);
+  SupabaseAuthRepository(SupabaseClient client)
+      : _remote = AuthRemoteDataSource(client);
 
-  final SupabaseClient _client;
+  final AuthRemoteDataSource _remote;
   static const Duration _requestTimeout = Duration(seconds: 15);
 
   @override
   Stream<AuthSessionState> watchSessionState() async* {
     yield await _safeCurrentSessionState();
-    await for (final _ in _client.auth.onAuthStateChange) {
+    await for (final _ in _remote.authStateChanges()) {
       yield await _safeCurrentSessionState();
     }
   }
@@ -57,12 +59,12 @@ class SupabaseAuthRepository implements AuthRepository {
 
   @override
   Future<AuthSessionState> getCurrentSessionState() async {
-    final session = _client.auth.currentSession;
-    if (session == null) {
+    final userId = _remote.currentUserId;
+    if (userId == null) {
       return const AuthSessionState.guest();
     }
 
-    final profile = await _fetchProfile(session.user.id);
+    final profile = await _fetchProfile(userId);
     if (profile == null) {
       return const AuthSessionState.guest();
     }
@@ -76,24 +78,22 @@ class SupabaseAuthRepository implements AuthRepository {
     required String password,
   }) async {
     try {
-      final response = await _client.auth.signInWithPassword(
-        email: email.trim(),
-        password: password,
-      ).timeout(_requestTimeout);
+      final user = await _remote
+          .signInWithPassword(email: email.trim(), password: password)
+          .timeout(_requestTimeout);
 
-      final user = response.user;
       if (user == null) {
         throw const PilgrimAuthException(PilgrimAuthErrorCode.invalidCredentials);
       }
 
       final profile = await _fetchProfile(user.id);
       if (profile == null) {
-        await _client.auth.signOut();
+        await _remote.signOut();
         throw const PilgrimAuthException(PilgrimAuthErrorCode.profileNotFound);
       }
 
       if (profile.role != AppUserRole.pilgrim) {
-        await _client.auth.signOut();
+        await _remote.signOut();
         throw const PilgrimAuthException(PilgrimAuthErrorCode.notPilgrimRole);
       }
 
@@ -115,24 +115,22 @@ class SupabaseAuthRepository implements AuthRepository {
     required String password,
   }) async {
     try {
-      final response = await _client.auth.signInWithPassword(
-        email: email.trim(),
-        password: password,
-      ).timeout(_requestTimeout);
+      final user = await _remote
+          .signInWithPassword(email: email.trim(), password: password)
+          .timeout(_requestTimeout);
 
-      final user = response.user;
       if (user == null) {
         throw const PilgrimAuthException(PilgrimAuthErrorCode.invalidCredentials);
       }
 
       final profile = await _fetchProfile(user.id);
       if (profile == null) {
-        await _client.auth.signOut();
+        await _remote.signOut();
         throw const PilgrimAuthException(PilgrimAuthErrorCode.profileNotFound);
       }
 
       if (profile.role != AppUserRole.operator) {
-        await _client.auth.signOut();
+        await _remote.signOut();
         throw const PilgrimAuthException(PilgrimAuthErrorCode.notStaffRole);
       }
 
@@ -154,24 +152,22 @@ class SupabaseAuthRepository implements AuthRepository {
     required String password,
   }) async {
     try {
-      final response = await _client.auth.signInWithPassword(
-        email: email.trim(),
-        password: password,
-      ).timeout(_requestTimeout);
+      final user = await _remote
+          .signInWithPassword(email: email.trim(), password: password)
+          .timeout(_requestTimeout);
 
-      final user = response.user;
       if (user == null) {
         throw const PilgrimAuthException(PilgrimAuthErrorCode.invalidCredentials);
       }
 
       final profile = await _fetchProfile(user.id);
       if (profile == null) {
-        await _client.auth.signOut();
+        await _remote.signOut();
         throw const PilgrimAuthException(PilgrimAuthErrorCode.profileNotFound);
       }
 
       if (profile.role != AppUserRole.admin) {
-        await _client.auth.signOut();
+        await _remote.signOut();
         throw const PilgrimAuthException(PilgrimAuthErrorCode.notAdminRole);
       }
 
@@ -189,22 +185,17 @@ class SupabaseAuthRepository implements AuthRepository {
 
   @override
   Future<void> signOut() async {
-    await _client.auth.signOut();
+    await _remote.signOut();
   }
 
   Future<UserProfile?> _fetchProfile(String userId) async {
-    final data = await _client
-        .from('profiles')
-        .select('id, full_name, role')
-        .eq('id', userId)
-        .maybeSingle()
-        .timeout(_requestTimeout);
+    final data = await _remote.fetchProfile(userId).timeout(_requestTimeout);
 
     if (data == null) {
       return null;
     }
 
-    return ProfileDto.fromJson(Map<String, dynamic>.from(data)).toDomain();
+    return ProfileDto.fromJson(data).toDomain();
   }
 
   PilgrimAuthErrorCode _mapAuthException(AuthException e) {

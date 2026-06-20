@@ -1,5 +1,6 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/domain/models/educational_media.dart';
+import 'package:rafiq_alhajj/features/content/data/data_sources/content_topics_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_topic.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_visibility.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -14,32 +15,28 @@ class ContentTopicsException implements Exception {
 }
 
 class ContentTopicsRepository {
-  ContentTopicsRepository([SupabaseClient? client]) : _client = client;
+  ContentTopicsRepository([SupabaseClient? client])
+      : _remote = AppConfig.hasSupabase && client != null
+            ? ContentTopicsRemoteDataSource(client)
+            : null;
 
-  final SupabaseClient? _client;
+  final ContentTopicsRemoteDataSource? _remote;
 
-  bool get isAvailable => AppConfig.hasSupabase && _client != null;
+  bool get isAvailable => _remote != null;
 
   Future<List<ContentTopic>> fetchActive({
     required bool includePilgrimOnly,
   }) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       return [];
     }
 
     try {
-      final rows = await _client!
-          .from('content_topics')
-          .select(
-            'id, title, description, cover_image_url, visibility, '
-            'sort_order, is_active, created_at, '
-            'content_topic_media(id, media_type, title, url, sort_order)',
-          )
-          .eq('is_active', true)
-          .order('sort_order');
+      final rows = await remote.fetchActive();
 
-      return (rows as List<dynamic>)
-          .map((row) => _mapTopic(Map<String, dynamic>.from(row as Map)))
+      return rows
+          .map(_mapTopic)
           .where(
             (topic) =>
                 topic.visibility == ContentVisibility.public ||
@@ -53,27 +50,19 @@ class ContentTopicsRepository {
   }
 
   Future<ContentTopic?> fetchById(String id) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       return null;
     }
 
     try {
-      final row = await _client!
-          .from('content_topics')
-          .select(
-            'id, title, description, cover_image_url, visibility, '
-            'sort_order, is_active, created_at, '
-            'content_topic_media(id, media_type, title, url, sort_order)',
-          )
-          .eq('id', id)
-          .eq('is_active', true)
-          .maybeSingle();
+      final row = await remote.fetchById(id);
 
       if (row == null) {
         return null;
       }
 
-      return _mapTopic(Map<String, dynamic>.from(row));
+      return _mapTopic(row);
     } on PostgrestException catch (e) {
       throw ContentTopicsException(e.message);
     }

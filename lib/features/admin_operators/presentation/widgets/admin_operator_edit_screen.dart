@@ -14,9 +14,11 @@ import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_account.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_editor_input.dart';
+import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_group_grant.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_permissions.dart';
 import 'package:rafiq_alhajj/features/admin_operators/presentation/providers/admin_operators_providers.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 
 class AdminOperatorEditScreen extends ConsumerStatefulWidget {
   const AdminOperatorEditScreen({this.operatorId, super.key});
@@ -29,12 +31,12 @@ class AdminOperatorEditScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminOperatorEditScreenState extends ConsumerState<AdminOperatorEditScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _fullNameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  late final FormGroup _form;
 
   OperatorPermissions _permissions = const OperatorPermissions();
+  final Set<String> _accessGroupIds = {};
+  final Set<String> _writeGroupIds = {};
+  bool _groupInit = false;
   bool _isActive = true;
   bool _loaded = false;
 
@@ -44,10 +46,29 @@ class _AdminOperatorEditScreenState extends ConsumerState<AdminOperatorEditScree
       _isEditing ? l10n.adminOperatorEditTitle : l10n.adminOperatorNewTitle;
 
   @override
+  void initState() {
+    super.initState();
+    _form = FormGroup({
+      'fullName': FormControl<String>(value: '', validators: [Validators.required]),
+      'email': FormControl<String>(
+        value: '',
+        validators: [Validators.required, Validators.delegate(_validateEmailAt)],
+      ),
+      'password': FormControl<String>(value: ''),
+    });
+  }
+
+  Map<String, dynamic>? _validateEmailAt(AbstractControl<dynamic> control) {
+    final value = control.value as String?;
+    if (value != null && value.contains('@')) {
+      return null;
+    }
+    return {'emailInvalid': true};
+  }
+
+  @override
   void dispose() {
-    _fullNameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
+    _form.dispose();
     super.dispose();
   }
 
@@ -55,11 +76,33 @@ class _AdminOperatorEditScreenState extends ConsumerState<AdminOperatorEditScree
     if (_loaded) {
       return;
     }
-    _fullNameController.text = operator.fullName;
-    _emailController.text = operator.email;
+    _form.control('fullName').updateValue(operator.fullName);
+    _form.control('email').updateValue(operator.email);
     _isActive = operator.isActive;
     _permissions = operator.permissions;
+    _accessGroupIds
+      ..clear()
+      ..addAll(operator.groupAccess.map((g) => g.groupId));
+    _writeGroupIds
+      ..clear()
+      ..addAll(
+        operator.groupAccess.where((g) => g.canWrite).map((g) => g.groupId),
+      );
+    _groupInit = true;
     _loaded = true;
+  }
+
+  /// On a fresh "create" form, default to granting all groups read+write
+  /// (matching the DB default for new operators).
+  void _initGroupsForCreate(List<OperatorGroupOption> groups) {
+    if (_groupInit) {
+      return;
+    }
+    _groupInit = true;
+    for (final group in groups) {
+      _accessGroupIds.add(group.id);
+      _writeGroupIds.add(group.id);
+    }
   }
 
   String _generatePassword() {
@@ -70,9 +113,7 @@ class _AdminOperatorEditScreenState extends ConsumerState<AdminOperatorEditScree
   }
 
   void _generateAndSetPassword() {
-    setState(() {
-      _passwordController.text = _generatePassword();
-    });
+    _form.control('password').updateValue(_generatePassword());
   }
 
   void _cancel() {
@@ -106,20 +147,24 @@ class _AdminOperatorEditScreenState extends ConsumerState<AdminOperatorEditScree
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) {
+    if (!_form.valid) {
+      _form.markAllAsTouched();
       return;
     }
 
     final l10n = AppLocalizations.of(context);
+    final password = (_form.control('password').value as String? ?? '').trim();
     final input = OperatorEditorInput(
       id: widget.operatorId,
-      fullName: _fullNameController.text,
-      email: _emailController.text,
-      password: _passwordController.text.trim().isEmpty
-          ? null
-          : _passwordController.text.trim(),
+      fullName: _form.control('fullName').value as String,
+      email: _form.control('email').value as String,
+      password: password.isEmpty ? null : password,
       isActive: _isActive,
       permissions: _permissions,
+      groupAccess: [
+        for (final id in _accessGroupIds)
+          OperatorGroupGrant(groupId: id, canWrite: _writeGroupIds.contains(id)),
+      ],
     );
 
     if (_isEditing) {
@@ -181,9 +226,77 @@ class _AdminOperatorEditScreenState extends ConsumerState<AdminOperatorEditScree
     );
   }
 
-  Widget _buildForm(AppLocalizations l10n, bool isSaving) {
-    final form = Form(
-      key: _formKey,
+  Widget _groupAccessSection(
+    AppLocalizations l10n,
+    List<OperatorGroupOption> groups,
+    bool isSaving,
+  ) {
+    if (groups.isEmpty) {
+      return Text(
+        l10n.adminOperatorGroupsEmpty,
+        style: const TextStyle(color: AppColors.textSecondary),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final group in groups)
+          Row(
+            children: [
+              Checkbox(
+                value: _accessGroupIds.contains(group.id),
+                onChanged: isSaving
+                    ? null
+                    : (checked) => setState(() {
+                          if (checked ?? false) {
+                            _accessGroupIds.add(group.id);
+                          } else {
+                            _accessGroupIds.remove(group.id);
+                            _writeGroupIds.remove(group.id);
+                          }
+                        }),
+              ),
+              Expanded(child: Text(group.name)),
+              if (_accessGroupIds.contains(group.id))
+                Row(
+                  children: [
+                    Text(
+                      _writeGroupIds.contains(group.id)
+                          ? l10n.adminOperatorGroupWrite
+                          : l10n.adminOperatorGroupRead,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    Switch(
+                      value: _writeGroupIds.contains(group.id),
+                      onChanged: isSaving
+                          ? null
+                          : (write) => setState(() {
+                                if (write) {
+                                  _writeGroupIds.add(group.id);
+                                } else {
+                                  _writeGroupIds.remove(group.id);
+                                }
+                              }),
+                    ),
+                  ],
+                ),
+            ],
+          ),
+      ],
+    );
+  }
+
+  Widget _buildForm(
+    AppLocalizations l10n,
+    bool isSaving,
+    AsyncValue<List<OperatorGroupOption>> groupsAsync,
+  ) {
+    if (!_isEditing) {
+      groupsAsync.whenData(_initGroupsForCreate);
+    }
+    final form = ReactiveForm(
+      formGroup: _form,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -196,34 +309,26 @@ class _AdminOperatorEditScreenState extends ConsumerState<AdminOperatorEditScree
               children: [
                 ResponsiveFormGrid(
                   children: [
-                    TextFormField(
-                      controller: _fullNameController,
-                      enabled: !isSaving,
+                    ReactiveTextField<String>(
+                      formControlName: 'fullName',
                       decoration: InputDecoration(
                         labelText: l10n.adminOperatorFullName,
                       ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return l10n.adminOperatorFullNameRequired;
-                        }
-                        return null;
+                      validationMessages: {
+                        ValidationMessage.required: (_) =>
+                            l10n.adminOperatorFullNameRequired,
                       },
                     ),
-                    TextFormField(
-                      controller: _emailController,
-                      enabled: !isSaving,
+                    ReactiveTextField<String>(
+                      formControlName: 'email',
                       decoration: InputDecoration(
                         labelText: l10n.adminOperatorEmail,
                       ),
                       keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return l10n.adminOperatorEmailRequired;
-                        }
-                        if (!value.contains('@')) {
-                          return l10n.adminOperatorEmailInvalid;
-                        }
-                        return null;
+                      validationMessages: {
+                        ValidationMessage.required: (_) =>
+                            l10n.adminOperatorEmailRequired,
+                        'emailInvalid': (_) => l10n.adminOperatorEmailInvalid,
                       },
                     ),
                   ],
@@ -251,9 +356,8 @@ class _AdminOperatorEditScreenState extends ConsumerState<AdminOperatorEditScree
             icon: Icons.lock_outline_rounded,
             title: l10n.operatorSectionAccount,
             subtitle: l10n.operatorSectionAccountHint,
-            child: TextFormField(
-              controller: _passwordController,
-              enabled: !isSaving,
+            child: ReactiveTextField<String>(
+              formControlName: 'password',
               obscureText: true,
               decoration: InputDecoration(
                 labelText: l10n.adminOperatorPasswordLabel,
@@ -321,6 +425,17 @@ class _AdminOperatorEditScreenState extends ConsumerState<AdminOperatorEditScree
               ],
             ),
           ),
+          SizedBox(height: 16.h),
+          StaffFormSection(
+            icon: Icons.groups_2_outlined,
+            title: l10n.adminOperatorGroupsSection,
+            subtitle: l10n.adminOperatorGroupsHint,
+            child: _groupAccessSection(
+              l10n,
+              groupsAsync.asData?.value ?? const [],
+              isSaving,
+            ),
+          ),
         ],
       ),
     );
@@ -366,6 +481,12 @@ class _AdminOperatorEditScreenState extends ConsumerState<AdminOperatorEditScree
     final isSaving = ref.watch(
       adminOperatorSaveProvider.select((state) => state.isLoading),
     );
+    if (isSaving && _form.enabled) {
+      _form.markAsDisabled();
+    } else if (!isSaving && _form.disabled) {
+      _form.markAsEnabled();
+    }
+    final groupsAsync = ref.watch(adminOperatorGroupOptionsProvider);
 
     if (_isEditing) {
       final detailAsync =
@@ -407,11 +528,11 @@ class _AdminOperatorEditScreenState extends ConsumerState<AdminOperatorEditScree
         ),
         data: (operator) {
           _bindOperator(operator);
-          return _buildForm(l10n, isSaving);
+          return _buildForm(l10n, isSaving, groupsAsync);
         },
       );
     }
 
-    return _buildForm(l10n, isSaving);
+    return _buildForm(l10n, isSaving, groupsAsync);
   }
 }

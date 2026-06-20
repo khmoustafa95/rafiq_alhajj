@@ -14,11 +14,12 @@ import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pil
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_update.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/operator_registry_providers.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 
 class OperatorPilgrimDetailScreen extends ConsumerStatefulWidget {
-  const OperatorPilgrimDetailScreen({required this.profileId, super.key});
+  const OperatorPilgrimDetailScreen({required this.pilgrimId, super.key});
 
-  final String profileId;
+  final String pilgrimId;
 
   @override
   ConsumerState<OperatorPilgrimDetailScreen> createState() =>
@@ -27,29 +28,30 @@ class OperatorPilgrimDetailScreen extends ConsumerStatefulWidget {
 
 class _OperatorPilgrimDetailScreenState
     extends ConsumerState<OperatorPilgrimDetailScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _fullNameController = TextEditingController();
-  final _passportController = TextEditingController();
-  final _permitController = TextEditingController();
-  final _medicalController = TextEditingController();
-  final _hotelController = TextEditingController();
-  final _hotelUrlController = TextEditingController();
-  final _transportController = TextEditingController();
+  late final FormGroup _form;
   DateTime? _travelDate;
-  String? _gender;
-  String? _groupId;
   bool _initialized = false;
   bool _isSaving = false;
 
   @override
+  void initState() {
+    super.initState();
+    _form = FormGroup({
+      'fullName': FormControl<String>(value: '', validators: [Validators.required]),
+      'gender': FormControl<String?>(),
+      'groupId': FormControl<String?>(),
+      'passport': FormControl<String>(value: ''),
+      'permit': FormControl<String>(value: ''),
+      'medical': FormControl<String>(value: ''),
+      'hotel': FormControl<String>(value: ''),
+      'hotelUrl': FormControl<String>(value: ''),
+      'transport': FormControl<String>(value: ''),
+    });
+  }
+
+  @override
   void dispose() {
-    _fullNameController.dispose();
-    _passportController.dispose();
-    _permitController.dispose();
-    _medicalController.dispose();
-    _hotelController.dispose();
-    _hotelUrlController.dispose();
-    _transportController.dispose();
+    _form.dispose();
     super.dispose();
   }
 
@@ -57,15 +59,15 @@ class _OperatorPilgrimDetailScreenState
     if (_initialized) {
       return;
     }
-    _passportController.text = record.passportNumber ?? '';
-    _fullNameController.text = record.fullName;
-    _gender = record.gender;
-    _groupId = record.groupId;
-    _permitController.text = record.travelPermitNumber ?? '';
-    _medicalController.text = record.medicalTestStatus ?? '';
-    _hotelController.text = record.hotelName ?? '';
-    _hotelUrlController.text = record.hotelLocationUrl ?? '';
-    _transportController.text = record.transportationDetails ?? '';
+    _form.control('passport').updateValue(record.passportNumber ?? '');
+    _form.control('fullName').updateValue(record.fullName);
+    _form.control('gender').updateValue(record.gender);
+    _form.control('groupId').updateValue(record.groupId);
+    _form.control('permit').updateValue(record.travelPermitNumber ?? '');
+    _form.control('medical').updateValue(record.medicalTestStatus ?? '');
+    _form.control('hotel').updateValue(record.hotelName ?? '');
+    _form.control('hotelUrl').updateValue(record.hotelLocationUrl ?? '');
+    _form.control('transport').updateValue(record.transportationDetails ?? '');
     _travelDate = record.travelDate;
     _initialized = true;
   }
@@ -75,7 +77,8 @@ class _OperatorPilgrimDetailScreenState
   }
 
   Future<void> _save() async {
-    if (!_formKey.currentState!.validate()) {
+    if (!_form.valid) {
+      _form.markAllAsTouched();
       return;
     }
 
@@ -84,19 +87,20 @@ class _OperatorPilgrimDetailScreenState
     final isAdmin = ref.read(authAccessModeProvider) == AppAccessMode.admin;
 
     final ok = await ref
-        .read(operatorPilgrimDetailProvider(widget.profileId).notifier)
+        .read(operatorPilgrimDetailProvider(widget.pilgrimId).notifier)
         .save(
           update: OperatorPilgrimUpdate(
-            fullName: isAdmin ? _fullNameController.text : null,
-            groupId: isAdmin ? _groupId : null,
-            gender: _gender,
-            passportNumber: _passportController.text,
-            travelPermitNumber: _permitController.text,
-            medicalTestStatus: _medicalController.text,
+            fullName: isAdmin ? _form.control('fullName').value as String : null,
+            groupId: isAdmin ? _form.control('groupId').value as String? : null,
+            gender: _form.control('gender').value as String?,
+            passportNumber: _form.control('passport').value as String? ?? '',
+            travelPermitNumber: _form.control('permit').value as String? ?? '',
+            medicalTestStatus: _form.control('medical').value as String? ?? '',
             travelDate: _travelDate,
-            hotelName: _hotelController.text,
-            hotelLocationUrl: _hotelUrlController.text,
-            transportationDetails: _transportController.text,
+            hotelName: _form.control('hotel').value as String? ?? '',
+            hotelLocationUrl: _form.control('hotelUrl').value as String? ?? '',
+            transportationDetails:
+                _form.control('transport').value as String? ?? '',
           ),
           includeProfileFields: isAdmin,
         );
@@ -134,8 +138,8 @@ class _OperatorPilgrimDetailScreenState
     List<PilgrimGroupOption> groups,
     bool isAdmin,
   ) {
-    return Form(
-      key: _formKey,
+    return ReactiveForm(
+      formGroup: _form,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -146,20 +150,16 @@ class _OperatorPilgrimDetailScreenState
               child: ResponsiveFormGrid(
                 maxColumns: 3,
                 children: [
-                  TextFormField(
-                    controller: _fullNameController,
-                    enabled: !_isSaving,
+                  ReactiveTextField<String>(
+                    formControlName: 'fullName',
                     decoration: InputDecoration(labelText: l10n.operatorFullName),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return l10n.adminOperatorFullNameRequired;
-                      }
-                      return null;
+                    validationMessages: {
+                      ValidationMessage.required: (_) =>
+                          l10n.adminOperatorFullNameRequired,
                     },
                   ),
-                  DropdownButtonFormField<String?>(
-                    key: ValueKey(_gender),
-                    initialValue: _gender,
+                  ReactiveDropdownField<String?>(
+                    formControlName: 'gender',
                     decoration: InputDecoration(
                       labelText: l10n.staffTableFilterGender,
                     ),
@@ -176,13 +176,9 @@ class _OperatorPilgrimDetailScreenState
                         child: Text(l10n.pilgrimGenderFemale),
                       ),
                     ],
-                    onChanged: _isSaving
-                        ? null
-                        : (value) => setState(() => _gender = value),
                   ),
-                  DropdownButtonFormField<String?>(
-                    key: ValueKey(_groupId),
-                    initialValue: _groupId,
+                  ReactiveDropdownField<String?>(
+                    formControlName: 'groupId',
                     decoration: InputDecoration(
                       labelText: l10n.staffTableFilterGroup,
                     ),
@@ -197,9 +193,6 @@ class _OperatorPilgrimDetailScreenState
                         ),
                       ),
                     ],
-                    onChanged: _isSaving
-                        ? null
-                        : (value) => setState(() => _groupId = value),
                   ),
                 ],
               ),
@@ -258,25 +251,22 @@ class _OperatorPilgrimDetailScreenState
             child: ResponsiveFormGrid(
               maxColumns: 3,
               children: [
-                TextFormField(
-                  controller: _passportController,
-                  enabled: !_isSaving,
+                ReactiveTextField<String>(
+                  formControlName: 'passport',
                   decoration: InputDecoration(
                     labelText: l10n.operatorPassport,
                     prefixIcon: const Icon(Icons.credit_card_outlined),
                   ),
                 ),
-                TextFormField(
-                  controller: _permitController,
-                  enabled: !_isSaving,
+                ReactiveTextField<String>(
+                  formControlName: 'permit',
                   decoration: InputDecoration(
                     labelText: l10n.operatorTravelPermit,
                     prefixIcon: const Icon(Icons.assignment_outlined),
                   ),
                 ),
-                TextFormField(
-                  controller: _medicalController,
-                  enabled: !_isSaving,
+                ReactiveTextField<String>(
+                  formControlName: 'medical',
                   decoration: InputDecoration(
                     labelText: l10n.pilgrimMedicalStatus,
                     prefixIcon: const Icon(Icons.medical_services_outlined),
@@ -289,26 +279,23 @@ class _OperatorPilgrimDetailScreenState
                   onPick: _isSaving ? null : _pickTravelDate,
                   enabled: !_isSaving,
                 ),
-                TextFormField(
-                  controller: _hotelController,
-                  enabled: !_isSaving,
+                ReactiveTextField<String>(
+                  formControlName: 'hotel',
                   decoration: InputDecoration(
                     labelText: l10n.pilgrimHotel,
                     prefixIcon: const Icon(Icons.hotel_outlined),
                   ),
                 ),
-                TextFormField(
-                  controller: _hotelUrlController,
-                  enabled: !_isSaving,
+                ReactiveTextField<String>(
+                  formControlName: 'hotelUrl',
                   keyboardType: TextInputType.url,
                   decoration: InputDecoration(
                     labelText: l10n.operatorHotelMapUrl,
                     prefixIcon: const Icon(Icons.map_outlined),
                   ),
                 ),
-                TextFormField(
-                  controller: _transportController,
-                  enabled: !_isSaving,
+                ReactiveTextField<String>(
+                  formControlName: 'transport',
                   decoration: InputDecoration(
                     labelText: l10n.pilgrimTransport,
                     prefixIcon: const Icon(Icons.directions_bus_outlined),
@@ -339,9 +326,14 @@ class _OperatorPilgrimDetailScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    if (_isSaving && _form.enabled) {
+      _form.markAsDisabled();
+    } else if (!_isSaving && _form.disabled) {
+      _form.markAsEnabled();
+    }
     final isAdmin = ref.watch(authAccessModeProvider) == AppAccessMode.admin;
     final detailAsync =
-        ref.watch(operatorPilgrimDetailProvider(widget.profileId));
+        ref.watch(operatorPilgrimDetailProvider(widget.pilgrimId));
     final groupsAsync = ref.watch(pilgrimGroupFilterOptionsProvider);
 
     return groupsAsync.when(

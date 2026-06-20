@@ -1,3 +1,4 @@
+import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_group_grant.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_permissions.dart';
 
 class OperatorEditorInput {
@@ -8,6 +9,7 @@ class OperatorEditorInput {
     this.password,
     this.isActive = true,
     required this.permissions,
+    this.groupAccess = const [],
   });
 
   final String? id;
@@ -16,6 +18,7 @@ class OperatorEditorInput {
   final String? password;
   final bool isActive;
   final OperatorPermissions permissions;
+  final List<OperatorGroupGrant> groupAccess;
 
   bool get isEditing => id != null;
 }

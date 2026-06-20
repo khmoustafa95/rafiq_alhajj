@@ -6,6 +6,7 @@ import 'package:rafiq_alhajj/core/widgets/staff_web_login_scaffold.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/controllers/operator_login_controller.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/utils/auth_error_l10n.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 
 class OperatorLoginScreen extends ConsumerStatefulWidget {
   const OperatorLoginScreen({super.key});
@@ -16,26 +17,50 @@ class OperatorLoginScreen extends ConsumerStatefulWidget {
 }
 
 class _OperatorLoginScreenState extends ConsumerState<OperatorLoginScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  late final FormGroup _form;
   bool _obscurePassword = true;
 
   @override
+  void initState() {
+    super.initState();
+    _form = FormGroup({
+      'email': FormControl<String>(
+        value: '',
+        validators: [
+          Validators.delegate((control) {
+            final trimmed = (control.value as String?)?.trim() ?? '';
+            if (trimmed.isEmpty) {
+              return {ValidationMessage.required: true};
+            }
+            if (!trimmed.contains('@')) {
+              return {ValidationMessage.email: true};
+            }
+            return null;
+          }),
+        ],
+      ),
+      'password': FormControl<String>(
+        value: '',
+        validators: [Validators.required],
+      ),
+    });
+  }
+
+  @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
+    _form.dispose();
     super.dispose();
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) {
+    if (!_form.valid) {
+      _form.markAllAsTouched();
       return;
     }
 
     final success = await ref.read(operatorLoginControllerProvider.notifier).signIn(
-          email: _emailController.text,
-          password: _passwordController.text,
+          email: _form.control('email').value as String,
+          password: _form.control('password').value as String,
         );
     if (!mounted) {
       return;
@@ -78,13 +103,13 @@ class _OperatorLoginScreenState extends ConsumerState<OperatorLoginScreen> {
           label: l10n.staffLoginHighlightRegistry,
         ),
       ],
-      form: Form(
-        key: _formKey,
+      form: ReactiveForm(
+        formGroup: _form,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextFormField(
-              controller: _emailController,
+            ReactiveTextField<String>(
+              formControlName: 'email',
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
               autofillHints: const [AutofillHints.username],
@@ -92,24 +117,18 @@ class _OperatorLoginScreenState extends ConsumerState<OperatorLoginScreen> {
                 labelText: l10n.loginEmailLabel,
                 prefixIcon: const Icon(Icons.email_outlined),
               ),
-              validator: (value) {
-                final trimmed = value?.trim() ?? '';
-                if (trimmed.isEmpty) {
-                  return l10n.loginEmailRequired;
-                }
-                if (!trimmed.contains('@')) {
-                  return l10n.loginEmailInvalid;
-                }
-                return null;
+              validationMessages: {
+                ValidationMessage.required: (_) => l10n.loginEmailRequired,
+                ValidationMessage.email: (_) => l10n.loginEmailInvalid,
               },
             ),
             const SizedBox(height: 16),
-            TextFormField(
-              controller: _passwordController,
+            ReactiveTextField<String>(
+              formControlName: 'password',
               obscureText: _obscurePassword,
               textInputAction: TextInputAction.done,
               autofillHints: const [AutofillHints.password],
-              onFieldSubmitted: (_) => _submit(),
+              onSubmitted: (_) => _submit(),
               decoration: InputDecoration(
                 labelText: l10n.loginPasswordLabel,
                 prefixIcon: const Icon(Icons.lock_outline),
@@ -124,11 +143,8 @@ class _OperatorLoginScreenState extends ConsumerState<OperatorLoginScreen> {
                   },
                 ),
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return l10n.loginPasswordRequired;
-                }
-                return null;
+              validationMessages: {
+                ValidationMessage.required: (_) => l10n.loginPasswordRequired,
               },
             ),
             const SizedBox(height: 28),

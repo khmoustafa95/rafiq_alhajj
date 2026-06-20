@@ -8,6 +8,7 @@ import 'package:rafiq_alhajj/features/admin_operators/data/repositories/admin_op
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/created_operator_account.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_account.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_editor_input.dart';
+import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_group_grant.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -44,6 +45,11 @@ Future<PaginatedResult<OperatorAccount>> adminOperatorListPage(
 @riverpod
 Future<OperatorAccount> adminOperatorDetail(Ref ref, String id) async {
   return ref.read(adminOperatorsServiceProvider).getOperator(id);
+}
+
+@Riverpod(keepAlive: true)
+Future<List<OperatorGroupOption>> adminOperatorGroupOptions(Ref ref) async {
+  return ref.read(adminOperatorsServiceProvider).listGroupOptions();
 }
 
 @riverpod

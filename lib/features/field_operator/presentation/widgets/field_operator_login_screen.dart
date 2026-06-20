@@ -7,6 +7,7 @@ import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/controllers/operator_login_controller.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/utils/auth_error_l10n.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 
 class FieldOperatorLoginScreen extends ConsumerStatefulWidget {
   const FieldOperatorLoginScreen({super.key});
@@ -18,14 +19,21 @@ class FieldOperatorLoginScreen extends ConsumerStatefulWidget {
 
 class _FieldOperatorLoginScreenState
     extends ConsumerState<FieldOperatorLoginScreen> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  late final FormGroup _form;
   bool _obscurePassword = true;
 
   @override
+  void initState() {
+    super.initState();
+    _form = FormGroup({
+      'email': FormControl<String>(value: ''),
+      'password': FormControl<String>(value: ''),
+    });
+  }
+
+  @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
+    _form.dispose();
     super.dispose();
   }
 
@@ -33,8 +41,8 @@ class _FieldOperatorLoginScreenState
     final success = await ref
         .read(operatorLoginControllerProvider.notifier)
         .signIn(
-          email: _emailController.text,
-          password: _passwordController.text,
+          email: _form.control('email').value as String,
+          password: _form.control('password').value as String,
         );
     if (!mounted) {
       return;
@@ -69,62 +77,67 @@ class _FieldOperatorLoginScreenState
             padding: EdgeInsets.all(24.w),
             child: ConstrainedBox(
               constraints: BoxConstraints(maxWidth: 400.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Icon(
-                    Icons.engineering_outlined,
-                    size: 56.sp,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  SizedBox(height: 16.h),
-                  Text(
-                    l10n.fieldOperatorLoginTitle,
-                    style: Theme.of(context).textTheme.headlineSmall,
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 8.h),
-                  Text(
-                    l10n.fieldOperatorLoginSubtitle,
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 24.h),
-                  TextField(
-                    controller: _emailController,
-                    decoration: InputDecoration(labelText: l10n.loginEmailLabel),
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  SizedBox(height: 16.h),
-                  TextField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    decoration: InputDecoration(
-                      labelText: l10n.loginPasswordLabel,
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
-                        ),
-                        onPressed: () {
-                          setState(() => _obscurePassword = !_obscurePassword);
-                        },
-                      ),
+              child: ReactiveForm(
+                formGroup: _form,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Icon(
+                      Icons.engineering_outlined,
+                      size: 56.sp,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
-                    onSubmitted: (_) => _submit(),
-                  ),
-                  SizedBox(height: 24.h),
-                  FilledButton(
-                    onPressed: isLoading ? null : _submit,
-                    child: isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Text(l10n.loginSubmit),
-                  ),
-                ],
+                    SizedBox(height: 16.h),
+                    Text(
+                      l10n.fieldOperatorLoginTitle,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      l10n.fieldOperatorLoginSubtitle,
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 24.h),
+                    ReactiveTextField<String>(
+                      formControlName: 'email',
+                      decoration:
+                          InputDecoration(labelText: l10n.loginEmailLabel),
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    SizedBox(height: 16.h),
+                    ReactiveTextField<String>(
+                      formControlName: 'password',
+                      obscureText: _obscurePassword,
+                      decoration: InputDecoration(
+                        labelText: l10n.loginPasswordLabel,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                          ),
+                          onPressed: () {
+                            setState(
+                                () => _obscurePassword = !_obscurePassword);
+                          },
+                        ),
+                      ),
+                      onSubmitted: (_) => _submit(),
+                    ),
+                    SizedBox(height: 24.h),
+                    FilledButton(
+                      onPressed: isLoading ? null : _submit,
+                      child: isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : Text(l10n.loginSubmit),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

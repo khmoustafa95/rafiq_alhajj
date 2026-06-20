@@ -1,4 +1,5 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/features/pilgrim/data/data_sources/pilgrim_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/pilgrim/data/dtos/pilgrim_details_dto.dart';
 import 'package:rafiq_alhajj/features/pilgrim/data/dtos/ritual_log_dto.dart';
 import 'package:rafiq_alhajj/features/pilgrim/domain/models/pilgrim_details.dart';
@@ -10,53 +11,72 @@ class PilgrimRemoteException implements Exception {
 }
 
 class PilgrimRemoteRepository {
-  PilgrimRemoteRepository([SupabaseClient? client]) : _client = client;
+  PilgrimRemoteRepository([SupabaseClient? client])
+      : _remote = client == null ? null : PilgrimRemoteDataSource(client);
 
-  final SupabaseClient? _client;
+  final PilgrimRemoteDataSource? _remote;
 
-  bool get isAvailable => AppConfig.hasSupabase && _client != null;
+  bool get isAvailable => AppConfig.hasSupabase && _remote != null;
 
-  Future<PilgrimDetails?> fetchDetails(String profileId) async {
-    if (!isAvailable) {
+  /// The pilgrim's active enrollment row from the flat view (prefers the
+  /// enrollment on an active trip, otherwise the first one).
+  Future<Map<String, dynamic>?> _activeEnrollmentRow(
+    PilgrimRemoteDataSource remote,
+    String profileId,
+  ) async {
+    final maps = await remote.fetchEnrollmentRows(profileId);
+    if (maps.isEmpty) {
       return null;
     }
 
+    return maps.firstWhere(
+      (m) => m['trip_status'] == 'active',
+      orElse: () => maps.first,
+    );
+  }
+
+  Future<String?> fetchActiveEnrollmentId(String profileId) async {
+    if (!isAvailable) {
+      return null;
+    }
+    final remote = _remote!;
     try {
-      final row = await _client!
-          .from('pilgrim_details')
-          .select(
-            'passport_number, travel_permit_number, medical_test_status, '
-            'travel_date, hotel_name, hotel_location_url, transportation_details',
-          )
-          .eq('profile_id', profileId)
-          .maybeSingle();
-
-      if (row == null) {
-        return null;
-      }
-
-      return PilgrimDetailsDto.fromJson(
-        Map<String, dynamic>.from(row),
-      ).toDomain();
+      final row = await _activeEnrollmentRow(remote, profileId);
+      return row?['enrollment_id'] as String?;
     } on PostgrestException {
       throw const PilgrimRemoteException();
     }
   }
 
-  Future<Map<String, RitualProgress>> fetchRitualLogs(String pilgrimId) async {
+  Future<PilgrimDetails?> fetchDetails(String profileId) async {
+    if (!isAvailable) {
+      return null;
+    }
+    final remote = _remote!;
+    try {
+      final row = await _activeEnrollmentRow(remote, profileId);
+      if (row == null) {
+        return null;
+      }
+      return PilgrimDetailsDto.fromJson(row).toDomain();
+    } on PostgrestException {
+      throw const PilgrimRemoteException();
+    }
+  }
+
+  Future<Map<String, RitualProgress>> fetchRitualLogs(
+    String enrollmentId,
+  ) async {
     if (!isAvailable) {
       return {};
     }
-
+    final remote = _remote!;
     try {
-      final rows = await _client!
-          .from('ritual_logs')
-          .select('ritual_key, is_completed, completed_at')
-          .eq('pilgrim_id', pilgrimId);
+      final rows = await remote.fetchRitualLogs(enrollmentId);
 
       final map = <String, RitualProgress>{};
-      for (final row in rows as List<dynamic>) {
-        final dto = RitualLogDto.fromJson(Map<String, dynamic>.from(row as Map));
+      for (final row in rows) {
+        final dto = RitualLogDto.fromJson(row);
         map[dto.ritualKey] = dto.toDomain();
       }
       return map;
@@ -66,24 +86,21 @@ class PilgrimRemoteRepository {
   }
 
   Future<void> upsertRitualLog({
-    required String pilgrimId,
+    required String enrollmentId,
     required RitualProgress progress,
   }) async {
     if (!isAvailable) {
       return;
     }
-
+    final remote = _remote!;
     try {
-      await _client!.from('ritual_logs').upsert(
-        {
-          'pilgrim_id': pilgrimId,
-          'ritual_key': progress.ritualKey,
-          'is_completed': progress.isCompleted,
-          'completed_at': progress.completedAt?.toUtc().toIso8601String(),
-          'updated_at': DateTime.now().toUtc().toIso8601String(),
-        },
-        onConflict: 'pilgrim_id,ritual_key',
-      );
+      await remote.upsertRitualLog({
+        'enrollment_id': enrollmentId,
+        'ritual_key': progress.ritualKey,
+        'is_completed': progress.isCompleted,
+        'completed_at': progress.completedAt?.toUtc().toIso8601String(),
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
+      });
     } on PostgrestException {
       throw const PilgrimRemoteException();
     }

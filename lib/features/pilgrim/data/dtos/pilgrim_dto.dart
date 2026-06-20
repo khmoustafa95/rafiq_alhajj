@@ -8,6 +8,11 @@ class PilgrimDto {
   const PilgrimDto({
     this.registryId,
     this.profileId,
+    this.enrollmentId,
+    this.pilgrimId,
+    this.tripId,
+    this.tripType,
+    this.groupId,
     this.koboId,
     this.sequence,
     this.cluster,
@@ -82,6 +87,11 @@ class PilgrimDto {
   @JsonKey(name: 'registry_id')
   final int? registryId;
   final String? profileId;
+  final String? enrollmentId;
+  final String? pilgrimId;
+  final String? tripId;
+  final String? tripType;
+  final String? groupId;
   final String? koboId;
   final String? sequence;
   final String? cluster;
@@ -152,6 +162,11 @@ class PilgrimDto {
   Pilgrim toDomain({String? displayName}) {
     return Pilgrim(
       profileId: profileId,
+      enrollmentId: enrollmentId,
+      pilgrimId: pilgrimId,
+      tripId: tripId,
+      tripType: tripType,
+      groupId: groupId,
       displayName: displayName ?? fullNameAr,
       fieldStatus: fieldStatus,
       medicalTestStatus: medicalTestStatus,

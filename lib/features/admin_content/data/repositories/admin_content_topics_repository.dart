@@ -1,61 +1,50 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/domain/models/educational_media.dart';
+import 'package:rafiq_alhajj/features/admin_content/data/data_sources/admin_content_topics_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/content/data/repositories/content_topics_repository.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_topic.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_visibility.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AdminContentTopicsRepository {
-  AdminContentTopicsRepository([SupabaseClient? client]) : _client = client;
+  AdminContentTopicsRepository([SupabaseClient? client])
+      : _remote = AppConfig.hasSupabase && client != null
+            ? AdminContentTopicsRemoteDataSource(client)
+            : null;
 
-  final SupabaseClient? _client;
+  final AdminContentTopicsRemoteDataSource? _remote;
 
-  bool get isAvailable => AppConfig.hasSupabase && _client != null;
+  bool get isAvailable => _remote != null;
 
   Future<List<ContentTopic>> fetchAll() async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       return [];
     }
 
     try {
-      final rows = await _client!
-          .from('content_topics')
-          .select(
-            'id, title, description, cover_image_url, visibility, '
-            'sort_order, is_active, created_at, '
-            'content_topic_media(id, media_type, title, url, sort_order)',
-          )
-          .order('sort_order');
+      final rows = await remote.fetchAll();
 
-      return (rows as List<dynamic>)
-          .map((row) => _mapTopic(Map<String, dynamic>.from(row as Map)))
-          .toList();
+      return rows.map(_mapTopic).toList();
     } on PostgrestException catch (e) {
       throw ContentTopicsException(e.message);
     }
   }
 
   Future<ContentTopic?> fetchById(String id) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       return null;
     }
 
     try {
-      final row = await _client!
-          .from('content_topics')
-          .select(
-            'id, title, description, cover_image_url, visibility, '
-            'sort_order, is_active, created_at, '
-            'content_topic_media(id, media_type, title, url, sort_order)',
-          )
-          .eq('id', id)
-          .maybeSingle();
+      final row = await remote.fetchById(id);
 
       if (row == null) {
         return null;
       }
 
-      return _mapTopic(Map<String, dynamic>.from(row));
+      return _mapTopic(row);
     } on PostgrestException catch (e) {
       throw ContentTopicsException(e.message);
     }
@@ -65,7 +54,8 @@ class AdminContentTopicsRepository {
     String? id,
     required ContentTopicEditorInput input,
   }) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       throw const ContentTopicsException('Supabase unavailable');
     }
 
@@ -81,15 +71,11 @@ class AdminContentTopicsRepository {
       };
 
       if (id != null) {
-        await _client!.from('content_topics').update(payload).eq('id', id);
+        await remote.updateTopic(id, payload);
         return id;
       }
 
-      final row = await _client!
-          .from('content_topics')
-          .insert(payload)
-          .select('id')
-          .single();
+      final row = await remote.insertTopic(payload);
 
       return row['id'] as String;
     } on PostgrestException catch (e) {
@@ -101,42 +87,44 @@ class AdminContentTopicsRepository {
     required String topicId,
     required List<ContentTopicMediaInput> media,
   }) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       throw const ContentTopicsException('Supabase unavailable');
     }
 
     try {
-      await _client!.from('content_topic_media').delete().eq('topic_id', topicId);
+      await remote.deleteMedia(topicId);
 
       if (media.isEmpty) {
         return;
       }
 
-      await _client.from('content_topic_media').insert(
-            media
-                .map(
-                  (item) => {
-                    'topic_id': topicId,
-                    'media_type': item.mediaTypeKey,
-                    'title': _nullIfEmpty(item.title),
-                    'url': item.url.trim(),
-                    'sort_order': item.sortOrder,
-                  },
-                )
-                .toList(),
-          );
+      await remote.insertMedia(
+        media
+            .map(
+              (item) => {
+                'topic_id': topicId,
+                'media_type': item.mediaTypeKey,
+                'title': _nullIfEmpty(item.title),
+                'url': item.url.trim(),
+                'sort_order': item.sortOrder,
+              },
+            )
+            .toList(),
+      );
     } on PostgrestException catch (e) {
       throw ContentTopicsException(e.message);
     }
   }
 
   Future<void> deleteTopic(String id) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       throw const ContentTopicsException('Supabase unavailable');
     }
 
     try {
-      await _client!.from('content_topics').delete().eq('id', id);
+      await remote.deleteTopic(id);
     } on PostgrestException catch (e) {
       throw ContentTopicsException(e.message);
     }

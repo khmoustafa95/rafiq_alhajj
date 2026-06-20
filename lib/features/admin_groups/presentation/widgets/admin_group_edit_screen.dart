@@ -19,6 +19,8 @@ import 'package:rafiq_alhajj/features/admin_groups/domain/models/group_editor_in
 import 'package:rafiq_alhajj/features/admin_groups/domain/models/hajj_group.dart';
 import 'package:rafiq_alhajj/features/admin_groups/presentation/providers/admin_groups_providers.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
+import 'package:reactive_forms/reactive_forms.dart';
+
 class _MemberFormRow {
   _MemberFormRow({
     this.id,
@@ -26,22 +28,49 @@ class _MemberFormRow {
     String? position,
     String? contact,
     this.photoUrl,
-  })  : nameController = TextEditingController(text: name),
-        positionController = TextEditingController(text: position),
-        contactController = TextEditingController(text: contact);
+  }) {
+    form = FormGroup({
+      'name': FormControl<String>(value: name),
+      'position': FormControl<String>(value: position),
+      'contact': FormControl<String>(value: contact),
+    });
+    nameControl.setValidators([Validators.delegate(_validateName)]);
+  }
 
   final String? id;
-  final TextEditingController nameController;
-  final TextEditingController positionController;
-  final TextEditingController contactController;
+  late final FormGroup form;
   String? photoUrl;
   Uint8List? photoBytes;
   String? photoFileName;
 
+  FormControl<String> get nameControl =>
+      form.control('name') as FormControl<String>;
+  FormControl<String> get positionControl =>
+      form.control('position') as FormControl<String>;
+  FormControl<String> get contactControl =>
+      form.control('contact') as FormControl<String>;
+
+  String get name => nameControl.value ?? '';
+  String get position => positionControl.value ?? '';
+  String get contact => contactControl.value ?? '';
+
+  Map<String, dynamic>? _validateName(AbstractControl<dynamic> control) {
+    final hasContent = position.trim().isNotEmpty ||
+        contact.trim().isNotEmpty ||
+        photoBytes != null ||
+        (photoUrl?.isNotEmpty ?? false);
+    if (!hasContent) {
+      return null;
+    }
+    final value = control.value as String?;
+    if (value == null || value.trim().isEmpty) {
+      return {'memberNameRequired': true};
+    }
+    return null;
+  }
+
   void dispose() {
-    nameController.dispose();
-    positionController.dispose();
-    contactController.dispose();
+    form.dispose();
   }
 }
 
@@ -56,10 +85,7 @@ class AdminGroupEditScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminGroupEditScreenState extends ConsumerState<AdminGroupEditScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _presidentNameController = TextEditingController();
-  final _presidentPhoneController = TextEditingController();
+  late final FormGroup _form;
 
   String? _logoUrl;
   Uint8List? _logoBytes;
@@ -70,10 +96,40 @@ class _AdminGroupEditScreenState extends ConsumerState<AdminGroupEditScreen> {
   bool get _isEditing => widget.groupId != null;
 
   @override
+  void initState() {
+    super.initState();
+    _form = FormGroup({
+      'name': FormControl<String>(value: '', validators: [Validators.required]),
+      'presidentName': FormControl<String>(value: ''),
+      'presidentPhone': FormControl<String>(value: ''),
+    });
+  }
+
+  void _syncEnabled(bool isSaving) {
+    if (isSaving) {
+      if (_form.enabled) {
+        _form.markAsDisabled();
+      }
+      for (final row in _memberRows) {
+        if (row.form.enabled) {
+          row.form.markAsDisabled();
+        }
+      }
+    } else {
+      if (_form.disabled) {
+        _form.markAsEnabled();
+      }
+      for (final row in _memberRows) {
+        if (row.form.disabled) {
+          row.form.markAsEnabled();
+        }
+      }
+    }
+  }
+
+  @override
   void dispose() {
-    _nameController.dispose();
-    _presidentNameController.dispose();
-    _presidentPhoneController.dispose();
+    _form.dispose();
     for (final row in _memberRows) {
       row.dispose();
     }
@@ -84,9 +140,9 @@ class _AdminGroupEditScreenState extends ConsumerState<AdminGroupEditScreen> {
     if (_loaded) {
       return;
     }
-    _nameController.text = group.name;
-    _presidentNameController.text = group.presidentName ?? '';
-    _presidentPhoneController.text = group.presidentPhone ?? '';
+    _form.control('name').updateValue(group.name);
+    _form.control('presidentName').updateValue(group.presidentName ?? '');
+    _form.control('presidentPhone').updateValue(group.presidentPhone ?? '');
     _logoUrl = group.logoUrl;
     _memberRows.addAll(
       group.members.map(
@@ -149,26 +205,34 @@ class _AdminGroupEditScreenState extends ConsumerState<AdminGroupEditScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) {
+    for (final row in _memberRows) {
+      row.nameControl.updateValueAndValidity();
+    }
+    final membersValid = _memberRows.every((row) => row.form.valid);
+    if (!_form.valid || !membersValid) {
+      _form.markAllAsTouched();
+      for (final row in _memberRows) {
+        row.form.markAllAsTouched();
+      }
       return;
     }
 
     final l10n = AppLocalizations.of(context);
     final input = GroupEditorInput(
       id: widget.groupId,
-      name: _nameController.text,
+      name: _form.control('name').value as String,
       logoUrl: _logoUrl,
       logoBytes: _logoBytes,
       logoFileName: _logoFileName,
-      presidentName: _presidentNameController.text,
-      presidentPhone: _presidentPhoneController.text,
+      presidentName: _form.control('presidentName').value as String? ?? '',
+      presidentPhone: _form.control('presidentPhone').value as String? ?? '',
       members: [
         for (var i = 0; i < _memberRows.length; i++)
           GroupMemberEditorInput(
             id: _memberRows[i].id,
-            name: _memberRows[i].nameController.text,
-            position: _memberRows[i].positionController.text,
-            contact: _memberRows[i].contactController.text,
+            name: _memberRows[i].name,
+            position: _memberRows[i].position,
+            contact: _memberRows[i].contact,
             photoUrl: _memberRows[i].photoUrl,
             photoBytes: _memberRows[i].photoBytes,
             photoFileName: _memberRows[i].photoFileName,
@@ -266,8 +330,8 @@ class _AdminGroupEditScreenState extends ConsumerState<AdminGroupEditScreen> {
   }
 
   Widget _buildForm(AppLocalizations l10n, bool isSaving) {
-    final form = Form(
-      key: _formKey,
+    final form = ReactiveForm(
+      formGroup: _form,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -293,17 +357,14 @@ class _AdminGroupEditScreenState extends ConsumerState<AdminGroupEditScreen> {
                             label: Text(l10n.adminGroupUploadLogo),
                           ),
                           SizedBox(height: sh(12)),
-                          TextFormField(
-                            controller: _nameController,
-                            enabled: !isSaving,
+                          ReactiveTextField<String>(
+                            formControlName: 'name',
                             decoration: InputDecoration(
                               labelText: l10n.adminGroupName,
                             ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return l10n.adminGroupNameRequired;
-                              }
-                              return null;
+                            validationMessages: {
+                              ValidationMessage.required: (_) =>
+                                  l10n.adminGroupNameRequired,
                             },
                           ),
                         ],
@@ -314,16 +375,14 @@ class _AdminGroupEditScreenState extends ConsumerState<AdminGroupEditScreen> {
                 SizedBox(height: 16.h),
                 ResponsiveFormGrid(
                   children: [
-                    TextFormField(
-                      controller: _presidentNameController,
-                      enabled: !isSaving,
+                    ReactiveTextField<String>(
+                      formControlName: 'presidentName',
                       decoration: InputDecoration(
                         labelText: l10n.adminGroupPresidentName,
                       ),
                     ),
-                    TextFormField(
-                      controller: _presidentPhoneController,
-                      enabled: !isSaving,
+                    ReactiveTextField<String>(
+                      formControlName: 'presidentPhone',
                       decoration: InputDecoration(
                         labelText: l10n.adminGroupPresidentPhone,
                       ),
@@ -418,6 +477,7 @@ class _AdminGroupEditScreenState extends ConsumerState<AdminGroupEditScreen> {
     final isSaving = ref.watch(
       adminGroupSaveProvider.select((state) => state.isLoading),
     );
+    _syncEnabled(isSaving);
 
     if (_isEditing) {
       final detailAsync = ref.watch(adminGroupDetailProvider(widget.groupId!));
@@ -510,46 +570,35 @@ class _MemberCard extends StatelessWidget {
               ],
             ),
             SizedBox(height: sh(12)),
-            ResponsiveFormGrid(
-              children: [
-                TextFormField(
-                  controller: row.nameController,
-                  enabled: !isSaving,
-                  decoration: InputDecoration(
-                    labelText: l10n.adminGroupMemberName,
+            ReactiveForm(
+              formGroup: row.form,
+              child: ResponsiveFormGrid(
+                children: [
+                  ReactiveTextField<String>(
+                    formControlName: 'name',
+                    decoration: InputDecoration(
+                      labelText: l10n.adminGroupMemberName,
+                    ),
+                    validationMessages: {
+                      'memberNameRequired': (_) =>
+                          l10n.adminGroupMemberNameRequired,
+                    },
                   ),
-                  validator: (value) {
-                    final hasContent = row.positionController.text
-                            .trim()
-                            .isNotEmpty ||
-                        row.contactController.text.trim().isNotEmpty ||
-                        row.photoBytes != null ||
-                        (row.photoUrl?.isNotEmpty ?? false);
-                    if (!hasContent) {
-                      return null;
-                    }
-                    if (value == null || value.trim().isEmpty) {
-                      return l10n.adminGroupMemberNameRequired;
-                    }
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  controller: row.positionController,
-                  enabled: !isSaving,
-                  decoration: InputDecoration(
-                    labelText: l10n.adminGroupMemberPosition,
+                  ReactiveTextField<String>(
+                    formControlName: 'position',
+                    decoration: InputDecoration(
+                      labelText: l10n.adminGroupMemberPosition,
+                    ),
                   ),
-                ),
-                TextFormField(
-                  controller: row.contactController,
-                  enabled: !isSaving,
-                  decoration: InputDecoration(
-                    labelText: l10n.adminGroupMemberContact,
+                  ReactiveTextField<String>(
+                    formControlName: 'contact',
+                    decoration: InputDecoration(
+                      labelText: l10n.adminGroupMemberContact,
+                    ),
+                    keyboardType: TextInputType.phone,
                   ),
-                  keyboardType: TextInputType.phone,
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),

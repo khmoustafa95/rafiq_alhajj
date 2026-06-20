@@ -1,8 +1,8 @@
 /// Tables published to [supabase_realtime] for live client refresh.
 abstract final class RealtimeTables {
-  static const pilgrimRegistry = ['profiles', 'pilgrim_details'];
+  static const pilgrimRegistry = ['profiles', 'pilgrims', 'trip_enrollments'];
 
-  static const pilgrimDashboard = ['pilgrim_details', 'ritual_logs'];
+  static const pilgrimDashboard = ['trip_enrollments', 'ritual_logs'];
 
   static const contentFeed = [
     'content_library',
@@ -12,7 +12,8 @@ abstract final class RealtimeTables {
 
   static const adminAnalytics = [
     'profiles',
-    'pilgrim_details',
+    'pilgrims',
+    'trip_enrollments',
     'ritual_logs',
     'pilgrim_documents',
     'groups',

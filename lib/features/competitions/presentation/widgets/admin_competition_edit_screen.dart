@@ -11,6 +11,7 @@ import 'package:rafiq_alhajj/features/competitions/domain/models/competition_edi
 import 'package:rafiq_alhajj/features/competitions/presentation/providers/competitions_providers.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/admin_competition_questions_panel.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 
 class AdminCompetitionEditScreen extends ConsumerStatefulWidget {
   const AdminCompetitionEditScreen({this.competitionId, super.key});
@@ -24,9 +25,7 @@ class AdminCompetitionEditScreen extends ConsumerStatefulWidget {
 
 class _AdminCompetitionEditScreenState
     extends ConsumerState<AdminCompetitionEditScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
+  late final FormGroup _form;
   DateTime? _startsAt;
   DateTime? _endsAt;
   bool _isActive = true;
@@ -38,9 +37,17 @@ class _AdminCompetitionEditScreenState
       _isEditing ? l10n.adminCompetitionEditTitle : l10n.adminCompetitionNewTitle;
 
   @override
+  void initState() {
+    super.initState();
+    _form = FormGroup({
+      'title': FormControl<String>(value: '', validators: [Validators.required]),
+      'description': FormControl<String>(value: ''),
+    });
+  }
+
+  @override
   void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
+    _form.dispose();
     super.dispose();
   }
 
@@ -48,8 +55,8 @@ class _AdminCompetitionEditScreenState
     if (_loaded) {
       return;
     }
-    _titleController.text = competition.title;
-    _descriptionController.text = competition.description ?? '';
+    _form.control('title').updateValue(competition.title);
+    _form.control('description').updateValue(competition.description ?? '');
     _startsAt = competition.startsAt.toLocal();
     _endsAt = competition.endsAt.toLocal();
     _isActive = competition.isActive;
@@ -79,7 +86,8 @@ class _AdminCompetitionEditScreenState
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) {
+    if (!_form.valid) {
+      _form.markAllAsTouched();
       return;
     }
     if (_startsAt == null || _endsAt == null) {
@@ -90,8 +98,8 @@ class _AdminCompetitionEditScreenState
     final ok = await ref.read(adminCompetitionSaveProvider.notifier).save(
           CompetitionEditorInput(
             id: widget.competitionId,
-            title: _titleController.text,
-            description: _descriptionController.text,
+            title: _form.control('title').value as String,
+            description: _form.control('description').value as String? ?? '',
             startsAt: _startsAt!,
             endsAt: _endsAt!,
             isActive: _isActive,
@@ -120,6 +128,11 @@ class _AdminCompetitionEditScreenState
     final isSaving = ref.watch(
       adminCompetitionSaveProvider.select((state) => state.isLoading),
     );
+    if (isSaving && _form.enabled) {
+      _form.markAsDisabled();
+    } else if (!isSaving && _form.disabled) {
+      _form.markAsEnabled();
+    }
 
     if (_isEditing) {
       final listAsync = ref.watch(adminCompetitionListProvider);
@@ -176,8 +189,8 @@ class _AdminCompetitionEditScreenState
   }
 
   Widget _buildForm(AppLocalizations l10n, bool isSaving) {
-    final form = Form(
-      key: _formKey,
+    final form = ReactiveForm(
+      formGroup: _form,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -186,18 +199,17 @@ class _AdminCompetitionEditScreenState
             title: l10n.adminCompetitionsTitle,
             child: ResponsiveFormGrid(
               children: [
-                TextFormField(
-                  controller: _titleController,
-                  enabled: !isSaving,
+                ReactiveTextField<String>(
+                  formControlName: 'title',
                   decoration:
                       InputDecoration(labelText: l10n.adminContentTitleLabel),
-                  validator: (v) => v == null || v.trim().isEmpty
-                      ? l10n.adminContentTitleRequired
-                      : null,
+                  validationMessages: {
+                    ValidationMessage.required: (_) =>
+                        l10n.adminContentTitleRequired,
+                  },
                 ),
-                TextFormField(
-                  controller: _descriptionController,
-                  enabled: !isSaving,
+                ReactiveTextField<String>(
+                  formControlName: 'description',
                   maxLines: 4,
                   decoration: InputDecoration(
                     labelText: l10n.adminContentDescriptionLabel,

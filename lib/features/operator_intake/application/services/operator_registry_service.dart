@@ -9,34 +9,47 @@ class OperatorRegistryService {
 
   final OperatorRegistryRepository _repository;
 
-  Future<List<OperatorPilgrimSummary>> listPilgrims() =>
-      _repository.fetchAll();
+  Future<List<OperatorPilgrimSummary>> listPilgrims({String? tripId}) =>
+      _repository.fetchAll(tripId: tripId);
 
   Future<PaginatedResult<OperatorPilgrimSummary>> listPage(
-    StaffTableQuery query,
-  ) =>
-      _repository.fetchPage(query);
+    StaffTableQuery query, {
+    String? tripId,
+  }) =>
+      _repository.fetchPage(query, tripId: tripId);
 
   Future<List<PilgrimGroupOption>> listGroupOptions() =>
       _repository.fetchGroupOptions();
 
-  Future<OperatorPilgrimRecord?> loadPilgrim(String profileId) =>
-      _repository.fetchById(profileId);
+  Future<OperatorPilgrimRecord?> loadPilgrim(
+    String pilgrimId, {
+    String? tripId,
+  }) =>
+      _repository.fetchById(pilgrimId, tripId: tripId);
 
   Future<void> savePilgrim({
-    required String profileId,
+    required String pilgrimId,
     required OperatorPilgrimUpdate update,
     bool includeProfileFields = false,
+    String? tripId,
+    String? enrollmentId,
   }) =>
       _repository.savePilgrim(
-        profileId: profileId,
+        pilgrimId: pilgrimId,
         update: update,
         includeProfileFields: includeProfileFields,
+        tripId: tripId,
+        enrollmentId: enrollmentId,
       );
 
   Future<void> bulkAssignGroup({
-    required List<String> profileIds,
+    required List<String> pilgrimIds,
     required String? groupId,
+    String? tripId,
   }) =>
-      _repository.bulkAssignGroup(profileIds: profileIds, groupId: groupId);
+      _repository.bulkAssignGroup(
+        pilgrimIds: pilgrimIds,
+        groupId: groupId,
+        tripId: tripId,
+      );
 }

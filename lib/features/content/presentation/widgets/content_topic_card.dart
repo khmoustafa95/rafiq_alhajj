@@ -74,33 +74,43 @@ class _HorizontalCard extends StatelessWidget {
                   url: topic.coverImageUrl,
                   height: 130.h,
                 ),
-                Padding(
-                  padding: EdgeInsets.all(12.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        topic.title,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (topic.description != null) ...[
-                        SizedBox(height: 4.h),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.all(12.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Text(
-                          topic.description!,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: AppColors.textSecondary,
+                          topic.title,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleSmall
+                              ?.copyWith(
+                                fontWeight: FontWeight.w700,
                               ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
+                        if (topic.description != null) ...[
+                          SizedBox(height: 4.h),
+                          Expanded(
+                            child: Text(
+                              topic.description!,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ] else
+                          const Spacer(),
+                        _MediaBadges(topic: topic, l10n: l10n),
                       ],
-                      SizedBox(height: 8.h),
-                      _MediaBadges(topic: topic, l10n: l10n),
-                    ],
+                    ),
                   ),
                 ),
               ],

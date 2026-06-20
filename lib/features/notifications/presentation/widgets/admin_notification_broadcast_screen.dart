@@ -9,6 +9,7 @@ import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/features/notifications/domain/models/notification_audience.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 
 class AdminNotificationBroadcastScreen extends ConsumerStatefulWidget {
   const AdminNotificationBroadcastScreen({super.key});
@@ -20,30 +21,53 @@ class AdminNotificationBroadcastScreen extends ConsumerStatefulWidget {
 
 class _AdminNotificationBroadcastScreenState
     extends ConsumerState<AdminNotificationBroadcastScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _titleArController = TextEditingController();
-  final _titleEnController = TextEditingController();
-  final _bodyArController = TextEditingController();
-  final _bodyEnController = TextEditingController();
+  late final FormGroup _form;
 
   NotificationAudience _audience = NotificationAudience.allPilgrims;
-  String? _groupId;
+
+  @override
+  void initState() {
+    super.initState();
+    _form = FormGroup({
+      'titleAr': FormControl<String>(
+        value: '',
+        validators: [Validators.required],
+      ),
+      'titleEn': FormControl<String>(
+        value: '',
+        validators: [Validators.required],
+      ),
+      'bodyAr': FormControl<String>(value: ''),
+      'bodyEn': FormControl<String>(value: ''),
+      'groupId': FormControl<String>(
+        validators: [Validators.delegate(_validateGroup)],
+      ),
+    });
+  }
 
   @override
   void dispose() {
-    _titleArController.dispose();
-    _titleEnController.dispose();
-    _bodyArController.dispose();
-    _bodyEnController.dispose();
+    _form.dispose();
     super.dispose();
   }
 
+  Map<String, dynamic>? _validateGroup(AbstractControl<dynamic> control) {
+    final value = control.value as String?;
+    if (_audience == NotificationAudience.groupPilgrims &&
+        (value == null || value.isEmpty)) {
+      return {'groupRequired': true};
+    }
+    return null;
+  }
+
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) {
+    if (!_form.valid) {
+      _form.markAllAsTouched();
       return;
     }
 
-    if (_audience == NotificationAudience.groupPilgrims && _groupId == null) {
+    if (_audience == NotificationAudience.groupPilgrims &&
+        _form.control('groupId').value == null) {
       return;
     }
 
@@ -53,11 +77,11 @@ class _AdminNotificationBroadcastScreenState
         .send(
           NotificationBroadcastInput(
             audience: _audience,
-            titleAr: _titleArController.text.trim(),
-            titleEn: _titleEnController.text.trim(),
-            bodyAr: _optionalText(_bodyArController.text),
-            bodyEn: _optionalText(_bodyEnController.text),
-            groupId: _groupId,
+            titleAr: (_form.control('titleAr').value as String).trim(),
+            titleEn: (_form.control('titleEn').value as String).trim(),
+            bodyAr: _optionalText(_form.control('bodyAr').value as String),
+            bodyEn: _optionalText(_form.control('bodyEn').value as String),
+            groupId: _form.control('groupId').value as String?,
             payload: const {'route': 'home'},
           ),
         );
@@ -79,10 +103,10 @@ class _AdminNotificationBroadcastScreenState
       ),
     );
 
-    _titleArController.clear();
-    _titleEnController.clear();
-    _bodyArController.clear();
-    _bodyEnController.clear();
+    _form.control('titleAr').reset(value: '');
+    _form.control('titleEn').reset(value: '');
+    _form.control('bodyAr').reset(value: '');
+    _form.control('bodyEn').reset(value: '');
   }
 
   String? _optionalText(String value) {
@@ -93,8 +117,8 @@ class _AdminNotificationBroadcastScreenState
   Widget _buildForm(AppLocalizations l10n, bool isSending) {
     final groupsAsync = ref.watch(notificationGroupsProvider);
 
-    return Form(
-      key: _formKey,
+    return ReactiveForm(
+      formGroup: _form,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -130,7 +154,9 @@ class _AdminNotificationBroadcastScreenState
                     setState(() {
                       _audience = selection.first;
                       if (_audience != NotificationAudience.groupPilgrims) {
-                        _groupId = null;
+                        _form.control('groupId').updateValue(null);
+                      } else {
+                        _form.control('groupId').updateValueAndValidity();
                       }
                     });
                   },
@@ -144,11 +170,11 @@ class _AdminNotificationBroadcastScreenState
                       if (groups.isEmpty) {
                         return Text(l10n.adminNotificationGroupsEmpty);
                       }
-                      return DropdownButtonFormField<String>(
+                      return ReactiveDropdownField<String>(
+                        formControlName: 'groupId',
                         decoration: InputDecoration(
                           labelText: l10n.adminNotificationGroupLabel,
                         ),
-                        initialValue: _groupId,
                         items: [
                           for (final group in groups)
                             DropdownMenuItem(
@@ -156,15 +182,9 @@ class _AdminNotificationBroadcastScreenState
                               child: Text(group.name),
                             ),
                         ],
-                        onChanged: isSending
-                            ? null
-                            : (value) => setState(() => _groupId = value),
-                        validator: (value) {
-                          if (_audience == NotificationAudience.groupPilgrims &&
-                              (value == null || value.isEmpty)) {
-                            return l10n.adminNotificationGroupRequired;
-                          }
-                          return null;
+                        validationMessages: {
+                          'groupRequired': (_) =>
+                              l10n.adminNotificationGroupRequired,
                         },
                       );
                     },
@@ -179,37 +199,35 @@ class _AdminNotificationBroadcastScreenState
             title: l10n.adminNotificationContentSection,
             child: ResponsiveFormGrid(
               children: [
-                TextFormField(
-                  controller: _titleArController,
-                  enabled: !isSending,
+                ReactiveTextField<String>(
+                  formControlName: 'titleAr',
                   decoration: InputDecoration(
                     labelText: l10n.adminNotificationTitleAr,
                   ),
-                  validator: (value) => value == null || value.trim().isEmpty
-                      ? l10n.adminNotificationTitleRequired
-                      : null,
+                  validationMessages: {
+                    ValidationMessage.required: (_) =>
+                        l10n.adminNotificationTitleRequired,
+                  },
                 ),
-                TextFormField(
-                  controller: _titleEnController,
-                  enabled: !isSending,
+                ReactiveTextField<String>(
+                  formControlName: 'titleEn',
                   decoration: InputDecoration(
                     labelText: l10n.adminNotificationTitleEn,
                   ),
-                  validator: (value) => value == null || value.trim().isEmpty
-                      ? l10n.adminNotificationTitleRequired
-                      : null,
+                  validationMessages: {
+                    ValidationMessage.required: (_) =>
+                        l10n.adminNotificationTitleRequired,
+                  },
                 ),
-                TextFormField(
-                  controller: _bodyArController,
-                  enabled: !isSending,
+                ReactiveTextField<String>(
+                  formControlName: 'bodyAr',
                   decoration: InputDecoration(
                     labelText: l10n.adminNotificationBodyAr,
                   ),
                   maxLines: 4,
                 ),
-                TextFormField(
-                  controller: _bodyEnController,
-                  enabled: !isSending,
+                ReactiveTextField<String>(
+                  formControlName: 'bodyEn',
                   decoration: InputDecoration(
                     labelText: l10n.adminNotificationBodyEn,
                   ),
@@ -238,6 +256,18 @@ class _AdminNotificationBroadcastScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final isSending = ref.watch(adminNotificationBroadcastProvider).isLoading;
+
+    ref.listen(
+      adminNotificationBroadcastProvider.select((state) => state.isLoading),
+      (previous, isLoading) {
+        if (isLoading) {
+          _form.markAsDisabled();
+        } else {
+          _form.markAsEnabled();
+        }
+      },
+    );
+
     final form = _buildForm(l10n, isSending);
 
     return StaffAdaptivePage(

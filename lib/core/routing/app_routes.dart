@@ -38,10 +38,10 @@ abstract final class AppRoutes {
   static const String operatorLogin = '/operator/login';
   static const String operatorIntake = '/operator/intake';
   static const String operatorPilgrims = '/operator/pilgrims';
-  static const String operatorPilgrimDetail = '/operator/pilgrims/:profileId';
+  static const String operatorPilgrimDetail = '/operator/pilgrims/:pilgrimId';
 
-  static String operatorPilgrimDetailPath(String profileId) =>
-      '/operator/pilgrims/$profileId';
+  static String operatorPilgrimDetailPath(String pilgrimId) =>
+      '/operator/pilgrims/$pilgrimId';
   static const String fieldOperatorLogin = '/operator/field/login';
   static const String fieldOperatorHome = '/operator/field';
   static const String fieldOperatorPilgrims = '/operator/field/pilgrims';
@@ -61,6 +61,8 @@ abstract final class AppRoutes {
   static const String adminGroups = '/admin/groups';
   static const String adminGroupNew = '/admin/groups/new';
   static const String adminGroupEdit = '/admin/groups/:id/edit';
+  static const String adminTrips = '/admin/trips';
+  static const String adminTripOffices = '/admin/trips/:id/offices';
   static const String adminSettings = '/admin/settings';
 
   static String adminContentEditPath(String id) => '/admin/content/$id/edit';
@@ -68,6 +70,8 @@ abstract final class AppRoutes {
   static String adminOperatorEditPath(String id) => '/admin/operators/$id/edit';
 
   static String adminGroupEditPath(String id) => '/admin/groups/$id/edit';
+
+  static String adminTripOfficesPath(String id) => '/admin/trips/$id/offices';
 
   static String contentDetailPath(String id) => '/content/$id';
 

@@ -19,9 +19,12 @@ class PilgrimDashboardService {
 
     if (_remote.isAvailable) {
       try {
-        final remoteLogs = await _remote.fetchRitualLogs(pilgrimId);
-        local = _mergeProgress(local, remoteLogs);
-        await RitualProgressCache.write(pilgrimId, local);
+        final enrollmentId = await _remote.fetchActiveEnrollmentId(pilgrimId);
+        if (enrollmentId != null) {
+          final remoteLogs = await _remote.fetchRitualLogs(enrollmentId);
+          local = _mergeProgress(local, remoteLogs);
+          await RitualProgressCache.write(pilgrimId, local);
+        }
 
         registry = await _tryFetchRegistry(pilgrimId);
       } on PilgrimRemoteException {
@@ -56,12 +59,15 @@ class PilgrimDashboardService {
 
     if (_remote.isAvailable) {
       try {
-        await _remote.upsertRitualLog(
-          pilgrimId: pilgrimId,
-          progress: updated[ritualKey]!.copyWith(pendingSync: false),
-        );
-        updated[ritualKey] = updated[ritualKey]!.copyWith(pendingSync: false);
-        await RitualProgressCache.write(pilgrimId, updated);
+        final enrollmentId = await _remote.fetchActiveEnrollmentId(pilgrimId);
+        if (enrollmentId != null) {
+          await _remote.upsertRitualLog(
+            enrollmentId: enrollmentId,
+            progress: updated[ritualKey]!.copyWith(pendingSync: false),
+          );
+          updated[ritualKey] = updated[ritualKey]!.copyWith(pendingSync: false);
+          await RitualProgressCache.write(pilgrimId, updated);
+        }
       } on PilgrimRemoteException {
         // Remains pendingSync for next sync.
       }
@@ -79,13 +85,18 @@ class PilgrimDashboardService {
       return;
     }
 
+    final enrollmentId = await _remote.fetchActiveEnrollmentId(pilgrimId);
+    if (enrollmentId == null) {
+      return;
+    }
+
     final local = await RitualProgressCache.read(pilgrimId);
     for (final entry in local.entries) {
       if (!entry.value.pendingSync) {
         continue;
       }
       await _remote.upsertRitualLog(
-        pilgrimId: pilgrimId,
+        enrollmentId: enrollmentId,
         progress: entry.value.copyWith(pendingSync: false),
       );
       local[entry.key] = entry.value.copyWith(pendingSync: false);

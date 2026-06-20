@@ -89,7 +89,7 @@ final class UnreadNotificationCountProvider
 }
 
 String _$unreadNotificationCountHash() =>
-    r'02cb6f211a59cecddc69105ae9ddcbb8cd6630ab';
+    r'09cc80d2903df34ab737bc8e2dfbcc20f36cccc5';
 
 @ProviderFor(NotificationInbox)
 final notificationInboxProvider = NotificationInboxProvider._();
@@ -115,7 +115,7 @@ final class NotificationInboxProvider
   NotificationInbox create() => NotificationInbox();
 }
 
-String _$notificationInboxHash() => r'3d8390fbae453dc02f3fc12ebe83dd14ea8a47fb';
+String _$notificationInboxHash() => r'4dfafcf29086d310eb1c66695ee17387f2a69adf';
 
 abstract class _$NotificationInbox
     extends $AsyncNotifier<List<InboxNotification>> {

@@ -9,6 +9,7 @@ import 'package:rafiq_alhajj/features/hajj_journey/domain/models/hajj_journey_me
 import 'package:rafiq_alhajj/features/hajj_journey/domain/models/hajj_journey_step.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/presentation/providers/hajj_journey_providers.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 
 class AdminHajjJourneyEditScreen extends ConsumerStatefulWidget {
   const AdminHajjJourneyEditScreen({required this.ritualKey, super.key});
@@ -43,22 +44,26 @@ class _MediaDraft {
 
 class _AdminHajjJourneyEditScreenState
     extends ConsumerState<AdminHajjJourneyEditScreen> {
-  final _titleArController = TextEditingController();
-  final _titleEnController = TextEditingController();
-  final _descriptionArController = TextEditingController();
-  final _descriptionEnController = TextEditingController();
-  final _sortOrderController = TextEditingController(text: '1');
+  late final FormGroup _form;
   bool _isActive = true;
   final List<_MediaDraft> _media = [];
   bool _initialized = false;
 
   @override
+  void initState() {
+    super.initState();
+    _form = FormGroup({
+      'titleAr': FormControl<String>(value: ''),
+      'titleEn': FormControl<String>(value: ''),
+      'descriptionAr': FormControl<String>(value: ''),
+      'descriptionEn': FormControl<String>(value: ''),
+      'sortOrder': FormControl<String>(value: '1'),
+    });
+  }
+
+  @override
   void dispose() {
-    _titleArController.dispose();
-    _titleEnController.dispose();
-    _descriptionArController.dispose();
-    _descriptionEnController.dispose();
-    _sortOrderController.dispose();
+    _form.dispose();
     for (final item in _media) {
       item.urlController.dispose();
       item.titleController.dispose();
@@ -70,11 +75,11 @@ class _AdminHajjJourneyEditScreenState
     if (_initialized) {
       return;
     }
-    _titleArController.text = step.titleAr;
-    _titleEnController.text = step.titleEn;
-    _descriptionArController.text = step.descriptionAr;
-    _descriptionEnController.text = step.descriptionEn;
-    _sortOrderController.text = '${step.sortOrder}';
+    _form.control('titleAr').updateValue(step.titleAr);
+    _form.control('titleEn').updateValue(step.titleEn);
+    _form.control('descriptionAr').updateValue(step.descriptionAr);
+    _form.control('descriptionEn').updateValue(step.descriptionEn);
+    _form.control('sortOrder').updateValue('${step.sortOrder}');
     _isActive = step.isActive;
     for (final m in step.media) {
       _media.add(
@@ -110,15 +115,16 @@ class _AdminHajjJourneyEditScreenState
 
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context);
-    final sortOrder = int.tryParse(_sortOrderController.text.trim()) ?? 1;
+    final sortOrder =
+        int.tryParse((_form.control('sortOrder').value as String).trim()) ?? 1;
 
     final input = HajjJourneyEditorInput(
       ritualKey: widget.ritualKey,
       sortOrder: sortOrder,
-      titleAr: _titleArController.text.trim(),
-      titleEn: _titleEnController.text.trim(),
-      descriptionAr: _descriptionArController.text.trim(),
-      descriptionEn: _descriptionEnController.text.trim(),
+      titleAr: (_form.control('titleAr').value as String).trim(),
+      titleEn: (_form.control('titleEn').value as String).trim(),
+      descriptionAr: (_form.control('descriptionAr').value as String).trim(),
+      descriptionEn: (_form.control('descriptionEn').value as String).trim(),
       isActive: _isActive,
     );
 
@@ -189,25 +195,27 @@ class _AdminHajjJourneyEditScreenState
             _populate(step);
           }
 
-          return ListView(
+          return ReactiveForm(
+            formGroup: _form,
+            child: ListView(
             padding: EdgeInsets.all(16.w),
             children: [
-              TextField(
-                controller: _titleArController,
+              ReactiveTextField<String>(
+                formControlName: 'titleAr',
                 decoration: InputDecoration(
                   labelText: l10n.adminHajjJourneyTitleAr,
                 ),
               ),
               SizedBox(height: 12.h),
-              TextField(
-                controller: _titleEnController,
+              ReactiveTextField<String>(
+                formControlName: 'titleEn',
                 decoration: InputDecoration(
                   labelText: l10n.adminHajjJourneyTitleEn,
                 ),
               ),
               SizedBox(height: 12.h),
-              TextField(
-                controller: _descriptionArController,
+              ReactiveTextField<String>(
+                formControlName: 'descriptionAr',
                 decoration: InputDecoration(
                   labelText: l10n.adminHajjJourneyDescriptionAr,
                 ),
@@ -215,8 +223,8 @@ class _AdminHajjJourneyEditScreenState
                 maxLines: 8,
               ),
               SizedBox(height: 12.h),
-              TextField(
-                controller: _descriptionEnController,
+              ReactiveTextField<String>(
+                formControlName: 'descriptionEn',
                 decoration: InputDecoration(
                   labelText: l10n.adminHajjJourneyDescriptionEn,
                 ),
@@ -224,8 +232,8 @@ class _AdminHajjJourneyEditScreenState
                 maxLines: 8,
               ),
               SizedBox(height: 12.h),
-              TextField(
-                controller: _sortOrderController,
+              ReactiveTextField<String>(
+                formControlName: 'sortOrder',
                 decoration: InputDecoration(
                   labelText: l10n.adminHajjJourneySortOrder,
                 ),
@@ -312,6 +320,7 @@ class _AdminHajjJourneyEditScreenState
                 SizedBox(height: 8.h),
               ],
             ],
+            ),
           );
         },
       ),

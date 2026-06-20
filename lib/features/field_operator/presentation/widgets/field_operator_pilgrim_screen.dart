@@ -13,6 +13,7 @@ import 'package:rafiq_alhajj/features/field_operator/presentation/utils/field_st
 import 'package:rafiq_alhajj/features/pilgrim/domain/models/pilgrim.dart';
 import 'package:rafiq_alhajj/features/pilgrim/presentation/widgets/pilgrim_profile_sections.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 
 class FieldOperatorPilgrimScreen extends ConsumerStatefulWidget {
   const FieldOperatorPilgrimScreen({required this.profileId, super.key});
@@ -27,12 +28,18 @@ class FieldOperatorPilgrimScreen extends ConsumerStatefulWidget {
 class _FieldOperatorPilgrimScreenState
     extends ConsumerState<FieldOperatorPilgrimScreen> {
   String? _fieldStatus;
-  final _medicalController = TextEditingController();
+  late final FormGroup _form;
   bool _initialized = false;
 
   @override
+  void initState() {
+    super.initState();
+    _form = FormGroup({'medical': FormControl<String>(value: '')});
+  }
+
+  @override
   void dispose() {
-    _medicalController.dispose();
+    _form.dispose();
     super.dispose();
   }
 
@@ -41,19 +48,18 @@ class _FieldOperatorPilgrimScreenState
       return;
     }
     _fieldStatus = pilgrim.fieldStatus ?? FieldPilgrimStatus.pending;
-    _medicalController.text = pilgrim.medicalTestStatus ?? '';
+    _form.control('medical').updateValue(pilgrim.medicalTestStatus ?? '');
     _initialized = true;
   }
 
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context);
+    final medical = (_form.control('medical').value as String? ?? '').trim();
     final saved = await ref
         .read(fieldOperatorPilgrimDetailProvider(widget.profileId).notifier)
         .save(
           fieldStatus: _fieldStatus,
-          medicalTestStatus: _medicalController.text.trim().isEmpty
-              ? null
-              : _medicalController.text.trim(),
+          medicalTestStatus: medical.isEmpty ? null : medical,
         );
 
     if (!mounted) {
@@ -72,12 +78,11 @@ class _FieldOperatorPilgrimScreenState
   void _shareSummary(Pilgrim pilgrim) {
     final l10n = AppLocalizations.of(context);
     final name = pilgrim.displayName ?? pilgrim.fullNameAr ?? '';
+    final medical = (_form.control('medical').value as String? ?? '').trim();
     final summary = l10n.fieldOperatorShareSummary(
       name,
       fieldStatusLabel(l10n, _fieldStatus),
-      _medicalController.text.trim().isEmpty
-          ? l10n.fieldStatusNotSet
-          : _medicalController.text.trim(),
+      medical.isEmpty ? l10n.fieldStatusNotSet : medical,
       pilgrim.makkahHotel ?? pilgrim.hotelName ?? l10n.fieldStatusNotSet,
     );
 
@@ -93,6 +98,11 @@ class _FieldOperatorPilgrimScreenState
     final detailAsync =
         ref.watch(fieldOperatorPilgrimDetailProvider(widget.profileId));
     final isSaving = detailAsync.isLoading && _initialized;
+    if (isSaving && _form.enabled) {
+      _form.markAsDisabled();
+    } else if (!isSaving && _form.disabled) {
+      _form.markAsEnabled();
+    }
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -143,11 +153,13 @@ class _FieldOperatorPilgrimScreenState
                           ],
                         ),
                       ),
-                      TextField(
-                        controller: _medicalController,
-                        enabled: !isSaving,
-                        decoration: InputDecoration(
-                          labelText: l10n.fieldOperatorMedicalLabel,
+                      ReactiveForm(
+                        formGroup: _form,
+                        child: ReactiveTextField<String>(
+                          formControlName: 'medical',
+                          decoration: InputDecoration(
+                            labelText: l10n.fieldOperatorMedicalLabel,
+                          ),
                         ),
                       ),
                       SizedBox(height: 16.h),

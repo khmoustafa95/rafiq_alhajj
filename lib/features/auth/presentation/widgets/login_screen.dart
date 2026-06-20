@@ -8,6 +8,7 @@ import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/controllers/login_controller.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/utils/auth_error_l10n.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -17,26 +18,50 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  late final FormGroup _form;
   bool _obscurePassword = true;
 
   @override
+  void initState() {
+    super.initState();
+    _form = FormGroup({
+      'email': FormControl<String>(
+        value: '',
+        validators: [
+          Validators.delegate((control) {
+            final trimmed = (control.value as String?)?.trim() ?? '';
+            if (trimmed.isEmpty) {
+              return {ValidationMessage.required: true};
+            }
+            if (!trimmed.contains('@')) {
+              return {ValidationMessage.email: true};
+            }
+            return null;
+          }),
+        ],
+      ),
+      'password': FormControl<String>(
+        value: '',
+        validators: [Validators.required],
+      ),
+    });
+  }
+
+  @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
+    _form.dispose();
     super.dispose();
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) {
+    if (!_form.valid) {
+      _form.markAllAsTouched();
       return;
     }
 
     final success = await ref.read(loginControllerProvider.notifier).signIn(
-          email: _emailController.text,
-          password: _passwordController.text,
+          email: _form.control('email').value as String,
+          password: _form.control('password').value as String,
         );
 
     if (!mounted) {
@@ -72,8 +97,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-          child: Form(
-            key: _formKey,
+          child: ReactiveForm(
+            formGroup: _form,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -103,8 +128,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   SizedBox(height: 16.h),
                 ],
-                TextFormField(
-                  controller: _emailController,
+                ReactiveTextField<String>(
+                  formControlName: 'email',
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
                   autofillHints: const [AutofillHints.username],
@@ -112,24 +137,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     labelText: l10n.loginEmailLabel,
                     prefixIcon: const Icon(Icons.person_outline),
                   ),
-                  validator: (value) {
-                    final trimmed = value?.trim() ?? '';
-                    if (trimmed.isEmpty) {
-                      return l10n.loginEmailRequired;
-                    }
-                    if (!trimmed.contains('@')) {
-                      return l10n.loginEmailInvalid;
-                    }
-                    return null;
+                  validationMessages: {
+                    ValidationMessage.required: (_) => l10n.loginEmailRequired,
+                    ValidationMessage.email: (_) => l10n.loginEmailInvalid,
                   },
                 ),
                 SizedBox(height: 16.h),
-                TextFormField(
-                  controller: _passwordController,
+                ReactiveTextField<String>(
+                  formControlName: 'password',
                   obscureText: _obscurePassword,
                   textInputAction: TextInputAction.done,
                   autofillHints: const [AutofillHints.password],
-                  onFieldSubmitted: (_) => _submit(),
+                  onSubmitted: (_) => _submit(),
                   decoration: InputDecoration(
                     labelText: l10n.loginPasswordLabel,
                     prefixIcon: const Icon(Icons.key_outlined),
@@ -146,11 +165,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       },
                     ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return l10n.loginPasswordRequired;
-                    }
-                    return null;
+                  validationMessages: {
+                    ValidationMessage.required: (_) =>
+                        l10n.loginPasswordRequired,
                   },
                 ),
                 SizedBox(height: 32.h),

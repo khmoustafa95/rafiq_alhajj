@@ -1,22 +1,27 @@
 import 'dart:math';
 
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/features/competitions/data/data_sources/competition_questions_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/competitions/data/repositories/competitions_repository.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition_question.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CompetitionQuestionsRepository {
-  CompetitionQuestionsRepository([SupabaseClient? client]) : _client = client;
+  CompetitionQuestionsRepository([SupabaseClient? client])
+      : _remote = AppConfig.hasSupabase && client != null
+            ? CompetitionQuestionsRemoteDataSource(client)
+            : null;
 
-  final SupabaseClient? _client;
+  final CompetitionQuestionsRemoteDataSource? _remote;
 
-  bool get isAvailable => AppConfig.hasSupabase && _client != null;
+  bool get isAvailable => _remote != null;
 
   Future<CompetitionQuizProgress> fetchQuizProgress({
     required String competitionId,
     String? profileId,
   }) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       return const CompetitionQuizProgress(
         questions: [],
         answeredQuestionIds: {},
@@ -24,33 +29,21 @@ class CompetitionQuestionsRepository {
     }
 
     try {
-      final questionRows = await _client!
-          .from('competition_questions')
-          .select(
-            'id, competition_id, sort_order, question_type, prompt, points, '
-            'competition_question_options(id, question_id, sort_order, label)',
-          )
-          .eq('competition_id', competitionId)
-          .order('sort_order');
+      final questionRows = await remote.fetchQuestions(competitionId);
 
       final questions = _mapQuestions(
-        questionRows as List<dynamic>,
+        questionRows,
         includeCorrectFlags: false,
       );
 
       final answeredIds = <String>{};
       if (profileId != null && questions.isNotEmpty) {
-        final attemptRows = await _client
-            .from('competition_question_attempts')
-            .select('question_id')
-            .eq('profile_id', profileId)
-            .inFilter(
-              'question_id',
-              questions.map((q) => q.id).toList(),
-            );
+        final attemptRows = await remote.fetchAttempts(
+          profileId: profileId,
+          questionIds: questions.map((q) => q.id).toList(),
+        );
 
-        for (final row in attemptRows as List<dynamic>) {
-          final map = Map<String, dynamic>.from(row as Map);
+        for (final map in attemptRows) {
           answeredIds.add(map['question_id'] as String);
         }
       }
@@ -68,17 +61,15 @@ class CompetitionQuestionsRepository {
     required String questionId,
     required String optionId,
   }) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       throw const CompetitionsException('Supabase is not configured');
     }
 
     try {
-      final result = await _client!.rpc<Map<String, dynamic>>(
-        'submit_competition_answer',
-        params: {
-          'p_question_id': questionId,
-          'p_option_id': optionId,
-        },
+      final result = await remote.submitAnswer(
+        questionId: questionId,
+        optionId: optionId,
       );
 
       final map = Map<String, dynamic>.from(result);
@@ -92,17 +83,15 @@ class CompetitionQuestionsRepository {
     required String questionId,
     required List<String> orderedOptionIds,
   }) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       throw const CompetitionsException('Supabase is not configured');
     }
 
     try {
-      final result = await _client!.rpc<Map<String, dynamic>>(
-        'submit_competition_ordering_answer',
-        params: {
-          'p_question_id': questionId,
-          'p_option_ids': orderedOptionIds,
-        },
+      final result = await remote.submitOrderingAnswer(
+        questionId: questionId,
+        orderedOptionIds: orderedOptionIds,
       );
 
       return _mapAnswerResult(Map<String, dynamic>.from(result));

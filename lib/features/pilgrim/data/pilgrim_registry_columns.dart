@@ -18,4 +18,11 @@ phone_number, whatsapp_number, syrian_phone_number, notes,
 field_status, medical_test_status, travel_date, hotel_name, hotel_location_url,
 transportation_details, profile_id
 ''';
+
+  /// Flat projection for the `pilgrim_enrollment_view` (person + enrollment
+  /// joined): the legacy details columns plus trip linkage + display name.
+  static const viewSelect = '''
+$detailsSelect,
+enrollment_id, pilgrim_id, trip_id, trip_type, group_id, full_name
+''';
 }

@@ -1658,6 +1658,22 @@ class AppLocalizationsAr extends AppLocalizations {
   String get adminOperatorPermUploadHint => 'رفع مستندات الحجاج أثناء التسجيل.';
 
   @override
+  String get adminOperatorGroupsSection => 'صلاحية المجموعات';
+
+  @override
+  String get adminOperatorGroupsHint =>
+      'اختر المكاتب (المجموعات) التي يمكن لهذا المشغّل قراءتها والكتابة فيها.';
+
+  @override
+  String get adminOperatorGroupsEmpty => 'لا توجد مجموعات متاحة بعد.';
+
+  @override
+  String get adminOperatorGroupRead => 'قراءة';
+
+  @override
+  String get adminOperatorGroupWrite => 'قراءة وكتابة';
+
+  @override
   String get adminOperatorGeneratePassword => 'توليد كلمة مرور';
 
   @override
@@ -2385,4 +2401,143 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminHajjJourneySaveError => 'تعذر حفظ النسك.';
+
+  @override
+  String get staffNavTrips => 'الرحلات';
+
+  @override
+  String get adminTripsTitle => 'إدارة الرحلات';
+
+  @override
+  String get adminTripsSubtitle =>
+      'إدارة رحلات الحج والعمرة لكل موسم والمكاتب المشاركة فيها.';
+
+  @override
+  String get adminTripAdd => 'إضافة رحلة';
+
+  @override
+  String get adminTripsEmpty => 'لا توجد رحلات بعد. أضف أول رحلة حج أو عمرة.';
+
+  @override
+  String get adminTripsLoadError => 'تعذر تحميل الرحلات.';
+
+  @override
+  String get adminTripNewTitle => 'رحلة جديدة';
+
+  @override
+  String get adminTripEditTitle => 'تعديل الرحلة';
+
+  @override
+  String get adminTripName => 'اسم الرحلة';
+
+  @override
+  String get adminTripNameRequired => 'اسم الرحلة مطلوب';
+
+  @override
+  String get adminTripType => 'نوع الرحلة';
+
+  @override
+  String get adminTripTypeHajj => 'حج';
+
+  @override
+  String get adminTripTypeUmrah => 'عمرة';
+
+  @override
+  String get adminTripSeasonYear => 'سنة الموسم';
+
+  @override
+  String get adminTripSeasonYearRequired => 'يجب إدخال سنة موسم صحيحة';
+
+  @override
+  String get adminTripStatus => 'الحالة';
+
+  @override
+  String get adminTripStatusPlanning => 'قيد التخطيط';
+
+  @override
+  String get adminTripStatusActive => 'نشطة';
+
+  @override
+  String get adminTripStatusCompleted => 'مكتملة';
+
+  @override
+  String get adminTripStatusCancelled => 'ملغاة';
+
+  @override
+  String get adminTripSave => 'حفظ الرحلة';
+
+  @override
+  String get adminTripCreateSuccess => 'تم إنشاء الرحلة';
+
+  @override
+  String get adminTripSaveSuccess => 'تم تحديث الرحلة';
+
+  @override
+  String get adminTripSaveError => 'تعذر حفظ الرحلة. حاول مجدداً.';
+
+  @override
+  String get adminTripDeleteTitle => 'حذف الرحلة؟';
+
+  @override
+  String adminTripDeleteMessage(String name) {
+    return 'حذف «$name»؟ ستُزال جميع تسجيلات الحجاج في هذه الرحلة.';
+  }
+
+  @override
+  String get adminTripDeleteConfirm => 'حذف';
+
+  @override
+  String get adminTripDeleteSuccess => 'تم حذف الرحلة';
+
+  @override
+  String get adminTripDeleteError => 'تعذر حذف الرحلة';
+
+  @override
+  String get adminTripManageOffices => 'إدارة المكاتب';
+
+  @override
+  String get adminTripOfficesTitle => 'المكاتب المشاركة';
+
+  @override
+  String get adminTripOfficesSubtitle =>
+      'إضافة أو سحب المكاتب السياحية من هذه الرحلة.';
+
+  @override
+  String get adminTripOfficesEmpty => 'لم ينضم أي مكتب لهذه الرحلة بعد.';
+
+  @override
+  String get adminTripAddOffice => 'إضافة مكتب';
+
+  @override
+  String get adminTripNoAvailableOffices => 'جميع المكاتب منضمة لهذه الرحلة.';
+
+  @override
+  String get adminTripOfficeWithdraw => 'سحب';
+
+  @override
+  String get adminTripOfficeActivate => 'إعادة تفعيل';
+
+  @override
+  String get adminTripOfficeRemove => 'إزالة';
+
+  @override
+  String get adminTripOfficeActive => 'نشط';
+
+  @override
+  String get adminTripOfficeWithdrawn => 'منسحب';
+
+  @override
+  String get adminTripOfficeUpdated => 'تم تحديث المكتب';
+
+  @override
+  String get adminTripOfficeAdded => 'تمت إضافة المكتب للرحلة';
+
+  @override
+  String get adminTripOfficeError => 'تعذر تحديث المكتب';
+
+  @override
+  String get tripSelectorLabel => 'الرحلة النشطة';
+
+  @override
+  String get tripSelectorAll => 'كل الرحلات';
 }

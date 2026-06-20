@@ -7,6 +7,8 @@ import 'package:intl/intl.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/home_app_header.dart';
+import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
+import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/features/notifications/application/utils/notification_navigation.dart';
 import 'package:rafiq_alhajj/features/notifications/domain/models/inbox_notification.dart';
 import 'package:rafiq_alhajj/features/notifications/domain/models/notification_type.dart';
@@ -28,7 +30,9 @@ class _NotificationListScreenState extends ConsumerState<NotificationListScreen>
     BuildContext context,
     InboxNotification notification,
   ) async {
-    if (!notification.isRead) {
+    final isGuest =
+        ref.read(authAccessModeProvider) == AppAccessMode.guest;
+    if (!isGuest && !notification.isRead) {
       await ref
           .read(notificationInboxProvider.notifier)
           .markAsRead(notification.id);
@@ -412,6 +416,12 @@ class _MarkAllReadText extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isGuest =
+        ref.watch(authAccessModeProvider) == AppAccessMode.guest;
+    if (isGuest) {
+      return const SizedBox.shrink();
+    }
+
     final l10n = AppLocalizations.of(context);
     final hasUnread = ref.watch(
       notificationInboxProvider.select(

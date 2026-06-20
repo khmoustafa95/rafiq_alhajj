@@ -14,6 +14,7 @@ import 'package:rafiq_alhajj/features/operator_intake/application/utils/credenti
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/pilgrim_intake_form.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/operator_intake_providers.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 
 class OperatorIntakeScreen extends ConsumerStatefulWidget {
   const OperatorIntakeScreen({super.key});
@@ -24,34 +25,44 @@ class OperatorIntakeScreen extends ConsumerStatefulWidget {
 }
 
 class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _fullNameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passportController = TextEditingController();
-  final _permitController = TextEditingController();
-  final _medicalController = TextEditingController();
-  final _hotelController = TextEditingController();
-  final _hotelUrlController = TextEditingController();
-  final _transportController = TextEditingController();
+  late final FormGroup _form;
   DateTime? _travelDate;
   String? _generatedPassword;
 
   @override
+  void initState() {
+    super.initState();
+    _form = FormGroup({
+      'fullName': FormControl<String>(value: '', validators: [Validators.required]),
+      'email': FormControl<String>(
+        value: '',
+        validators: [Validators.delegate(_validateEmail)],
+      ),
+      'passport': FormControl<String>(value: ''),
+      'permit': FormControl<String>(value: ''),
+      'medical': FormControl<String>(value: ''),
+      'hotel': FormControl<String>(value: ''),
+      'hotelUrl': FormControl<String>(value: ''),
+      'transport': FormControl<String>(value: ''),
+    });
+  }
+
+  Map<String, dynamic>? _validateEmail(AbstractControl<dynamic> control) {
+    final value = control.value as String?;
+    return (value == null || !value.contains('@'))
+        ? {'emailInvalid': true}
+        : null;
+  }
+
+  @override
   void dispose() {
-    _fullNameController.dispose();
-    _emailController.dispose();
-    _passportController.dispose();
-    _permitController.dispose();
-    _medicalController.dispose();
-    _hotelController.dispose();
-    _hotelUrlController.dispose();
-    _transportController.dispose();
+    _form.dispose();
     super.dispose();
   }
 
   void _generateCredentials() {
+    _form.control('email').updateValue(CredentialGenerator.generateDemoEmail());
     setState(() {
-      _emailController.text = CredentialGenerator.generateDemoEmail();
       _generatedPassword = CredentialGenerator.generatePassword();
     });
   }
@@ -74,21 +85,23 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) {
+    if (!_form.valid) {
+      _form.markAllAsTouched();
       return;
     }
 
     final l10n = AppLocalizations.of(context);
     final form = PilgrimIntakeForm(
-      fullName: _fullNameController.text,
-      email: _emailController.text,
-      passportNumber: _emptyToNull(_passportController.text),
-      travelPermitNumber: _emptyToNull(_permitController.text),
-      medicalTestStatus: _emptyToNull(_medicalController.text),
+      fullName: _form.control('fullName').value as String,
+      email: _form.control('email').value as String,
+      passportNumber: _emptyToNull(_form.control('passport').value as String? ?? ''),
+      travelPermitNumber: _emptyToNull(_form.control('permit').value as String? ?? ''),
+      medicalTestStatus: _emptyToNull(_form.control('medical').value as String? ?? ''),
       travelDate: _travelDate,
-      hotelName: _emptyToNull(_hotelController.text),
-      hotelLocationUrl: _emptyToNull(_hotelUrlController.text),
-      transportationDetails: _emptyToNull(_transportController.text),
+      hotelName: _emptyToNull(_form.control('hotel').value as String? ?? ''),
+      hotelLocationUrl: _emptyToNull(_form.control('hotelUrl').value as String? ?? ''),
+      transportationDetails:
+          _emptyToNull(_form.control('transport').value as String? ?? ''),
     );
 
     final created =
@@ -115,15 +128,7 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
   }
 
   void _clearForm() {
-    _formKey.currentState?.reset();
-    _fullNameController.clear();
-    _emailController.clear();
-    _passportController.clear();
-    _permitController.clear();
-    _medicalController.clear();
-    _hotelController.clear();
-    _hotelUrlController.clear();
-    _transportController.clear();
+    _form.reset();
     setState(() {
       _travelDate = null;
       _generatedPassword = null;
@@ -167,8 +172,8 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
     final controller = ref.read(operatorIntakeControllerProvider.notifier);
     final pickedCount = controller.pickedFiles.length;
 
-    final formContent = Form(
-      key: _formKey,
+    final formContent = ReactiveForm(
+      formGroup: _form,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -178,16 +183,16 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
             subtitle: l10n.operatorSectionPersonalInfoHint,
             child: ResponsiveFormGrid(
               children: [
-                TextFormField(
-                  controller: _fullNameController,
+                ReactiveTextField<String>(
+                  formControlName: 'fullName',
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
                     labelText: l10n.operatorFullName,
                     prefixIcon: const Icon(Icons.badge_outlined),
                   ),
-                  validator: (v) => v == null || v.trim().isEmpty
-                      ? l10n.operatorRequired
-                      : null,
+                  validationMessages: {
+                    ValidationMessage.required: (_) => l10n.operatorRequired,
+                  },
                 ),
               ],
             ),
@@ -207,8 +212,8 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
               children: [
                 ResponsiveFormGrid(
                   children: [
-                    TextFormField(
-                      controller: _emailController,
+                    ReactiveTextField<String>(
+                      formControlName: 'email',
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
                       autofillHints: const [AutofillHints.username],
@@ -216,8 +221,9 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
                         labelText: l10n.loginEmailLabel,
                         prefixIcon: const Icon(Icons.email_outlined),
                       ),
-                      validator: (v) =>
-                          v == null || !v.contains('@') ? l10n.loginEmailInvalid : null,
+                      validationMessages: {
+                        'emailInvalid': (_) => l10n.loginEmailInvalid,
+                      },
                     ),
                   ],
                 ),
@@ -272,24 +278,24 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
             child: ResponsiveFormGrid(
               maxColumns: 3,
               children: [
-                TextFormField(
-                  controller: _passportController,
+                ReactiveTextField<String>(
+                  formControlName: 'passport',
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
                     labelText: l10n.operatorPassport,
                     prefixIcon: const Icon(Icons.credit_card_outlined),
                   ),
                 ),
-                TextFormField(
-                  controller: _permitController,
+                ReactiveTextField<String>(
+                  formControlName: 'permit',
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
                     labelText: l10n.operatorTravelPermit,
                     prefixIcon: const Icon(Icons.assignment_outlined),
                   ),
                 ),
-                TextFormField(
-                  controller: _medicalController,
+                ReactiveTextField<String>(
+                  formControlName: 'medical',
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
                     labelText: l10n.pilgrimMedicalStatus,
@@ -303,16 +309,16 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
                   onPick: _pickTravelDate,
                   enabled: !isSubmitting,
                 ),
-                TextFormField(
-                  controller: _hotelController,
+                ReactiveTextField<String>(
+                  formControlName: 'hotel',
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
                     labelText: l10n.pilgrimHotel,
                     prefixIcon: const Icon(Icons.hotel_outlined),
                   ),
                 ),
-                TextFormField(
-                  controller: _hotelUrlController,
+                ReactiveTextField<String>(
+                  formControlName: 'hotelUrl',
                   keyboardType: TextInputType.url,
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
@@ -320,8 +326,8 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
                     prefixIcon: const Icon(Icons.map_outlined),
                   ),
                 ),
-                TextFormField(
-                  controller: _transportController,
+                ReactiveTextField<String>(
+                  formControlName: 'transport',
                   textInputAction: TextInputAction.done,
                   decoration: InputDecoration(
                     labelText: l10n.pilgrimTransport,

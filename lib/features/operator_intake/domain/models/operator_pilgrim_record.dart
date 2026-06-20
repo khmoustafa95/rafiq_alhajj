@@ -1,8 +1,13 @@
 /// Full pilgrim logistics for operator desk view/edit (US-09).
+///
+/// Keyed by [pilgrimId] (stable person identity); [enrollmentId] is the trip
+/// enrollment whose logistics are shown.
 class OperatorPilgrimRecord {
   const OperatorPilgrimRecord({
-    required this.profileId,
+    required this.pilgrimId,
     required this.fullName,
+    this.profileId,
+    this.enrollmentId,
     this.passportNumber,
     this.travelPermitNumber,
     this.medicalTestStatus,
@@ -15,8 +20,10 @@ class OperatorPilgrimRecord {
     this.groupName,
   });
 
-  final String profileId;
+  final String pilgrimId;
   final String fullName;
+  final String? profileId;
+  final String? enrollmentId;
   final String? passportNumber;
   final String? travelPermitNumber;
   final String? medicalTestStatus;

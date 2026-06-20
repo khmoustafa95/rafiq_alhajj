@@ -1,3 +1,4 @@
+import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_group_grant.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_permissions.dart';
 
 class OperatorAccount {
@@ -8,6 +9,7 @@ class OperatorAccount {
     required this.isActive,
     required this.permissions,
     this.updatedAt,
+    this.groupAccess = const [],
   });
 
   final String id;
@@ -16,4 +18,5 @@ class OperatorAccount {
   final bool isActive;
   final OperatorPermissions permissions;
   final DateTime? updatedAt;
+  final List<OperatorGroupGrant> groupAccess;
 }
