@@ -79,7 +79,7 @@ class StaffWebLoginScaffold extends StatelessWidget {
             const Positioned(
               top: 8,
               left: 8,
-              child: LanguageSwitcherAppBarAction(),
+              child: LanguageSwitcherAppBarAction(compact: true),
             ),
           ],
         ),

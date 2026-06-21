@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/features/operator_intake/data/data_sources/pilgrim_intake_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/created_pilgrim_account.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/pilgrim_intake_form.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -14,11 +15,18 @@ class PilgrimIntakeException implements Exception {
 }
 
 class PilgrimIntakeService {
-  PilgrimIntakeService(this._client);
+  PilgrimIntakeService([SupabaseClient? client])
+      : _remote =
+            client == null ? null : PilgrimIntakeRemoteDataSource(client);
 
-  final SupabaseClient? _client;
+  final PilgrimIntakeRemoteDataSource? _remote;
 
-  bool get isAvailable => AppConfig.hasSupabase && _client != null;
+  /// Hard cap per uploaded document (10 MB) and the allowed file types. These
+  /// are enforced client-side; storage RLS additionally restricts the bucket.
+  static const _maxFileBytes = 10 * 1024 * 1024;
+  static const _allowedExtensions = {'pdf', 'jpg', 'jpeg', 'png'};
+
+  bool get isAvailable => AppConfig.hasSupabase && _remote != null;
 
   Future<CreatedPilgrimAccount> registerPilgrim(PilgrimIntakeForm form) async {
     if (!isAvailable) {
@@ -26,20 +34,14 @@ class PilgrimIntakeService {
     }
 
     try {
-      final response = await _client!.functions.invoke(
-        'create-pilgrim',
-        body: {
-          'email': form.email.trim(),
-          'full_name': form.fullName.trim(),
-          'passport_number': form.passportNumber,
-          'travel_permit_number': form.travelPermitNumber,
-          'medical_test_status': form.medicalTestStatus,
-          'travel_date': form.travelDate?.toIso8601String().split('T').first,
-          'hotel_name': form.hotelName,
-          'hotel_location_url': form.hotelLocationUrl,
-          'transportation_details': form.transportationDetails,
-        },
-      );
+      final response = await _remote!.createPilgrim({
+        'email': form.email.trim(),
+        'full_name': form.fullName.trim(),
+        if (form.tripId != null) 'trip_id': form.tripId,
+        if (form.groupId != null) 'group_id': form.groupId,
+        'person': form.person,
+        'enrollment': form.enrollment,
+      });
 
       if (response.status != 200) {
         final error = response.data is Map
@@ -59,11 +61,16 @@ class PilgrimIntakeService {
       rethrow;
     } on FunctionException catch (e) {
       throw PilgrimIntakeException(e.reasonPhrase ?? 'Edge function error');
-    } catch (e) {
-      throw PilgrimIntakeException(e.toString());
+    } on PostgrestException catch (e) {
+      throw PilgrimIntakeException(e.message);
     }
   }
 
+  /// Uploads picked documents. Returns the number successfully uploaded.
+  ///
+  /// Best-effort: each valid file is uploaded independently; invalid or failed
+  /// files are collected and surfaced via [PilgrimIntakeException] after the
+  /// valid ones are stored, so a partial failure never blocks the others.
   Future<int> uploadDocuments({
     required String profileId,
     required String operatorId,
@@ -72,35 +79,57 @@ class PilgrimIntakeService {
     if (!isAvailable || files.isEmpty) {
       return 0;
     }
+    final remote = _remote!;
 
     var uploaded = 0;
+    final failures = <String>[];
+
     for (final file in files) {
-      if (file.bytes == null) {
+      final bytes = file.bytes;
+      final extension = file.extension?.toLowerCase();
+
+      if (bytes == null) {
+        failures.add(file.name);
+        continue;
+      }
+      if (extension == null || !_allowedExtensions.contains(extension)) {
+        failures.add(file.name);
+        continue;
+      }
+      if (bytes.length > _maxFileBytes) {
+        failures.add(file.name);
         continue;
       }
 
       final safeName = file.name.replaceAll(RegExp(r'[^\w.\-]'), '_');
-      final storagePath = '$profileId/${DateTime.now().millisecondsSinceEpoch}_$safeName';
+      final storagePath =
+          '$profileId/${DateTime.now().millisecondsSinceEpoch}_$safeName';
 
-      await _client!.storage.from('pilgrim-documents').uploadBinary(
-            storagePath,
-            file.bytes!,
-            fileOptions: FileOptions(
-              contentType: file.extension != null
-                  ? _mimeFromExtension(file.extension!)
-                  : null,
-            ),
-          );
+      try {
+        await remote.uploadDocument(
+          storagePath: storagePath,
+          bytes: bytes,
+          contentType: _mimeFromExtension(extension),
+        );
+        await remote.insertDocumentMetadata({
+          'profile_id': profileId,
+          'file_name': file.name,
+          'storage_path': storagePath,
+          'document_type': extension,
+          'uploaded_by': operatorId,
+        });
+        uploaded++;
+      } on StorageException {
+        failures.add(file.name);
+      } on PostgrestException {
+        failures.add(file.name);
+      }
+    }
 
-      await _client.from('pilgrim_documents').insert({
-        'profile_id': profileId,
-        'file_name': file.name,
-        'storage_path': storagePath,
-        'document_type': file.extension,
-        'uploaded_by': operatorId,
-      });
-
-      uploaded++;
+    if (failures.isNotEmpty) {
+      throw PilgrimIntakeException(
+        'Failed to upload: ${failures.join(', ')}',
+      );
     }
 
     return uploaded;

@@ -21,6 +21,11 @@ abstract final class PilgrimTableColumns {
     'medical_test',
     'travel_date',
     'hotel',
+    'cluster',
+    'sticker',
+    'makkah_hotel',
+    'phone',
+    'whatsapp',
   };
 }
 

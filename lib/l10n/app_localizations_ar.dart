@@ -394,7 +394,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get operatorLoginTitle => 'دخول التقني';
 
   @override
-  String get operatorLoginSubtitle => 'تقني المركز — تسجيل الحجاج (US-05)';
+  String get operatorLoginSubtitle =>
+      'تقني المركز — تسجيل الحجاج ورفع المستندات';
 
   @override
   String get staffLoginHighlightRegistration => 'تسجيل الحجاج ورفع المستندات';
@@ -432,6 +433,49 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get operatorDocumentsSection => 'الثبوتيات والمستندات';
+
+  @override
+  String get operatorDocumentsUploadFailed =>
+      'تم إنشاء الحساب، لكن تعذّر رفع بعض المستندات. يمكنك إعادة رفعها لاحقاً.';
+
+  @override
+  String get operatorSharedDefaultsTitle => 'بيانات مشتركة';
+
+  @override
+  String get operatorSharedDefaultsHint =>
+      'الحقول المشتركة (الفندق، الرحلة، التواريخ، المشاعر…) تُحفظ تلقائياً وتُعبّأ في الحاج التالي لتسريع الإدخال.';
+
+  @override
+  String get operatorClearSharedDefaults => 'مسح البيانات المشتركة';
+
+  @override
+  String get operatorSendCredentialsWhatsapp =>
+      'إرسال بيانات الدخول عبر واتساب';
+
+  @override
+  String get operatorResetSendConfirmTitle => 'إرسال بيانات الدخول';
+
+  @override
+  String operatorResetSendConfirmBody(String name) {
+    return 'سيتم إنشاء كلمة مرور جديدة لـ $name وإرسالها عبر واتساب. هل تريد المتابعة؟';
+  }
+
+  @override
+  String get operatorResetSendConfirm => 'إعادة التعيين والإرسال';
+
+  @override
+  String get operatorResetFailed => 'تعذّر إعادة تعيين كلمة المرور.';
+
+  @override
+  String get operatorWhatsappOpenFailed => 'تعذّر فتح واتساب.';
+
+  @override
+  String get operatorWhatsappNoNumber => 'لا يوجد رقم واتساب مسجّل.';
+
+  @override
+  String operatorCredentialsWhatsappMessage(String email, String password) {
+    return 'مرحباً، بيانات الدخول لتطبيق رفيق الحاج:\nالبريد الإلكتروني: $email\nكلمة المرور: $password';
+  }
 
   @override
   String operatorPickDocuments(int count) {
@@ -473,7 +517,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get fieldOperatorLoginSubtitle =>
-      'البحث عن الحجاج وتحديث حالاتهم في المشاعر (US-06)';
+      'البحث عن الحجاج وتحديث حالاتهم في المشاعر';
 
   @override
   String get fieldOperatorHomeTitle => 'الحجاج في الميدان';
@@ -829,7 +873,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get adminLoginTitle => 'دخول المسؤول';
 
   @override
-  String get adminLoginSubtitle => 'تقارير وإحصائيات التكتل (US-07)';
+  String get adminLoginSubtitle => 'تقارير وإحصائيات التكتل';
 
   @override
   String get adminDashboardTitle => 'لوحة التقارير';

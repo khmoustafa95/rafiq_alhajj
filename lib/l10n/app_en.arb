@@ -287,7 +287,7 @@
   "authErrorNotStaffRole": "This account is not authorized for the operator dashboard.",
   "authErrorNotAdminRole": "This account is not authorized for the admin dashboard.",
   "operatorLoginTitle": "Operator sign in",
-  "operatorLoginSubtitle": "Center technician — pilgrim registration (US-05)",
+  "operatorLoginSubtitle": "Center technician — pilgrim registration and documents",
   "staffLoginHighlightRegistration": "Register pilgrims and upload documents",
   "staffLoginHighlightDocuments": "Secure document storage per pilgrim",
   "staffLoginHighlightRegistry": "Manage pilgrim registry in real time",
@@ -302,6 +302,24 @@
     "placeholders": {"password": {"type": "String"}}
   },
   "operatorDocumentsSection": "Documents",
+  "operatorDocumentsUploadFailed": "Account created, but some documents failed to upload. You can re-upload them later.",
+  "operatorSharedDefaultsTitle": "Shared defaults",
+  "operatorSharedDefaultsHint": "Shared fields (hotel, trip, dates, mashaer…) are saved automatically and pre-filled for the next pilgrim to speed up entry.",
+  "operatorClearSharedDefaults": "Clear shared defaults",
+  "operatorSendCredentialsWhatsapp": "Send login info via WhatsApp",
+  "operatorResetSendConfirmTitle": "Send login info",
+  "operatorResetSendConfirmBody": "A new password will be generated for {name} and sent over WhatsApp. Continue?",
+  "@operatorResetSendConfirmBody": {
+    "placeholders": {"name": {"type": "String"}}
+  },
+  "operatorResetSendConfirm": "Reset & send",
+  "operatorResetFailed": "Could not reset the password.",
+  "operatorWhatsappOpenFailed": "Could not open WhatsApp.",
+  "operatorWhatsappNoNumber": "No WhatsApp number on file.",
+  "operatorCredentialsWhatsappMessage": "Hello, your Rafiq Al-Hajj login details:\nEmail: {email}\nPassword: {password}",
+  "@operatorCredentialsWhatsappMessage": {
+    "placeholders": {"email": {"type": "String"}, "password": {"type": "String"}}
+  },
   "operatorPickDocuments": "Pick files ({count})",
   "@operatorPickDocuments": {
     "placeholders": {"count": {"type": "int"}}
@@ -317,7 +335,7 @@
   "operatorCloseDialog": "Close",
   "homeFieldOperatorSignIn": "Field operator sign in",
   "fieldOperatorLoginTitle": "Field operator",
-  "fieldOperatorLoginSubtitle": "Search pilgrims and update logistics in the field (US-06)",
+  "fieldOperatorLoginSubtitle": "Search pilgrims and update logistics in the field",
   "fieldOperatorHomeTitle": "Pilgrims in the field",
   "fieldOperatorDashboardTitle": "Field dashboard",
   "fieldOperatorPilgrimsTitle": "Pilgrims",
@@ -454,7 +472,7 @@
   "pilgrimLabelSyrianPhone": "Syrian phone",
   "operatorGoAdminLogin": "Admin analytics sign in",
   "adminLoginTitle": "Admin sign in",
-  "adminLoginSubtitle": "Consortium analytics and reporting (US-07)",
+  "adminLoginSubtitle": "Consortium analytics and reporting",
   "adminDashboardTitle": "Analytics dashboard",
   "adminDashboardSubtitle": "Live metrics from Supabase — pilgrims, groups, and field status.",
   "adminDashboardLoadError": "Could not load dashboard metrics.",

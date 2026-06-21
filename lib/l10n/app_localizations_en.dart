@@ -403,7 +403,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get operatorLoginSubtitle =>
-      'Center technician — pilgrim registration (US-05)';
+      'Center technician — pilgrim registration and documents';
 
   @override
   String get staffLoginHighlightRegistration =>
@@ -448,6 +448,48 @@ class AppLocalizationsEn extends AppLocalizations {
   String get operatorDocumentsSection => 'Documents';
 
   @override
+  String get operatorDocumentsUploadFailed =>
+      'Account created, but some documents failed to upload. You can re-upload them later.';
+
+  @override
+  String get operatorSharedDefaultsTitle => 'Shared defaults';
+
+  @override
+  String get operatorSharedDefaultsHint =>
+      'Shared fields (hotel, trip, dates, mashaer…) are saved automatically and pre-filled for the next pilgrim to speed up entry.';
+
+  @override
+  String get operatorClearSharedDefaults => 'Clear shared defaults';
+
+  @override
+  String get operatorSendCredentialsWhatsapp => 'Send login info via WhatsApp';
+
+  @override
+  String get operatorResetSendConfirmTitle => 'Send login info';
+
+  @override
+  String operatorResetSendConfirmBody(String name) {
+    return 'A new password will be generated for $name and sent over WhatsApp. Continue?';
+  }
+
+  @override
+  String get operatorResetSendConfirm => 'Reset & send';
+
+  @override
+  String get operatorResetFailed => 'Could not reset the password.';
+
+  @override
+  String get operatorWhatsappOpenFailed => 'Could not open WhatsApp.';
+
+  @override
+  String get operatorWhatsappNoNumber => 'No WhatsApp number on file.';
+
+  @override
+  String operatorCredentialsWhatsappMessage(String email, String password) {
+    return 'Hello, your Rafiq Al-Hajj login details:\nEmail: $email\nPassword: $password';
+  }
+
+  @override
   String operatorPickDocuments(int count) {
     return 'Pick files ($count)';
   }
@@ -487,7 +529,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fieldOperatorLoginSubtitle =>
-      'Search pilgrims and update logistics in the field (US-06)';
+      'Search pilgrims and update logistics in the field';
 
   @override
   String get fieldOperatorHomeTitle => 'Pilgrims in the field';
@@ -845,7 +887,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminLoginTitle => 'Admin sign in';
 
   @override
-  String get adminLoginSubtitle => 'Consortium analytics and reporting (US-07)';
+  String get adminLoginSubtitle => 'Consortium analytics and reporting';
 
   @override
   String get adminDashboardTitle => 'Analytics dashboard';

@@ -31,10 +31,15 @@ String? operatorUserId(Ref ref) {
 class OperatorIntakeController extends _$OperatorIntakeController {
   List<PlatformFile> _pickedFiles = [];
   CreatedPilgrimAccount? _lastCreated;
+  String? _lastUploadError;
 
   List<PlatformFile> get pickedFiles => _pickedFiles;
 
   CreatedPilgrimAccount? get lastCreated => _lastCreated;
+
+  /// Non-null when the account was created but document upload failed; lets the
+  /// UI report a partial success instead of discarding a created pilgrim.
+  String? get lastUploadError => _lastUploadError;
 
   @override
   FutureOr<void> build() {}
@@ -59,23 +64,39 @@ class OperatorIntakeController extends _$OperatorIntakeController {
 
   Future<CreatedPilgrimAccount?> submit(PilgrimIntakeForm form) async {
     state = const AsyncLoading();
-    CreatedPilgrimAccount? created;
+    _lastUploadError = null;
 
+    // 1. Create the account. A failure here is the only thing that should
+    //    surface as an error / null result.
+    CreatedPilgrimAccount? created;
     state = await AsyncValue.guard(() async {
-      created = await ref.read(pilgrimIntakeServiceProvider).registerPilgrim(form);
-      final operatorId = ref.read(operatorUserIdProvider);
-      if (operatorId != null && created != null) {
+      created =
+          await ref.read(pilgrimIntakeServiceProvider).registerPilgrim(form);
+    });
+
+    final account = created;
+    if (state.hasError || account == null) {
+      return null;
+    }
+
+    // 2. Upload documents as a best-effort follow-up. If this fails the account
+    //    still exists, so we record a warning instead of discarding it.
+    final operatorId = ref.read(operatorUserIdProvider);
+    if (operatorId != null && _pickedFiles.isNotEmpty) {
+      try {
         await ref.read(pilgrimIntakeServiceProvider).uploadDocuments(
-              profileId: created!.profileId,
+              profileId: account.profileId,
               operatorId: operatorId,
               files: _pickedFiles,
             );
+      } on Object catch (e) {
+        _lastUploadError = e.toString();
       }
-      _lastCreated = created;
-      _pickedFiles = [];
-      ref.invalidate(operatorPilgrimRegistryPageProvider);
-    });
+    }
 
-    return state.hasError ? null : created;
+    _lastCreated = account;
+    _pickedFiles = [];
+    ref.invalidate(operatorPilgrimRegistryPageProvider);
+    return account;
   }
 }

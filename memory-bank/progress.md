@@ -2,6 +2,9 @@
 
 > **Update this file after every completed task.**
 
+## Changelog
+- **2026-06-21 — Admin pilgrim workflow overhaul:** compact login language control + smaller icons; removed `US-0x` codes from ARBs; full pilgrim field set exposed via a single `pilgrim_field_catalog` (intake + edit forms + table) with raw-backed models and server-side column allowlists in `create-pilgrim`; resilient creation (best-effort doc upload, partial-success warning); expanded table columns (cluster/sticker/makkah_hotel/phone/whatsapp); persisted "shared defaults" + `TripSelector` for fast entry; uploads moved to `pilgrim_intake_remote_data_source` with size/MIME guards; WhatsApp "send login info" row action backed by new operator/admin-gated `reset-pilgrim-password` edge fn; notifications audit (no fixes needed). `flutter analyze` clean. ⚠ Restart local edge runtime to serve `reset-pilgrim-password`.
+
 ## Status summary
 | Area | Status |
 |------|--------|
@@ -67,6 +70,11 @@
 - [x] FCM push (device tokens + Edge Function)
 
 ## Changelog
+
+### 2026-06-21 — Demo-user seeder fix (admin login)
+- [x] Removed obsolete `seedFakePilgrimRegistry` import/call from `seed-demo-users.mjs` (targeted dropped `pilgrim_details`; Arabic data now in `seed.sql`).
+- [x] `updateUser` now re-sets `password` + `email_confirm: true` → seeder is idempotent/self-healing for existing accounts.
+- [x] Verified `npm run setup:users` exits 0; password-grant test → admin login OK (`role: admin`, email confirmed).
 
 ### 2026-06-20 — `.cursorrules` conformance audit + rollout
 - [x] **Audit** of codebase vs updated `.cursorrules`; `flutter analyze` already clean.

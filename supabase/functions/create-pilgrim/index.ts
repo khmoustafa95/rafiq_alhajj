@@ -9,17 +9,98 @@ const corsHeaders = {
 type PilgrimPayload = {
   email: string;
   full_name: string;
-  passport_number?: string;
-  travel_permit_number?: string;
-  medical_test_status?: string;
-  travel_date?: string;
-  hotel_name?: string;
-  hotel_location_url?: string;
-  transportation_details?: string;
-  gender?: string;
   group_id?: string;
   trip_id?: string;
+  person?: Record<string, unknown>;
+  enrollment?: Record<string, unknown>;
 };
+
+// Server-side allowlists so clients can never write arbitrary columns.
+const PERSON_COLUMNS = new Set([
+  "passport_number",
+  "mother_name_ar",
+  "birth_date",
+  "gender",
+  "first_name_en",
+  "last_name_en",
+  "father_name_en",
+  "mother_name_en",
+  "passport_issue_date",
+  "passport_expiry_date",
+  "residence",
+  "body_size",
+  "phone_number",
+  "whatsapp_number",
+  "syrian_phone_number",
+]);
+
+const ENROLLMENT_COLUMNS = new Set([
+  "kobo_id",
+  "sequence",
+  "cluster",
+  "coordinator_name",
+  "sticker_number",
+  "visa_number",
+  "barcode_number",
+  "request_type",
+  "housing_type",
+  "hady_status",
+  "companion_name",
+  "relation",
+  "field_status",
+  "medical_test_status",
+  "health_status",
+  "needs_wheelchair",
+  "is_smoking",
+  "health_card",
+  "is_vaccinated",
+  "travel_permit_number",
+  "travel_date",
+  "hotel_name",
+  "hotel_location_url",
+  "transportation_details",
+  "makkah_hotel",
+  "makkah_floor",
+  "makkah_room",
+  "madinah_travel_date",
+  "madinah_hotel",
+  "madinah_floor",
+  "madinah_room",
+  "departure_airport",
+  "departure_airline",
+  "departure_flight_no",
+  "departure_date",
+  "departure_time",
+  "return_airport",
+  "return_airline",
+  "return_flight_no",
+  "return_date",
+  "return_time",
+  "service_center_name",
+  "service_center_arafat",
+  "service_center_mina",
+  "bus_arafat",
+  "bus_mina",
+  "tent_arafat",
+  "tent_mina",
+  "notes",
+]);
+
+function pick(
+  source: Record<string, unknown> | undefined,
+  allowed: Set<string>,
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  if (!source) {
+    return result;
+  }
+  for (const [key, value] of Object.entries(source)) {
+    if (allowed.has(key) && value !== undefined) {
+      result[key] = value;
+    }
+  }
+  return result;
+}
 
 function generatePassword(length = 12): string {
   const chars =
@@ -148,9 +229,8 @@ Deno.serve(async (req) => {
     const { error: personError } = await supabaseAdmin
       .from("pilgrims")
       .update({
-        passport_number: body.passport_number ?? null,
+        ...pick(body.person, PERSON_COLUMNS),
         full_name_ar: body.full_name.trim(),
-        gender: body.gender ?? null,
         updated_at: new Date().toISOString(),
       })
       .eq("id", pilgrimId);
@@ -177,12 +257,7 @@ Deno.serve(async (req) => {
 
     if (tripId) {
       const enrollmentPayload = {
-        travel_permit_number: body.travel_permit_number ?? null,
-        medical_test_status: body.medical_test_status ?? null,
-        travel_date: body.travel_date ?? null,
-        hotel_name: body.hotel_name ?? null,
-        hotel_location_url: body.hotel_location_url ?? null,
-        transportation_details: body.transportation_details ?? null,
+        ...pick(body.enrollment, ENROLLMENT_COLUMNS),
         group_id: body.group_id ?? null,
         updated_at: new Date().toISOString(),
       };

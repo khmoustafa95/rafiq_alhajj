@@ -104,7 +104,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               children: [
                 Icon(
                   Icons.lock_outline,
-                  size: 56.sp,
+                  size: 44.sp,
                   color: colorScheme.primary,
                 ),
                 SizedBox(height: 16.h),

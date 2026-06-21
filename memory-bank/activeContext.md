@@ -3,7 +3,25 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
-**`.cursorrules` architecture conformance** — the updated rules added: `data_sources/` layer (all `SupabaseClient` calls), `reactive_forms` for all forms, `flutter_gen` for assets (no hardcoded paths), and blessed `AppColors` as the color source of truth. A full audit + rollout was completed this session. Prior focus (pilgrim ↔ trips restructure) is done; see below.
+**Admin pilgrim workflow overhaul** — completed this session (see below). Prior focus (`.cursorrules` conformance, pilgrim ↔ trips restructure) is done.
+
+## Recent changes (2026-06-21) — admin pilgrim UX overhaul
+- **Login language control shrunk:** `staff_web_login_scaffold` + shared `RafiqAppBar` now use `LanguageSwitcherAppBarAction(compact: true)` (icon-only); login lock icon `56.sp → 44.sp`.
+- **Dev leakage removed:** `US-05/06/07` codes stripped from `operatorLoginSubtitle` / `fieldOperatorLoginSubtitle` / `adminLoginSubtitle` (both ARBs).
+- **Full pilgrim field set (single source of truth):** new `pilgrim_field_catalog.dart` (`presentation/forms/`) defines every `pilgrims`/`trip_enrollments` column as a grouped `PilgrimField` (table + kind + l10n label) and builds the `FormGroup`, payloads, bind, and shared-values helpers. Reused by the intake form **and** edit form via the new `PilgrimFieldsForm` widget. Models `OperatorPilgrimRecord`/`Summary` are now **raw-row-backed** (getters), `PilgrimIntakeForm`/`OperatorPilgrimUpdate` carry `person`/`enrollment` maps. View select switched to `*`; new sortable ids. Edge `create-pilgrim` now accepts `person`/`enrollment` objects with **server-side column allowlists**.
+- **Reliable creation (partial success):** `OperatorIntakeController.submit` creates the account first; document upload is a **best-effort** follow-up — failures set `lastUploadError` (warning snackbar) instead of discarding a created pilgrim.
+- **Expanded table:** added `cluster / sticker / makkah_hotel / phone / whatsapp` columns + picker options + sortable ids (defaults still readable).
+- **Shared defaults (fast entry):** `pilgrim_shared_defaults_provider` (keepAlive + `SharedPreferences`) persists shared logistics; auto-applied on load, re-applied after each create, cleared via the "Shared defaults" card (with `TripSelector`).
+- **Safer uploads:** storage + `create-pilgrim` invoke moved to `pilgrim_intake_remote_data_source` (conforms to `data_sources/`); added 10 MB size cap, MIME/extension allowlist, filename sanitization, per-file resilience (private `pilgrim-documents` bucket unchanged).
+- **WhatsApp "send login info":** new operator/admin-gated edge fn `reset-pilgrim-password` (resets password, returns email+new password). Table row action: confirm → reset → open `wa.me/<digits>?text=<localized credentials>` (`url_launcher`). Shown only when the pilgrim has a login + WhatsApp number.
+- **Audits:** notifications system reviewed — FCM lifecycle (bind on login / unregister+deleteToken on sign-out / refresh), RLS-scoped reads/updates, realtime dedup, navigation all sound; **no fixes needed**. Code review: no `SupabaseClient` calls remain in `application`/`presentation` layers.
+- **Verified:** `flutter analyze` → No issues found; `build_runner` + `gen-l10n` clean.
+- **Action needed:** local Supabase **edge runtime must reload** to serve the new `reset-pilgrim-password` function (restart `supabase` / edge runtime). No migration/schema changes were made (schema already had all columns), so no `db reset` required.
+
+## Recent changes (2026-06-21) — demo-user seeder fix (admin login)
+- **Root cause of failed `admin@demo.local` login:** `scripts/seed-demo-users.mjs` imported `seedFakePilgrimRegistry`, which upserts into the **dropped `pilgrim_details` table** → the seeder threw *after* creating users; and its `updateUser` path only patched `user_metadata` (never re-set the password or `email_confirm`), so re-runs reported "Updated" without ever fixing credentials.
+- **Fix:** removed the obsolete fake-registry import/call from the seeder (Arabic pilgrim data now comes from `seed.sql`); `updateUser` now also sends `password` + `email_confirm: true`, making the seeder idempotent/self-healing.
+- **Verified:** `npm run setup:users` exits 0 for all 14 demo accounts; password-grant auth test → `LOGIN OK, role: admin, confirmed_at set`.
 
 ## Recent changes (2026-06-20) — `.cursorrules` conformance audit + rollout
 - **`.cursorrules` updated:** blessed `AppColors` design tokens (wired into `ColorScheme`) as the color source of truth + banned raw `Color(0x…)` in widgets; fixed the outdated `AppLocalizations.of(context)!` example (generated lookup is non-nullable).
@@ -23,9 +41,9 @@
 - **Verified:** `supabase db reset` runs clean; counts = 2 trips / 3 groups / 8 pilgrims / 10 enrollments; `flutter analyze` clean; `build_runner` + `gen-l10n` regenerated.
 
 ## Next steps
-1. **Manual RLS test:** create demo auth users (`supabase auth users create …` from `seed.sql` header), then verify an operator scoped to one group sees only that group's enrollments; admin sees all.
+1. **Manual RLS test:** demo auth users now seed cleanly via `npm run setup:users` (incl. `admin@demo.local` / `demo123456`). Verify an operator scoped to one group sees only that group's enrollments; admin sees all.
 2. **Optional:** add `TripSelector` to the operator pilgrim list (field-operator already has it); operator reads are already trip-scoped via `activeTrip`.
-3. **Obsolete:** `scripts/seed-fake-pilgrim-registry.mjs` / `npm run setup:users` still target `pilgrim_details` — Arabic data now lives in `seed.sql`; update or retire the script.
+3. **Obsolete:** `scripts/seed-fake-pilgrim-registry.mjs` (+ `npm run setup:registry`) still target the dropped `pilgrim_details` table and are no longer wired into `setup:users`; retire them.
 
 ## Key paths
 | Concern | Location |

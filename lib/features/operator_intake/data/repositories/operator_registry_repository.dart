@@ -4,6 +4,7 @@ import 'package:rafiq_alhajj/features/operator_intake/data/data_sources/operator
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_record.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_summary.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_update.dart';
+import 'package:rafiq_alhajj/features/operator_intake/domain/models/pilgrim_credentials.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class OperatorRegistryException implements Exception {
@@ -135,6 +136,31 @@ class OperatorRegistryRepository {
     }
   }
 
+  Future<PilgrimCredentials> resetPilgrimPassword(String profileId) async {
+    if (!isAvailable) {
+      throw const OperatorRegistryException('Supabase is not configured');
+    }
+    final remote = _remote!;
+    try {
+      final response = await remote.resetPilgrimPassword(profileId);
+      if (response.status != 200) {
+        final error = response.data is Map
+            ? (response.data as Map)['error']?.toString()
+            : null;
+        throw OperatorRegistryException(error ?? 'Password reset failed');
+      }
+      final data = Map<String, dynamic>.from(response.data as Map);
+      return PilgrimCredentials(
+        email: data['email'] as String,
+        password: data['password'] as String,
+      );
+    } on FunctionException catch (e) {
+      throw OperatorRegistryException(e.reasonPhrase ?? 'Edge function error');
+    } on PostgrestException catch (e) {
+      throw OperatorRegistryException(e.message);
+    }
+  }
+
   Future<void> bulkAssignGroup({
     required List<String> pilgrimIds,
     required String? groupId,
@@ -160,45 +186,10 @@ class OperatorRegistryRepository {
   }
 
   OperatorPilgrimSummary _mapSummary(Map<String, dynamic> row) {
-    return OperatorPilgrimSummary(
-      pilgrimId: row['pilgrim_id'] as String,
-      profileId: row['profile_id'] as String?,
-      enrollmentId: row['enrollment_id'] as String?,
-      fullName: (row['full_name'] as String?) ?? '',
-      passportNumber: row['passport_number'] as String?,
-      travelPermitNumber: row['travel_permit_number'] as String?,
-      medicalTestStatus: row['medical_test_status'] as String?,
-      travelDate: _parseDate(row['travel_date']),
-      hotelName: row['hotel_name'] as String?,
-      gender: row['gender'] as String?,
-      groupId: row['group_id'] as String?,
-      groupName: row['group_name'] as String?,
-    );
+    return OperatorPilgrimSummary(row);
   }
 
   OperatorPilgrimRecord _mapRecord(Map<String, dynamic> row) {
-    return OperatorPilgrimRecord(
-      pilgrimId: row['pilgrim_id'] as String,
-      profileId: row['profile_id'] as String?,
-      enrollmentId: row['enrollment_id'] as String?,
-      fullName: (row['full_name'] as String?) ?? '',
-      passportNumber: row['passport_number'] as String?,
-      travelPermitNumber: row['travel_permit_number'] as String?,
-      medicalTestStatus: row['medical_test_status'] as String?,
-      travelDate: _parseDate(row['travel_date']),
-      hotelName: row['hotel_name'] as String?,
-      hotelLocationUrl: row['hotel_location_url'] as String?,
-      transportationDetails: row['transportation_details'] as String?,
-      gender: row['gender'] as String?,
-      groupId: row['group_id'] as String?,
-      groupName: row['group_name'] as String?,
-    );
-  }
-
-  DateTime? _parseDate(dynamic value) {
-    if (value == null) {
-      return null;
-    }
-    return DateTime.tryParse(value.toString());
+    return OperatorPilgrimRecord(row);
   }
 }

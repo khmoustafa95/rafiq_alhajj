@@ -785,7 +785,7 @@ abstract class AppLocalizations {
   /// No description provided for @operatorLoginSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Center technician — pilgrim registration (US-05)'**
+  /// **'Center technician — pilgrim registration and documents'**
   String get operatorLoginSubtitle;
 
   /// No description provided for @staffLoginHighlightRegistration.
@@ -853,6 +853,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Documents'**
   String get operatorDocumentsSection;
+
+  /// No description provided for @operatorDocumentsUploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Account created, but some documents failed to upload. You can re-upload them later.'**
+  String get operatorDocumentsUploadFailed;
+
+  /// No description provided for @operatorSharedDefaultsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared defaults'**
+  String get operatorSharedDefaultsTitle;
+
+  /// No description provided for @operatorSharedDefaultsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared fields (hotel, trip, dates, mashaer…) are saved automatically and pre-filled for the next pilgrim to speed up entry.'**
+  String get operatorSharedDefaultsHint;
+
+  /// No description provided for @operatorClearSharedDefaults.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear shared defaults'**
+  String get operatorClearSharedDefaults;
+
+  /// No description provided for @operatorSendCredentialsWhatsapp.
+  ///
+  /// In en, this message translates to:
+  /// **'Send login info via WhatsApp'**
+  String get operatorSendCredentialsWhatsapp;
+
+  /// No description provided for @operatorResetSendConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send login info'**
+  String get operatorResetSendConfirmTitle;
+
+  /// No description provided for @operatorResetSendConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A new password will be generated for {name} and sent over WhatsApp. Continue?'**
+  String operatorResetSendConfirmBody(String name);
+
+  /// No description provided for @operatorResetSendConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset & send'**
+  String get operatorResetSendConfirm;
+
+  /// No description provided for @operatorResetFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reset the password.'**
+  String get operatorResetFailed;
+
+  /// No description provided for @operatorWhatsappOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open WhatsApp.'**
+  String get operatorWhatsappOpenFailed;
+
+  /// No description provided for @operatorWhatsappNoNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'No WhatsApp number on file.'**
+  String get operatorWhatsappNoNumber;
+
+  /// No description provided for @operatorCredentialsWhatsappMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello, your Rafiq Al-Hajj login details:\nEmail: {email}\nPassword: {password}'**
+  String operatorCredentialsWhatsappMessage(String email, String password);
 
   /// No description provided for @operatorPickDocuments.
   ///
@@ -929,7 +1001,7 @@ abstract class AppLocalizations {
   /// No description provided for @fieldOperatorLoginSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Search pilgrims and update logistics in the field (US-06)'**
+  /// **'Search pilgrims and update logistics in the field'**
   String get fieldOperatorLoginSubtitle;
 
   /// No description provided for @fieldOperatorHomeTitle.
@@ -1606,7 +1678,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminLoginSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Consortium analytics and reporting (US-07)'**
+  /// **'Consortium analytics and reporting'**
   String get adminLoginSubtitle;
 
   /// No description provided for @adminDashboardTitle.

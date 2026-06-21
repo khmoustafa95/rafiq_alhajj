@@ -24,6 +24,7 @@ import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pil
 import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/operator_registry_providers.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/pilgrim_table_column_visibility_provider.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class OperatorPilgrimListScreen extends ConsumerStatefulWidget {
   const OperatorPilgrimListScreen({super.key});
@@ -126,6 +127,26 @@ class _OperatorPilgrimListScreenState
       StaffTableColumnOption(
         id: 'hotel',
         label: l10n.pilgrimHotel,
+      ),
+      StaffTableColumnOption(
+        id: 'cluster',
+        label: l10n.pilgrimLabelCluster,
+      ),
+      StaffTableColumnOption(
+        id: 'sticker',
+        label: l10n.pilgrimLabelSticker,
+      ),
+      StaffTableColumnOption(
+        id: 'makkah_hotel',
+        label: l10n.pilgrimLabelMakkahHotel,
+      ),
+      StaffTableColumnOption(
+        id: 'phone',
+        label: l10n.pilgrimLabelPhone,
+      ),
+      StaffTableColumnOption(
+        id: 'whatsapp',
+        label: l10n.pilgrimLabelWhatsapp,
       ),
     ];
   }
@@ -316,6 +337,80 @@ class _OperatorPilgrimListScreenState
     );
   }
 
+  bool _canSendCredentials(OperatorPilgrimSummary item) {
+    return item.profileId != null &&
+        (item.whatsappNumber?.trim().isNotEmpty ?? false);
+  }
+
+  /// Resets the pilgrim's password and opens WhatsApp pre-filled with the new
+  /// credentials. Passwords are never stored, so we always issue a fresh one.
+  Future<void> _sendCredentials(
+    AppLocalizations l10n,
+    OperatorPilgrimSummary item,
+  ) async {
+    final profileId = item.profileId;
+    final whatsapp = item.whatsappNumber?.trim() ?? '';
+    if (profileId == null) {
+      return;
+    }
+    if (whatsapp.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.operatorWhatsappNoNumber)),
+      );
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.operatorResetSendConfirmTitle),
+        content: Text(l10n.operatorResetSendConfirmBody(item.fullName)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.dialogCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.operatorResetSendConfirm),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) {
+      return;
+    }
+
+    final credentials =
+        await ref.read(pilgrimPasswordResetProvider.notifier).reset(profileId);
+
+    if (!mounted) {
+      return;
+    }
+    if (credentials == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.operatorResetFailed)),
+      );
+      return;
+    }
+
+    final digits = whatsapp.replaceAll(RegExp(r'[^\d]'), '');
+    final message = Uri.encodeComponent(
+      l10n.operatorCredentialsWhatsappMessage(
+        credentials.email,
+        credentials.password,
+      ),
+    );
+    final uri = Uri.parse('https://wa.me/$digits?text=$message');
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!launched && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.operatorWhatsappOpenFailed)),
+      );
+    }
+  }
+
   String _genderLabel(AppLocalizations l10n, String? gender) {
     return switch (gender) {
       'male' => l10n.pilgrimGenderMale,
@@ -374,6 +469,12 @@ class _OperatorPilgrimListScreenState
               onRowTap: _openPilgrim,
               trailingBuilder: (context, item) => StaffTableRowActions(
                 children: [
+                  if (_canSendCredentials(item))
+                    StaffTableRowActions.iconButton(
+                      icon: Icons.chat_outlined,
+                      tooltip: l10n.operatorSendCredentialsWhatsapp,
+                      onPressed: () => unawaited(_sendCredentials(l10n, item)),
+                    ),
                   StaffTableRowActions.iconButton(
                     icon: Icons.edit_outlined,
                     onPressed: () => _openPilgrim(item),
@@ -577,6 +678,60 @@ class _OperatorPilgrimListScreenState
           style: Theme.of(context).textTheme.bodyMedium,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      StaffTableColumn(
+        id: 'cluster',
+        label: l10n.pilgrimLabelCluster,
+        flex: 2,
+        sortable: true,
+        cellBuilder: (context, item) => Text(
+          item.cluster ?? '—',
+          style: Theme.of(context).textTheme.bodyMedium,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      StaffTableColumn(
+        id: 'sticker',
+        label: l10n.pilgrimLabelSticker,
+        flex: 2,
+        sortable: true,
+        cellBuilder: (context, item) => Text(
+          item.stickerNumber ?? '—',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      ),
+      StaffTableColumn(
+        id: 'makkah_hotel',
+        label: l10n.pilgrimLabelMakkahHotel,
+        flex: 2,
+        sortable: true,
+        cellBuilder: (context, item) => Text(
+          item.makkahHotel ?? '—',
+          style: Theme.of(context).textTheme.bodyMedium,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      StaffTableColumn(
+        id: 'phone',
+        label: l10n.pilgrimLabelPhone,
+        flex: 2,
+        sortable: true,
+        cellBuilder: (context, item) => Text(
+          item.phoneNumber ?? '—',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      ),
+      StaffTableColumn(
+        id: 'whatsapp',
+        label: l10n.pilgrimLabelWhatsapp,
+        flex: 2,
+        sortable: true,
+        cellBuilder: (context, item) => Text(
+          item.whatsappNumber ?? '—',
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
       ),
     ];

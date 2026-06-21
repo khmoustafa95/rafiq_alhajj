@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PilgrimIntakeForm {
 
- String get fullName; String get email; String? get passportNumber; String? get travelPermitNumber; String? get medicalTestStatus; DateTime? get travelDate; String? get hotelName; String? get hotelLocationUrl; String? get transportationDetails;
+ String get fullName; String get email; String? get tripId; String? get groupId; Map<String, dynamic> get person; Map<String, dynamic> get enrollment;
 /// Create a copy of PilgrimIntakeForm
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $PilgrimIntakeFormCopyWith<PilgrimIntakeForm> get copyWith => _$PilgrimIntakeFor
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PilgrimIntakeForm&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.email, email) || other.email == email)&&(identical(other.passportNumber, passportNumber) || other.passportNumber == passportNumber)&&(identical(other.travelPermitNumber, travelPermitNumber) || other.travelPermitNumber == travelPermitNumber)&&(identical(other.medicalTestStatus, medicalTestStatus) || other.medicalTestStatus == medicalTestStatus)&&(identical(other.travelDate, travelDate) || other.travelDate == travelDate)&&(identical(other.hotelName, hotelName) || other.hotelName == hotelName)&&(identical(other.hotelLocationUrl, hotelLocationUrl) || other.hotelLocationUrl == hotelLocationUrl)&&(identical(other.transportationDetails, transportationDetails) || other.transportationDetails == transportationDetails));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PilgrimIntakeForm&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.email, email) || other.email == email)&&(identical(other.tripId, tripId) || other.tripId == tripId)&&(identical(other.groupId, groupId) || other.groupId == groupId)&&const DeepCollectionEquality().equals(other.person, person)&&const DeepCollectionEquality().equals(other.enrollment, enrollment));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,fullName,email,passportNumber,travelPermitNumber,medicalTestStatus,travelDate,hotelName,hotelLocationUrl,transportationDetails);
+int get hashCode => Object.hash(runtimeType,fullName,email,tripId,groupId,const DeepCollectionEquality().hash(person),const DeepCollectionEquality().hash(enrollment));
 
 @override
 String toString() {
-  return 'PilgrimIntakeForm(fullName: $fullName, email: $email, passportNumber: $passportNumber, travelPermitNumber: $travelPermitNumber, medicalTestStatus: $medicalTestStatus, travelDate: $travelDate, hotelName: $hotelName, hotelLocationUrl: $hotelLocationUrl, transportationDetails: $transportationDetails)';
+  return 'PilgrimIntakeForm(fullName: $fullName, email: $email, tripId: $tripId, groupId: $groupId, person: $person, enrollment: $enrollment)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $PilgrimIntakeFormCopyWith<$Res>  {
   factory $PilgrimIntakeFormCopyWith(PilgrimIntakeForm value, $Res Function(PilgrimIntakeForm) _then) = _$PilgrimIntakeFormCopyWithImpl;
 @useResult
 $Res call({
- String fullName, String email, String? passportNumber, String? travelPermitNumber, String? medicalTestStatus, DateTime? travelDate, String? hotelName, String? hotelLocationUrl, String? transportationDetails
+ String fullName, String email, String? tripId, String? groupId, Map<String, dynamic> person, Map<String, dynamic> enrollment
 });
 
 
@@ -62,18 +62,15 @@ class _$PilgrimIntakeFormCopyWithImpl<$Res>
 
 /// Create a copy of PilgrimIntakeForm
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? fullName = null,Object? email = null,Object? passportNumber = freezed,Object? travelPermitNumber = freezed,Object? medicalTestStatus = freezed,Object? travelDate = freezed,Object? hotelName = freezed,Object? hotelLocationUrl = freezed,Object? transportationDetails = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? fullName = null,Object? email = null,Object? tripId = freezed,Object? groupId = freezed,Object? person = null,Object? enrollment = null,}) {
   return _then(_self.copyWith(
 fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,passportNumber: freezed == passportNumber ? _self.passportNumber : passportNumber // ignore: cast_nullable_to_non_nullable
-as String?,travelPermitNumber: freezed == travelPermitNumber ? _self.travelPermitNumber : travelPermitNumber // ignore: cast_nullable_to_non_nullable
-as String?,medicalTestStatus: freezed == medicalTestStatus ? _self.medicalTestStatus : medicalTestStatus // ignore: cast_nullable_to_non_nullable
-as String?,travelDate: freezed == travelDate ? _self.travelDate : travelDate // ignore: cast_nullable_to_non_nullable
-as DateTime?,hotelName: freezed == hotelName ? _self.hotelName : hotelName // ignore: cast_nullable_to_non_nullable
-as String?,hotelLocationUrl: freezed == hotelLocationUrl ? _self.hotelLocationUrl : hotelLocationUrl // ignore: cast_nullable_to_non_nullable
-as String?,transportationDetails: freezed == transportationDetails ? _self.transportationDetails : transportationDetails // ignore: cast_nullable_to_non_nullable
-as String?,
+as String,tripId: freezed == tripId ? _self.tripId : tripId // ignore: cast_nullable_to_non_nullable
+as String?,groupId: freezed == groupId ? _self.groupId : groupId // ignore: cast_nullable_to_non_nullable
+as String?,person: null == person ? _self.person : person // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>,enrollment: null == enrollment ? _self.enrollment : enrollment // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>,
   ));
 }
 
@@ -158,10 +155,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String fullName,  String email,  String? passportNumber,  String? travelPermitNumber,  String? medicalTestStatus,  DateTime? travelDate,  String? hotelName,  String? hotelLocationUrl,  String? transportationDetails)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String fullName,  String email,  String? tripId,  String? groupId,  Map<String, dynamic> person,  Map<String, dynamic> enrollment)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PilgrimIntakeForm() when $default != null:
-return $default(_that.fullName,_that.email,_that.passportNumber,_that.travelPermitNumber,_that.medicalTestStatus,_that.travelDate,_that.hotelName,_that.hotelLocationUrl,_that.transportationDetails);case _:
+return $default(_that.fullName,_that.email,_that.tripId,_that.groupId,_that.person,_that.enrollment);case _:
   return orElse();
 
 }
@@ -179,10 +176,10 @@ return $default(_that.fullName,_that.email,_that.passportNumber,_that.travelPerm
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String fullName,  String email,  String? passportNumber,  String? travelPermitNumber,  String? medicalTestStatus,  DateTime? travelDate,  String? hotelName,  String? hotelLocationUrl,  String? transportationDetails)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String fullName,  String email,  String? tripId,  String? groupId,  Map<String, dynamic> person,  Map<String, dynamic> enrollment)  $default,) {final _that = this;
 switch (_that) {
 case _PilgrimIntakeForm():
-return $default(_that.fullName,_that.email,_that.passportNumber,_that.travelPermitNumber,_that.medicalTestStatus,_that.travelDate,_that.hotelName,_that.hotelLocationUrl,_that.transportationDetails);case _:
+return $default(_that.fullName,_that.email,_that.tripId,_that.groupId,_that.person,_that.enrollment);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +196,10 @@ return $default(_that.fullName,_that.email,_that.passportNumber,_that.travelPerm
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String fullName,  String email,  String? passportNumber,  String? travelPermitNumber,  String? medicalTestStatus,  DateTime? travelDate,  String? hotelName,  String? hotelLocationUrl,  String? transportationDetails)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String fullName,  String email,  String? tripId,  String? groupId,  Map<String, dynamic> person,  Map<String, dynamic> enrollment)?  $default,) {final _that = this;
 switch (_that) {
 case _PilgrimIntakeForm() when $default != null:
-return $default(_that.fullName,_that.email,_that.passportNumber,_that.travelPermitNumber,_that.medicalTestStatus,_that.travelDate,_that.hotelName,_that.hotelLocationUrl,_that.transportationDetails);case _:
+return $default(_that.fullName,_that.email,_that.tripId,_that.groupId,_that.person,_that.enrollment);case _:
   return null;
 
 }
@@ -214,18 +211,27 @@ return $default(_that.fullName,_that.email,_that.passportNumber,_that.travelPerm
 
 
 class _PilgrimIntakeForm implements PilgrimIntakeForm {
-  const _PilgrimIntakeForm({required this.fullName, required this.email, this.passportNumber, this.travelPermitNumber, this.medicalTestStatus, this.travelDate, this.hotelName, this.hotelLocationUrl, this.transportationDetails});
+  const _PilgrimIntakeForm({required this.fullName, required this.email, this.tripId, this.groupId, final  Map<String, dynamic> person = const <String, dynamic>{}, final  Map<String, dynamic> enrollment = const <String, dynamic>{}}): _person = person,_enrollment = enrollment;
   
 
 @override final  String fullName;
 @override final  String email;
-@override final  String? passportNumber;
-@override final  String? travelPermitNumber;
-@override final  String? medicalTestStatus;
-@override final  DateTime? travelDate;
-@override final  String? hotelName;
-@override final  String? hotelLocationUrl;
-@override final  String? transportationDetails;
+@override final  String? tripId;
+@override final  String? groupId;
+ final  Map<String, dynamic> _person;
+@override@JsonKey() Map<String, dynamic> get person {
+  if (_person is EqualUnmodifiableMapView) return _person;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(_person);
+}
+
+ final  Map<String, dynamic> _enrollment;
+@override@JsonKey() Map<String, dynamic> get enrollment {
+  if (_enrollment is EqualUnmodifiableMapView) return _enrollment;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(_enrollment);
+}
+
 
 /// Create a copy of PilgrimIntakeForm
 /// with the given fields replaced by the non-null parameter values.
@@ -237,16 +243,16 @@ _$PilgrimIntakeFormCopyWith<_PilgrimIntakeForm> get copyWith => __$PilgrimIntake
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PilgrimIntakeForm&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.email, email) || other.email == email)&&(identical(other.passportNumber, passportNumber) || other.passportNumber == passportNumber)&&(identical(other.travelPermitNumber, travelPermitNumber) || other.travelPermitNumber == travelPermitNumber)&&(identical(other.medicalTestStatus, medicalTestStatus) || other.medicalTestStatus == medicalTestStatus)&&(identical(other.travelDate, travelDate) || other.travelDate == travelDate)&&(identical(other.hotelName, hotelName) || other.hotelName == hotelName)&&(identical(other.hotelLocationUrl, hotelLocationUrl) || other.hotelLocationUrl == hotelLocationUrl)&&(identical(other.transportationDetails, transportationDetails) || other.transportationDetails == transportationDetails));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PilgrimIntakeForm&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.email, email) || other.email == email)&&(identical(other.tripId, tripId) || other.tripId == tripId)&&(identical(other.groupId, groupId) || other.groupId == groupId)&&const DeepCollectionEquality().equals(other._person, _person)&&const DeepCollectionEquality().equals(other._enrollment, _enrollment));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,fullName,email,passportNumber,travelPermitNumber,medicalTestStatus,travelDate,hotelName,hotelLocationUrl,transportationDetails);
+int get hashCode => Object.hash(runtimeType,fullName,email,tripId,groupId,const DeepCollectionEquality().hash(_person),const DeepCollectionEquality().hash(_enrollment));
 
 @override
 String toString() {
-  return 'PilgrimIntakeForm(fullName: $fullName, email: $email, passportNumber: $passportNumber, travelPermitNumber: $travelPermitNumber, medicalTestStatus: $medicalTestStatus, travelDate: $travelDate, hotelName: $hotelName, hotelLocationUrl: $hotelLocationUrl, transportationDetails: $transportationDetails)';
+  return 'PilgrimIntakeForm(fullName: $fullName, email: $email, tripId: $tripId, groupId: $groupId, person: $person, enrollment: $enrollment)';
 }
 
 
@@ -257,7 +263,7 @@ abstract mixin class _$PilgrimIntakeFormCopyWith<$Res> implements $PilgrimIntake
   factory _$PilgrimIntakeFormCopyWith(_PilgrimIntakeForm value, $Res Function(_PilgrimIntakeForm) _then) = __$PilgrimIntakeFormCopyWithImpl;
 @override @useResult
 $Res call({
- String fullName, String email, String? passportNumber, String? travelPermitNumber, String? medicalTestStatus, DateTime? travelDate, String? hotelName, String? hotelLocationUrl, String? transportationDetails
+ String fullName, String email, String? tripId, String? groupId, Map<String, dynamic> person, Map<String, dynamic> enrollment
 });
 
 
@@ -274,18 +280,15 @@ class __$PilgrimIntakeFormCopyWithImpl<$Res>
 
 /// Create a copy of PilgrimIntakeForm
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? fullName = null,Object? email = null,Object? passportNumber = freezed,Object? travelPermitNumber = freezed,Object? medicalTestStatus = freezed,Object? travelDate = freezed,Object? hotelName = freezed,Object? hotelLocationUrl = freezed,Object? transportationDetails = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? fullName = null,Object? email = null,Object? tripId = freezed,Object? groupId = freezed,Object? person = null,Object? enrollment = null,}) {
   return _then(_PilgrimIntakeForm(
 fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,passportNumber: freezed == passportNumber ? _self.passportNumber : passportNumber // ignore: cast_nullable_to_non_nullable
-as String?,travelPermitNumber: freezed == travelPermitNumber ? _self.travelPermitNumber : travelPermitNumber // ignore: cast_nullable_to_non_nullable
-as String?,medicalTestStatus: freezed == medicalTestStatus ? _self.medicalTestStatus : medicalTestStatus // ignore: cast_nullable_to_non_nullable
-as String?,travelDate: freezed == travelDate ? _self.travelDate : travelDate // ignore: cast_nullable_to_non_nullable
-as DateTime?,hotelName: freezed == hotelName ? _self.hotelName : hotelName // ignore: cast_nullable_to_non_nullable
-as String?,hotelLocationUrl: freezed == hotelLocationUrl ? _self.hotelLocationUrl : hotelLocationUrl // ignore: cast_nullable_to_non_nullable
-as String?,transportationDetails: freezed == transportationDetails ? _self.transportationDetails : transportationDetails // ignore: cast_nullable_to_non_nullable
-as String?,
+as String,tripId: freezed == tripId ? _self.tripId : tripId // ignore: cast_nullable_to_non_nullable
+as String?,groupId: freezed == groupId ? _self.groupId : groupId // ignore: cast_nullable_to_non_nullable
+as String?,person: null == person ? _self._person : person // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>,enrollment: null == enrollment ? _self._enrollment : enrollment // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>,
   ));
 }
 

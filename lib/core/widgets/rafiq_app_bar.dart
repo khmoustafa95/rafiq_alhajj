@@ -46,7 +46,7 @@ class RafiqAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: elevation,
       actions: [
         ...?actions,
-        const LanguageSwitcherAppBarAction(),
+        const LanguageSwitcherAppBarAction(compact: true),
       ],
     );
   }

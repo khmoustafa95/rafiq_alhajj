@@ -11,8 +11,14 @@ import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/controllers/sign_out_controller.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_bell_button.dart';
 import 'package:rafiq_alhajj/features/operator_intake/application/utils/credential_generator.dart';
+import 'package:rafiq_alhajj/features/operator_intake/data/repositories/operator_registry_repository.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/pilgrim_intake_form.dart';
+import 'package:rafiq_alhajj/features/operator_intake/presentation/forms/pilgrim_field_catalog.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/operator_intake_providers.dart';
+import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/operator_registry_providers.dart';
+import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/pilgrim_shared_defaults_provider.dart';
+import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/pilgrim_fields_form.dart';
+import 'package:rafiq_alhajj/features/trips/presentation/widgets/trip_selector.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -26,25 +32,20 @@ class OperatorIntakeScreen extends ConsumerStatefulWidget {
 
 class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
   late final FormGroup _form;
-  DateTime? _travelDate;
   String? _generatedPassword;
+  bool _defaultsApplied = false;
 
   @override
   void initState() {
     super.initState();
-    _form = FormGroup({
-      'fullName': FormControl<String>(value: '', validators: [Validators.required]),
-      'email': FormControl<String>(
-        value: '',
-        validators: [Validators.delegate(_validateEmail)],
-      ),
-      'passport': FormControl<String>(value: ''),
-      'permit': FormControl<String>(value: ''),
-      'medical': FormControl<String>(value: ''),
-      'hotel': FormControl<String>(value: ''),
-      'hotelUrl': FormControl<String>(value: ''),
-      'transport': FormControl<String>(value: ''),
-    });
+    _form = PilgrimFormCatalog.buildFormGroup()
+      ..addAll({
+        'email': FormControl<String>(
+          value: '',
+          validators: [Validators.delegate(_validateEmail)],
+        ),
+        'groupId': FormControl<String?>(),
+      });
   }
 
   Map<String, dynamic>? _validateEmail(AbstractControl<dynamic> control) {
@@ -72,18 +73,6 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
     setState(() {});
   }
 
-  Future<void> _pickTravelDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      firstDate: DateTime(2024),
-      lastDate: DateTime(2030),
-      initialDate: _travelDate ?? DateTime.now(),
-    );
-    if (picked != null) {
-      setState(() => _travelDate = picked);
-    }
-  }
-
   Future<void> _submit() async {
     if (!_form.valid) {
       _form.markAllAsTouched();
@@ -91,18 +80,22 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
     }
 
     final l10n = AppLocalizations.of(context);
+    final person = PilgrimFormCatalog.payload(_form, PilgrimFieldTable.person);
+    final enrollment =
+        PilgrimFormCatalog.payload(_form, PilgrimFieldTable.enrollment);
+
     final form = PilgrimIntakeForm(
-      fullName: _form.control('fullName').value as String,
+      fullName: (person['full_name_ar'] as String?) ?? '',
       email: _form.control('email').value as String,
-      passportNumber: _emptyToNull(_form.control('passport').value as String? ?? ''),
-      travelPermitNumber: _emptyToNull(_form.control('permit').value as String? ?? ''),
-      medicalTestStatus: _emptyToNull(_form.control('medical').value as String? ?? ''),
-      travelDate: _travelDate,
-      hotelName: _emptyToNull(_form.control('hotel').value as String? ?? ''),
-      hotelLocationUrl: _emptyToNull(_form.control('hotelUrl').value as String? ?? ''),
-      transportationDetails:
-          _emptyToNull(_form.control('transport').value as String? ?? ''),
+      groupId: _form.control('groupId').value as String?,
+      person: person,
+      enrollment: enrollment,
     );
+
+    // Persist shared logistics so the next pilgrim is pre-filled.
+    await ref
+        .read(pilgrimSharedDefaultsProvider.notifier)
+        .setAll(PilgrimFormCatalog.sharedValues(_form));
 
     final created =
         await ref.read(operatorIntakeControllerProvider.notifier).submit(form);
@@ -112,6 +105,13 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
     }
 
     if (created != null) {
+      final uploadError =
+          ref.read(operatorIntakeControllerProvider.notifier).lastUploadError;
+      if (uploadError != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.operatorDocumentsUploadFailed)),
+        );
+      }
       _showCredentialsDialog(created.email, created.password);
       _clearForm();
     } else if (ref.read(operatorIntakeControllerProvider).hasError) {
@@ -122,17 +122,22 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
     }
   }
 
-  String? _emptyToNull(String value) {
-    final trimmed = value.trim();
-    return trimmed.isEmpty ? null : trimmed;
-  }
-
   void _clearForm() {
+    // Reset everything, then re-apply persisted shared defaults so logistics
+    // common to a batch (hotel, flights, mashaer…) are not retyped.
+    final defaults = ref.read(pilgrimSharedDefaultsProvider);
     _form.reset();
+    PilgrimFormCatalog.applyShared(_form, defaults);
     setState(() {
-      _travelDate = null;
       _generatedPassword = null;
     });
+  }
+
+  Future<void> _clearSharedDefaults() async {
+    await ref.read(pilgrimSharedDefaultsProvider.notifier).clear();
+    for (final key in PilgrimFormCatalog.sharedKeys) {
+      _form.control(key).reset();
+    }
   }
 
   void _showCredentialsDialog(String email, String password) {
@@ -171,6 +176,16 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
     );
     final controller = ref.read(operatorIntakeControllerProvider.notifier);
     final pickedCount = controller.pickedFiles.length;
+    final groupsAsync = ref.watch(pilgrimGroupFilterOptionsProvider);
+    final groups = groupsAsync.value ?? const <PilgrimGroupOption>[];
+
+    // Apply persisted shared defaults once they have loaded.
+    ref.listen(pilgrimSharedDefaultsProvider, (previous, next) {
+      if (!_defaultsApplied && next.isNotEmpty) {
+        PilgrimFormCatalog.applyShared(_form, next);
+        _defaultsApplied = true;
+      }
+    });
 
     final formContent = ReactiveForm(
       formGroup: _form,
@@ -178,23 +193,17 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           StaffFormSection(
-            icon: Icons.person_outline,
-            title: l10n.operatorSectionPersonalInfo,
-            subtitle: l10n.operatorSectionPersonalInfoHint,
-            child: ResponsiveFormGrid(
-              children: [
-                ReactiveTextField<String>(
-                  formControlName: 'fullName',
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: l10n.operatorFullName,
-                    prefixIcon: const Icon(Icons.badge_outlined),
-                  ),
-                  validationMessages: {
-                    ValidationMessage.required: (_) => l10n.operatorRequired,
-                  },
-                ),
-              ],
+            icon: Icons.bookmarks_outlined,
+            title: l10n.operatorSharedDefaultsTitle,
+            subtitle: l10n.operatorSharedDefaultsHint,
+            trailing: OutlinedButton.icon(
+              onPressed: isSubmitting ? null : _clearSharedDefaults,
+              icon: const Icon(Icons.layers_clear_outlined, size: 18),
+              label: Text(l10n.operatorClearSharedDefaults),
+            ),
+            child: const Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TripSelector(),
             ),
           ),
           SizedBox(height: 16.h),
@@ -225,6 +234,24 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
                         'emailInvalid': (_) => l10n.loginEmailInvalid,
                       },
                     ),
+                    ReactiveDropdownField<String?>(
+                      formControlName: 'groupId',
+                      decoration: InputDecoration(
+                        labelText: l10n.staffTableFilterGroup,
+                        prefixIcon: const Icon(Icons.groups_outlined),
+                      ),
+                      items: [
+                        DropdownMenuItem(
+                          child: Text(l10n.staffTableFilterAll),
+                        ),
+                        ...groups.map(
+                          (group) => DropdownMenuItem(
+                            value: group.id,
+                            child: Text(group.name),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
                 if (_generatedPassword != null) ...[
@@ -240,11 +267,13 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.info_outline, color: AppColors.success, size: 18),
+                        const Icon(Icons.info_outline,
+                            color: AppColors.success, size: 18),
                         SizedBox(width: 8.w),
                         Expanded(
                           child: Text(
-                            l10n.operatorGeneratedPasswordPreview(_generatedPassword!),
+                            l10n.operatorGeneratedPasswordPreview(
+                                _generatedPassword!),
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                         ),
@@ -271,72 +300,7 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
             ),
           ),
           SizedBox(height: 16.h),
-          StaffFormSection(
-            icon: Icons.flight_takeoff_outlined,
-            title: l10n.pilgrimLogisticsTitle,
-            subtitle: l10n.operatorSectionLogisticsHint,
-            child: ResponsiveFormGrid(
-              maxColumns: 3,
-              children: [
-                ReactiveTextField<String>(
-                  formControlName: 'passport',
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: l10n.operatorPassport,
-                    prefixIcon: const Icon(Icons.credit_card_outlined),
-                  ),
-                ),
-                ReactiveTextField<String>(
-                  formControlName: 'permit',
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: l10n.operatorTravelPermit,
-                    prefixIcon: const Icon(Icons.assignment_outlined),
-                  ),
-                ),
-                ReactiveTextField<String>(
-                  formControlName: 'medical',
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: l10n.pilgrimMedicalStatus,
-                    prefixIcon: const Icon(Icons.medical_services_outlined),
-                  ),
-                ),
-                StaffDateFormField(
-                  label: l10n.pilgrimTravelDate,
-                  value: _travelDate,
-                  unsetLabel: l10n.operatorPickDate,
-                  onPick: _pickTravelDate,
-                  enabled: !isSubmitting,
-                ),
-                ReactiveTextField<String>(
-                  formControlName: 'hotel',
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: l10n.pilgrimHotel,
-                    prefixIcon: const Icon(Icons.hotel_outlined),
-                  ),
-                ),
-                ReactiveTextField<String>(
-                  formControlName: 'hotelUrl',
-                  keyboardType: TextInputType.url,
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: l10n.operatorHotelMapUrl,
-                    prefixIcon: const Icon(Icons.map_outlined),
-                  ),
-                ),
-                ReactiveTextField<String>(
-                  formControlName: 'transport',
-                  textInputAction: TextInputAction.done,
-                  decoration: InputDecoration(
-                    labelText: l10n.pilgrimTransport,
-                    prefixIcon: const Icon(Icons.directions_bus_outlined),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          PilgrimFieldsForm(enabled: !isSubmitting),
           if (!AppPlatform.isWeb) ...[
             SizedBox(height: 24.h),
             Align(

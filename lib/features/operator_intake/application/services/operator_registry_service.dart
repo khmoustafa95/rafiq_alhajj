@@ -3,6 +3,7 @@ import 'package:rafiq_alhajj/features/operator_intake/data/repositories/operator
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_record.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_summary.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_update.dart';
+import 'package:rafiq_alhajj/features/operator_intake/domain/models/pilgrim_credentials.dart';
 
 class OperatorRegistryService {
   const OperatorRegistryService(this._repository);
@@ -41,6 +42,9 @@ class OperatorRegistryService {
         tripId: tripId,
         enrollmentId: enrollmentId,
       );
+
+  Future<PilgrimCredentials> resetPilgrimPassword(String profileId) =>
+      _repository.resetPilgrimPassword(profileId);
 
   Future<void> bulkAssignGroup({
     required List<String> pilgrimIds,

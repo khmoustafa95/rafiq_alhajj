@@ -14,12 +14,6 @@ class OperatorRegistryRemoteDataSource {
 
   final SupabaseClient _client;
 
-  static const viewSelect =
-      'pilgrim_id, profile_id, enrollment_id, full_name, passport_number, '
-      'travel_permit_number, medical_test_status, travel_date, hotel_name, '
-      'hotel_location_url, transportation_details, gender, group_id, '
-      'group_name, trip_id, trip_type';
-
   Future<List<Map<String, dynamic>>> fetchGroupOptions() async {
     final rows = await _client.from('groups').select('id, name').order('name');
     return _asMaps(rows);
@@ -29,7 +23,9 @@ class OperatorRegistryRemoteDataSource {
     StaffTableQuery query, {
     String? tripId,
   }) async {
-    var request = _client.from('pilgrim_enrollment_view').select(viewSelect);
+    // The view is a flat projection of person + enrollment + trip + group, so
+    // the default select('*') exposes every catalog field.
+    var request = _client.from('pilgrim_enrollment_view').select();
 
     if (tripId != null && tripId.isNotEmpty) {
       request = request.eq('trip_id', tripId);
@@ -68,7 +64,7 @@ class OperatorRegistryRemoteDataSource {
   }) async {
     var request = _client
         .from('pilgrim_enrollment_view')
-        .select(viewSelect)
+        .select()
         .eq('pilgrim_id', pilgrimId);
     if (tripId != null && tripId.isNotEmpty) {
       request = request.eq('trip_id', tripId);
@@ -101,6 +97,13 @@ class OperatorRegistryRemoteDataSource {
       update = update.eq('trip_id', tripId);
     }
     await update;
+  }
+
+  Future<FunctionResponse> resetPilgrimPassword(String profileId) {
+    return _client.functions.invoke(
+      'reset-pilgrim-password',
+      body: {'profile_id': profileId},
+    );
   }
 
   Future<Map<String, dynamic>?> fetchPilgrimProfileId(String pilgrimId) async {
@@ -142,6 +145,12 @@ class OperatorRegistryRemoteDataSource {
       'travel_permit' => 'travel_permit_number',
       'medical_test' => 'medical_test_status',
       'hotel' => 'hotel_name',
+      'cluster' => 'cluster',
+      'sticker' => 'sticker_number',
+      'field_status' => 'field_status',
+      'phone' => 'phone_number',
+      'whatsapp' => 'whatsapp_number',
+      'makkah_hotel' => 'makkah_hotel',
       _ => 'full_name',
     };
   }

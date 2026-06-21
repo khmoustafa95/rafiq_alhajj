@@ -1,37 +1,17 @@
-/// Full pilgrim logistics for operator desk view/edit (US-09).
-///
-/// Keyed by [pilgrimId] (stable person identity); [enrollmentId] is the trip
-/// enrollment whose logistics are shown.
+/// Full pilgrim record for the operator/admin edit view, backed by a raw
+/// `pilgrim_enrollment_view` row so the shared field catalog can bind every
+/// column without an explicit field-by-field model.
 class OperatorPilgrimRecord {
-  const OperatorPilgrimRecord({
-    required this.pilgrimId,
-    required this.fullName,
-    this.profileId,
-    this.enrollmentId,
-    this.passportNumber,
-    this.travelPermitNumber,
-    this.medicalTestStatus,
-    this.travelDate,
-    this.hotelName,
-    this.hotelLocationUrl,
-    this.transportationDetails,
-    this.gender,
-    this.groupId,
-    this.groupName,
-  });
+  const OperatorPilgrimRecord(this.raw);
 
-  final String pilgrimId;
-  final String fullName;
-  final String? profileId;
-  final String? enrollmentId;
-  final String? passportNumber;
-  final String? travelPermitNumber;
-  final String? medicalTestStatus;
-  final DateTime? travelDate;
-  final String? hotelName;
-  final String? hotelLocationUrl;
-  final String? transportationDetails;
-  final String? gender;
-  final String? groupId;
-  final String? groupName;
+  final Map<String, dynamic> raw;
+
+  String get pilgrimId => raw['pilgrim_id'] as String;
+  String? get profileId => raw['profile_id'] as String?;
+  String? get enrollmentId => raw['enrollment_id'] as String?;
+  String get fullName => (raw['full_name'] as String?) ?? '';
+  String? get gender => raw['gender'] as String?;
+  String? get groupId => raw['group_id'] as String?;
+  String? get groupName => raw['group_name'] as String?;
+  String? get whatsappNumber => raw['whatsapp_number'] as String?;
 }

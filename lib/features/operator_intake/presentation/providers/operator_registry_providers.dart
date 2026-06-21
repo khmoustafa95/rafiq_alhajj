@@ -8,6 +8,7 @@ import 'package:rafiq_alhajj/features/operator_intake/data/repositories/operator
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_record.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_summary.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_update.dart';
+import 'package:rafiq_alhajj/features/operator_intake/domain/models/pilgrim_credentials.dart';
 import 'package:rafiq_alhajj/features/trips/presentation/providers/trips_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -90,6 +91,25 @@ class OperatorPilgrimDetail extends _$OperatorPilgrimDetail {
     } on OperatorRegistryException {
       return false;
     }
+  }
+}
+
+@riverpod
+class PilgrimPasswordReset extends _$PilgrimPasswordReset {
+  @override
+  FutureOr<void> build() {}
+
+  /// Resets the pilgrim's login password and returns the new credentials, or
+  /// null on failure.
+  Future<PilgrimCredentials?> reset(String profileId) async {
+    state = const AsyncLoading();
+    PilgrimCredentials? credentials;
+    state = await AsyncValue.guard(() async {
+      credentials = await ref
+          .read(operatorRegistryServiceProvider)
+          .resetPilgrimPassword(profileId);
+    });
+    return state.hasError ? null : credentials;
   }
 }
 

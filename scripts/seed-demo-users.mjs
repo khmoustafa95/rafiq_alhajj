@@ -2,7 +2,6 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
-import { seedFakePilgrimRegistry } from "./seed-fake-pilgrim-registry.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, "..");
@@ -88,6 +87,8 @@ async function updateUser(userId, user, headers) {
     method: "PUT",
     headers,
     body: JSON.stringify({
+      password: user.password,
+      email_confirm: true,
       user_metadata: user.metadata,
     }),
   });
@@ -175,9 +176,10 @@ for (const user of users) {
 }
 
 console.log("");
-console.log("Seeding fake pilgrim registry (12 pilgrims, all field statuses)...");
-await seedFakePilgrimRegistry(headers, baseUrl);
-
-console.log("");
 console.log("Demo password for all accounts: demo123456");
 console.log("Pilgrim logins: pilgrim@demo.local … pilgrim12@demo.local");
+console.log("Operator login: operator@demo.local");
+console.log("Admin login: admin@demo.local");
+console.log(
+  "Note: pilgrim/trip demo data is seeded by supabase/seed.sql (Arabic).",
+);
