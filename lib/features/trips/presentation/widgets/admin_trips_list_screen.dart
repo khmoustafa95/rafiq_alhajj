@@ -10,6 +10,7 @@ import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/features/trips/domain/models/trip.dart';
+import 'package:rafiq_alhajj/features/trips/domain/models/trip_editor_input.dart';
 import 'package:rafiq_alhajj/features/trips/presentation/providers/trips_providers.dart';
 import 'package:rafiq_alhajj/features/trips/presentation/widgets/trip_editor_dialog.dart';
 import 'package:rafiq_alhajj/features/trips/presentation/widgets/trip_labels.dart';
@@ -20,6 +21,34 @@ class AdminTripsListScreen extends ConsumerWidget {
 
   Future<void> _openEditor(BuildContext context, {Trip? trip}) async {
     await showTripEditorDialog(context, trip: trip);
+  }
+
+  Future<void> _toggleStatus(
+    BuildContext context,
+    WidgetRef ref,
+    Trip trip,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+    final newStatus = trip.status == 'active' ? 'completed' : 'active';
+    final ok = await ref.read(tripSaveProvider.notifier).save(
+          TripEditorInput(
+            id: trip.id,
+            type: trip.type,
+            seasonYear: trip.seasonYear,
+            name: trip.name,
+            status: newStatus,
+          ),
+        );
+    if (!context.mounted) {
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          ok ? l10n.adminTripStatusUpdated : l10n.adminTripSaveError,
+        ),
+      ),
+    );
   }
 
   void _openOffices(BuildContext context, String tripId) {
@@ -107,6 +136,8 @@ class AdminTripsListScreen extends ConsumerWidget {
               onEdit: () => _openEditor(context, trip: trip),
               onDelete: () => unawaited(_confirmDelete(context, ref, trip)),
               onOffices: () => _openOffices(context, trip.id),
+              onToggleStatus: () =>
+                  unawaited(_toggleStatus(context, ref, trip)),
             );
           },
         );
@@ -154,6 +185,7 @@ class _TripCard extends StatelessWidget {
     required this.onEdit,
     required this.onDelete,
     required this.onOffices,
+    required this.onToggleStatus,
   });
 
   final Trip trip;
@@ -161,6 +193,7 @@ class _TripCard extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
   final VoidCallback onOffices;
+  final VoidCallback onToggleStatus;
 
   @override
   Widget build(BuildContext context) {
@@ -187,6 +220,20 @@ class _TripCard extends StatelessWidget {
         trailing: Wrap(
           spacing: sw(4),
           children: [
+            IconButton(
+              tooltip: trip.status == 'active'
+                  ? l10n.adminTripMarkFinished
+                  : l10n.adminTripMarkActive,
+              icon: Icon(
+                trip.status == 'active'
+                    ? Icons.flag_circle_outlined
+                    : Icons.play_circle_outline,
+                color: trip.status == 'active'
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.outline,
+              ),
+              onPressed: onToggleStatus,
+            ),
             IconButton(
               tooltip: l10n.adminTripManageOffices,
               icon: const Icon(Icons.groups_2_outlined),

@@ -3,6 +3,7 @@
 > **Update this file after every completed task.**
 
 ## Changelog
+- **2026-06-21 — Trip filter + status:** added `TripSelector` to the operator/admin pilgrim list (web toolbar + mobile bar); list scoping defaults to the active trip via `ActiveTrip`. Trip status aligned to two admin-pickable states **active (نشطة) / finished (منتهية)** (`tripEditableStatuses`); editor defaults new trips to `active` and stays robust for legacy `planning`/`cancelled` rows; renamed `completed` label to منتهية/Finished. Added a one-tap status toggle (active⇄finished) on each admin trip card. `flutter analyze` clean.
 - **2026-06-21 — Admin pilgrim workflow overhaul:** compact login language control + smaller icons; removed `US-0x` codes from ARBs; full pilgrim field set exposed via a single `pilgrim_field_catalog` (intake + edit forms + table) with raw-backed models and server-side column allowlists in `create-pilgrim`; resilient creation (best-effort doc upload, partial-success warning); expanded table columns (cluster/sticker/makkah_hotel/phone/whatsapp); persisted "shared defaults" + `TripSelector` for fast entry; uploads moved to `pilgrim_intake_remote_data_source` with size/MIME guards; WhatsApp "send login info" row action backed by new operator/admin-gated `reset-pilgrim-password` edge fn; notifications audit (no fixes needed). `flutter analyze` clean. ⚠ Restart local edge runtime to serve `reset-pilgrim-password`.
 
 ## Status summary

@@ -2496,13 +2496,22 @@ class AppLocalizationsAr extends AppLocalizations {
   String get adminTripStatus => 'الحالة';
 
   @override
+  String get adminTripMarkActive => 'تفعيل الرحلة';
+
+  @override
+  String get adminTripMarkFinished => 'إنهاء الرحلة';
+
+  @override
+  String get adminTripStatusUpdated => 'تم تحديث حالة الرحلة';
+
+  @override
   String get adminTripStatusPlanning => 'قيد التخطيط';
 
   @override
   String get adminTripStatusActive => 'نشطة';
 
   @override
-  String get adminTripStatusCompleted => 'مكتملة';
+  String get adminTripStatusCompleted => 'منتهية';
 
   @override
   String get adminTripStatusCancelled => 'ملغاة';

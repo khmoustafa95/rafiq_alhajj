@@ -48,7 +48,7 @@ class _TripEditorDialogState extends ConsumerState<TripEditorDialog> {
           Validators.max(3000),
         ],
       ),
-      'status': FormControl<String>(value: trip?.status ?? 'planning'),
+      'status': FormControl<String>(value: trip?.status ?? 'active'),
     });
   }
 
@@ -152,7 +152,12 @@ class _TripEditorDialogState extends ConsumerState<TripEditorDialog> {
                 formControlName: 'status',
                 decoration: InputDecoration(labelText: l10n.adminTripStatus),
                 items: [
-                  for (final status in tripStatuses)
+                  // Active / finished plus the current value if it is a legacy
+                  // status, so editing an old trip never blanks the field.
+                  for (final status in {
+                    ...tripEditableStatuses,
+                    if (widget.trip != null) widget.trip!.status,
+                  })
                     DropdownMenuItem(
                       value: status,
                       child: Text(tripStatusLabel(l10n, status)),

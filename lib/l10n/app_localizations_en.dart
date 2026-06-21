@@ -2532,13 +2532,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminTripStatus => 'Status';
 
   @override
+  String get adminTripMarkActive => 'Set active';
+
+  @override
+  String get adminTripMarkFinished => 'Mark finished';
+
+  @override
+  String get adminTripStatusUpdated => 'Trip status updated';
+
+  @override
   String get adminTripStatusPlanning => 'Planning';
 
   @override
   String get adminTripStatusActive => 'Active';
 
   @override
-  String get adminTripStatusCompleted => 'Completed';
+  String get adminTripStatusCompleted => 'Finished';
 
   @override
   String get adminTripStatusCancelled => 'Cancelled';

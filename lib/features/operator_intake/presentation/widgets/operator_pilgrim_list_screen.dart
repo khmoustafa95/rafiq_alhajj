@@ -23,6 +23,7 @@ import 'package:rafiq_alhajj/features/operator_intake/data/repositories/operator
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_summary.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/operator_registry_providers.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/pilgrim_table_column_visibility_provider.dart';
+import 'package:rafiq_alhajj/features/trips/presentation/widgets/trip_selector.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -178,6 +179,7 @@ class _OperatorPilgrimListScreenState
     Set<String> hiddenColumnIds,
   ) {
     return [
+      const TripSelector(),
       OutlinedButton.icon(
         onPressed: () => unawaited(_openColumnPicker(l10n, hiddenColumnIds)),
         icon: const Icon(Icons.view_column_outlined),
@@ -524,7 +526,18 @@ class _OperatorPilgrimListScreenState
             ),
           ],
         ),
-        body: listBody,
+        body: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: sw(16), vertical: sh(8)),
+              child: const Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: TripSelector(),
+              ),
+            ),
+            Expanded(child: listBody),
+          ],
+        ),
       ),
     );
   }

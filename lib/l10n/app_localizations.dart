@@ -4687,6 +4687,24 @@ abstract class AppLocalizations {
   /// **'Status'**
   String get adminTripStatus;
 
+  /// No description provided for @adminTripMarkActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Set active'**
+  String get adminTripMarkActive;
+
+  /// No description provided for @adminTripMarkFinished.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark finished'**
+  String get adminTripMarkFinished;
+
+  /// No description provided for @adminTripStatusUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip status updated'**
+  String get adminTripStatusUpdated;
+
   /// No description provided for @adminTripStatusPlanning.
   ///
   /// In en, this message translates to:
@@ -4702,7 +4720,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminTripStatusCompleted.
   ///
   /// In en, this message translates to:
-  /// **'Completed'**
+  /// **'Finished'**
   String get adminTripStatusCompleted;
 
   /// No description provided for @adminTripStatusCancelled.
