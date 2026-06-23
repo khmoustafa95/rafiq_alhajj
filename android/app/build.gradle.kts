@@ -3,6 +3,8 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    // Google Services plugin (FCM): reads android/app/google-services.json.
+    id("com.google.gms.google-services")
 }
 
 import java.io.File
@@ -124,6 +126,5 @@ flutter {
     source = "../.."
 }
 
-// When adding FCM: place google-services.json here, then add to settings.gradle.kts:
-// id("com.google.gms.google-services") version "4.4.2" apply false
-// and uncomment: apply(plugin = "com.google.gms.google-services")
+// FCM is enabled: android/app/google-services.json is present and the
+// com.google.gms.google-services plugin is applied in the plugins {} block above.
