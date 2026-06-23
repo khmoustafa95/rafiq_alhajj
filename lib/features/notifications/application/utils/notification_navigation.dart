@@ -23,9 +23,20 @@ void navigateFromNotification(BuildContext context, InboxNotification notificati
       unawaited(context.push(AppRoutes.pilgrimDashboard));
     case 'competitions':
       unawaited(context.push(AppRoutes.competitions));
+    case 'sos':
+      context.go(resolveSosRoute(context));
     case 'home':
       context.go(AppRoutes.home);
     default:
       break;
   }
+}
+
+/// Picks the SOS monitor route that matches the current staff context.
+String resolveSosRoute(BuildContext context) {
+  final location =
+      GoRouter.of(context).routerDelegate.currentConfiguration.uri.path;
+  return location.startsWith('/operator/field')
+      ? AppRoutes.fieldOperatorSos
+      : AppRoutes.adminSos;
 }

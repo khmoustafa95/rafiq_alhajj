@@ -14,6 +14,8 @@ abstract final class AppRoutes {
   static const String contentNewsList = '/content/news';
   static const String contentDetail = '/content/:id';
   static const String tools = '/tools';
+  static const String supportContacts = '/support-contacts';
+  static const String sos = '/sos';
   static const String prayerTimes = '/tools/prayer-times';
   static const String qibla = '/tools/qibla';
   static const String quran = '/tools/quran';
@@ -64,8 +66,17 @@ abstract final class AppRoutes {
   static const String adminTrips = '/admin/trips';
   static const String adminTripOffices = '/admin/trips/:id/offices';
   static const String adminSettings = '/admin/settings';
+  static const String adminSupportContacts = '/admin/support-contacts';
+  static const String adminSupportContactNew = '/admin/support-contacts/new';
+  static const String adminSupportContactEdit =
+      '/admin/support-contacts/:id/edit';
+  static const String adminSos = '/admin/sos';
+  static const String fieldOperatorSos = '/operator/field/sos';
 
   static String adminContentEditPath(String id) => '/admin/content/$id/edit';
+
+  static String adminSupportContactEditPath(String id) =>
+      '/admin/support-contacts/$id/edit';
 
   static String adminOperatorEditPath(String id) => '/admin/operators/$id/edit';
 

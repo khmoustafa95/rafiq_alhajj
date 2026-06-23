@@ -138,7 +138,7 @@ final class UnreadNotificationCountProvider
 }
 
 String _$unreadNotificationCountHash() =>
-    r'a8f3dd0b77071e7305fcacb9cd933f20399cd267';
+    r'2e5557604ae116bb0dae88e88ccc7eb2ab272bc2';
 
 @ProviderFor(NotificationInbox)
 final notificationInboxProvider = NotificationInboxProvider._();

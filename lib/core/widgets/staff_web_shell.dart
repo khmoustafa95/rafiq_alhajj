@@ -168,6 +168,18 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
         isActive: location == AppRoutes.adminNotificationSend,
       ),
       _StaffNavItem(
+        icon: Icons.contact_phone_outlined,
+        label: l10n.staffNavContacts,
+        route: AppRoutes.adminSupportContacts,
+        isActive: location.startsWith(AppRoutes.adminSupportContacts),
+      ),
+      _StaffNavItem(
+        icon: Icons.sos_rounded,
+        label: l10n.staffNavSos,
+        route: AppRoutes.adminSos,
+        isActive: location.startsWith(AppRoutes.adminSos),
+      ),
+      _StaffNavItem(
         icon: Icons.settings_outlined,
         label: l10n.staffNavSettings,
         route: AppRoutes.adminSettings,
@@ -223,6 +235,12 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
     }
     if (location == AppRoutes.adminSettings) {
       return l10n.adminSettingsTitle;
+    }
+    if (location.startsWith(AppRoutes.adminSupportContacts)) {
+      return l10n.adminSupportContactsTitle;
+    }
+    if (location.startsWith(AppRoutes.adminSos)) {
+      return l10n.sosMonitorTitle;
     }
     return isAdmin ? l10n.staffPortalSubtitle : l10n.staffOperatorPortalSubtitle;
   }

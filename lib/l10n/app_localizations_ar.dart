@@ -2593,4 +2593,256 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get tripSelectorAll => 'كل الرحلات';
+
+  @override
+  String get staffNavContacts => 'أرقام التواصل';
+
+  @override
+  String get staffNavSos => 'نداءات الاستغاثة';
+
+  @override
+  String get servicesContactsSubtitle =>
+      'أرقام الطوارئ والخدمات — اتصل أو راسل عبر واتساب.';
+
+  @override
+  String get supportContactsTitle => 'المساعدة وأرقام التواصل';
+
+  @override
+  String get supportContactsSubtitle =>
+      'تواصل مع الجهة المناسبة بسرعة. اتصل أو راسل عبر واتساب.';
+
+  @override
+  String get supportContactsEmpty => 'لا توجد أرقام متاحة حالياً.';
+
+  @override
+  String get supportContactsError => 'تعذّر تحميل الأرقام. تحقّق من الاتصال.';
+
+  @override
+  String get supportContactsCall => 'اتصال';
+
+  @override
+  String get supportContactsWhatsapp => 'واتساب';
+
+  @override
+  String get supportContactsLaunchFailed => 'تعذّر فتح هذا الرقم.';
+
+  @override
+  String get adminSupportContactsTitle => 'أرقام التواصل';
+
+  @override
+  String get adminSupportContactsSubtitle =>
+      'أرقام الهاتف والواتساب التي تظهر للحجاج.';
+
+  @override
+  String get adminSupportContactsEmpty => 'لا توجد أرقام بعد. أضف أول رقم.';
+
+  @override
+  String get adminSupportContactAdd => 'إضافة رقم';
+
+  @override
+  String get adminSupportContactEditTitle => 'تعديل رقم';
+
+  @override
+  String get adminSupportContactNewTitle => 'رقم جديد';
+
+  @override
+  String get adminSupportContactDetailsSection => 'تفاصيل الرقم';
+
+  @override
+  String get adminSupportContactScopeSection => 'الظهور';
+
+  @override
+  String get adminSupportContactLabelAr => 'الاسم (عربي)';
+
+  @override
+  String get adminSupportContactLabelEn => 'الاسم (إنجليزي)';
+
+  @override
+  String get adminSupportContactLabelRequired => 'الاسمان مطلوبان';
+
+  @override
+  String get adminSupportContactDescriptionAr => 'الوصف (عربي)';
+
+  @override
+  String get adminSupportContactDescriptionEn => 'الوصف (إنجليزي)';
+
+  @override
+  String get adminSupportContactPhone => 'رقم الهاتف';
+
+  @override
+  String get adminSupportContactWhatsapp => 'رقم الواتساب';
+
+  @override
+  String get adminSupportContactScope => 'الجمهور';
+
+  @override
+  String get adminSupportContactScopeGlobal => 'الجميع';
+
+  @override
+  String get adminSupportContactScopeGroup => 'مجموعة محددة';
+
+  @override
+  String get adminSupportContactGroup => 'المجموعة';
+
+  @override
+  String get adminSupportContactGroupRequired => 'اختر مجموعة لهذا الرقم';
+
+  @override
+  String get adminSupportContactChannelRequired => 'أضف رقم هاتف أو واتساب';
+
+  @override
+  String get adminSupportContactSortOrder => 'ترتيب العرض';
+
+  @override
+  String get adminSupportContactActive => 'مُفعّل';
+
+  @override
+  String get adminSupportContactActiveHint =>
+      'الأرقام غير المفعّلة تُخفى عن الحجاج.';
+
+  @override
+  String get adminSupportContactActiveBadge => 'مُفعّل';
+
+  @override
+  String get adminSupportContactInactiveBadge => 'مخفي';
+
+  @override
+  String get adminSupportContactSaveSuccess => 'تم حفظ الرقم';
+
+  @override
+  String get adminSupportContactCreateSuccess => 'تمت إضافة الرقم';
+
+  @override
+  String get adminSupportContactSaveError => 'تعذّر حفظ الرقم. حاول مجدداً.';
+
+  @override
+  String get adminSupportContactDeleteTitle => 'حذف الرقم';
+
+  @override
+  String adminSupportContactDeleteMessage(String label) {
+    return 'حذف \"$label\"؟';
+  }
+
+  @override
+  String get adminSupportContactDeleteConfirm => 'حذف';
+
+  @override
+  String get adminSupportContactDeleteSuccess => 'تم حذف الرقم';
+
+  @override
+  String get adminSupportContactDeleteError => 'تعذّر حذف الرقم';
+
+  @override
+  String get sosTitle => 'استغاثة';
+
+  @override
+  String get fieldOperatorNavSos => 'استغاثة';
+
+  @override
+  String get sosHomeButton => 'أنا تائه';
+
+  @override
+  String get sosHomeSubtitle => 'أرسل موقعك إلى فريقك';
+
+  @override
+  String get sosIntro =>
+      'إذا تهت أو احتجت مساعدة عاجلة، أرسل نداء استغاثة. سيتم إشعار فريق مجموعتك والمشرفين بموقعك المباشر.';
+
+  @override
+  String get sosRaiseButton => 'إرسال نداء استغاثة';
+
+  @override
+  String get sosRaiseError => 'تعذّر إرسال النداء. حاول مجدداً.';
+
+  @override
+  String get sosLocationPermissionNeeded =>
+      'إذن الموقع مطلوب لمشاركة موقعك. تم إرسال النداء بدونه.';
+
+  @override
+  String get sosActiveTitle => 'المساعدة في الطريق';
+
+  @override
+  String get sosActiveBody =>
+      'تم إشعار فريقك والمشرفين. أبقِ هذه الشاشة مفتوحة لمشاركة موقعك المباشر.';
+
+  @override
+  String get sosSharingLocation => 'جارٍ مشاركة موقعك المباشر…';
+
+  @override
+  String sosLastUpdate(String time) {
+    return 'آخر تحديث: $time';
+  }
+
+  @override
+  String get sosLocationPending => 'جارٍ تحديد موقعك…';
+
+  @override
+  String get sosCancelButton => 'أنا بخير الآن';
+
+  @override
+  String get sosCancelConfirmTitle => 'إلغاء النداء؟';
+
+  @override
+  String get sosCancelConfirmMessage => 'سيُبلّغ فريقك بأنك بخير.';
+
+  @override
+  String get sosCancelConfirm => 'نعم، أنا بخير';
+
+  @override
+  String get sosCancelError => 'تعذّر إلغاء النداء. حاول مجدداً.';
+
+  @override
+  String get sosMonitorTitle => 'نداءات الاستغاثة';
+
+  @override
+  String get sosMonitorSubtitle =>
+      'الموقع المباشر للحجاج الذين طلبوا المساعدة.';
+
+  @override
+  String get sosMonitorEmpty => 'لا توجد نداءات استغاثة نشطة.';
+
+  @override
+  String sosMonitorActiveCount(int count) {
+    return '$count نشطة';
+  }
+
+  @override
+  String get sosMonitorError => 'تعذّر تحميل نداءات الاستغاثة.';
+
+  @override
+  String get sosUnknownPilgrim => 'حاج';
+
+  @override
+  String get sosNoGroup => 'بدون مجموعة';
+
+  @override
+  String get sosNoLocationYet => 'بانتظار الموقع…';
+
+  @override
+  String get sosOpenInMaps => 'فتح في الخرائط';
+
+  @override
+  String get sosResolveButton => 'إنهاء';
+
+  @override
+  String get sosResolveConfirmTitle => 'إنهاء هذا النداء؟';
+
+  @override
+  String sosResolveConfirmMessage(String name) {
+    return 'تعليم \"$name\" بأنه وُجد وبأمان.';
+  }
+
+  @override
+  String get sosResolveConfirm => 'إنهاء';
+
+  @override
+  String get sosResolvedSuccess => 'تم إنهاء النداء';
+
+  @override
+  String get sosResolveError => 'تعذّر إنهاء النداء.';
+
+  @override
+  String sosStartedAt(String time) {
+    return 'منذ $time';
+  }
 }

@@ -97,3 +97,25 @@ void realtimeSyncAdminGroups(Ref ref) {
         RealtimeInvalidationRegistry.fire(ref, RealtimeSyncKeys.adminGroups),
   );
 }
+
+@Riverpod(keepAlive: true)
+void realtimeSyncSupportContacts(Ref ref) {
+  watchSupabaseTables(
+    ref,
+    client: _realtimeClient(),
+    tables: RealtimeTables.supportContacts,
+    onEvent: () =>
+        RealtimeInvalidationRegistry.fire(ref, RealtimeSyncKeys.supportContacts),
+  );
+}
+
+@Riverpod(keepAlive: true)
+void realtimeSyncSosAlerts(Ref ref) {
+  watchSupabaseTables(
+    ref,
+    client: _realtimeClient(),
+    tables: RealtimeTables.sosAlerts,
+    onEvent: () =>
+        RealtimeInvalidationRegistry.fire(ref, RealtimeSyncKeys.sosAlerts),
+  );
+}

@@ -45,6 +45,15 @@ class ServicesHubScreen extends StatelessWidget {
                     subtitle: l10n.servicesCompetitionsSubtitle,
                     onTap: () => unawaited(context.push(AppRoutes.competitions)),
                   ),
+                  SizedBox(height: 12.h),
+                  _ServiceTile(
+                    icon: Icons.contact_phone_outlined,
+                    color: AppColors.info,
+                    title: l10n.supportContactsTitle,
+                    subtitle: l10n.servicesContactsSubtitle,
+                    onTap: () =>
+                        unawaited(context.push(AppRoutes.supportContacts)),
+                  ),
                 ],
               ),
             ),

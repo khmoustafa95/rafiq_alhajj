@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/routing/root_navigator_key.dart';
+import 'package:rafiq_alhajj/features/notifications/application/utils/notification_navigation.dart';
 
 /// Navigates from FCM [data] payload (`route`, `id`).
 void navigateFromPushData(Map<String, dynamic> data) {
@@ -27,6 +28,8 @@ void navigateFromPushData(Map<String, dynamic> data) {
       unawaited(context.push(AppRoutes.pilgrimDashboard));
     case 'competitions':
       unawaited(context.push(AppRoutes.competitions));
+    case 'sos':
+      context.go(resolveSosRoute(context));
     case 'home':
       context.go(AppRoutes.home);
     case 'notifications':

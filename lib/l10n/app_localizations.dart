@@ -4878,6 +4878,474 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All trips'**
   String get tripSelectorAll;
+
+  /// No description provided for @staffNavContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get staffNavContacts;
+
+  /// No description provided for @staffNavSos.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS alerts'**
+  String get staffNavSos;
+
+  /// No description provided for @servicesContactsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency and service numbers — call or message on WhatsApp.'**
+  String get servicesContactsSubtitle;
+
+  /// No description provided for @supportContactsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & contacts'**
+  String get supportContactsTitle;
+
+  /// No description provided for @supportContactsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reach the right team quickly. Call or message on WhatsApp.'**
+  String get supportContactsSubtitle;
+
+  /// No description provided for @supportContactsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No contacts are available right now.'**
+  String get supportContactsEmpty;
+
+  /// No description provided for @supportContactsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load contacts. Check your connection.'**
+  String get supportContactsError;
+
+  /// No description provided for @supportContactsCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get supportContactsCall;
+
+  /// No description provided for @supportContactsWhatsapp.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get supportContactsWhatsapp;
+
+  /// No description provided for @supportContactsLaunchFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open this contact.'**
+  String get supportContactsLaunchFailed;
+
+  /// No description provided for @adminSupportContactsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Support contacts'**
+  String get adminSupportContactsTitle;
+
+  /// No description provided for @adminSupportContactsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone and WhatsApp numbers shown to pilgrims.'**
+  String get adminSupportContactsSubtitle;
+
+  /// No description provided for @adminSupportContactsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No contacts yet. Add the first one.'**
+  String get adminSupportContactsEmpty;
+
+  /// No description provided for @adminSupportContactAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add contact'**
+  String get adminSupportContactAdd;
+
+  /// No description provided for @adminSupportContactEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit contact'**
+  String get adminSupportContactEditTitle;
+
+  /// No description provided for @adminSupportContactNewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New contact'**
+  String get adminSupportContactNewTitle;
+
+  /// No description provided for @adminSupportContactDetailsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact details'**
+  String get adminSupportContactDetailsSection;
+
+  /// No description provided for @adminSupportContactScopeSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Visibility'**
+  String get adminSupportContactScopeSection;
+
+  /// No description provided for @adminSupportContactLabelAr.
+  ///
+  /// In en, this message translates to:
+  /// **'Label (Arabic)'**
+  String get adminSupportContactLabelAr;
+
+  /// No description provided for @adminSupportContactLabelEn.
+  ///
+  /// In en, this message translates to:
+  /// **'Label (English)'**
+  String get adminSupportContactLabelEn;
+
+  /// No description provided for @adminSupportContactLabelRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Both labels are required'**
+  String get adminSupportContactLabelRequired;
+
+  /// No description provided for @adminSupportContactDescriptionAr.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (Arabic)'**
+  String get adminSupportContactDescriptionAr;
+
+  /// No description provided for @adminSupportContactDescriptionEn.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (English)'**
+  String get adminSupportContactDescriptionEn;
+
+  /// No description provided for @adminSupportContactPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get adminSupportContactPhone;
+
+  /// No description provided for @adminSupportContactWhatsapp.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp number'**
+  String get adminSupportContactWhatsapp;
+
+  /// No description provided for @adminSupportContactScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Audience'**
+  String get adminSupportContactScope;
+
+  /// No description provided for @adminSupportContactScopeGlobal.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone'**
+  String get adminSupportContactScopeGlobal;
+
+  /// No description provided for @adminSupportContactScopeGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Specific group'**
+  String get adminSupportContactScopeGroup;
+
+  /// No description provided for @adminSupportContactGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get adminSupportContactGroup;
+
+  /// No description provided for @adminSupportContactGroupRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a group for this contact'**
+  String get adminSupportContactGroupRequired;
+
+  /// No description provided for @adminSupportContactChannelRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a phone or WhatsApp number'**
+  String get adminSupportContactChannelRequired;
+
+  /// No description provided for @adminSupportContactSortOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort order'**
+  String get adminSupportContactSortOrder;
+
+  /// No description provided for @adminSupportContactActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get adminSupportContactActive;
+
+  /// No description provided for @adminSupportContactActiveHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive contacts are hidden from pilgrims.'**
+  String get adminSupportContactActiveHint;
+
+  /// No description provided for @adminSupportContactActiveBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get adminSupportContactActiveBadge;
+
+  /// No description provided for @adminSupportContactInactiveBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden'**
+  String get adminSupportContactInactiveBadge;
+
+  /// No description provided for @adminSupportContactSaveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact saved'**
+  String get adminSupportContactSaveSuccess;
+
+  /// No description provided for @adminSupportContactCreateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact added'**
+  String get adminSupportContactCreateSuccess;
+
+  /// No description provided for @adminSupportContactSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save contact. Try again.'**
+  String get adminSupportContactSaveError;
+
+  /// No description provided for @adminSupportContactDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete contact'**
+  String get adminSupportContactDeleteTitle;
+
+  /// No description provided for @adminSupportContactDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{label}\"?'**
+  String adminSupportContactDeleteMessage(String label);
+
+  /// No description provided for @adminSupportContactDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get adminSupportContactDeleteConfirm;
+
+  /// No description provided for @adminSupportContactDeleteSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact deleted'**
+  String get adminSupportContactDeleteSuccess;
+
+  /// No description provided for @adminSupportContactDeleteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete contact'**
+  String get adminSupportContactDeleteError;
+
+  /// No description provided for @sosTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency'**
+  String get sosTitle;
+
+  /// No description provided for @fieldOperatorNavSos.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS'**
+  String get fieldOperatorNavSos;
+
+  /// No description provided for @sosHomeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m lost'**
+  String get sosHomeButton;
+
+  /// No description provided for @sosHomeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send your location to your team'**
+  String get sosHomeSubtitle;
+
+  /// No description provided for @sosIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'If you are lost or need urgent help, send an alert. Your group team and supervisors will be notified with your live location.'**
+  String get sosIntro;
+
+  /// No description provided for @sosRaiseButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Send SOS'**
+  String get sosRaiseButton;
+
+  /// No description provided for @sosRaiseError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send the alert. Try again.'**
+  String get sosRaiseError;
+
+  /// No description provided for @sosLocationPermissionNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission is required to share your position. The alert was sent without it.'**
+  String get sosLocationPermissionNeeded;
+
+  /// No description provided for @sosActiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Help is on the way'**
+  String get sosActiveTitle;
+
+  /// No description provided for @sosActiveBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your team and supervisors have been notified. Keep this screen open to share your live location.'**
+  String get sosActiveBody;
+
+  /// No description provided for @sosSharingLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing your live location…'**
+  String get sosSharingLocation;
+
+  /// No description provided for @sosLastUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Last update: {time}'**
+  String sosLastUpdate(String time);
+
+  /// No description provided for @sosLocationPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting your location…'**
+  String get sosLocationPending;
+
+  /// No description provided for @sosCancelButton.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m safe now'**
+  String get sosCancelButton;
+
+  /// No description provided for @sosCancelConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel the alert?'**
+  String get sosCancelConfirmTitle;
+
+  /// No description provided for @sosCancelConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will tell your team that you are safe.'**
+  String get sosCancelConfirmMessage;
+
+  /// No description provided for @sosCancelConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, I\'m safe'**
+  String get sosCancelConfirm;
+
+  /// No description provided for @sosCancelError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not cancel the alert. Try again.'**
+  String get sosCancelError;
+
+  /// No description provided for @sosMonitorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS alerts'**
+  String get sosMonitorTitle;
+
+  /// No description provided for @sosMonitorSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Live location of pilgrims who asked for help.'**
+  String get sosMonitorSubtitle;
+
+  /// No description provided for @sosMonitorEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No active SOS alerts.'**
+  String get sosMonitorEmpty;
+
+  /// No description provided for @sosMonitorActiveCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} active'**
+  String sosMonitorActiveCount(int count);
+
+  /// No description provided for @sosMonitorError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load SOS alerts.'**
+  String get sosMonitorError;
+
+  /// No description provided for @sosUnknownPilgrim.
+  ///
+  /// In en, this message translates to:
+  /// **'Pilgrim'**
+  String get sosUnknownPilgrim;
+
+  /// No description provided for @sosNoGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'No group'**
+  String get sosNoGroup;
+
+  /// No description provided for @sosNoLocationYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for location…'**
+  String get sosNoLocationYet;
+
+  /// No description provided for @sosOpenInMaps.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in maps'**
+  String get sosOpenInMaps;
+
+  /// No description provided for @sosResolveButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve'**
+  String get sosResolveButton;
+
+  /// No description provided for @sosResolveConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve this alert?'**
+  String get sosResolveConfirmTitle;
+
+  /// No description provided for @sosResolveConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark \"{name}\" as found and safe.'**
+  String sosResolveConfirmMessage(String name);
+
+  /// No description provided for @sosResolveConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve'**
+  String get sosResolveConfirm;
+
+  /// No description provided for @sosResolvedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Alert resolved'**
+  String get sosResolvedSuccess;
+
+  /// No description provided for @sosResolveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not resolve the alert.'**
+  String get sosResolveError;
+
+  /// No description provided for @sosStartedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Since {time}'**
+  String sosStartedAt(String time);
 }
 
 class _AppLocalizationsDelegate

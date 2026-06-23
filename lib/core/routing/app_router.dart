@@ -54,6 +54,11 @@ import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/opera
 import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_pilgrim_list_screen.dart';
 import 'package:rafiq_alhajj/features/profile/presentation/widgets/profile_screen.dart';
 import 'package:rafiq_alhajj/features/services/presentation/widgets/services_hub_screen.dart';
+import 'package:rafiq_alhajj/features/sos/presentation/widgets/sos_monitor_screen.dart';
+import 'package:rafiq_alhajj/features/sos/presentation/widgets/sos_screen.dart';
+import 'package:rafiq_alhajj/features/support_contacts/presentation/widgets/admin_support_contact_edit_screen.dart';
+import 'package:rafiq_alhajj/features/support_contacts/presentation/widgets/admin_support_contacts_screen.dart';
+import 'package:rafiq_alhajj/features/support_contacts/presentation/widgets/support_contacts_screen.dart';
 import 'package:rafiq_alhajj/features/trips/presentation/widgets/admin_trip_offices_screen.dart';
 import 'package:rafiq_alhajj/features/trips/presentation/widgets/admin_trips_list_screen.dart';
 import 'package:rafiq_alhajj/features/virtual_tour/presentation/widgets/virtual_tour_screen.dart';
@@ -122,6 +127,15 @@ StatefulShellRoute _fieldOperatorShellRoute() {
             path: AppRoutes.fieldOperatorPilgrims,
             name: 'fieldOperatorPilgrims',
             builder: (context, state) => const FieldOperatorPilgrimsScreen(),
+          ),
+        ],
+      ),
+      StatefulShellBranch(
+        routes: [
+          GoRoute(
+            path: AppRoutes.fieldOperatorSos,
+            name: 'fieldOperatorSos',
+            builder: (context, state) => const SosMonitorScreen(),
           ),
         ],
       ),
@@ -414,6 +428,39 @@ List<RouteBase> _mobilePilgrimRoutes() => [
         name: 'adminSettings',
         builder: (context, state) => const AdminSettingsScreen(),
       ),
+      GoRoute(
+        path: AppRoutes.supportContacts,
+        name: 'supportContacts',
+        builder: (context, state) => const SupportContactsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminSupportContacts,
+        name: 'adminSupportContacts',
+        builder: (context, state) => const AdminSupportContactsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminSupportContactNew,
+        name: 'adminSupportContactNew',
+        builder: (context, state) => const AdminSupportContactEditScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminSupportContactEdit,
+        name: 'adminSupportContactEdit',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return AdminSupportContactEditScreen(contactId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.sos,
+        name: 'sos',
+        builder: (context, state) => const SosScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminSos,
+        name: 'adminSos',
+        builder: (context, state) => const SosMonitorScreen(),
+      ),
     ];
 
 ShellRoute _staffWebShellRoute() {
@@ -572,6 +619,29 @@ ShellRoute _staffWebShellRoute() {
         name: 'adminSettings',
         builder: (context, state) => const AdminSettingsScreen(),
       ),
+      GoRoute(
+        path: AppRoutes.adminSupportContacts,
+        name: 'adminSupportContactsWeb',
+        builder: (context, state) => const AdminSupportContactsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminSupportContactNew,
+        name: 'adminSupportContactNewWeb',
+        builder: (context, state) => const AdminSupportContactEditScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminSupportContactEdit,
+        name: 'adminSupportContactEditWeb',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return AdminSupportContactEditScreen(contactId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.adminSos,
+        name: 'adminSosWeb',
+        builder: (context, state) => const SosMonitorScreen(),
+      ),
     ],
   );
 }
@@ -690,6 +760,11 @@ List<RouteBase> _webRoutes() => [
         name: 'tools',
         builder: (context, state) => const IslamicToolsHubScreen(),
         routes: _toolsChildRoutes(),
+      ),
+      GoRoute(
+        path: AppRoutes.supportContacts,
+        name: 'supportContactsWeb',
+        builder: (context, state) => const SupportContactsScreen(),
       ),
     ];
 

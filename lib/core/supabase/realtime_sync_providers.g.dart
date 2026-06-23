@@ -353,3 +353,88 @@ final class RealtimeSyncAdminGroupsProvider
 
 String _$realtimeSyncAdminGroupsHash() =>
     r'74274f25a107a76e6fd3034abdc06a9951f7b678';
+
+@ProviderFor(realtimeSyncSupportContacts)
+final realtimeSyncSupportContactsProvider =
+    RealtimeSyncSupportContactsProvider._();
+
+final class RealtimeSyncSupportContactsProvider
+    extends $FunctionalProvider<void, void, void>
+    with $Provider<void> {
+  RealtimeSyncSupportContactsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'realtimeSyncSupportContactsProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$realtimeSyncSupportContactsHash();
+
+  @$internal
+  @override
+  $ProviderElement<void> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  void create(Ref ref) {
+    return realtimeSyncSupportContacts(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(void value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<void>(value),
+    );
+  }
+}
+
+String _$realtimeSyncSupportContactsHash() =>
+    r'09f53fbf6bd947c3151e0da99072de9b68e6be99';
+
+@ProviderFor(realtimeSyncSosAlerts)
+final realtimeSyncSosAlertsProvider = RealtimeSyncSosAlertsProvider._();
+
+final class RealtimeSyncSosAlertsProvider
+    extends $FunctionalProvider<void, void, void>
+    with $Provider<void> {
+  RealtimeSyncSosAlertsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'realtimeSyncSosAlertsProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$realtimeSyncSosAlertsHash();
+
+  @$internal
+  @override
+  $ProviderElement<void> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  void create(Ref ref) {
+    return realtimeSyncSosAlerts(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(void value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<void>(value),
+    );
+  }
+}
+
+String _$realtimeSyncSosAlertsHash() =>
+    r'e392f0549f1fbb09cb65dc4c17ee85a0a6e063cf';

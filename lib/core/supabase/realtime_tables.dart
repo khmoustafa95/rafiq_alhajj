@@ -21,4 +21,8 @@ abstract final class RealtimeTables {
   ];
 
   static const competitions = ['competitions', 'competition_entries'];
+
+  static const supportContacts = ['support_contacts'];
+
+  static const sosAlerts = ['sos_alerts', 'sos_location_pings'];
 }

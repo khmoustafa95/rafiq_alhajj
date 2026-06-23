@@ -61,6 +61,15 @@ class FieldOperatorShellScreen extends StatelessWidget {
                     onTap: () => _onTap(1),
                   ),
                 ),
+                Expanded(
+                  child: _NavItem(
+                    icon: Icons.sos,
+                    selectedIcon: Icons.sos_rounded,
+                    label: l10n.fieldOperatorNavSos,
+                    selected: navigationShell.currentIndex == 2,
+                    onTap: () => _onTap(2),
+                  ),
+                ),
               ],
             ),
           ),

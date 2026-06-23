@@ -2630,4 +2630,261 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tripSelectorAll => 'All trips';
+
+  @override
+  String get staffNavContacts => 'Contacts';
+
+  @override
+  String get staffNavSos => 'SOS alerts';
+
+  @override
+  String get servicesContactsSubtitle =>
+      'Emergency and service numbers — call or message on WhatsApp.';
+
+  @override
+  String get supportContactsTitle => 'Help & contacts';
+
+  @override
+  String get supportContactsSubtitle =>
+      'Reach the right team quickly. Call or message on WhatsApp.';
+
+  @override
+  String get supportContactsEmpty => 'No contacts are available right now.';
+
+  @override
+  String get supportContactsError =>
+      'Could not load contacts. Check your connection.';
+
+  @override
+  String get supportContactsCall => 'Call';
+
+  @override
+  String get supportContactsWhatsapp => 'WhatsApp';
+
+  @override
+  String get supportContactsLaunchFailed => 'Could not open this contact.';
+
+  @override
+  String get adminSupportContactsTitle => 'Support contacts';
+
+  @override
+  String get adminSupportContactsSubtitle =>
+      'Phone and WhatsApp numbers shown to pilgrims.';
+
+  @override
+  String get adminSupportContactsEmpty => 'No contacts yet. Add the first one.';
+
+  @override
+  String get adminSupportContactAdd => 'Add contact';
+
+  @override
+  String get adminSupportContactEditTitle => 'Edit contact';
+
+  @override
+  String get adminSupportContactNewTitle => 'New contact';
+
+  @override
+  String get adminSupportContactDetailsSection => 'Contact details';
+
+  @override
+  String get adminSupportContactScopeSection => 'Visibility';
+
+  @override
+  String get adminSupportContactLabelAr => 'Label (Arabic)';
+
+  @override
+  String get adminSupportContactLabelEn => 'Label (English)';
+
+  @override
+  String get adminSupportContactLabelRequired => 'Both labels are required';
+
+  @override
+  String get adminSupportContactDescriptionAr => 'Description (Arabic)';
+
+  @override
+  String get adminSupportContactDescriptionEn => 'Description (English)';
+
+  @override
+  String get adminSupportContactPhone => 'Phone number';
+
+  @override
+  String get adminSupportContactWhatsapp => 'WhatsApp number';
+
+  @override
+  String get adminSupportContactScope => 'Audience';
+
+  @override
+  String get adminSupportContactScopeGlobal => 'Everyone';
+
+  @override
+  String get adminSupportContactScopeGroup => 'Specific group';
+
+  @override
+  String get adminSupportContactGroup => 'Group';
+
+  @override
+  String get adminSupportContactGroupRequired =>
+      'Choose a group for this contact';
+
+  @override
+  String get adminSupportContactChannelRequired =>
+      'Add a phone or WhatsApp number';
+
+  @override
+  String get adminSupportContactSortOrder => 'Sort order';
+
+  @override
+  String get adminSupportContactActive => 'Active';
+
+  @override
+  String get adminSupportContactActiveHint =>
+      'Inactive contacts are hidden from pilgrims.';
+
+  @override
+  String get adminSupportContactActiveBadge => 'Active';
+
+  @override
+  String get adminSupportContactInactiveBadge => 'Hidden';
+
+  @override
+  String get adminSupportContactSaveSuccess => 'Contact saved';
+
+  @override
+  String get adminSupportContactCreateSuccess => 'Contact added';
+
+  @override
+  String get adminSupportContactSaveError =>
+      'Could not save contact. Try again.';
+
+  @override
+  String get adminSupportContactDeleteTitle => 'Delete contact';
+
+  @override
+  String adminSupportContactDeleteMessage(String label) {
+    return 'Delete \"$label\"?';
+  }
+
+  @override
+  String get adminSupportContactDeleteConfirm => 'Delete';
+
+  @override
+  String get adminSupportContactDeleteSuccess => 'Contact deleted';
+
+  @override
+  String get adminSupportContactDeleteError => 'Could not delete contact';
+
+  @override
+  String get sosTitle => 'Emergency';
+
+  @override
+  String get fieldOperatorNavSos => 'SOS';
+
+  @override
+  String get sosHomeButton => 'I\'m lost';
+
+  @override
+  String get sosHomeSubtitle => 'Send your location to your team';
+
+  @override
+  String get sosIntro =>
+      'If you are lost or need urgent help, send an alert. Your group team and supervisors will be notified with your live location.';
+
+  @override
+  String get sosRaiseButton => 'Send SOS';
+
+  @override
+  String get sosRaiseError => 'Could not send the alert. Try again.';
+
+  @override
+  String get sosLocationPermissionNeeded =>
+      'Location permission is required to share your position. The alert was sent without it.';
+
+  @override
+  String get sosActiveTitle => 'Help is on the way';
+
+  @override
+  String get sosActiveBody =>
+      'Your team and supervisors have been notified. Keep this screen open to share your live location.';
+
+  @override
+  String get sosSharingLocation => 'Sharing your live location…';
+
+  @override
+  String sosLastUpdate(String time) {
+    return 'Last update: $time';
+  }
+
+  @override
+  String get sosLocationPending => 'Getting your location…';
+
+  @override
+  String get sosCancelButton => 'I\'m safe now';
+
+  @override
+  String get sosCancelConfirmTitle => 'Cancel the alert?';
+
+  @override
+  String get sosCancelConfirmMessage =>
+      'This will tell your team that you are safe.';
+
+  @override
+  String get sosCancelConfirm => 'Yes, I\'m safe';
+
+  @override
+  String get sosCancelError => 'Could not cancel the alert. Try again.';
+
+  @override
+  String get sosMonitorTitle => 'SOS alerts';
+
+  @override
+  String get sosMonitorSubtitle =>
+      'Live location of pilgrims who asked for help.';
+
+  @override
+  String get sosMonitorEmpty => 'No active SOS alerts.';
+
+  @override
+  String sosMonitorActiveCount(int count) {
+    return '$count active';
+  }
+
+  @override
+  String get sosMonitorError => 'Could not load SOS alerts.';
+
+  @override
+  String get sosUnknownPilgrim => 'Pilgrim';
+
+  @override
+  String get sosNoGroup => 'No group';
+
+  @override
+  String get sosNoLocationYet => 'Waiting for location…';
+
+  @override
+  String get sosOpenInMaps => 'Open in maps';
+
+  @override
+  String get sosResolveButton => 'Resolve';
+
+  @override
+  String get sosResolveConfirmTitle => 'Resolve this alert?';
+
+  @override
+  String sosResolveConfirmMessage(String name) {
+    return 'Mark \"$name\" as found and safe.';
+  }
+
+  @override
+  String get sosResolveConfirm => 'Resolve';
+
+  @override
+  String get sosResolvedSuccess => 'Alert resolved';
+
+  @override
+  String get sosResolveError => 'Could not resolve the alert.';
+
+  @override
+  String sosStartedAt(String time) {
+    return 'Since $time';
+  }
 }

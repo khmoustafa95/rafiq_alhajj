@@ -12,6 +12,8 @@ abstract final class RealtimeSyncKeys {
   static const systemSettings = 'system_settings';
   static const adminOperators = 'admin_operators';
   static const adminGroups = 'admin_groups';
+  static const supportContacts = 'support_contacts';
+  static const sosAlerts = 'sos_alerts';
 }
 
 /// Handlers registered by features; fired by [realtimeSyncProviders].
