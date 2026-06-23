@@ -13,7 +13,9 @@ type NotificationRecord = {
 type WebhookBody = {
   type?: string;
   table?: string;
+  // Single-row (DB webhook) or batched (statement-level trigger) payloads.
   record?: NotificationRecord;
+  records?: NotificationRecord[];
 };
 
 type ServiceAccount = {
@@ -147,9 +149,17 @@ Deno.serve(async (req) => {
     });
   }
 
-  const record = body.record;
-  if (!record?.recipient_id) {
-    return new Response(JSON.stringify({ error: "Missing record" }), {
+  // Accept a batched `records` array (statement-level trigger) or a single
+  // `record` (legacy / DB webhook).
+  const records: NotificationRecord[] = Array.isArray(body.records)
+    ? body.records
+    : body.record
+    ? [body.record]
+    : [];
+  const validRecords = records.filter((r) => r?.recipient_id);
+
+  if (validRecords.length === 0) {
+    return new Response(JSON.stringify({ error: "Missing record(s)" }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
     });
@@ -159,10 +169,12 @@ Deno.serve(async (req) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const supabaseAdmin = createClient(supabaseUrl, serviceKey);
 
+  // One query for every recipient's tokens, grouped by profile id.
+  const recipientIds = [...new Set(validRecords.map((r) => r.recipient_id))];
   const { data: tokenRows, error: tokenError } = await supabaseAdmin
     .from("device_tokens")
-    .select("token")
-    .eq("profile_id", record.recipient_id);
+    .select("profile_id, token")
+    .in("profile_id", recipientIds);
 
   if (tokenError) {
     return new Response(JSON.stringify({ error: tokenError.message }), {
@@ -171,20 +183,24 @@ Deno.serve(async (req) => {
     });
   }
 
-  const tokens = (tokenRows ?? []).map((row) => row.token as string).filter(
-    Boolean,
-  );
+  const tokensByRecipient = new Map<string, string[]>();
+  for (const row of tokenRows ?? []) {
+    const profileId = row.profile_id as string;
+    const token = row.token as string;
+    if (!token) {
+      continue;
+    }
+    const list = tokensByRecipient.get(profileId) ?? [];
+    list.push(token);
+    tokensByRecipient.set(profileId, list);
+  }
 
-  if (tokens.length === 0) {
+  if (tokensByRecipient.size === 0) {
     return new Response(
       JSON.stringify({ ok: true, sent: 0, reason: "no_device_tokens" }),
       { status: 200, headers: { "Content-Type": "application/json" } },
     );
   }
-
-  const payload = record.payload ?? {};
-  const route = typeof payload.route === "string" ? payload.route : "";
-  const id = typeof payload.id === "string" ? payload.id : "";
 
   let accessToken: string;
   try {
@@ -199,47 +215,87 @@ Deno.serve(async (req) => {
 
   const endpoint =
     `https://fcm.googleapis.com/v1/projects/${serviceAccount.project_id}/messages:send`;
-  const title = record.title_en || record.title_ar;
-  const bodyText = pickBody(record);
 
   let sent = 0;
   let failed = 0;
   const errors: string[] = [];
+  // Tokens FCM reports as no longer valid; removed from device_tokens below so
+  // the table doesn't accumulate dead registrations.
+  const staleTokens = new Set<string>();
 
-  // FCM HTTP v1 sends one message per request; loop over device tokens.
-  await Promise.all(tokens.map(async (token) => {
-    const message = {
-      message: {
-        token,
-        notification: { title, body: bodyText },
-        data: { route, id, notification_id: record.id },
-        android: { priority: "HIGH" },
-        apns: { payload: { aps: { sound: "default" } } },
-      },
-    };
-    try {
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(message),
-      });
-      if (response.ok) {
-        sent++;
-      } else {
-        failed++;
-        errors.push(await response.text());
-      }
-    } catch (error) {
-      failed++;
-      errors.push(error instanceof Error ? error.message : "send failed");
+  // Build one FCM message per (recipient token × notification), then send all.
+  const sends: Promise<void>[] = [];
+  for (const record of validRecords) {
+    const tokens = tokensByRecipient.get(record.recipient_id) ?? [];
+    if (tokens.length === 0) {
+      continue;
     }
-  }));
+    const payload = record.payload ?? {};
+    const route = typeof payload.route === "string" ? payload.route : "";
+    const id = typeof payload.id === "string" ? payload.id : "";
+    const title = record.title_en || record.title_ar;
+    const bodyText = pickBody(record);
+
+    for (const token of tokens) {
+      const message = {
+        message: {
+          token,
+          notification: { title, body: bodyText },
+          data: { route, id, notification_id: record.id },
+          android: { priority: "HIGH" },
+          apns: { payload: { aps: { sound: "default" } } },
+        },
+      };
+      sends.push((async () => {
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(message),
+          });
+          if (response.ok) {
+            sent++;
+            return;
+          }
+          failed++;
+          const text = await response.text();
+          errors.push(text);
+          // 404 / UNREGISTERED means the token is dead (app uninstalled, token
+          // rotated, etc.). Mark it for deletion.
+          if (
+            response.status === 404 ||
+            /UNREGISTERED|registration-token-not-registered/i.test(text)
+          ) {
+            staleTokens.add(token);
+          }
+        } catch (error) {
+          failed++;
+          errors.push(error instanceof Error ? error.message : "send failed");
+        }
+      })());
+    }
+  }
+
+  await Promise.all(sends);
+
+  let cleaned = 0;
+  if (staleTokens.size > 0) {
+    const { error: cleanupError, count } = await supabaseAdmin
+      .from("device_tokens")
+      .delete({ count: "exact" })
+      .in("token", [...staleTokens]);
+    if (cleanupError) {
+      errors.push(`cleanup: ${cleanupError.message}`);
+    } else {
+      cleaned = count ?? staleTokens.size;
+    }
+  }
 
   return new Response(
-    JSON.stringify({ ok: true, sent, failed, errors: errors.slice(0, 3) }),
+    JSON.stringify({ ok: true, sent, failed, cleaned, errors: errors.slice(0, 3) }),
     { status: 200, headers: { "Content-Type": "application/json" } },
   );
 });

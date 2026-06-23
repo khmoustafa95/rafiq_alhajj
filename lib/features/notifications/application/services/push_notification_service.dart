@@ -5,19 +5,28 @@ import 'package:flutter/foundation.dart';
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/firebase/app_firebase.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
+import 'package:rafiq_alhajj/features/notifications/application/services/local_notifications_service.dart';
 import 'package:rafiq_alhajj/features/notifications/application/utils/push_message_navigation.dart';
 import 'package:rafiq_alhajj/features/notifications/data/repositories/device_token_repository.dart';
 
 /// Registers FCM tokens and handles notification open events.
 class PushNotificationService {
-  PushNotificationService(this._tokenRepository);
+  PushNotificationService(
+    this._tokenRepository, {
+    LocalNotificationsService? localNotifications,
+  }) : _localNotifications = localNotifications ?? LocalNotificationsService();
 
   final DeviceTokenRepository _tokenRepository;
+  final LocalNotificationsService _localNotifications;
 
   FirebaseMessaging? _messaging;
   StreamSubscription<String>? _tokenRefreshSub;
+  StreamSubscription<RemoteMessage>? _foregroundSub;
   String? _currentProfileId;
   String? _lastRegisteredToken;
+  // Guards against handling the same opened message twice (e.g. both
+  // getInitialMessage and onMessageOpenedApp firing for one tap).
+  final Set<String> _handledOpenedMessageIds = {};
 
   bool get isSupported =>
       !AppPlatform.isWeb &&
@@ -34,6 +43,10 @@ class PushNotificationService {
     await AppFirebase.initialize();
     _messaging = FirebaseMessaging.instance;
 
+    await _localNotifications.initialize();
+
+    // iOS presents foreground notifications itself via these options; on
+    // Android we render them through [_localNotifications] in [_handleForeground].
     await _messaging!.setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
@@ -42,6 +55,7 @@ class PushNotificationService {
 
     await _requestPermission();
 
+    _foregroundSub = FirebaseMessaging.onMessage.listen(_handleForeground);
     FirebaseMessaging.onMessageOpenedApp.listen(_handleRemoteMessage);
     final initial = await _messaging!.getInitialMessage();
     if (initial != null) {
@@ -131,10 +145,29 @@ class PushNotificationService {
   }
 
   void _handleRemoteMessage(RemoteMessage message) {
+    final dedupeKey = message.messageId ??
+        message.data['notification_id'] as String? ??
+        message.data['id'] as String?;
+    if (dedupeKey != null) {
+      if (_handledOpenedMessageIds.contains(dedupeKey)) {
+        return;
+      }
+      _handledOpenedMessageIds.add(dedupeKey);
+    }
     navigateFromPushData(message.data);
+  }
+
+  /// Renders a system notification for messages received while the app is in
+  /// the foreground. Only Android needs this; iOS shows them automatically.
+  void _handleForeground(RemoteMessage message) {
+    if (defaultTargetPlatform != TargetPlatform.android) {
+      return;
+    }
+    unawaited(_localNotifications.showFromRemoteMessage(message));
   }
 
   void dispose() {
     unawaited(_tokenRefreshSub?.cancel());
+    unawaited(_foregroundSub?.cancel());
   }
 }

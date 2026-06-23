@@ -6,7 +6,31 @@ Arabic summary is in [runbook-ar.md](./runbook-ar.md#push-fcm) (add anchor secti
 
 - Flutter registers FCM tokens in `device_tokens` after sign-in.
 - On `notifications` INSERT, Postgres (`pg_net`) calls Edge Function `send-push-notification`.
-- Edge Function sends FCM HTTP v1 via `firebase-admin` and `FIREBASE_SERVICE_ACCOUNT_JSON`.
+- The Edge Function sends **FCM HTTP v1 via `fetch`** — it mints an OAuth2 access
+  token from `FIREBASE_SERVICE_ACCOUNT_JSON` using **Web Crypto** (RS256-signed
+  JWT). It does **not** use `firebase-admin`: that library's `node:http2`
+  transport is unsupported on the Supabase Edge (Deno) runtime and crashes with
+  `ERR_NOT_IMPLEMENTED`.
+- The function also **cleans up dead tokens**: any token FCM reports as `404` /
+  `UNREGISTERED` is deleted from `device_tokens` (response includes `cleaned`).
+
+## Notification display behavior
+
+- **Background / terminated:** the OS shows the FCM `notification` payload in the
+  system tray. Look-and-feel comes from the manifest defaults
+  (`default_notification_channel_id` = `high_importance_channel`,
+  `default_notification_icon` = `@drawable/ic_stat_notification`,
+  `default_notification_color` = `@color/notification_color`).
+- **Foreground (Android):** `PushNotificationService` listens to
+  `FirebaseMessaging.onMessage` and renders a heads-up notification via
+  `flutter_local_notifications` (channel created in `LocalNotificationsService`,
+  id must match the manifest default). Tapping routes via `navigateFromPushData`.
+- **Foreground (iOS):** shown by the OS via
+  `setForegroundNotificationPresentationOptions(alert/badge/sound)`.
+- **Fallback:** on web / when Firebase isn't configured, the in-app `SnackBar`
+  (`NotificationToastHost`) covers the foreground case via Supabase Realtime.
+- Requires Android Gradle **core library desugaring**
+  (`desugar_jdk_libs`, enabled in `android/app/build.gradle.kts`).
 
 ## 1. Firebase project
 
@@ -17,8 +41,8 @@ Arabic summary is in [runbook-ar.md](./runbook-ar.md#push-fcm) (add anchor secti
 5. Enable the Gradle plugin (required for Android FCM build):
    - In `android/settings.gradle.kts` add:
      `id("com.google.gms.google-services") version "4.4.2" apply false`
-   - In `android/app/build.gradle.kts` at the bottom add:
-     `apply(plugin = "com.google.gms.google-services")`
+   - In `android/app/build.gradle.kts` add `id("com.google.gms.google-services")`
+     to the `plugins { }` block (already applied in this repo).
 6. Download `GoogleService-Info.plist` → `ios/Runner/GoogleService-Info.plist` (gitignored).
 7. Enable **Cloud Messaging**; create a **Service account** key (JSON) for the Edge Function.
 
@@ -70,6 +94,14 @@ npm run setup
 2. Sign in as `pilgrim@demo.local`.
 3. From admin web: **Send notification** → all pilgrims.
 4. Pilgrim device should receive a system notification; tap opens the target screen.
+   - **App open (foreground):** a heads-up notification appears via
+     `flutter_local_notifications`.
+   - **App backgrounded / killed:** the OS shows the FCM tray notification.
+
+> Local runtime: `supabase start` does **not** load `supabase/.env` into the edge
+> runtime. Run `supabase functions serve --env-file ./supabase/.env` (kept
+> running) so pushes dispatch. `verify_jwt=false` is required for this function
+> (the trigger calls it with `x-push-secret`, not a JWT).
 
 ## 6. Production webhook (hosted)
 

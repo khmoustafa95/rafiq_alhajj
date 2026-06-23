@@ -57,6 +57,55 @@ final class NotificationRepositoryProvider
 String _$notificationRepositoryHash() =>
     r'b9c2d29fc769bc0ca48b5bfa6ec71fd6c956d5bb';
 
+@ProviderFor(guestNotificationsSeenStore)
+final guestNotificationsSeenStoreProvider =
+    GuestNotificationsSeenStoreProvider._();
+
+final class GuestNotificationsSeenStoreProvider
+    extends
+        $FunctionalProvider<
+          GuestNotificationsSeenStore,
+          GuestNotificationsSeenStore,
+          GuestNotificationsSeenStore
+        >
+    with $Provider<GuestNotificationsSeenStore> {
+  GuestNotificationsSeenStoreProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'guestNotificationsSeenStoreProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$guestNotificationsSeenStoreHash();
+
+  @$internal
+  @override
+  $ProviderElement<GuestNotificationsSeenStore> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  GuestNotificationsSeenStore create(Ref ref) {
+    return guestNotificationsSeenStore(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(GuestNotificationsSeenStore value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<GuestNotificationsSeenStore>(value),
+    );
+  }
+}
+
+String _$guestNotificationsSeenStoreHash() =>
+    r'040e23b08c5b756c67b51cf68b1cdac8054f5201';
+
 @ProviderFor(unreadNotificationCount)
 final unreadNotificationCountProvider = UnreadNotificationCountProvider._();
 
@@ -89,7 +138,7 @@ final class UnreadNotificationCountProvider
 }
 
 String _$unreadNotificationCountHash() =>
-    r'09cc80d2903df34ab737bc8e2dfbcc20f36cccc5';
+    r'a8f3dd0b77071e7305fcacb9cd933f20399cd267';
 
 @ProviderFor(NotificationInbox)
 final notificationInboxProvider = NotificationInboxProvider._();
@@ -226,7 +275,7 @@ final class NotificationToastEventsProvider
 }
 
 String _$notificationToastEventsHash() =>
-    r'b6a12170f9c07639fa9f6bb27a2e29246a4e3169';
+    r'e08db4b4835000059f820af9a4858f2a98b95e29';
 
 @ProviderFor(AdminNotificationBroadcast)
 final adminNotificationBroadcastProvider =

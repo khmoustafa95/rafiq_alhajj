@@ -3,7 +3,44 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
-**FCM push — end-to-end device test PASSED** (2026-06-23). Both layers verified on a real Android emulator: in-app realtime inbox (Layer 1) + FCM background push (Layer 2). Required a server-side fix to the edge function (see below). Prior focus done.
+**Notifications hardening — ALL audit weaknesses closed** (2026-06-23). Foreground heads-up notifications + the deferred architectural/product items are now done (batched dispatch, field-status `ritual_update`, config hardening, push idempotency).
+
+## Recent changes (2026-06-23) — deferred weaknesses closed (#8–#11)
+- **#10 Batched push dispatch (new migration `20260623120000_notifications_hardening.sql`):** replaced the per-row pg_net trigger with a **statement-level** trigger using a transition table (`referencing new table as new_notifications ... for each statement`) → `trg_dispatch_push_notifications()` aggregates all rows from one INSERT into a single `records[]` payload and makes **one** `net.http_post`. A broadcast to N pilgrims now = 1 Edge invocation (was N). Dropped old `trg_dispatch_push_notification()` + per-row trigger. Verified: `pg_trigger` shows `on_notification_insert_dispatch_push` is statement-level (`is_row=0`).
+- **#8 Config hardening:** dispatch fn reads `app.supabase_functions_url`/`app.push_webhook_secret`; if unset it `raise log`s a warning before using the local-dev default (was a silent fallback that prod would reject). Wrapped in exception → `raise log` (no longer fully silent).
+- **#9 `ritual_update` now produced:** new row-level trigger `on_enrollment_field_status_notify` → `trg_notify_field_status_update()` inserts a `ritual_update` notification to the pilgrim's `profile_id` when `trip_enrollments.field_status` changes (route `pilgrim`). The list "Urgent" filter (system + ritualUpdate) now matches real data. **Functional probe passed** (BEGIN…ROLLBACK: field_status update → exactly 1 `ritual_update`, DB left clean).
+- **#10/#11 Edge fn:** `send-push-notification` now accepts `records[]` (batch) **or** `record` (legacy webhook); fetches all recipients' tokens in **one** `.in('profile_id', ids)` query grouped by recipient; sends all messages; deletes stale tokens by `.in('token', stale)`. Response: `{ok,sent,failed,cleaned,errors}`.
+- **#11 Client idempotency:** `PushNotificationService._handleRemoteMessage` dedupes opened-message handling via a `Set` keyed by `messageId`/`notification_id`/`id` (prevents double navigation from `getInitialMessage` + `onMessageOpenedApp`).
+- **Verified:** `supabase db reset` applied the new migration cleanly + seed OK; trigger probe passed; `flutter analyze` (notifications) → No issues found.
+- **Note:** Deno not on PATH locally (Supabase uses its bundled deno for `functions serve`); the TS edits are standard supabase-js v2 (`.in`, `.delete({count})`) — re-verify with `functions serve` on next device test.
+
+## Earlier focus (2026-06-23) — first-pass weakness fixes
+After adding foreground heads-up notifications, addressed stale tokens (#3), guest unread (#6), toast races (#5), error visibility (#4), doc drift (#7).
+
+## Recent changes (2026-06-23) — notifications weakness fixes
+- **#3 Stale device tokens (Edge fn):** `send-push-notification` now collects tokens FCM reports as `404`/`UNREGISTERED` and **deletes** them from `device_tokens` (`.delete({count:'exact'}).eq(profile_id).in('token', stale)`); response gained a `cleaned` field. Prevents dead-token accumulation.
+- **#6 Guest unread count:** new `application/services/guest_notifications_seen_store.dart` (SharedPreferences key `guest_notifications_last_seen`). `unreadNotificationCount` guest branch now counts items with `createdAt > lastSeen` (was: total items, capped 20). New keepAlive provider `guestNotificationsSeenStore`. `NotificationListScreen.initState` post-frame → `markSeen()` + `ref.invalidate(unreadNotificationCountProvider)` for guests → badge clears on open.
+- **#5 Toast race:** `notificationToastEvents` rewritten to **id-based dedup** (track `lastEmittedId` + `startedAt`; emit newest unread only if `id != lastEmittedId` and `createdAt.isAfter(startedAt)`). Removes count-comparison races and the "single toast for a burst" issue; wraps fetch in try/catch.
+- **#4 Error visibility:** added `_logNotificationError(where, e)` (debug-only) at the previously silent `yield 0`/swallow points.
+- **#7 Doc drift:** `docs/push-notifications-setup.md` updated — FCM HTTP v1 via `fetch`+Web Crypto (not firebase-admin), token cleanup, foreground/background display behavior, desugaring, `functions serve --env-file` runtime note, gradle plugins-block.
+- **Deferred (intentional, documented):** #8 trigger's hardcoded `dev-local-push-secret` fallback (DB migration + reset; acceptable for dev); #9 `ritual_update` type defined but never produced (product decision — would need a `ritual_logs`/`field_status` trigger with a defined recipient); #10 per-pilgrim synchronous fan-out in content/competition triggers (needs batching/queue); #11 push retry/idempotency (needs queue infra; realtime already dedups by `id`).
+- **Verified:** `flutter analyze` (notifications + core + main) → No issues found; `build_runner` clean.
+
+## Earlier focus (2026-06-23) — foreground system notifications
+**Foreground system notifications added.** Notifications now behave like most apps: a real system-tray heads-up notification is shown in **all** app states (foreground via `flutter_local_notifications`; background/terminated via FCM's `notification` block).
+
+## Recent changes (2026-06-23) — heads-up notifications (foreground parity)
+- **Problem fixed:** Android **foreground** pushes previously raised no system notification (only an in-app `SnackBar`), unlike typical apps. Added `flutter_local_notifications 22.0.1`.
+- **New:** `lib/features/notifications/application/services/local_notifications_service.dart` — creates the Android channel `high_importance_channel` (Importance.high), shows a heads-up notification from a foreground `RemoteMessage`, and routes taps via `navigateFromPushData` (payload = JSON of `message.data`).
+- **Wired:** `PushNotificationService.initialize()` now inits local notifications and listens to `FirebaseMessaging.onMessage` → on **Android only** renders a local notification (iOS shows foreground alerts itself via `setForegroundNotificationPresentationOptions`). Subscription disposed in `dispose()`.
+- **De-dup:** `NotificationToastHost` now **skips** the in-app `SnackBar` when system notifications cover foreground (mobile + `hasFirebase`); the SnackBar stays as a fallback on **web / when Firebase isn't configured / guests**.
+- **Android resources:** `res/drawable/ic_stat_notification.xml` (white bell vector), `res/values/colors.xml` (`notification_color = #065F46` = `AppColors.primary`), and `AndroidManifest.xml` FCM default meta-data (channel id / icon / color) so **background** tray notifications match the foreground look. Channel id in manifest **must** match `LocalNotificationsService._channelId`.
+- **Gradle:** enabled core library desugaring (`isCoreLibraryDesugaringEnabled = true` + `coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")`) — required by flutter_local_notifications 22.
+- **Verified:** `flutter analyze` (notifications + core + main) → No issues found. Device re-test of the foreground heads-up still pending on a real emulator.
+- **Known gaps not addressed this session (audit):** stale `device_tokens` not cleaned on FCM `UNREGISTERED`; `pg_net` trigger swallows all errors; guest unread count shows total not unread; `ritual_update` type defined but never produced; `docs/push-notifications-setup.md` still says firebase-admin (drift).
+
+## Earlier focus (2026-06-23)
+**FCM push — end-to-end device test PASSED**. Both layers verified on a real Android emulator: in-app realtime inbox (Layer 1) + FCM background push (Layer 2). Required a server-side fix to the edge function (see below).
 
 ## Recent changes (2026-06-23) — FCM device test PASSED + edge function rewrite
 - **Root-cause fix (affects production, not just local):** `supabase/functions/send-push-notification/index.ts` was rewritten to use **FCM HTTP v1 REST via `fetch`** (mints an OAuth2 access token from the service account with **Web Crypto** RS256-signed JWT) instead of **`firebase-admin`**. Reason: firebase-admin's messaging transport uses **`node:http2`**, which the Supabase Edge (Deno) runtime does **not** implement — the first send crashed with `Error [ERR_NOT_IMPLEMENTED]: Not implemented: callTimeout at node:http2`. The REST path uses only `fetch` + Web Crypto, so it runs in Deno. Loops one `messages:send` POST per device token; returns `{ok,sent,failed,errors}`.

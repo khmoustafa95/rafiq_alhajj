@@ -1,8 +1,11 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/features/notifications/application/utils/notification_navigation.dart';
 import 'package:rafiq_alhajj/features/notifications/domain/models/inbox_notification.dart';
@@ -15,16 +18,28 @@ class NotificationToastHost extends ConsumerWidget {
 
   final Widget? child;
 
+  /// On mobile with FCM configured, foreground messages already raise a system
+  /// notification (see `LocalNotificationsService`); showing an in-app SnackBar
+  /// too would duplicate it. The toast stays as a fallback on web / when
+  /// Firebase is not configured.
+  static bool get _systemNotificationsHandleForeground =>
+      !AppPlatform.isWeb &&
+      AppConfig.hasFirebase &&
+      (defaultTargetPlatform == TargetPlatform.android ||
+          defaultTargetPlatform == TargetPlatform.iOS);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.listen<AsyncValue<InboxNotification>>(
-      notificationToastEventsProvider,
-      (previous, next) {
-        next.whenData((notification) {
-          _showToast(context, notification);
-        });
-      },
-    );
+    if (!_systemNotificationsHandleForeground) {
+      ref.listen<AsyncValue<InboxNotification>>(
+        notificationToastEventsProvider,
+        (previous, next) {
+          next.whenData((notification) {
+            _showToast(context, notification);
+          });
+        },
+      );
+    }
 
     return child ?? const SizedBox.shrink();
   }

@@ -26,6 +26,29 @@ class NotificationListScreen extends ConsumerStatefulWidget {
 class _NotificationListScreenState extends ConsumerState<NotificationListScreen> {
   int _filterIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _markGuestSeen());
+  }
+
+  /// Guests have no server-side read state; opening the inbox clears the badge
+  /// by recording the last-seen time locally (`GuestNotificationsSeenStore`).
+  Future<void> _markGuestSeen() async {
+    if (!mounted) {
+      return;
+    }
+    final isGuest = ref.read(authAccessModeProvider) == AppAccessMode.guest;
+    if (!isGuest) {
+      return;
+    }
+    await ref.read(guestNotificationsSeenStoreProvider).markSeen();
+    if (!mounted) {
+      return;
+    }
+    ref.invalidate(unreadNotificationCountProvider);
+  }
+
   Future<void> _onTap(
     BuildContext context,
     InboxNotification notification,
