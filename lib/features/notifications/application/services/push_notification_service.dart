@@ -28,12 +28,17 @@ class PushNotificationService {
   // getInitialMessage and onMessageOpenedApp firing for one tap).
   final Set<String> _handledOpenedMessageIds = {};
 
-  bool get isSupported =>
-      !AppPlatform.isWeb &&
-      AppConfig.hasFirebase &&
-      AppConfig.hasSupabase &&
-      (defaultTargetPlatform == TargetPlatform.android ||
-          defaultTargetPlatform == TargetPlatform.iOS);
+  bool get isSupported {
+    if (!AppConfig.hasSupabase) {
+      return false;
+    }
+    if (AppPlatform.isWeb) {
+      return AppConfig.hasFirebaseWeb;
+    }
+    return AppConfig.hasFirebase &&
+        (defaultTargetPlatform == TargetPlatform.android ||
+            defaultTargetPlatform == TargetPlatform.iOS);
+  }
 
   Future<void> initialize() async {
     if (!isSupported) {
@@ -43,15 +48,21 @@ class PushNotificationService {
     await AppFirebase.initialize();
     _messaging = FirebaseMessaging.instance;
 
-    await _localNotifications.initialize();
+    // flutter_local_notifications has no web implementation; on web, foreground
+    // messages are surfaced by the Realtime in-app toast and background ones by
+    // the `firebase-messaging-sw.js` service worker.
+    if (!AppPlatform.isWeb) {
+      await _localNotifications.initialize();
 
-    // iOS presents foreground notifications itself via these options; on
-    // Android we render them through [_localNotifications] in [_handleForeground].
-    await _messaging!.setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+      // iOS presents foreground notifications itself via these options; on
+      // Android we render them through [_localNotifications] in
+      // [_handleForeground].
+      await _messaging!.setForegroundNotificationPresentationOptions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+    }
 
     await _requestPermission();
 
@@ -75,13 +86,19 @@ class PushNotificationService {
       return;
     }
 
-    final token = await _messaging?.getToken();
+    final token = await _fetchToken();
     if (token == null || token.isEmpty) {
       return;
     }
 
     await _persistToken(token);
   }
+
+  // Web requires the VAPID public key to mint a token; mobile ignores it.
+  Future<String?> _fetchToken() => _messaging?.getToken(
+        vapidKey: AppPlatform.isWeb ? AppConfig.firebaseVapidKey : null,
+      ) ??
+      Future<String?>.value();
 
   Future<void> unregisterCurrentUser() async {
     final profileId = _currentProfileId;
@@ -124,11 +141,15 @@ class PushNotificationService {
       return;
     }
 
-    final platform = switch (defaultTargetPlatform) {
-      TargetPlatform.iOS => 'ios',
-      TargetPlatform.android => 'android',
-      _ => 'web',
-    };
+    // `defaultTargetPlatform` reports the host OS even on web (e.g. android on
+    // a mobile browser), so check `kIsWeb` first to tag web tokens correctly.
+    final platform = AppPlatform.isWeb
+        ? 'web'
+        : switch (defaultTargetPlatform) {
+            TargetPlatform.iOS => 'ios',
+            TargetPlatform.android => 'android',
+            _ => 'web',
+          };
 
     try {
       await _tokenRepository.upsertToken(
@@ -158,9 +179,10 @@ class PushNotificationService {
   }
 
   /// Renders a system notification for messages received while the app is in
-  /// the foreground. Only Android needs this; iOS shows them automatically.
+  /// the foreground. Only Android needs this; iOS shows them automatically and
+  /// web relies on the Realtime in-app toast.
   void _handleForeground(RemoteMessage message) {
-    if (defaultTargetPlatform != TargetPlatform.android) {
+    if (AppPlatform.isWeb || defaultTargetPlatform != TargetPlatform.android) {
       return;
     }
     unawaited(_localNotifications.showFromRemoteMessage(message));

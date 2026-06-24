@@ -3,7 +3,20 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
-**Pilgrim-safety features shipped** (2026-06-24): (1) admin-managed **support/emergency contacts** (call + WhatsApp), and (2) **lost-pilgrim SOS** with foreground live-location tracking on a staff map. `flutter analyze` clean, `supabase db reset` applied both migrations + seed.
+**FCM Web Push enabled** (2026-06-24): push notifications now work on the web build (previously web was hard-disabled). `flutter analyze` clean; `flutter build web --dart-define-from-file=dart_defines.local.example.json` compiles. **Action needed before web push actually delivers:** fill the new web `FIREBASE_*` dart-defines from a registered Firebase **Web app** and replace the placeholders in `web/firebase-messaging-sw.js`.
+
+## Recent changes (2026-06-24) — FCM Web Push
+- **Why:** `PushNotificationService.isSupported` previously did `!AppPlatform.isWeb && …`, so web got no FCM at all (only the Realtime in-app toast). No service worker / web Firebase config existed.
+- **Config (`AppConfig`):** added web-only `--dart-define`s `FIREBASE_WEB_APP_ID`, `FIREBASE_AUTH_DOMAIN`, `FIREBASE_STORAGE_BUCKET`, `FIREBASE_VAPID_KEY`, `FIREBASE_MEASUREMENT_ID` + `hasFirebaseWeb` getter (requires projectId/apiKey/senderId/webAppId/authDomain/vapidKey).
+- **`AppFirebase`:** now platform-aware — `_webOptions` (web appId + authDomain + storageBucket + measurementId) vs `_mobileOptions`; `initialize()` picks config via `kIsWeb` and checks `hasFirebaseWeb` on web. `options` getter returns the right set.
+- **`PushNotificationService`:** `isSupported` returns `hasFirebaseWeb` on web (mobile path unchanged). `getToken` now passes `vapidKey` on web (`_fetchToken`). `_persistToken` tags web tokens `'web'` via `kIsWeb` first (avoids `defaultTargetPlatform==android` on mobile browsers). **Guards:** `_localNotifications.initialize()` + `setForegroundNotificationPresentationOptions` skipped on web (flutter_local_notifications has no web impl); `_handleForeground` early-returns on web. So web: foreground = Realtime toast (`NotificationToastHost`, unchanged), background/closed-tab = service worker tray notification.
+- **New `web/firebase-messaging-sw.js`:** imports Firebase compat 10.12.2, `onBackgroundMessage` → `showNotification`, `notificationclick` focuses/opens the app. Auto-registered by the `firebase_messaging` web plugin. **Contains placeholders** (`REPLACE_WITH_FIREBASE_WEB_API_KEY`, `REPLACE_WITH_FIREBASE_WEB_APP_ID`) — public web config must be pasted in (SWs can't read dart-defines).
+- **Examples:** `dart_defines.local.example.json` (web) + `dart_defines.production.example.json` gained the 5 new web keys.
+- **No duplication:** FCM SW only shows when the tab is unfocused; foreground stays on the Realtime toast → no double notifications.
+- **Verified:** `flutter analyze` (config/firebase/push service) → No issues found; `flutter build web` succeeded.
+
+## Earlier focus (2026-06-24) — Support contacts + Lost-pilgrim SOS
+**Pilgrim-safety features shipped**: (1) admin-managed **support/emergency contacts** (call + WhatsApp), and (2) **lost-pilgrim SOS** with foreground live-location tracking on a staff map. `flutter analyze` clean, `supabase db reset` applied both migrations + seed.
 
 ## Recent changes (2026-06-24) — Support contacts + Lost-pilgrim SOS
 - **DB (2 new migrations):**

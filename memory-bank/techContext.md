@@ -56,6 +56,7 @@ npm run dev:android    # Android emulator/device
 - **Templates:** `dart_defines.local.example.json`, `dart_defines.android.local.example.json`, `dart_defines.staging.example.json`, `dart_defines.production.example.json`.
 - **Crash reporting:** `CRASH_REPORTING_ENABLED=true` in release dart-defines; wire Sentry/Crashlytics in `ConfiguredCrashReporter`.
 - **Push (FCM):** `docs/push-notifications-setup.md`; `FIREBASE_*` dart-defines; Edge secrets `FIREBASE_SERVICE_ACCOUNT_JSON`, `PUSH_WEBHOOK_SECRET`.
+- **Push (FCM Web):** extra web-only dart-defines `FIREBASE_WEB_APP_ID`, `FIREBASE_AUTH_DOMAIN`, `FIREBASE_STORAGE_BUCKET`, `FIREBASE_VAPID_KEY`, `FIREBASE_MEASUREMENT_ID` (from a Firebase **Web app** + Cloud Messaging Web Push VAPID cert). The service worker `web/firebase-messaging-sw.js` holds the same public web config inline (can't read dart-defines) — keep its placeholders in sync.
 
 ## Version notes
 - `json_annotation` pinned to **^4.11.0** (not 4.12) so `riverpod_generator` + `json_serializable` resolve with Flutter SDK `meta` pin.
