@@ -5,6 +5,12 @@
 ## Current focus
 **FCM Web Push enabled** (2026-06-24): push notifications now work on the web build (previously web was hard-disabled). `flutter analyze` clean; `flutter build web --dart-define-from-file=dart_defines.local.example.json` compiles. **Action needed before web push actually delivers:** fill the new web `FIREBASE_*` dart-defines from a registered Firebase **Web app** and replace the placeholders in `web/firebase-messaging-sw.js`.
 
+## Build fix (2026-06-24) — Android Gradle mirror removed
+- **Symptom:** `flutter run` (android) failed: `Could not resolve com.google.gms:google-services:4.4.2` → `502 Bad Gateway` from `maven.aliyun.com`. Not a local-internet problem.
+- **Root cause:** `android/settings.gradle.kts` + `android/build.gradle.kts` declared **Aliyun mirrors** (`maven.aliyun.com/repository/{google,central,gradle-plugin}`). Aliyun returned `502`; Gradle then "disables" that repo and fails the whole resolution. Connectivity test: official `dl.google.com` 200 in 0.69s, `plugins.gradle.org` OK — official repos are fast/reliable from this network.
+- **Fix:** removed all `maven.aliyun.com` entries from both Gradle files; now relying on `google()` + `mavenCentral()` (+ `gradlePluginPortal()` in settings). Validated: build now passes the dependency-resolution step that previously failed.
+- **Note:** Gradle distribution still pulls from `mirrors.cloud.tencent.com` in `gradle-wrapper.properties` (works, left as-is). First clean build is slow (fresh downloads + `org.gradle.parallel=false`, `workers.max=2`, `kotlin.incremental=false`, and machine memory pressure) — not a failure.
+
 ## Recent changes (2026-06-24) — FCM Web Push
 - **Why:** `PushNotificationService.isSupported` previously did `!AppPlatform.isWeb && …`, so web got no FCM at all (only the Realtime in-app toast). No service worker / web Firebase config existed.
 - **Config (`AppConfig`):** added web-only `--dart-define`s `FIREBASE_WEB_APP_ID`, `FIREBASE_AUTH_DOMAIN`, `FIREBASE_STORAGE_BUCKET`, `FIREBASE_VAPID_KEY`, `FIREBASE_MEASUREMENT_ID` + `hasFirebaseWeb` getter (requires projectId/apiKey/senderId/webAppId/authDomain/vapidKey).

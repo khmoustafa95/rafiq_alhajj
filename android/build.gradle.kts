@@ -2,8 +2,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven(url = uri("https://maven.aliyun.com/repository/google"))
-        maven(url = uri("https://maven.aliyun.com/repository/central"))
     }
 }
 
@@ -13,8 +11,6 @@ subprojects {
         repositories {
             google()
             mavenCentral()
-            maven(url = uri("https://maven.aliyun.com/repository/google"))
-            maven(url = uri("https://maven.aliyun.com/repository/central"))
         }
         configurations.matching { it.name == "classpath" }.configureEach {
             resolutionStrategy {
