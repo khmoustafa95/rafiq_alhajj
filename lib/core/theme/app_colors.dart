@@ -16,6 +16,9 @@ abstract final class AppColors {
   static const Color surface = Color(0xFFFFFFFF);
   static const Color surfaceMuted = Color(0xFFF3F4F6);
 
+  /// Subtle tint used to highlight unread notification rows.
+  static const Color notificationUnread = Color(0xFFF0FDF7);
+
   static const Color textPrimary = Color(0xFF111827);
   static const Color textSecondary = Color(0xFF6B7280);
   static const Color textOnDark = Color(0xFFFFFFFF);

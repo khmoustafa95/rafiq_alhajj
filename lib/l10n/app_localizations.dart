@@ -2899,6 +2899,72 @@ abstract class AppLocalizations {
   /// **'{minutes} min ago'**
   String notificationsMinutesAgo(int minutes);
 
+  /// No description provided for @notificationsGroupToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get notificationsGroupToday;
+
+  /// No description provided for @notificationsGroupYesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get notificationsGroupYesterday;
+
+  /// No description provided for @notificationsGroupEarlier.
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier'**
+  String get notificationsGroupEarlier;
+
+  /// No description provided for @notificationsUnreadCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} unread'**
+  String notificationsUnreadCount(int count);
+
+  /// No description provided for @notificationsAllReadSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All caught up'**
+  String get notificationsAllReadSubtitle;
+
+  /// No description provided for @notificationsAllCaughtUp.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re all caught up'**
+  String get notificationsAllCaughtUp;
+
+  /// No description provided for @notificationsNewBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get notificationsNewBadge;
+
+  /// No description provided for @notificationsRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get notificationsRefresh;
+
+  /// No description provided for @notificationsJustNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get notificationsJustNow;
+
+  /// No description provided for @notificationsHoursAgoShort.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h'**
+  String notificationsHoursAgoShort(int hours);
+
+  /// No description provided for @notificationsMinutesAgoShort.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m'**
+  String notificationsMinutesAgoShort(int minutes);
+
   /// No description provided for @staffNavHome.
   ///
   /// In en, this message translates to:
@@ -5280,6 +5346,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load SOS alerts.'**
   String get sosMonitorError;
+
+  /// No description provided for @sosMonitorRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get sosMonitorRefresh;
+
+  /// No description provided for @sosMonitorLive.
+  ///
+  /// In en, this message translates to:
+  /// **'Live'**
+  String get sosMonitorLive;
+
+  /// No description provided for @sosMonitorSelectHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap an alert to track it on the map.'**
+  String get sosMonitorSelectHint;
 
   /// No description provided for @sosUnknownPilgrim.
   ///

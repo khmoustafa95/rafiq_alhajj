@@ -20,6 +20,7 @@ class PushNotificationService {
   final LocalNotificationsService _localNotifications;
 
   FirebaseMessaging? _messaging;
+  Future<void>? _initialization;
   StreamSubscription<String>? _tokenRefreshSub;
   StreamSubscription<RemoteMessage>? _foregroundSub;
   String? _currentProfileId;
@@ -40,7 +41,12 @@ class PushNotificationService {
             defaultTargetPlatform == TargetPlatform.iOS);
   }
 
-  Future<void> initialize() async {
+  /// Runs [_initialize] at most once. `bindUser` awaits this so a token is
+  /// never fetched before FCM setup + permission completes (otherwise
+  /// `getToken()` returns null and the token is never registered).
+  Future<void> initialize() => _initialization ??= _initialize();
+
+  Future<void> _initialize() async {
     if (!isSupported) {
       return;
     }
@@ -82,11 +88,38 @@ class PushNotificationService {
     _currentProfileId = profileId;
 
     if (!isSupported || profileId == null) {
-      await _clearRegistration();
+      if (kDebugMode) {
+        debugPrint(
+          'FCM bindUser skipped: supported=$isSupported profile=$profileId',
+        );
+      }
+      _clearRegistration();
       return;
     }
 
-    final token = await _fetchToken();
+    // Ensure FCM is fully initialized before requesting a token. The auth
+    // listener can fire `bindUser` before `initialize()` finishes (e.g. on a
+    // relaunch with an already-signed-in user); calling getToken too early
+    // returns null. `initialize()` is idempotent so this is cheap when done.
+    await initialize();
+
+    String? token;
+    try {
+      token = await _fetchToken();
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('FCM getToken failed: $e');
+      }
+      return;
+    }
+
+    if (kDebugMode) {
+      final preview = (token == null || token.isEmpty)
+          ? 'NULL/EMPTY'
+          : 'len=${token.length} ${token.substring(0, 12)}…';
+      debugPrint('FCM bindUser profile=$profileId token=$preview');
+    }
+
     if (token == null || token.isEmpty) {
       return;
     }
@@ -117,15 +150,18 @@ class PushNotificationService {
       }
     }
 
-    await _clearRegistration();
+    _clearRegistration();
   }
 
-  Future<void> _clearRegistration() async {
+  // Clears local registration state only. We intentionally do NOT call
+  // `_messaging.deleteToken()`: the DB row is already removed in
+  // `unregisterCurrentUser()`, which is what stops server-side push targeting.
+  // Deleting the FCM token device-wide forces a fresh mint and can leave the
+  // next signed-in user without a token (getToken() races and returns null
+  // right after a delete), which silently breaks re-registration on re-login.
+  void _clearRegistration() {
     _currentProfileId = null;
     _lastRegisteredToken = null;
-    if (isSupported) {
-      await _messaging?.deleteToken();
-    }
   }
 
   Future<void> _requestPermission() async {
@@ -158,6 +194,9 @@ class PushNotificationService {
         platform: platform,
       );
       _lastRegisteredToken = token;
+      if (kDebugMode) {
+        debugPrint('FCM token persisted ($platform) for profile $profileId');
+      }
     } on DeviceTokenException catch (e) {
       if (kDebugMode) {
         debugPrint('Push token upsert failed: $e');

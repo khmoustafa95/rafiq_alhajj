@@ -1532,6 +1532,45 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get notificationsGroupToday => 'اليوم';
+
+  @override
+  String get notificationsGroupYesterday => 'أمس';
+
+  @override
+  String get notificationsGroupEarlier => 'الأقدم';
+
+  @override
+  String notificationsUnreadCount(int count) {
+    return '$count غير مقروء';
+  }
+
+  @override
+  String get notificationsAllReadSubtitle => 'تمت قراءة الكل';
+
+  @override
+  String get notificationsAllCaughtUp => 'أنت على اطّلاع بكل جديد';
+
+  @override
+  String get notificationsNewBadge => 'جديد';
+
+  @override
+  String get notificationsRefresh => 'تحديث';
+
+  @override
+  String get notificationsJustNow => 'الآن';
+
+  @override
+  String notificationsHoursAgoShort(int hours) {
+    return '$hours س';
+  }
+
+  @override
+  String notificationsMinutesAgoShort(int minutes) {
+    return '$minutes د';
+  }
+
+  @override
   String get staffNavHome => 'الرئيسية';
 
   @override
@@ -2808,6 +2847,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get sosMonitorError => 'تعذّر تحميل نداءات الاستغاثة.';
+
+  @override
+  String get sosMonitorRefresh => 'تحديث';
+
+  @override
+  String get sosMonitorLive => 'مباشر';
+
+  @override
+  String get sosMonitorSelectHint => 'اضغط على نداء لتتبّعه على الخريطة.';
 
   @override
   String get sosUnknownPilgrim => 'حاج';

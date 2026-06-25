@@ -35,7 +35,10 @@ Future<SosAlert?> mySosAlert(Ref ref) async {
     syncKey: RealtimeSyncKeys.sosAlerts,
     ensureSyncActive: (ref) => ref.watch(realtimeSyncSosAlertsProvider),
     handlerId: 'my_sos_alert',
-    onInvalidate: (ref) => ref.invalidate(mySosAlertProvider),
+    // Invalidate through the container: these data providers depend on the
+    // sync provider, so `ref.invalidate` would trip Riverpod's debug
+    // can-depend-on guard (false-positive cycle) and silently skip the refresh.
+    onInvalidate: (ref) => ref.container.invalidate(mySosAlertProvider),
   );
 
   return ref.read(sosServiceProvider).loadMyActiveAlert(profileId);
@@ -49,7 +52,7 @@ Future<List<SosAlert>> activeSosAlerts(Ref ref) async {
     syncKey: RealtimeSyncKeys.sosAlerts,
     ensureSyncActive: (ref) => ref.watch(realtimeSyncSosAlertsProvider),
     handlerId: 'active_sos_alerts',
-    onInvalidate: (ref) => ref.invalidate(activeSosAlertsProvider),
+    onInvalidate: (ref) => ref.container.invalidate(activeSosAlertsProvider),
   );
 
   return ref.read(sosServiceProvider).loadActiveAlerts();
@@ -63,7 +66,8 @@ Future<List<SosPing>> sosAlertPings(Ref ref, String alertId) async {
     syncKey: RealtimeSyncKeys.sosAlerts,
     ensureSyncActive: (ref) => ref.watch(realtimeSyncSosAlertsProvider),
     handlerId: 'sos_pings_$alertId',
-    onInvalidate: (ref) => ref.invalidate(sosAlertPingsProvider(alertId)),
+    onInvalidate: (ref) =>
+        ref.container.invalidate(sosAlertPingsProvider(alertId)),
   );
 
   return ref.read(sosServiceProvider).loadPings(alertId);

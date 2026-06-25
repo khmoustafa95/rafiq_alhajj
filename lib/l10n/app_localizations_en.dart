@@ -1554,6 +1554,45 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get notificationsGroupToday => 'Today';
+
+  @override
+  String get notificationsGroupYesterday => 'Yesterday';
+
+  @override
+  String get notificationsGroupEarlier => 'Earlier';
+
+  @override
+  String notificationsUnreadCount(int count) {
+    return '$count unread';
+  }
+
+  @override
+  String get notificationsAllReadSubtitle => 'All caught up';
+
+  @override
+  String get notificationsAllCaughtUp => 'You\'re all caught up';
+
+  @override
+  String get notificationsNewBadge => 'New';
+
+  @override
+  String get notificationsRefresh => 'Refresh';
+
+  @override
+  String get notificationsJustNow => 'Just now';
+
+  @override
+  String notificationsHoursAgoShort(int hours) {
+    return '${hours}h';
+  }
+
+  @override
+  String notificationsMinutesAgoShort(int minutes) {
+    return '${minutes}m';
+  }
+
+  @override
   String get staffNavHome => 'Home';
 
   @override
@@ -2850,6 +2889,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sosMonitorError => 'Could not load SOS alerts.';
+
+  @override
+  String get sosMonitorRefresh => 'Refresh';
+
+  @override
+  String get sosMonitorLive => 'Live';
+
+  @override
+  String get sosMonitorSelectHint => 'Tap an alert to track it on the map.';
 
   @override
   String get sosUnknownPilgrim => 'Pilgrim';

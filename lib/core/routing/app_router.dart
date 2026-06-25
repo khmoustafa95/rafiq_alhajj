@@ -66,25 +66,33 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_router.g.dart';
 
+/// Tool detail routes rendered above the pilgrim shell (no bottom nav bar).
+///
+/// They are nested under `/tools` for path semantics but pinned to the root
+/// navigator so the bottom navigation bar and home FAB are hidden on them.
 List<RouteBase> _toolsChildRoutes() => [
       GoRoute(
         path: 'prayer-times',
         name: 'prayerTimes',
+        parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const PrayerTimesScreen(),
       ),
       GoRoute(
         path: 'qibla',
         name: 'qibla',
+        parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const QiblaScreen(),
       ),
       GoRoute(
         path: 'quran',
         name: 'quran',
+        parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const QuranSurahListScreen(),
         routes: [
           GoRoute(
             path: ':surahNumber',
             name: 'quranSurah',
+            parentNavigatorKey: rootNavigatorKey,
             builder: (context, state) {
               final surahNumber = int.parse(
                 state.pathParameters['surahNumber']!,
@@ -97,11 +105,13 @@ List<RouteBase> _toolsChildRoutes() => [
       GoRoute(
         path: 'adhkar',
         name: 'adhkar',
+        parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const AdhkarScreen(),
       ),
       GoRoute(
         path: 'virtual-tour',
         name: 'virtualTour',
+        parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const VirtualTourScreen(),
       ),
     ];
@@ -493,6 +503,11 @@ ShellRoute _staffWebShellRoute() {
         builder: (context, state) => const AdminDashboardScreen(),
       ),
       GoRoute(
+        path: AppRoutes.notifications,
+        name: 'staffNotifications',
+        builder: (context, state) => const NotificationListScreen(),
+      ),
+      GoRoute(
         path: AppRoutes.adminNotificationSend,
         name: 'adminNotificationSend',
         builder: (context, state) =>
@@ -668,11 +683,6 @@ List<RouteBase> _webRoutes() => [
         builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
-        path: AppRoutes.notifications,
-        name: 'notifications',
-        builder: (context, state) => const NotificationListScreen(),
-      ),
-      GoRoute(
         path: AppRoutes.contentVideosList,
         name: 'contentVideosListWeb',
         redirect: (context, state) => AppRoutes.contentTopicsList,
@@ -812,13 +822,17 @@ GoRouter appRouter(Ref ref) {
           if (location == AppRoutes.adminLogin) {
             return AppRoutes.adminDashboard;
           }
-          if (_isAdminStaffWebRoute(location)) {
+          if (location == AppRoutes.notifications ||
+              _isAdminStaffWebRoute(location)) {
             return null;
           }
           return AppRoutes.adminDashboard;
         }
 
         if (isOperator) {
+          if (location == AppRoutes.notifications) {
+            return null;
+          }
           if (!isOperatorWebRoute || location == AppRoutes.operatorLogin) {
             return AppRoutes.operatorIntake;
           }
@@ -843,13 +857,17 @@ GoRouter appRouter(Ref ref) {
         if (location == AppRoutes.adminLogin) {
           return AppRoutes.adminDashboard;
         }
-        if (_isAdminStaffWebRoute(location)) {
+        if (location == AppRoutes.notifications ||
+            _isAdminStaffWebRoute(location)) {
           return null;
         }
         return AppRoutes.adminDashboard;
       }
 
       if (isOperator) {
+        if (location == AppRoutes.notifications) {
+          return null;
+        }
         if (!isFieldOperatorRoute || location == AppRoutes.fieldOperatorLogin) {
           return AppRoutes.fieldOperatorHome;
         }

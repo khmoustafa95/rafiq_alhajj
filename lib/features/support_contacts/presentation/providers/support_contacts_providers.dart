@@ -31,7 +31,10 @@ Future<List<SupportContact>> supportContacts(Ref ref) async {
     syncKey: RealtimeSyncKeys.supportContacts,
     ensureSyncActive: (ref) => ref.watch(realtimeSyncSupportContactsProvider),
     handlerId: 'support_contacts',
-    onInvalidate: (ref) => ref.invalidate(supportContactsProvider),
+    // Invalidate via the container: this provider depends on the sync
+    // provider, so `ref.invalidate` trips Riverpod's debug can-depend-on
+    // guard (false-positive cycle) and silently skips the realtime refresh.
+    onInvalidate: (ref) => ref.container.invalidate(supportContactsProvider),
   );
 
   return ref.read(supportContactsServiceProvider).loadVisible();
@@ -45,7 +48,8 @@ Future<List<SupportContact>> adminSupportContacts(Ref ref) async {
     syncKey: RealtimeSyncKeys.supportContacts,
     ensureSyncActive: (ref) => ref.watch(realtimeSyncSupportContactsProvider),
     handlerId: 'admin_support_contacts',
-    onInvalidate: (ref) => ref.invalidate(adminSupportContactsProvider),
+    onInvalidate: (ref) =>
+        ref.container.invalidate(adminSupportContactsProvider),
   );
 
   return ref.read(supportContactsServiceProvider).loadAll();

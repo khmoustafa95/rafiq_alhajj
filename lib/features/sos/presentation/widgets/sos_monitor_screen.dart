@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
@@ -11,6 +10,7 @@ import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/features/sos/domain/models/sos_alert.dart';
 import 'package:rafiq_alhajj/features/sos/domain/models/sos_ping.dart';
 import 'package:rafiq_alhajj/features/sos/presentation/controllers/sos_controller.dart';
@@ -35,6 +35,14 @@ class _SosMonitorScreenState extends ConsumerState<SosMonitorScreen> {
     setState(() => _selectedId = alert.id);
     if (alert.hasLocation) {
       _mapController.move(LatLng(alert.latitude!, alert.longitude!), 16);
+    }
+  }
+
+  void _refresh() {
+    ref.invalidate(activeSosAlertsProvider);
+    final id = _selectedId;
+    if (id != null) {
+      ref.invalidate(sosAlertPingsProvider(id));
     }
   }
 
@@ -88,6 +96,7 @@ class _SosMonitorScreenState extends ConsumerState<SosMonitorScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final alertsAsync = ref.watch(activeSosAlertsProvider);
+    final activeCount = alertsAsync.value?.length ?? 0;
 
     final body = alertsAsync.when(
       skipLoadingOnReload: true,
@@ -119,9 +128,9 @@ class _SosMonitorScreenState extends ConsumerState<SosMonitorScreen> {
         );
 
         final list = ListView.separated(
-          padding: EdgeInsets.all(16.w),
+          padding: EdgeInsets.all(sw(16)),
           itemCount: alerts.length,
-          separatorBuilder: (_, _) => SizedBox(height: 10.h),
+          separatorBuilder: (_, _) => SizedBox(height: sh(10)),
           itemBuilder: (context, index) {
             final alert = alerts[index];
             return _AlertCard(
@@ -140,17 +149,14 @@ class _SosMonitorScreenState extends ConsumerState<SosMonitorScreen> {
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(flex: 3, child: map),
-                  SizedBox(
-                    width: 380,
-                    child: list,
-                  ),
+                  Expanded(child: map),
+                  SizedBox(width: sw(360), child: list),
                 ],
               );
             }
             return Column(
               children: [
-                SizedBox(height: 280.h, child: map),
+                SizedBox(height: sh(300), child: map),
                 Expanded(child: list),
               ],
             );
@@ -159,19 +165,75 @@ class _SosMonitorScreenState extends ConsumerState<SosMonitorScreen> {
       },
     );
 
+    final actions = <Widget>[
+      if (activeCount > 0) _LiveBadge(count: activeCount),
+      IconButton(
+        tooltip: l10n.sosMonitorRefresh,
+        onPressed: _refresh,
+        icon: const Icon(Icons.refresh_rounded),
+      ),
+    ];
+
     if (AppPlatform.isWeb) {
       return StaffWebPage(
         title: l10n.sosMonitorTitle,
         subtitle: l10n.sosMonitorSubtitle,
         scrollable: false,
+        actions: actions,
         body: body,
       );
     }
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: RafiqAppBar(title: Text(l10n.sosMonitorTitle)),
+      appBar: RafiqAppBar(
+        title: Text(l10n.sosMonitorTitle),
+        actions: actions,
+      ),
       body: body,
+    );
+  }
+}
+
+/// Pulsing "live" indicator with the active alert count.
+class _LiveBadge extends StatelessWidget {
+  const _LiveBadge({required this.count});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Padding(
+      padding: EdgeInsetsDirectional.only(end: sw(8)),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: sw(10), vertical: sh(6)),
+        decoration: BoxDecoration(
+          color: AppColors.error.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(999),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: ss(8),
+              height: ss(8),
+              decoration: const BoxDecoration(
+                color: AppColors.error,
+                shape: BoxShape.circle,
+              ),
+            ),
+            SizedBox(width: sw(6)),
+            Text(
+              '${l10n.sosMonitorLive} · ${l10n.sosMonitorActiveCount(count)}',
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: AppColors.error,
+                    fontWeight: FontWeight.w700,
+                  ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -193,6 +255,7 @@ class _SosMap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final located = alerts.where((a) => a.hasLocation).toList();
     final center = selected.hasLocation
         ? LatLng(selected.latitude!, selected.longitude!)
@@ -205,7 +268,7 @@ class _SosMap extends StatelessWidget {
         .toList(growable: false);
 
     return Padding(
-      padding: EdgeInsets.all(16.w),
+      padding: EdgeInsets.all(sw(16)),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
         child: FlutterMap(
@@ -236,36 +299,113 @@ class _SosMap extends StatelessWidget {
                 for (final alert in located)
                   Marker(
                     point: LatLng(alert.latitude!, alert.longitude!),
-                    width: 44,
-                    height: 44,
-                    child: GestureDetector(
+                    width: 200,
+                    height: 86,
+                    alignment: Alignment.topCenter,
+                    child: _PilgrimMarker(
+                      name: alert.pilgrimName ?? l10n.sosUnknownPilgrim,
+                      group: alert.groupName ?? l10n.sosNoGroup,
+                      selected: alert.id == selected.id,
                       onTap: () => onSelect(alert),
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: alert.id == selected.id
-                              ? AppColors.error
-                              : AppColors.accentRed,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.white,
-                            width: alert.id == selected.id ? 3 : 2,
-                          ),
-                          boxShadow: const [
-                            BoxShadow(color: AppColors.shadow, blurRadius: 4),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.person_pin_circle,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                      ),
                     ),
                   ),
               ],
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Map flag: a callout pill showing pilgrim name + group above the location pin.
+class _PilgrimMarker extends StatelessWidget {
+  const _PilgrimMarker({
+    required this.name,
+    required this.group,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String name;
+  final String group;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final pinColor = selected ? AppColors.error : AppColors.accentRed;
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 184),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: selected ? AppColors.error : AppColors.border,
+                  width: selected ? 1.5 : 1,
+                ),
+                boxShadow: const [
+                  BoxShadow(color: AppColors.shadow, blurRadius: 6),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.person_pin_circle,
+                          size: 14, color: pinColor),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            height: 1.1,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 1),
+                  Text(
+                    group,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 10.5,
+                      height: 1.1,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Icon(
+            Icons.location_on,
+            size: 34,
+            color: pinColor,
+            shadows: const [
+              Shadow(color: AppColors.shadow, blurRadius: 4),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -300,35 +440,38 @@ class _AlertCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppDecorations.radiusLg),
         child: Container(
-          decoration: AppDecorations.card(radius: AppDecorations.radiusLg).copyWith(
+          decoration:
+              AppDecorations.card(radius: AppDecorations.radiusLg).copyWith(
             border: Border.all(
               color: selected ? AppColors.error : AppColors.border,
               width: selected ? 1.5 : 1,
             ),
           ),
-          padding: EdgeInsets.all(14.w),
+          padding: EdgeInsets.all(sw(14)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   Container(
-                    width: 40.w,
-                    height: 40.w,
+                    width: ss(40),
+                    height: ss(40),
                     decoration: BoxDecoration(
                       color: AppColors.error.withValues(alpha: 0.12),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(Icons.sos_rounded,
-                        color: AppColors.error, size: 22.sp),
+                        color: AppColors.error, size: ss(22)),
                   ),
-                  SizedBox(width: 12.w),
+                  SizedBox(width: sw(12)),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: Theme.of(context)
                               .textTheme
                               .titleSmall
@@ -336,6 +479,8 @@ class _AlertCard extends StatelessWidget {
                         ),
                         Text(
                           group,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: Theme.of(context)
                               .textTheme
                               .bodySmall
@@ -346,32 +491,56 @@ class _AlertCard extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 10.h),
-              Text(
-                lastUpdate != null
-                    ? l10n.sosLastUpdate(
-                        TimeOfDay.fromDateTime(lastUpdate).format(context))
-                    : l10n.sosNoLocationYet,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.textSecondary,
+              SizedBox(height: sh(10)),
+              Row(
+                children: [
+                  Icon(
+                    lastUpdate != null
+                        ? Icons.my_location
+                        : Icons.location_searching,
+                    size: ss(15),
+                    color: AppColors.textSecondary,
+                  ),
+                  SizedBox(width: sw(6)),
+                  Expanded(
+                    child: Text(
+                      lastUpdate != null
+                          ? l10n.sosLastUpdate(
+                              TimeOfDay.fromDateTime(lastUpdate).format(context))
+                          : l10n.sosNoLocationYet,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
+                  ),
+                ],
               ),
-              SizedBox(height: 12.h),
+              SizedBox(height: sh(12)),
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: alert.hasLocation ? onOpenMaps : null,
                       icon: const Icon(Icons.map_outlined, size: 18),
-                      label: Text(l10n.sosOpenInMaps),
+                      label: Text(
+                        l10n.sosOpenInMaps,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
-                  SizedBox(width: 10.w),
+                  SizedBox(width: sw(10)),
                   Expanded(
                     child: FilledButton.icon(
                       onPressed: onResolve,
                       icon: const Icon(Icons.check_circle_outline, size: 18),
-                      label: Text(l10n.sosResolveButton),
+                      label: Text(
+                        l10n.sosResolveButton,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
                 ],
@@ -393,13 +562,13 @@ class _EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(32.w),
+        padding: EdgeInsets.all(sw(32)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.verified_user_outlined,
-                size: 48.sp, color: AppColors.success),
-            SizedBox(height: 16.h),
+                size: ss(48), color: AppColors.success),
+            SizedBox(height: sh(16)),
             Text(
               message,
               textAlign: TextAlign.center,

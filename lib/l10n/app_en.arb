@@ -743,6 +743,26 @@
   "@notificationsMinutesAgo": {
     "placeholders": {"minutes": {"type": "int"}}
   },
+  "notificationsGroupToday": "Today",
+  "notificationsGroupYesterday": "Yesterday",
+  "notificationsGroupEarlier": "Earlier",
+  "notificationsUnreadCount": "{count} unread",
+  "@notificationsUnreadCount": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "notificationsAllReadSubtitle": "All caught up",
+  "notificationsAllCaughtUp": "You're all caught up",
+  "notificationsNewBadge": "New",
+  "notificationsRefresh": "Refresh",
+  "notificationsJustNow": "Just now",
+  "notificationsHoursAgoShort": "{hours}h",
+  "@notificationsHoursAgoShort": {
+    "placeholders": {"hours": {"type": "int"}}
+  },
+  "notificationsMinutesAgoShort": "{minutes}m",
+  "@notificationsMinutesAgoShort": {
+    "placeholders": {"minutes": {"type": "int"}}
+  },
   "staffNavHome": "Home",
   "staffNavPilgrims": "Pilgrims",
   "staffNavOperators": "Operators",
@@ -1205,6 +1225,9 @@
     "placeholders": {"count": {"type": "int"}}
   },
   "sosMonitorError": "Could not load SOS alerts.",
+  "sosMonitorRefresh": "Refresh",
+  "sosMonitorLive": "Live",
+  "sosMonitorSelectHint": "Tap an alert to track it on the map.",
   "sosUnknownPilgrim": "Pilgrim",
   "sosNoGroup": "No group",
   "sosNoLocationYet": "Waiting for location…",
