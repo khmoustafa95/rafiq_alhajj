@@ -123,7 +123,22 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
             width: collapsed
                 ? StaffWebShell.collapsedSidebarWidth
                 : StaffWebShell.sidebarWidth,
-            child: sidebar,
+            // Force the sidebar to its target width and clip the overflow so its
+            // contents lay out at the final width (no squeezing) and are simply
+            // revealed/hidden as the container animates — avoids transient
+            // RenderFlex overflow on the nav tiles mid-animation.
+            child: ClipRect(
+              child: OverflowBox(
+                alignment: AlignmentDirectional.topStart,
+                minWidth: collapsed
+                    ? StaffWebShell.collapsedSidebarWidth
+                    : StaffWebShell.sidebarWidth,
+                maxWidth: collapsed
+                    ? StaffWebShell.collapsedSidebarWidth
+                    : StaffWebShell.sidebarWidth,
+                child: sidebar,
+              ),
+            ),
           ),
           Expanded(
             child: Material(
