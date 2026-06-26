@@ -50,13 +50,14 @@ class AdminContentTopicSave extends _$AdminContentTopicSave {
   @override
   FutureOr<void> build() {}
 
-  Future<bool> save({
+  /// Returns the saved topic id on success, or null on failure.
+  Future<String?> save({
     String? id,
     required ContentTopicEditorInput input,
     required List<ContentTopicMediaInput> media,
   }) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
+    final result = await AsyncValue.guard(() async {
       final repo = ref.read(adminContentTopicsRepositoryProvider);
       final storage = ref.read(contentMediaStorageServiceProvider);
       final wantPrivate = input.visibility == ContentVisibility.pilgrimOnly;
@@ -72,8 +73,10 @@ class AdminContentTopicSave extends _$AdminContentTopicSave {
       await repo.replaceMedia(topicId: topicId, media: effectiveMedia);
       ref.invalidate(adminContentTopicsListProvider);
       ref.invalidate(adminContentTopicDetailProvider(topicId));
+      return topicId;
     });
-    return !state.hasError;
+    state = result.whenData((_) {});
+    return result.whenOrNull(data: (topicId) => topicId);
   }
 
   Future<ContentTopicEditorInput> _rehomeCover(

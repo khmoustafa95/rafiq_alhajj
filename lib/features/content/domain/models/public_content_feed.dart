@@ -7,7 +7,18 @@ part 'public_content_feed.freezed.dart';
 @freezed
 abstract class PublicContentFeed with _$PublicContentFeed {
   const factory PublicContentFeed({
+    required List<ContentItem> announcements,
+    required List<ContentItem> news,
     required List<ContentTopic> topics,
-    required List<ContentItem> newsAndAnnouncements,
   }) = _PublicContentFeed;
+
+  const PublicContentFeed._();
+
+  /// Announcements + news combined (most recent first), for screens that show a
+  /// single mixed feed list.
+  List<ContentItem> get newsAndAnnouncements {
+    final combined = [...announcements, ...news]
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return combined;
+  }
 }

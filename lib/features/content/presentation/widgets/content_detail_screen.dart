@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
-import 'package:rafiq_alhajj/features/content/domain/models/content_type.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_detail_provider.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -32,21 +31,35 @@ class ContentDetailScreen extends ConsumerWidget {
             return Center(child: Text(l10n.contentNotFound));
           }
 
-          final colorScheme = Theme.of(context).colorScheme;
+          final mediaUrl = item.mediaUrl;
+          final hasMedia = mediaUrl != null && mediaUrl.isNotEmpty;
+          final showInlineImage = hasMedia && _isImageUrl(mediaUrl);
 
           return SingleChildScrollView(
             padding: EdgeInsets.all(24.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Icon(
-                  item.type == ContentType.video
-                      ? Icons.play_circle_outline
-                      : Icons.article_outlined,
-                  size: 48.sp,
-                  color: colorScheme.primary,
-                ),
-                SizedBox(height: 16.h),
+                if (showInlineImage) ...[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16.r),
+                    child: Image.network(
+                      mediaUrl,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, progress) =>
+                          progress == null
+                              ? child
+                              : SizedBox(
+                                  height: 200.h,
+                                  child: const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                ),
+                      errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                    ),
+                  ),
+                  SizedBox(height: 20.h),
+                ],
                 Text(
                   item.title,
                   style: Theme.of(context).textTheme.headlineSmall,
@@ -59,10 +72,10 @@ class ContentDetailScreen extends ConsumerWidget {
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
-                if (item.mediaUrl != null && item.mediaUrl!.isNotEmpty) ...[
+                if (hasMedia && !showInlineImage) ...[
                   SizedBox(height: 24.h),
                   FilledButton.icon(
-                    onPressed: () => _openMediaUrl(context, item.mediaUrl!),
+                    onPressed: () => _openMediaUrl(context, mediaUrl),
                     icon: const Icon(Icons.open_in_new),
                     label: Text(l10n.contentOpenMedia),
                   ),
@@ -73,6 +86,17 @@ class ContentDetailScreen extends ConsumerWidget {
         },
       ),
     );
+  }
+
+  /// True when the URL points at a renderable raster image (by extension).
+  /// Non-image links (e.g. YouTube) fall back to the external open button.
+  bool _isImageUrl(String url) {
+    final path = Uri.tryParse(url)?.path.toLowerCase() ?? url.toLowerCase();
+    return path.endsWith('.jpg') ||
+        path.endsWith('.jpeg') ||
+        path.endsWith('.png') ||
+        path.endsWith('.webp') ||
+        path.endsWith('.gif');
   }
 
   Future<void> _openMediaUrl(BuildContext context, String url) async {

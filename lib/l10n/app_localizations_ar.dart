@@ -53,6 +53,24 @@ class AppLocalizationsAr extends AppLocalizations {
   String get contentNewsSection => 'أخبار وإعلانات';
 
   @override
+  String get contentNewsSectionTitle => 'الأخبار';
+
+  @override
+  String get contentAnnouncementsSection => 'الإعلانات';
+
+  @override
+  String get contentAnnouncementsEmpty => 'لا توجد إعلانات بعد.';
+
+  @override
+  String get contentLibrarySection => 'المكتبة التعليمية';
+
+  @override
+  String get contentMediaPdf => 'ملف PDF';
+
+  @override
+  String get educationalMediaPdfError => 'تعذّر فتح ملف PDF.';
+
+  @override
   String get contentVideosEmpty => 'لا توجد فيديوهات عامة حالياً.';
 
   @override
@@ -916,7 +934,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get adminManageContent => 'إدارة مكتبة المحتوى';
 
   @override
-  String get adminContentListTitle => 'مكتبة المحتوى';
+  String get adminContentListTitle => 'إدارة المحتوى';
 
   @override
   String get adminContentAdd => 'إضافة محتوى';
@@ -929,6 +947,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminContentEditTitle => 'تعديل المحتوى';
+
+  @override
+  String get adminContentTabAnnouncements => 'الإعلانات';
+
+  @override
+  String get adminContentTabNews => 'الأخبار';
+
+  @override
+  String get adminContentTabLibrary => 'المكتبة التعليمية';
+
+  @override
+  String get adminContentNotifyPilgrims => 'إشعار الحجاج';
+
+  @override
+  String get adminContentNotifyPilgrimsHint =>
+      'إرسال إشعار للحجاج بهذا التغيير.';
 
   @override
   String get adminContentLoadError => 'تعذر تحميل المحتوى.';
@@ -2399,6 +2433,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminContentMediaUploadCover => 'رفع صورة';
+
+  @override
+  String get adminContentMediaUploadVideo => 'رفع فيديو';
 
   @override
   String get adminContentVideoExternalHint =>

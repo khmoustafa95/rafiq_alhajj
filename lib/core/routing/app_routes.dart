@@ -12,6 +12,7 @@ abstract final class AppRoutes {
   static const String contentTopicsList = '/content/topics';
   static const String contentTopicDetail = '/content/topics/:id';
   static const String contentNewsList = '/content/news';
+  static const String contentAnnouncementsList = '/content/announcements';
   static const String contentDetail = '/content/:id';
   static const String tools = '/tools';
   static const String supportContacts = '/support-contacts';
@@ -75,6 +76,10 @@ abstract final class AppRoutes {
   static const String fieldOperatorSos = '/operator/field/sos';
 
   static String adminContentEditPath(String id) => '/admin/content/$id/edit';
+
+  /// Admin "new content" scoped to a feed type (announcement | news).
+  static String adminContentNewTypedPath(String type) =>
+      '/admin/content/new?type=$type';
 
   static String adminSupportContactEditPath(String id) =>
       '/admin/support-contacts/$id/edit';

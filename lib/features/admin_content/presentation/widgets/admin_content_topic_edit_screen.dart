@@ -10,6 +10,7 @@ import 'package:rafiq_alhajj/core/utils/upload_validation.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/core/widgets/upload_progress_banner.dart';
+import 'package:rafiq_alhajj/features/admin_content/presentation/providers/admin_content_providers.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/providers/admin_content_topics_providers.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/utils/content_meta_l10n.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_topic.dart';
@@ -54,6 +55,7 @@ class _AdminContentTopicEditScreenState
     extends ConsumerState<AdminContentTopicEditScreen> {
   late final FormGroup _form;
   bool _isActive = true;
+  bool _notifyPilgrims = false;
   final List<_MediaDraft> _media = [];
   bool _initialized = false;
   bool _isUploading = false;
@@ -135,6 +137,7 @@ class _AdminContentTopicEditScreenState
       EducationalMediaType.video => UploadConstraints.video,
       EducationalMediaType.audio => UploadConstraints.audio,
       EducationalMediaType.image => UploadConstraints.image,
+      EducationalMediaType.pdf => UploadConstraints.pdf,
     };
   }
 
@@ -143,6 +146,7 @@ class _AdminContentTopicEditScreenState
       EducationalMediaType.video => UploadMediaKind.video,
       EducationalMediaType.audio => UploadMediaKind.audio,
       EducationalMediaType.image => UploadMediaKind.image,
+      EducationalMediaType.pdf => UploadMediaKind.other,
     };
   }
 
@@ -299,7 +303,7 @@ class _AdminContentTopicEditScreenState
           _media[i].toInput(i + 1),
     ];
 
-    final ok = await ref.read(adminContentTopicSaveProvider.notifier).save(
+    final savedId = await ref.read(adminContentTopicSaveProvider.notifier).save(
           id: widget.topicId,
           input: input,
           media: media,
@@ -309,9 +313,18 @@ class _AdminContentTopicEditScreenState
       return;
     }
 
-    if (!ok) {
+    if (savedId == null) {
       _showSnack(l10n.adminContentTopicSaveError);
       return;
+    }
+
+    if (_notifyPilgrims) {
+      await ref.read(contentNotificationServiceProvider).publish(
+            title: input.title,
+            route: 'contentTopic',
+            id: savedId,
+            visibility: input.visibility,
+          );
     }
 
     // Best-effort: drop storage objects that are no longer referenced.
@@ -474,6 +487,12 @@ class _AdminContentTopicEditScreenState
             onChanged: (v) => setState(() => _isActive = v),
             title: Text(l10n.adminHajjJourneyActive),
           ),
+          SwitchListTile(
+            value: _notifyPilgrims,
+            onChanged: isBusy ? null : (v) => setState(() => _notifyPilgrims = v),
+            title: Text(l10n.adminContentNotifyPilgrims),
+            subtitle: Text(l10n.adminContentNotifyPilgrimsHint),
+          ),
           SizedBox(height: 16.h),
           Row(
             children: [
@@ -525,6 +544,7 @@ class _AdminContentTopicEditScreenState
       EducationalMediaType.video => l10n.hajjJourneyMediaVideo,
       EducationalMediaType.audio => l10n.hajjJourneyMediaAudio,
       EducationalMediaType.image => l10n.hajjJourneyMediaImage,
+      EducationalMediaType.pdf => l10n.contentMediaPdf,
     };
   }
 }

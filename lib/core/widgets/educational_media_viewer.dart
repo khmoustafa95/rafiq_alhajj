@@ -2,9 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:chewie/chewie.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pdfx/pdfx.dart';
 import 'package:rafiq_alhajj/core/domain/models/educational_media.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
@@ -41,47 +44,10 @@ class EducationalMediaViewer extends StatefulWidget {
 
 class _EducationalMediaViewerState extends State<EducationalMediaViewer> {
   int _selectedIndex = 0;
-  int _imageIndex = 0;
-  bool _slideshowActive = false;
-  Timer? _slideshowTimer;
-  static const _slideshowInterval = Duration(seconds: 4);
 
   List<EducationalMediaItem> get _images => widget.media
       .where((m) => m.mediaType == EducationalMediaType.image)
       .toList();
-
-  @override
-  void dispose() {
-    _stopSlideshow();
-    super.dispose();
-  }
-
-  void _stopSlideshow() {
-    _slideshowTimer?.cancel();
-    _slideshowTimer = null;
-    _slideshowActive = false;
-  }
-
-  void _toggleSlideshow() {
-    if (_images.length < 2) {
-      return;
-    }
-
-    if (_slideshowActive) {
-      _stopSlideshow();
-    } else {
-      _slideshowActive = true;
-      _slideshowTimer = Timer.periodic(_slideshowInterval, (_) {
-        if (!mounted) {
-          return;
-        }
-        setState(() {
-          _imageIndex = (_imageIndex + 1) % _images.length;
-        });
-      });
-    }
-    setState(() {});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -145,7 +111,6 @@ class _EducationalMediaViewerState extends State<EducationalMediaViewer> {
                           ),
                           selected: _selectedIndex == i,
                           onSelected: (_) {
-                            _stopSlideshow();
                             setState(() => _selectedIndex = i);
                           },
                         ),
@@ -157,26 +122,6 @@ class _EducationalMediaViewerState extends State<EducationalMediaViewer> {
             _MediaContent(
               media: selected,
               images: _images,
-              imageIndex: _imageIndex,
-              slideshowActive: _slideshowActive,
-              onImagePrev: _images.length > 1
-                  ? () {
-                      _stopSlideshow();
-                      setState(() {
-                        _imageIndex =
-                            (_imageIndex - 1 + _images.length) % _images.length;
-                      });
-                    }
-                  : null,
-              onImageNext: _images.length > 1
-                  ? () {
-                      _stopSlideshow();
-                      setState(() {
-                        _imageIndex = (_imageIndex + 1) % _images.length;
-                      });
-                    }
-                  : null,
-              onToggleSlideshow: _images.length > 1 ? _toggleSlideshow : null,
             ),
           ],
         ),
@@ -189,6 +134,7 @@ class _EducationalMediaViewerState extends State<EducationalMediaViewer> {
       EducationalMediaType.video => l10n.educationalMediaVideo,
       EducationalMediaType.audio => l10n.educationalMediaAudio,
       EducationalMediaType.image => l10n.educationalMediaImage,
+      EducationalMediaType.pdf => l10n.contentMediaPdf,
     };
   }
 }
@@ -197,20 +143,10 @@ class _MediaContent extends ConsumerWidget {
   const _MediaContent({
     required this.media,
     required this.images,
-    required this.imageIndex,
-    required this.slideshowActive,
-    this.onImagePrev,
-    this.onImageNext,
-    this.onToggleSlideshow,
   });
 
   final EducationalMediaItem media;
   final List<EducationalMediaItem> images;
-  final int imageIndex;
-  final bool slideshowActive;
-  final VoidCallback? onImagePrev;
-  final VoidCallback? onImageNext;
-  final VoidCallback? onToggleSlideshow;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -219,13 +155,9 @@ class _MediaContent extends ConsumerWidget {
     return switch (media.mediaType) {
       EducationalMediaType.video => _ResolvedVideoEmbed(media: media),
       EducationalMediaType.audio => ResolvedAudioPlayer(media: media),
-      EducationalMediaType.image => _ImageGallery(
+      EducationalMediaType.pdf => _PdfMedia(media: media),
+      EducationalMediaType.image => _StoriesGallery(
           images: images.isEmpty ? [media] : images,
-          index: images.isEmpty ? 0 : imageIndex,
-          slideshowActive: slideshowActive,
-          onPrev: onImagePrev,
-          onNext: onImageNext,
-          onToggleSlideshow: onToggleSlideshow,
           l10n: l10n,
         ),
     };
@@ -431,73 +363,358 @@ class _VideoEmbedState extends State<_VideoEmbed> {
   }
 }
 
-class _ImageGallery extends StatelessWidget {
-  const _ImageGallery({
-    required this.images,
-    required this.index,
-    required this.slideshowActive,
-    required this.l10n,
-    this.onPrev,
-    this.onNext,
-    this.onToggleSlideshow,
-  });
+/// Resolves a PDF source (decrypted local file or signed/public URL) and
+/// renders a paged viewer via `pdfx`.
+class _PdfMedia extends ConsumerWidget {
+  const _PdfMedia({required this.media});
 
-  final List<EducationalMediaItem> images;
-  final int index;
-  final bool slideshowActive;
-  final AppLocalizations l10n;
-  final VoidCallback? onPrev;
-  final VoidCallback? onNext;
-  final VoidCallback? onToggleSlideshow;
+  final EducationalMediaItem media;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final urlAsync = ref.watch(
+      resolvedMediaPlaybackUrlProvider(media.id, media.url),
+    );
+
+    return urlAsync.when(
+      loading: () => SizedBox(
+        height: 200.h,
+        child: const Center(child: CircularProgressIndicator()),
+      ),
+      error: (_, _) => _PdfViewer(source: media.url),
+      data: (url) => _PdfViewer(source: url),
+    );
+  }
+}
+
+class _PdfViewer extends StatefulWidget {
+  const _PdfViewer({required this.source});
+
+  final String source;
+
+  @override
+  State<_PdfViewer> createState() => _PdfViewerState();
+}
+
+class _PdfViewerState extends State<_PdfViewer> {
+  PdfController? _controller;
+  Object? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_load());
+  }
+
+  @override
+  void didUpdateWidget(covariant _PdfViewer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.source != widget.source) {
+      _controller?.dispose();
+      _controller = null;
+      _error = null;
+      unawaited(_load());
+    }
+  }
+
+  Future<void> _load() async {
+    try {
+      final source = widget.source;
+      // Local decrypted files use openFile; remote/signed URLs are fetched as
+      // bytes (also the only path that works on web).
+      final Future<PdfDocument> document;
+      if (source.startsWith('http')) {
+        final response = await Dio().get<List<int>>(
+          source,
+          options: Options(responseType: ResponseType.bytes),
+        );
+        document = PdfDocument.openData(
+          Uint8List.fromList(response.data ?? const []),
+        );
+      } else {
+        document = PdfDocument.openFile(source);
+      }
+      final controller = PdfController(document: document);
+      if (!mounted) {
+        controller.dispose();
+        return;
+      }
+      setState(() => _controller = controller);
+    } catch (e) {
+      if (mounted) {
+        setState(() => _error = e);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final current = images[index.clamp(0, images.length - 1)];
-
+    final l10n = AppLocalizations.of(context);
+    if (_error != null) {
+      return SizedBox(
+        height: 200.h,
+        child: ColoredBox(
+          color: AppColors.surfaceMuted,
+          child: Center(
+            child: Text(
+              l10n.educationalMediaPdfError,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+            ),
+          ),
+        ),
+      );
+    }
+    final controller = _controller;
+    if (controller == null) {
+      return SizedBox(
+        height: 200.h,
+        child: const Center(child: CircularProgressIndicator()),
+      );
+    }
     return Column(
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
-          child: AspectRatio(
-            aspectRatio: 16 / 10,
-            child: ResolvedTopicImage(
-              media: current,
-              fit: BoxFit.cover,
+          child: SizedBox(
+            height: 420.h,
+            child: PdfView(
+              controller: controller,
+              scrollDirection: Axis.vertical,
             ),
           ),
         ),
-        if (images.length > 1) ...[
-          SizedBox(height: 10.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                onPressed: onPrev,
-                icon: const Icon(Icons.chevron_left_rounded),
-              ),
-              Text(
-                l10n.educationalMediaImageCounter(index + 1, images.length),
+        SizedBox(height: 8.h),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.picture_as_pdf_outlined,
+              size: 18,
+              color: AppColors.textSecondary,
+            ),
+            SizedBox(width: 6.w),
+            PdfPageNumber(
+              controller: controller,
+              builder: (context, loadingState, page, pagesCount) => Text(
+                l10n.educationalMediaImageCounter(page, pagesCount ?? 0),
                 style: Theme.of(context).textTheme.labelMedium,
               ),
-              IconButton(
-                onPressed: onNext,
-                icon: const Icon(Icons.chevron_right_rounded),
-              ),
-              IconButton(
-                onPressed: onToggleSlideshow,
-                tooltip: slideshowActive
-                    ? l10n.educationalMediaSlideshowStop
-                    : l10n.educationalMediaSlideshowStart,
-                icon: Icon(
-                  slideshowActive
-                      ? Icons.pause_circle_outline
-                      : Icons.slideshow_outlined,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// Social-media "stories" style image viewer: a top segmented progress bar,
+/// auto-advance, tap-left/right zones to step, and pause-on-hold.
+class _StoriesGallery extends StatefulWidget {
+  const _StoriesGallery({
+    required this.images,
+    required this.l10n,
+  });
+
+  final List<EducationalMediaItem> images;
+  final AppLocalizations l10n;
+
+  @override
+  State<_StoriesGallery> createState() => _StoriesGalleryState();
+}
+
+class _StoriesGalleryState extends State<_StoriesGallery>
+    with SingleTickerProviderStateMixin {
+  static const _slideDuration = Duration(seconds: 4);
+
+  late final AnimationController _progress;
+  int _index = 0;
+
+  bool get _hasMultiple => widget.images.length > 1;
+
+  @override
+  void initState() {
+    super.initState();
+    _progress = AnimationController(vsync: this, duration: _slideDuration)
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          _next();
+        }
+      });
+    if (_hasMultiple) {
+      unawaited(_progress.forward());
+    }
+  }
+
+  @override
+  void dispose() {
+    _progress.dispose();
+    super.dispose();
+  }
+
+  void _restartTimer() {
+    if (!_hasMultiple) {
+      return;
+    }
+    _progress.reset();
+    unawaited(_progress.forward());
+  }
+
+  void _next() {
+    if (!mounted) {
+      return;
+    }
+    setState(() => _index = (_index + 1) % widget.images.length);
+    _restartTimer();
+  }
+
+  void _prev() {
+    if (!mounted) {
+      return;
+    }
+    setState(
+      () => _index =
+          (_index - 1 + widget.images.length) % widget.images.length,
+    );
+    _restartTimer();
+  }
+
+  void _pause() {
+    if (_progress.isAnimating) {
+      _progress.stop();
+    }
+  }
+
+  void _resume() {
+    if (_hasMultiple && !_progress.isAnimating) {
+      unawaited(_progress.forward());
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final current = widget.images[_index.clamp(0, widget.images.length - 1)];
+
+    return Column(
+      children: [
+        if (_hasMultiple) ...[
+          Row(
+            children: [
+              for (var i = 0; i < widget.images.length; i++)
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsetsDirectional.only(
+                      end: i == widget.images.length - 1 ? 0 : 4.w,
+                    ),
+                    child: _StorySegment(
+                      controller: _progress,
+                      state: i < _index
+                          ? _SegmentState.done
+                          : i == _index
+                              ? _SegmentState.active
+                              : _SegmentState.pending,
+                    ),
+                  ),
                 ),
-              ),
             ],
+          ),
+          SizedBox(height: 8.h),
+        ],
+        ClipRRect(
+          borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
+          child: AspectRatio(
+            aspectRatio: 16 / 10,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                ResolvedTopicImage(
+                  key: ValueKey(current.id),
+                  media: current,
+                  fit: BoxFit.cover,
+                ),
+                if (_hasMultiple)
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: _prev,
+                          onLongPress: _pause,
+                          onLongPressUp: _resume,
+                          onTapDown: (_) => _pause(),
+                          onTapUp: (_) => _resume(),
+                        ),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: _next,
+                          onLongPress: _pause,
+                          onLongPressUp: _resume,
+                          onTapDown: (_) => _pause(),
+                          onTapUp: (_) => _resume(),
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          ),
+        ),
+        if (_hasMultiple) ...[
+          SizedBox(height: 8.h),
+          Text(
+            widget.l10n.educationalMediaImageCounter(
+              _index + 1,
+              widget.images.length,
+            ),
+            style: Theme.of(context).textTheme.labelMedium,
           ),
         ],
       ],
+    );
+  }
+}
+
+enum _SegmentState { done, active, pending }
+
+class _StorySegment extends StatelessWidget {
+  const _StorySegment({
+    required this.controller,
+    required this.state,
+  });
+
+  final AnimationController controller;
+  final _SegmentState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final track = AppColors.textSecondary.withValues(alpha: 0.25);
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(2.r),
+      child: SizedBox(
+        height: 3.h,
+        child: switch (state) {
+          _SegmentState.done => const ColoredBox(color: AppColors.primary),
+          _SegmentState.pending => ColoredBox(color: track),
+          _SegmentState.active => AnimatedBuilder(
+              animation: controller,
+              builder: (context, _) => LinearProgressIndicator(
+                value: controller.value,
+                backgroundColor: track,
+                valueColor:
+                    const AlwaysStoppedAnimation<Color>(AppColors.primary),
+              ),
+            ),
+        },
+      ),
     );
   }
 }

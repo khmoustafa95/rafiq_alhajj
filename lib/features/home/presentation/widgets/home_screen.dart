@@ -47,6 +47,8 @@ abstract final class HomeFeedPreviewLimits {
 
   static const int news = 2;
 
+  static const int announcements = 2;
+
 }
 
 
@@ -303,71 +305,57 @@ class _HomeBody extends ConsumerWidget {
                     ),
 
                     SliverToBoxAdapter(
-
-                      child: isFeedLoading
-
-                          ? const ContentTopicsSectionSkeleton()
-
-                          : ContentTopicsSection(
-
-                        title: l10n.contentTopicsSection,
-
-                        topics: feed?.topics ?? const [],
-
-                        emptyMessage: l10n.contentTopicsEmpty,
-
-                        onTopicTap: onTopicTap,
-
-                        maxItems: HomeFeedPreviewLimits.topics,
-
-                        seeAllLabel: l10n.homeSeeAll,
-
-                        onSeeAll: feed == null
-
-                            ? null
-
-                            : () => unawaited(
-
-                                  context.push(AppRoutes.contentTopicsList),
-
-                                ),
-
-                      ),
-
-                    ),
-
-                    SliverToBoxAdapter(
-
                       child: ContentSection(
-
-                        title: l10n.contentNewsSection,
-
-                        items: feed?.newsAndAnnouncements ?? const [],
-
-                        emptyMessage: l10n.contentNewsEmpty,
-
+                        title: l10n.contentAnnouncementsSection,
+                        items: feed?.announcements ?? const [],
+                        emptyMessage: l10n.contentAnnouncementsEmpty,
                         onItemTap: onContentTap,
-
-                        maxItems: HomeFeedPreviewLimits.news,
-
+                        maxItems: HomeFeedPreviewLimits.announcements,
                         seeAllLabel: l10n.homeSeeAll,
-
                         onSeeAll: feed == null
-
                             ? null
-
                             : () => unawaited(
-
-                                  context.push(AppRoutes.contentNewsList),
-
+                                  context.push(
+                                    AppRoutes.contentAnnouncementsList,
+                                  ),
                                 ),
-
                         layout: ContentSectionLayout.featured,
-
                       ),
-
                     ),
-
+                    SliverToBoxAdapter(
+                      child: ContentSection(
+                        title: l10n.contentNewsSectionTitle,
+                        items: feed?.news ?? const [],
+                        emptyMessage: l10n.contentNewsEmpty,
+                        onItemTap: onContentTap,
+                        maxItems: HomeFeedPreviewLimits.news,
+                        seeAllLabel: l10n.homeSeeAll,
+                        onSeeAll: feed == null
+                            ? null
+                            : () => unawaited(
+                                  context.push(AppRoutes.contentNewsList),
+                                ),
+                        layout: ContentSectionLayout.featured,
+                      ),
+                    ),
+                    SliverToBoxAdapter(
+                      child: isFeedLoading
+                          ? const ContentTopicsSectionSkeleton()
+                          : ContentTopicsSection(
+                              title: l10n.contentLibrarySection,
+                              topics: feed?.topics ?? const [],
+                              emptyMessage: l10n.contentTopicsEmpty,
+                              onTopicTap: onTopicTap,
+                              maxItems: HomeFeedPreviewLimits.topics,
+                              seeAllLabel: l10n.homeSeeAll,
+                              onSeeAll: feed == null
+                                  ? null
+                                  : () => unawaited(
+                                        context
+                                            .push(AppRoutes.contentTopicsList),
+                                      ),
+                            ),
+                    ),
                     SliverToBoxAdapter(child: SizedBox(height: 24.h)),
 
                   ],

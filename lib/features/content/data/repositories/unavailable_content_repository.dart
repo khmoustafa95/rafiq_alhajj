@@ -10,8 +10,9 @@ class UnavailableContentRepository implements ContentRepository {
     required bool includePilgrimOnly,
   }) async {
     return const PublicContentFeed(
+      announcements: [],
+      news: [],
       topics: [],
-      newsAndAnnouncements: [],
     );
   }
 

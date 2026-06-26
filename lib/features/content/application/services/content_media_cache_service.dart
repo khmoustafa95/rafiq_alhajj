@@ -508,6 +508,7 @@ class ContentMediaCacheService {
     if (mime.contains('webp')) return '.webp';
     if (mime.contains('gif')) return '.gif';
     if (mime.contains('jpeg') || mime.contains('jpg')) return '.jpg';
+    if (mime.contains('pdf')) return '.pdf';
 
     final path = Uri.tryParse(ref)?.path ?? ref;
     final dot = path.lastIndexOf('.');
@@ -520,6 +521,7 @@ class ContentMediaCacheService {
     return switch (mediaType) {
       'audio' => '.mp3',
       'image' => '.jpg',
+      'pdf' => '.pdf',
       _ => '.mp4',
     };
   }

@@ -56,6 +56,30 @@
   "@contentNewsSection": {
     "description": "US-01 news section title"
   },
+  "contentNewsSectionTitle": "News",
+  "@contentNewsSectionTitle": {
+    "description": "News-only section / list title"
+  },
+  "contentAnnouncementsSection": "Announcements",
+  "@contentAnnouncementsSection": {
+    "description": "Announcements section / list title"
+  },
+  "contentAnnouncementsEmpty": "No announcements yet.",
+  "@contentAnnouncementsEmpty": {
+    "description": "Empty state for announcements"
+  },
+  "contentLibrarySection": "Educational library",
+  "@contentLibrarySection": {
+    "description": "Home section title for the educational library (topics)"
+  },
+  "contentMediaPdf": "PDF",
+  "@contentMediaPdf": {
+    "description": "Label for a PDF media item"
+  },
+  "educationalMediaPdfError": "Couldn't open this PDF.",
+  "@educationalMediaPdfError": {
+    "description": "Shown when a PDF media item fails to render"
+  },
   "contentVideosEmpty": "No public videos available yet.",
   "@contentVideosEmpty": {
     "description": "Empty state for videos"
@@ -486,11 +510,16 @@
   "adminUnassignedGroup": "Unassigned",
   "adminUnknownOperator": "Unknown operator",
   "adminManageContent": "Manage content library",
-  "adminContentListTitle": "Content library",
+  "adminContentListTitle": "Content management",
   "adminContentAdd": "Add content",
   "adminContentEdit": "Edit",
   "adminContentNewTitle": "New content",
   "adminContentEditTitle": "Edit content",
+  "adminContentTabAnnouncements": "Announcements",
+  "adminContentTabNews": "News",
+  "adminContentTabLibrary": "Educational library",
+  "adminContentNotifyPilgrims": "Notify pilgrims",
+  "adminContentNotifyPilgrimsHint": "Send a notification to pilgrims about this change.",
   "adminContentLoadError": "Could not load content.",
   "adminContentEmpty": "No content yet. Add your first item.",
   "adminContentNotFound": "Content item not found.",
@@ -1076,6 +1105,7 @@
     }
   },
   "adminContentMediaUploadCover": "Upload image",
+  "adminContentMediaUploadVideo": "Upload video",
   "adminContentVideoExternalHint": "For large or long videos, paste a YouTube/Vimeo link instead of uploading the file.",
   "contentOfflineTitle": "Offline content",
   "contentOfflineSubtitle": "Download educational topics (audio and images) for use without internet.",

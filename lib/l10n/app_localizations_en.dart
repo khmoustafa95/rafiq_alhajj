@@ -54,6 +54,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contentNewsSection => 'News & announcements';
 
   @override
+  String get contentNewsSectionTitle => 'News';
+
+  @override
+  String get contentAnnouncementsSection => 'Announcements';
+
+  @override
+  String get contentAnnouncementsEmpty => 'No announcements yet.';
+
+  @override
+  String get contentLibrarySection => 'Educational library';
+
+  @override
+  String get contentMediaPdf => 'PDF';
+
+  @override
+  String get educationalMediaPdfError => 'Couldn\'t open this PDF.';
+
+  @override
   String get contentVideosEmpty => 'No public videos available yet.';
 
   @override
@@ -930,7 +948,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminManageContent => 'Manage content library';
 
   @override
-  String get adminContentListTitle => 'Content library';
+  String get adminContentListTitle => 'Content management';
 
   @override
   String get adminContentAdd => 'Add content';
@@ -943,6 +961,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminContentEditTitle => 'Edit content';
+
+  @override
+  String get adminContentTabAnnouncements => 'Announcements';
+
+  @override
+  String get adminContentTabNews => 'News';
+
+  @override
+  String get adminContentTabLibrary => 'Educational library';
+
+  @override
+  String get adminContentNotifyPilgrims => 'Notify pilgrims';
+
+  @override
+  String get adminContentNotifyPilgrimsHint =>
+      'Send a notification to pilgrims about this change.';
 
   @override
   String get adminContentLoadError => 'Could not load content.';
@@ -2434,6 +2468,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminContentMediaUploadCover => 'Upload image';
+
+  @override
+  String get adminContentMediaUploadVideo => 'Upload video';
 
   @override
   String get adminContentVideoExternalHint =>

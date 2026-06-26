@@ -4,6 +4,7 @@ import 'package:rafiq_alhajj/core/supabase/realtime_invalidation_registry.dart';
 import 'package:rafiq_alhajj/core/supabase/realtime_sync_attach.dart';
 import 'package:rafiq_alhajj/core/supabase/realtime_sync_providers.dart';
 import 'package:rafiq_alhajj/features/admin_content/application/services/admin_content_service.dart';
+import 'package:rafiq_alhajj/features/admin_content/application/services/content_notification_service.dart';
 import 'package:rafiq_alhajj/features/admin_content/data/repositories/admin_content_repository.dart';
 import 'package:rafiq_alhajj/features/admin_content/domain/models/content_editor_input.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_item.dart';
@@ -22,6 +23,13 @@ AdminContentRepository adminContentRepository(Ref ref) {
 @Riverpod(keepAlive: true)
 AdminContentService adminContentService(Ref ref) {
   return AdminContentService(ref.watch(adminContentRepositoryProvider));
+}
+
+@Riverpod(keepAlive: true)
+ContentNotificationService contentNotificationService(Ref ref) {
+  return ContentNotificationService(
+    AppConfig.hasSupabase ? Supabase.instance.client : null,
+  );
 }
 
 @riverpod
@@ -73,15 +81,18 @@ class AdminContentSave extends _$AdminContentSave {
   @override
   FutureOr<void> build() {}
 
-  Future<bool> save(ContentEditorInput input) async {
+  /// Returns the saved item id on success, or null on failure.
+  Future<String?> save(ContentEditorInput input) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
-      await ref.read(adminContentServiceProvider).save(input);
+    final result = await AsyncValue.guard(() async {
+      final saved = await ref.read(adminContentServiceProvider).save(input);
       ref.invalidate(adminContentListPageProvider);
       if (input.id != null) {
         ref.invalidate(adminContentDetailProvider(input.id!));
       }
+      return saved.id;
     });
-    return !state.hasError;
+    state = result.whenData((_) {});
+    return result.whenOrNull(data: (id) => id);
   }
 }

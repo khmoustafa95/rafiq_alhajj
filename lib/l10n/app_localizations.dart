@@ -182,6 +182,42 @@ abstract class AppLocalizations {
   /// **'News & announcements'**
   String get contentNewsSection;
 
+  /// News-only section / list title
+  ///
+  /// In en, this message translates to:
+  /// **'News'**
+  String get contentNewsSectionTitle;
+
+  /// Announcements section / list title
+  ///
+  /// In en, this message translates to:
+  /// **'Announcements'**
+  String get contentAnnouncementsSection;
+
+  /// Empty state for announcements
+  ///
+  /// In en, this message translates to:
+  /// **'No announcements yet.'**
+  String get contentAnnouncementsEmpty;
+
+  /// Home section title for the educational library (topics)
+  ///
+  /// In en, this message translates to:
+  /// **'Educational library'**
+  String get contentLibrarySection;
+
+  /// Label for a PDF media item
+  ///
+  /// In en, this message translates to:
+  /// **'PDF'**
+  String get contentMediaPdf;
+
+  /// Shown when a PDF media item fails to render
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open this PDF.'**
+  String get educationalMediaPdfError;
+
   /// Empty state for videos
   ///
   /// In en, this message translates to:
@@ -1762,7 +1798,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminContentListTitle.
   ///
   /// In en, this message translates to:
-  /// **'Content library'**
+  /// **'Content management'**
   String get adminContentListTitle;
 
   /// No description provided for @adminContentAdd.
@@ -1788,6 +1824,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit content'**
   String get adminContentEditTitle;
+
+  /// No description provided for @adminContentTabAnnouncements.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcements'**
+  String get adminContentTabAnnouncements;
+
+  /// No description provided for @adminContentTabNews.
+  ///
+  /// In en, this message translates to:
+  /// **'News'**
+  String get adminContentTabNews;
+
+  /// No description provided for @adminContentTabLibrary.
+  ///
+  /// In en, this message translates to:
+  /// **'Educational library'**
+  String get adminContentTabLibrary;
+
+  /// No description provided for @adminContentNotifyPilgrims.
+  ///
+  /// In en, this message translates to:
+  /// **'Notify pilgrims'**
+  String get adminContentNotifyPilgrims;
+
+  /// No description provided for @adminContentNotifyPilgrimsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a notification to pilgrims about this change.'**
+  String get adminContentNotifyPilgrimsHint;
 
   /// No description provided for @adminContentLoadError.
   ///
@@ -4488,6 +4554,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Upload image'**
   String get adminContentMediaUploadCover;
+
+  /// No description provided for @adminContentMediaUploadVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload video'**
+  String get adminContentMediaUploadVideo;
 
   /// No description provided for @adminContentVideoExternalHint.
   ///

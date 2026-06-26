@@ -1,13 +1,15 @@
 enum EducationalMediaType {
   video,
   audio,
-  image;
+  image,
+  pdf;
 
   static EducationalMediaType typeFromKey(String value) {
     return switch (value) {
       'video' => EducationalMediaType.video,
       'audio' => EducationalMediaType.audio,
       'image' => EducationalMediaType.image,
+      'pdf' => EducationalMediaType.pdf,
       _ => EducationalMediaType.image,
     };
   }
@@ -33,6 +35,7 @@ class EducationalMediaItem {
       'video' => EducationalMediaType.video,
       'audio' => EducationalMediaType.audio,
       'image' => EducationalMediaType.image,
+      'pdf' => EducationalMediaType.pdf,
       _ => EducationalMediaType.image,
     };
   }
@@ -41,5 +44,6 @@ class EducationalMediaItem {
         EducationalMediaType.video => 'video',
         EducationalMediaType.audio => 'audio',
         EducationalMediaType.image => 'image',
+        EducationalMediaType.pdf => 'pdf',
       };
 }

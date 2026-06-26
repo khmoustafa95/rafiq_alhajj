@@ -64,6 +64,13 @@ class UploadConstraints {
     maxBytes: 45 * _mb,
   );
 
+  /// PDF documents attached to library topics. Not compressible; kept under the
+  /// bucket cap. Large books should be split or linked externally.
+  static const pdf = UploadConstraints(
+    allowedExtensions: {'pdf'},
+    maxBytes: 25 * _mb,
+  );
+
   /// Pilgrim identity documents (private bucket).
   static const pilgrimDocuments = UploadConstraints(
     allowedExtensions: {'pdf', 'jpg', 'jpeg', 'png'},

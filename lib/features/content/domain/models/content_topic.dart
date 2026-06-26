@@ -96,5 +96,6 @@ class ContentTopicMediaInput {
         EducationalMediaType.video => 'video',
         EducationalMediaType.audio => 'audio',
         EducationalMediaType.image => 'image',
+        EducationalMediaType.pdf => 'pdf',
       };
 }

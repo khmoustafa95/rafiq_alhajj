@@ -20,8 +20,9 @@ void main() {
           ),
           homeContentFeedProvider(AppAccessMode.guest).overrideWith(
             (ref) async => const PublicContentFeed(
+              announcements: [],
+              news: [],
               topics: [],
-              newsAndAnnouncements: [],
             ),
           ),
           prayerTimesScheduleProvider.overrideWith(

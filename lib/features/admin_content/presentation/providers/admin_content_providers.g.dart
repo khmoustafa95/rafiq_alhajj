@@ -105,6 +105,55 @@ final class AdminContentServiceProvider
 String _$adminContentServiceHash() =>
     r'5bbb2677ad9b0c35749e3462fbd65c19adaf1027';
 
+@ProviderFor(contentNotificationService)
+final contentNotificationServiceProvider =
+    ContentNotificationServiceProvider._();
+
+final class ContentNotificationServiceProvider
+    extends
+        $FunctionalProvider<
+          ContentNotificationService,
+          ContentNotificationService,
+          ContentNotificationService
+        >
+    with $Provider<ContentNotificationService> {
+  ContentNotificationServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'contentNotificationServiceProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$contentNotificationServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<ContentNotificationService> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  ContentNotificationService create(Ref ref) {
+    return contentNotificationService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ContentNotificationService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ContentNotificationService>(value),
+    );
+  }
+}
+
+String _$contentNotificationServiceHash() =>
+    r'f699706096222e4af36665fa3a5f0d168bfcc337';
+
 @ProviderFor(adminContentListPage)
 final adminContentListPageProvider = AdminContentListPageFamily._();
 
@@ -332,7 +381,7 @@ final class AdminContentSaveProvider
   AdminContentSave create() => AdminContentSave();
 }
 
-String _$adminContentSaveHash() => r'ea81c9454057c8360ab184f6f76dc1f74b1b2994';
+String _$adminContentSaveHash() => r'fed34e0f1f448f8b959b81227db5030b28dea450';
 
 abstract class _$AdminContentSave extends $AsyncNotifier<void> {
   FutureOr<void> build();

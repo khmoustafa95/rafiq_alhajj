@@ -85,14 +85,14 @@ values
     'مقدمة في مناسك الحج',
     'نظرة موجزة على الخطوات الأساسية التي ينبغي لكل حاج معرفتها قبل السفر.',
     'https://www.youtube.com/watch?v=example-hajj-intro',
-    'video',
+    'news',
     'public'
   ),
   (
     'نصائح صحية قبل المغادرة',
     'إرشادات حول التطعيمات والترطيب والفحوصات الطبية للحجاج.',
     'https://www.youtube.com/watch?v=example-health-tips',
-    'video',
+    'news',
     'public'
   ),
   (

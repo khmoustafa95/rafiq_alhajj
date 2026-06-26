@@ -26,6 +26,7 @@ import 'package:rafiq_alhajj/features/competitions/presentation/widgets/admin_co
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competition_detail_screen.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competition_quiz_screen.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competitions_list_screen.dart';
+import 'package:rafiq_alhajj/features/content/domain/models/content_type.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_detail_screen.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_list_screen.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_topic_detail_screen.dart';
@@ -66,6 +67,15 @@ import 'package:rafiq_alhajj/features/virtual_tour/presentation/widgets/virtual_
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_router.g.dart';
+
+/// Maps the `?type=` query on the admin "new content" route to a feed type.
+/// Defaults to news; the dropped `video` type is never offered.
+ContentType _feedTypeFromQuery(String? value) {
+  return switch (value) {
+    'announcement' => ContentType.announcement,
+    _ => ContentType.news,
+  };
+}
 
 /// Tool detail routes rendered above the pilgrim shell (no bottom nav bar).
 ///
@@ -243,6 +253,13 @@ List<RouteBase> _mobilePilgrimRoutes() => [
         ),
       ),
       GoRoute(
+        path: AppRoutes.contentAnnouncementsList,
+        name: 'contentAnnouncementsList',
+        builder: (context, state) => const ContentListScreen(
+          category: ContentListCategory.announcements,
+        ),
+      ),
+      GoRoute(
         path: AppRoutes.contentDetail,
         name: 'contentDetail',
         builder: (context, state) {
@@ -326,7 +343,9 @@ List<RouteBase> _mobilePilgrimRoutes() => [
       GoRoute(
         path: AppRoutes.adminContentNew,
         name: 'adminContentNew',
-        builder: (context, state) => const AdminContentEditScreen(),
+        builder: (context, state) => AdminContentEditScreen(
+          initialType: _feedTypeFromQuery(state.uri.queryParameters['type']),
+        ),
       ),
       GoRoute(
         path: AppRoutes.adminContentEdit,
@@ -527,7 +546,9 @@ ShellRoute _staffWebShellRoute() {
       GoRoute(
         path: AppRoutes.adminContentNew,
         name: 'adminContentNew',
-        builder: (context, state) => const AdminContentEditScreen(),
+        builder: (context, state) => AdminContentEditScreen(
+          initialType: _feedTypeFromQuery(state.uri.queryParameters['type']),
+        ),
       ),
       GoRoute(
         path: AppRoutes.adminContentEdit,
@@ -711,6 +732,13 @@ List<RouteBase> _webRoutes() => [
         name: 'contentNewsListWeb',
         builder: (context, state) => const ContentListScreen(
           category: ContentListCategory.news,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.contentAnnouncementsList,
+        name: 'contentAnnouncementsListWeb',
+        builder: (context, state) => const ContentListScreen(
+          category: ContentListCategory.announcements,
         ),
       ),
       GoRoute(

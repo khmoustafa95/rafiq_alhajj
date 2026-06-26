@@ -25,8 +25,9 @@ class ContentService {
     }
 
     return PublicContentFeed(
+      announcements: feed.announcements,
+      news: feed.news,
       topics: topics,
-      newsAndAnnouncements: feed.newsAndAnnouncements,
     );
   }
 

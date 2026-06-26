@@ -42,8 +42,11 @@ class SupabaseContentRepository implements ContentRepository {
           .toList();
 
       return PublicContentFeed(
+        announcements: items
+            .where((item) => item.type == ContentType.announcement)
+            .toList(),
+        news: items.where((item) => item.type == ContentType.news).toList(),
         topics: const [],
-        newsAndAnnouncements: items,
       );
     } on PostgrestException {
       throw const ContentFetchException();

@@ -6,7 +6,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/routing/staff_navigation.dart';
-import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/utils/file_pick_upload.dart';
 import 'package:rafiq_alhajj/core/utils/upload_validation.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
@@ -24,9 +23,13 @@ import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 class AdminContentEditScreen extends ConsumerStatefulWidget {
-  const AdminContentEditScreen({this.contentId, super.key});
+  const AdminContentEditScreen({this.contentId, this.initialType, super.key});
 
   final String? contentId;
+
+  /// Feed type for a brand-new item (announcement | news). On edit the type is
+  /// derived from the loaded item. The dropped `video` type is never offered.
+  final ContentType? initialType;
 
   @override
   ConsumerState<AdminContentEditScreen> createState() =>
@@ -39,8 +42,11 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
   bool _isUploading = false;
   bool _isCompressing = false;
   double? _uploadProgress;
+  bool _notifyPilgrims = false;
 
   bool get _isEditing => widget.contentId != null;
+
+  ContentType get _type => _form.control('type').value as ContentType;
 
   String get _pageTitle {
     final l10n = AppLocalizations.of(context);
@@ -54,7 +60,9 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
       'title': FormControl<String>(value: '', validators: [Validators.required]),
       'mediaUrl': FormControl<String>(value: ''),
       'description': FormControl<String>(value: ''),
-      'type': FormControl<ContentType>(value: ContentType.news),
+      'type': FormControl<ContentType>(
+        value: widget.initialType ?? ContentType.news,
+      ),
       'visibility': FormControl<ContentVisibility>(
         value: ContentVisibility.public,
       ),
@@ -99,13 +107,25 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
       visibility: _form.control('visibility').value as ContentVisibility,
     );
 
-    final ok = await ref.read(adminContentSaveProvider.notifier).save(input);
+    final savedId =
+        await ref.read(adminContentSaveProvider.notifier).save(input);
 
     if (!mounted) {
       return;
     }
 
-    if (ok) {
+    if (savedId != null) {
+      if (_notifyPilgrims) {
+        await ref.read(contentNotificationServiceProvider).publish(
+              title: input.title,
+              route: 'content',
+              id: savedId,
+              visibility: input.visibility,
+            );
+      }
+      if (!mounted) {
+        return;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -124,7 +144,7 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
     );
   }
 
-  Future<void> _uploadImage() async {
+  Future<void> _uploadMedia() async {
     final l10n = AppLocalizations.of(context);
     const constraints = UploadConstraints.image;
 
@@ -283,7 +303,7 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
       formGroup: _form,
       child: StaffFormSection(
         icon: Icons.article_outlined,
-        title: l10n.adminContentListTitle,
+        title: contentTypeLabel(l10n, _type),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -313,20 +333,6 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
                     labelText: l10n.adminContentDescriptionLabel,
                   ),
                 ),
-                ReactiveDropdownField<ContentType>(
-                  formControlName: 'type',
-                  decoration: InputDecoration(
-                    labelText: l10n.adminContentTypeLabel,
-                  ),
-                  items: ContentType.values
-                      .map(
-                        (type) => DropdownMenuItem(
-                          value: type,
-                          child: Text(contentTypeLabel(l10n, type)),
-                        ),
-                      )
-                      .toList(),
-                ),
                 ReactiveDropdownField<ContentVisibility>(
                   formControlName: 'visibility',
                   decoration: InputDecoration(
@@ -347,17 +353,10 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
             Align(
               alignment: AlignmentDirectional.centerStart,
               child: OutlinedButton.icon(
-                onPressed: isBusy ? null : _uploadImage,
-                icon: const Icon(Icons.upload_file_outlined),
+                onPressed: isBusy ? null : _uploadMedia,
+                icon: const Icon(Icons.image_outlined),
                 label: Text(l10n.adminContentMediaUploadCover),
               ),
-            ),
-            SizedBox(height: 6.h),
-            Text(
-              l10n.adminContentVideoExternalHint,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
             ),
             if (_isUploading) ...[
               SizedBox(height: 12.h),
@@ -366,6 +365,15 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
                 compressing: _isCompressing,
               ),
             ],
+            SizedBox(height: 8.h),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              value: _notifyPilgrims,
+              onChanged:
+                  isBusy ? null : (v) => setState(() => _notifyPilgrims = v),
+              title: Text(l10n.adminContentNotifyPilgrims),
+              subtitle: Text(l10n.adminContentNotifyPilgrimsHint),
+            ),
           ],
         ),
       ),

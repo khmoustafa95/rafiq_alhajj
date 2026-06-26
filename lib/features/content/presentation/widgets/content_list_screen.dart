@@ -14,7 +14,7 @@ import 'package:rafiq_alhajj/features/content/presentation/providers/public_cont
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_card.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
-enum ContentListCategory { news }
+enum ContentListCategory { news, announcements }
 
 class ContentListScreen extends ConsumerWidget {
   const ContentListScreen({
@@ -28,6 +28,16 @@ class ContentListScreen extends ConsumerWidget {
     unawaited(context.push(AppRoutes.contentDetailPath(item.id)));
   }
 
+  String _title(AppLocalizations l10n) => switch (category) {
+        ContentListCategory.news => l10n.contentNewsSectionTitle,
+        ContentListCategory.announcements => l10n.contentAnnouncementsSection,
+      };
+
+  String _emptyMessage(AppLocalizations l10n) => switch (category) {
+        ContentListCategory.news => l10n.contentNewsEmpty,
+        ContentListCategory.announcements => l10n.contentAnnouncementsEmpty,
+      };
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
@@ -39,19 +49,22 @@ class ContentListScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: RafiqAppBar(title: Text(l10n.contentNewsSection)),
+      appBar: RafiqAppBar(title: Text(_title(l10n))),
       body: feedAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, _) => Center(child: Text(l10n.contentLoadError)),
         data: (feed) {
-          final items = feed.newsAndAnnouncements;
+          final items = switch (category) {
+            ContentListCategory.news => feed.news,
+            ContentListCategory.announcements => feed.announcements,
+          };
 
           if (items.isEmpty) {
             return Center(
               child: Padding(
                 padding: EdgeInsets.all(24.w),
                 child: Text(
-                  l10n.contentNewsEmpty,
+                  _emptyMessage(l10n),
                   style: Theme.of(context).textTheme.bodyMedium,
                   textAlign: TextAlign.center,
                 ),

@@ -15,6 +15,10 @@ void navigateFromNotification(BuildContext context, InboxNotification notificati
       if (id != null && id.isNotEmpty) {
         unawaited(context.push(AppRoutes.contentDetailPath(id)));
       }
+    case 'contentTopic':
+      if (id != null && id.isNotEmpty) {
+        unawaited(context.push(AppRoutes.contentTopicDetailPath(id)));
+      }
     case 'competition':
       if (id != null && id.isNotEmpty) {
         unawaited(context.push(AppRoutes.competitionDetailPath(id)));
