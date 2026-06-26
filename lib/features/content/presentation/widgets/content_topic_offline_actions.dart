@@ -64,52 +64,68 @@ class ContentTopicOfflineActions extends ConsumerWidget {
           l10n.contentTopicOfflineProgress(cachedForTopic, cacheableIds.length);
     }
 
+    final row = Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.contentTopicOfflineTitle,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              SizedBox(height: 4.h),
+              Text(
+                subtitle,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+              ),
+            ],
+          ),
+        ),
+        _TopicActionButton(
+          downloading: downloading.isNotEmpty,
+          allCached: allCached,
+          hasFailed: hasFailed,
+          onDownload: () async {
+            await controller.enqueueTopic(topic);
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.contentTopicOfflineStarted)),
+              );
+            }
+          },
+          onPause: () {
+            for (final job in downloading) {
+              controller.pause(job.mediaId);
+            }
+          },
+          onDelete: () => controller.removeTopicDownloads(topic.id),
+        ),
+      ],
+    );
+
     return DecoratedBox(
       decoration: AppDecorations.card(color: AppColors.surfaceMuted),
       child: Padding(
         padding: EdgeInsets.all(12.w),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.contentTopicOfflineTitle,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                  ),
-                  SizedBox(height: 4.h),
-                  Text(
-                    subtitle,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                  ),
-                ],
-              ),
-            ),
-            _TopicActionButton(
-              downloading: downloading.isNotEmpty,
-              allCached: allCached,
-              hasFailed: hasFailed,
-              onDownload: () async {
-                await controller.enqueueTopic(topic);
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.contentTopicOfflineStarted)),
-                  );
-                }
-              },
-              onPause: () {
-                for (final job in downloading) {
-                  controller.pause(job.mediaId);
-                }
-              },
-              onDelete: () => controller.removeTopicDownloads(topic.id),
-            ),
-          ],
+        // The inner Row uses an Expanded child, which requires a bounded
+        // width. If a transient frame ever supplies unbounded width (e.g. a
+        // mid-swap hot-reload tree), fall back to a capped width so layout
+        // can never hard-crash with "BoxConstraints forces an infinite width".
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.hasBoundedWidth) {
+              return row;
+            }
+            return ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600),
+              child: row,
+            );
+          },
         ),
       ),
     );

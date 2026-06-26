@@ -63,7 +63,14 @@ class StaffTableQuery {
         search,
         sortColumnId,
         sortAscending,
-        Object.hashAllUnordered(filters.entries.toList()),
+        // Hash by entry value, not by MapEntry identity: `MapEntry` does not
+        // implement value equality, so `filters.entries` would yield a fresh
+        // (identity-hashed) object on every access and make `hashCode`
+        // non-deterministic — breaking the ==/hashCode contract and causing
+        // Riverpod family lookups to miss and refetch in a loop.
+        Object.hashAllUnordered([
+          for (final entry in filters.entries) Object.hash(entry.key, entry.value),
+        ]),
       );
 }
 

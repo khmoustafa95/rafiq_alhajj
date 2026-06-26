@@ -15,7 +15,12 @@ import 'package:rafiq_alhajj/features/content/domain/models/content_topic.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 class AdminContentTopicsListScreen extends ConsumerWidget {
-  const AdminContentTopicsListScreen({super.key});
+  const AdminContentTopicsListScreen({this.embedded = false, super.key});
+
+  /// When embedded inside a parent surface (e.g. the content tabs), drop the
+  /// page chrome (header/app bar) and just render the bounded list + add action
+  /// so the inner [ListView] gets a bounded height from the parent.
+  final bool embedded;
 
   void _openNew(BuildContext context) {
     const path = AppRoutes.adminContentTopicNew;
@@ -147,8 +152,29 @@ class AdminContentTopicsListScreen extends ConsumerWidget {
     );
 
     if (AppPlatform.isWeb) {
+      // Embedded (inside the content tabs): no nested StaffWebPage chrome.
+      // A bare Column with Expanded gives the ListView a bounded height.
+      if (embedded) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Align(
+              alignment: Alignment.centerRight,
+              child: FilledButton.icon(
+                onPressed: () => _openNew(context),
+                icon: const Icon(Icons.add_rounded),
+                label: Text(l10n.adminContentTopicAdd),
+              ),
+            ),
+            SizedBox(height: 12.h),
+            Expanded(child: body),
+          ],
+        );
+      }
+
       return StaffWebPage(
         title: l10n.adminContentTopicsListTitle,
+        scrollable: false,
         actions: [
           FilledButton.icon(
             onPressed: () => _openNew(context),
@@ -161,13 +187,16 @@ class AdminContentTopicsListScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: RafiqAppBar(
-        title: Text(l10n.adminContentTopicsListTitle),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go(AppRoutes.adminContent),
-        ),
-      ),
+      // Embedded: omit the app bar (the parent screen already provides one).
+      appBar: embedded
+          ? null
+          : RafiqAppBar(
+              title: Text(l10n.adminContentTopicsListTitle),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => context.go(AppRoutes.adminContent),
+              ),
+            ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openNew(context),
         icon: const Icon(Icons.add),

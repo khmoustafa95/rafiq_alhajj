@@ -12,10 +12,10 @@ import 'package:rafiq_alhajj/core/domain/models/educational_media.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_media_providers.dart';
+import 'package:rafiq_alhajj/core/widgets/video_embed/video_embed_view.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_media_widgets.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 import 'package:video_player/video_player.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 /// YouTube/Vimeo links are played via their web embeds; everything else
 /// (direct/signed MP4 or a decrypted local file) uses the native player.
@@ -298,29 +298,10 @@ class _NativeVideoPlayerState extends State<_NativeVideoPlayer> {
   }
 }
 
-class _VideoEmbed extends StatefulWidget {
+class _VideoEmbed extends StatelessWidget {
   const _VideoEmbed({required this.url});
 
   final String url;
-
-  @override
-  State<_VideoEmbed> createState() => _VideoEmbedState();
-}
-
-class _VideoEmbedState extends State<_VideoEmbed> {
-  late final WebViewController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    final embedUrl = _toEmbedUrl(widget.url);
-    _controller = WebViewController();
-    unawaited(
-      _controller.setJavaScriptMode(JavaScriptMode.unrestricted).then(
-        (_) => _controller.loadRequest(Uri.parse(embedUrl)),
-      ),
-    );
-  }
 
   String _toEmbedUrl(String url) {
     if (!url.startsWith('http')) {
@@ -357,7 +338,7 @@ class _VideoEmbedState extends State<_VideoEmbed> {
       borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
       child: SizedBox(
         height: 200.h,
-        child: WebViewWidget(controller: _controller),
+        child: buildVideoEmbedView(_toEmbedUrl(url)),
       ),
     );
   }

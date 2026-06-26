@@ -385,6 +385,7 @@ class _AdminContentTopicEditScreenState
     return StaffAdaptivePage(
       web: StaffWebPage(
         title: title,
+        scrollable: false,
         body: body,
         bottomBar: StaffFormActionsBar(
           primaryLabel: l10n.adminContentSave,

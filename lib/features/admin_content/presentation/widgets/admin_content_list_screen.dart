@@ -45,7 +45,7 @@ class AdminContentListScreen extends StatelessWidget {
       children: [
         _FeedContentTab(typeScope: ContentType.announcement),
         _FeedContentTab(typeScope: ContentType.news),
-        AdminContentTopicsListScreen(),
+        AdminContentTopicsListScreen(embedded: true),
       ],
     );
 
