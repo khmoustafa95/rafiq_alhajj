@@ -132,7 +132,7 @@ final class MySosAlertProvider
   }
 }
 
-String _$mySosAlertHash() => r'2b76405c5ef62d2a4d1754670a9d441f17d5c07c';
+String _$mySosAlertHash() => r'c121e3ffdf73fa2b80efc3c3d1b70fdb5f095ff2';
 
 /// All active alerts visible to the signed-in staff member (RLS-scoped by group).
 
@@ -176,7 +176,7 @@ final class ActiveSosAlertsProvider
   }
 }
 
-String _$activeSosAlertsHash() => r'0cc73a895210b347f9b18ec3caddd10d38215655';
+String _$activeSosAlertsHash() => r'99cb3a4591a98ce494c3042ab66545b2c96b3ec2';
 
 /// Breadcrumb trail for a single alert.
 
@@ -238,7 +238,7 @@ final class SosAlertPingsProvider
   }
 }
 
-String _$sosAlertPingsHash() => r'3a79e9c5fb5f8bdb7d07cd7d4785e52276a38eac';
+String _$sosAlertPingsHash() => r'2455248db164d89af122d2c0edba5f8448ee8874';
 
 /// Breadcrumb trail for a single alert.
 

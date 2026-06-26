@@ -5430,6 +5430,342 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Since {time}'**
   String sosStartedAt(String time);
+
+  /// No description provided for @importTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import pilgrims'**
+  String get importTitle;
+
+  /// No description provided for @importSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add or update pilgrims from an Excel or CSV file.'**
+  String get importSubtitle;
+
+  /// No description provided for @importPickTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from Excel / CSV'**
+  String get importPickTitle;
+
+  /// No description provided for @importPickDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick an .xlsx or .csv file. The first row must be the column headers. Existing pilgrims are matched by passport number and updated; the rest are created.'**
+  String get importPickDescription;
+
+  /// No description provided for @importPickFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose file'**
+  String get importPickFile;
+
+  /// No description provided for @importMappingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Match columns'**
+  String get importMappingTitle;
+
+  /// No description provided for @importMappingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'We matched your file columns to pilgrim fields. Review and fix any that look wrong.'**
+  String get importMappingDescription;
+
+  /// No description provided for @importColumnIgnore.
+  ///
+  /// In en, this message translates to:
+  /// **'Ignore this column'**
+  String get importColumnIgnore;
+
+  /// No description provided for @importFileColumn.
+  ///
+  /// In en, this message translates to:
+  /// **'File column'**
+  String get importFileColumn;
+
+  /// No description provided for @importMapsTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Maps to'**
+  String get importMapsTo;
+
+  /// No description provided for @importEmailColumnLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Login email'**
+  String get importEmailColumnLabel;
+
+  /// No description provided for @importPreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get importPreviewTitle;
+
+  /// No description provided for @importNewCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} new'**
+  String importNewCount(int count);
+
+  /// No description provided for @importUpdateCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} to update'**
+  String importUpdateCount(int count);
+
+  /// No description provided for @importErrorCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} with errors'**
+  String importErrorCount(int count);
+
+  /// No description provided for @importIgnoredColumns.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} columns ignored'**
+  String importIgnoredColumns(int count);
+
+  /// No description provided for @importColRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Row'**
+  String get importColRow;
+
+  /// No description provided for @importColName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get importColName;
+
+  /// No description provided for @importColAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Action'**
+  String get importColAction;
+
+  /// No description provided for @importColIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'Issues'**
+  String get importColIssues;
+
+  /// No description provided for @importActionCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get importActionCreate;
+
+  /// No description provided for @importActionUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get importActionUpdate;
+
+  /// No description provided for @importActionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get importActionError;
+
+  /// No description provided for @importConfirmButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Import {count} pilgrims'**
+  String importConfirmButton(int count);
+
+  /// No description provided for @importCommitting.
+  ///
+  /// In en, this message translates to:
+  /// **'Importing…'**
+  String get importCommitting;
+
+  /// No description provided for @importResultTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import complete'**
+  String get importResultTitle;
+
+  /// No description provided for @importResultCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} created'**
+  String importResultCreated(int count);
+
+  /// No description provided for @importResultUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} updated'**
+  String importResultUpdated(int count);
+
+  /// No description provided for @importResultFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} failed'**
+  String importResultFailed(int count);
+
+  /// No description provided for @importResultErrorsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Errors'**
+  String get importResultErrorsTitle;
+
+  /// No description provided for @importAnother.
+  ///
+  /// In en, this message translates to:
+  /// **'Import another file'**
+  String get importAnother;
+
+  /// No description provided for @importChangeFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a different file'**
+  String get importChangeFile;
+
+  /// No description provided for @importNoRows.
+  ///
+  /// In en, this message translates to:
+  /// **'No data rows were found in the file.'**
+  String get importNoRows;
+
+  /// No description provided for @importNothingToImport.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no valid rows to import.'**
+  String get importNothingToImport;
+
+  /// No description provided for @importGenericError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not read the file. Make sure it is a valid Excel or CSV file.'**
+  String get importGenericError;
+
+  /// No description provided for @importIssueMissingName.
+  ///
+  /// In en, this message translates to:
+  /// **'Arabic full name is required'**
+  String get importIssueMissingName;
+
+  /// No description provided for @importIssueInvalidDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid date'**
+  String get importIssueInvalidDate;
+
+  /// No description provided for @importIssueInvalidGender.
+  ///
+  /// In en, this message translates to:
+  /// **'Unrecognized gender'**
+  String get importIssueInvalidGender;
+
+  /// No description provided for @importIssueInvalidBoolean.
+  ///
+  /// In en, this message translates to:
+  /// **'Unrecognized yes/no value'**
+  String get importIssueInvalidBoolean;
+
+  /// No description provided for @importIssueDuplicatePassport.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate passport in file'**
+  String get importIssueDuplicatePassport;
+
+  /// No description provided for @exportButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get exportButton;
+
+  /// No description provided for @exportTemplateButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Template'**
+  String get exportTemplateButton;
+
+  /// No description provided for @exportEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no pilgrims to export.'**
+  String get exportEmpty;
+
+  /// No description provided for @exportDownloadStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Export ready — check your downloads.'**
+  String get exportDownloadStarted;
+
+  /// No description provided for @exportSavedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to {path}'**
+  String exportSavedTo(String path);
+
+  /// No description provided for @exportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Export failed. Please try again.'**
+  String get exportFailed;
+
+  /// No description provided for @bulkEditAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Bulk edit'**
+  String get bulkEditAction;
+
+  /// No description provided for @bulkEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bulk edit {count} pilgrims'**
+  String bulkEditTitle(int count);
+
+  /// No description provided for @bulkEditDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the fields you enable will change. Fields left off keep each pilgrim\'s current value.'**
+  String get bulkEditDescription;
+
+  /// No description provided for @bulkEditEnableField.
+  ///
+  /// In en, this message translates to:
+  /// **'Update this field'**
+  String get bulkEditEnableField;
+
+  /// No description provided for @bulkEditNotify.
+  ///
+  /// In en, this message translates to:
+  /// **'Notify pilgrims of changes'**
+  String get bulkEditNotify;
+
+  /// No description provided for @bulkEditNotifyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pilgrims with the app get a notification when their hotel, flight, or other logistics change.'**
+  String get bulkEditNotifyHint;
+
+  /// No description provided for @bulkEditApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply to {count} pilgrims'**
+  String bulkEditApply(int count);
+
+  /// No description provided for @bulkEditNoFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable at least one field to update.'**
+  String get bulkEditNoFields;
+
+  /// No description provided for @bulkEditSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated {count} pilgrims'**
+  String bulkEditSuccess(int count);
+
+  /// No description provided for @bulkEditError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not apply the changes. Please try again.'**
+  String get bulkEditError;
 }
 
 class _AppLocalizationsDelegate

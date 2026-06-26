@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/features/operator_intake/data/data_sources/pilgrim_intake_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/created_pilgrim_account.dart';
+import 'package:rafiq_alhajj/features/operator_intake/domain/models/pilgrim_import_models.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/pilgrim_intake_form.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -56,6 +57,50 @@ class PilgrimIntakeService {
         profileId: data['profile_id'] as String,
         email: data['email'] as String,
         password: data['password'] as String,
+      );
+    } on PilgrimIntakeException {
+      rethrow;
+    } on FunctionException catch (e) {
+      throw PilgrimIntakeException(e.reasonPhrase ?? 'Edge function error');
+    } on PostgrestException catch (e) {
+      throw PilgrimIntakeException(e.message);
+    }
+  }
+
+  /// Sends parsed [rows] to the `import-pilgrims` edge function (server-side
+  /// upsert by passport). Returns a per-row outcome summary.
+  Future<PilgrimImportResult> importPilgrims({
+    required List<Map<String, dynamic>> rows,
+    String? tripId,
+    String? groupId,
+  }) async {
+    if (!isAvailable) {
+      throw const PilgrimIntakeException('Supabase is not configured');
+    }
+
+    try {
+      final response = await _remote!.importPilgrims({
+        'rows': rows,
+        'trip_id': ?tripId,
+        'group_id': ?groupId,
+      });
+
+      if (response.status != 200) {
+        final error = response.data is Map
+            ? (response.data as Map)['error']?.toString()
+            : null;
+        throw PilgrimIntakeException(error ?? 'Failed to import pilgrims');
+      }
+
+      final data = Map<String, dynamic>.from(response.data as Map);
+      return PilgrimImportResult(
+        created: (data['created'] as num?)?.toInt() ?? 0,
+        updated: (data['updated'] as num?)?.toInt() ?? 0,
+        failed: (data['failed'] as num?)?.toInt() ?? 0,
+        errors: (data['errors'] as List?)
+                ?.map((e) => e.toString())
+                .toList(growable: false) ??
+            const [],
       );
     } on PilgrimIntakeException {
       rethrow;

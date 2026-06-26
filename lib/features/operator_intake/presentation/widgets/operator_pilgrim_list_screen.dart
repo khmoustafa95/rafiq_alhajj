@@ -22,7 +22,9 @@ import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_p
 import 'package:rafiq_alhajj/features/operator_intake/data/repositories/operator_registry_repository.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pilgrim_summary.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/operator_registry_providers.dart';
+import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/pilgrim_export_providers.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/pilgrim_table_column_visibility_provider.dart';
+import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/pilgrim_bulk_edit_dialog.dart';
 import 'package:rafiq_alhajj/features/trips/presentation/widgets/trip_selector.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -81,6 +83,49 @@ class _OperatorPilgrimListScreenState
     } else {
       unawaited(context.push(AppRoutes.operatorIntake));
     }
+  }
+
+  void _openImport() {
+    if (AppPlatform.isWeb) {
+      context.go(AppRoutes.operatorPilgrimsImport);
+    } else {
+      unawaited(context.push(AppRoutes.operatorPilgrimsImport));
+    }
+  }
+
+  Future<void> _exportPilgrims(AppLocalizations l10n) async {
+    final outcome =
+        await ref.read(pilgrimExportControllerProvider.notifier).exportPilgrims(l10n);
+    if (!mounted) {
+      return;
+    }
+    _showExportResult(l10n, outcome);
+  }
+
+  Future<void> _downloadTemplate(AppLocalizations l10n) async {
+    final outcome = await ref
+        .read(pilgrimExportControllerProvider.notifier)
+        .downloadTemplate(l10n);
+    if (!mounted) {
+      return;
+    }
+    _showExportResult(l10n, outcome);
+  }
+
+  void _showExportResult(AppLocalizations l10n, PilgrimExportOutcome? outcome) {
+    final String message;
+    if (outcome == null) {
+      message = l10n.exportFailed;
+    } else if (outcome.empty) {
+      message = l10n.exportEmpty;
+    } else if (outcome.savedPath != null) {
+      message = l10n.exportSavedTo(outcome.savedPath!);
+    } else {
+      message = l10n.exportDownloadStarted;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   List<StaffTableColumn<OperatorPilgrimSummary>> _visibleColumns(
@@ -185,6 +230,21 @@ class _OperatorPilgrimListScreenState
         icon: const Icon(Icons.view_column_outlined),
         label: Text(l10n.staffTableColumnsCustomize),
       ),
+      OutlinedButton.icon(
+        onPressed: () => unawaited(_downloadTemplate(l10n)),
+        icon: const Icon(Icons.description_outlined),
+        label: Text(l10n.exportTemplateButton),
+      ),
+      OutlinedButton.icon(
+        onPressed: () => unawaited(_exportPilgrims(l10n)),
+        icon: const Icon(Icons.file_download_outlined),
+        label: Text(l10n.exportButton),
+      ),
+      OutlinedButton.icon(
+        onPressed: _openImport,
+        icon: const Icon(Icons.upload_file_outlined),
+        label: Text(l10n.importTitle),
+      ),
       FilledButton.icon(
         onPressed: _openIntake,
         icon: const Icon(Icons.person_add_outlined),
@@ -234,6 +294,16 @@ class _OperatorPilgrimListScreenState
     List<PilgrimGroupOption> groups,
   ) {
     return [
+      StaffTableBulkAction(
+        label: l10n.bulkEditAction,
+        icon: Icons.edit_note_outlined,
+        onPressed: (items) => unawaited(
+          PilgrimBulkEditDialog.show(
+            context,
+            items.map((item) => item.pilgrimId).toList(),
+          ),
+        ),
+      ),
       StaffTableBulkAction(
         label: l10n.adminPilgrimBulkAssignGroup,
         icon: Icons.groups_outlined,

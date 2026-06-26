@@ -149,7 +149,7 @@ final class SupportContactsProvider
   }
 }
 
-String _$supportContactsHash() => r'92742687fabb3b90964017db16e03ae0285920a1';
+String _$supportContactsHash() => r'f0c55001805f41c6e5251fc4ad2986318d2b4897';
 
 /// Every contact (admin management view).
 
@@ -196,7 +196,7 @@ final class AdminSupportContactsProvider
 }
 
 String _$adminSupportContactsHash() =>
-    r'601f3c3faa506534f4b74775da907096a9ea5a68';
+    r'a71d8624b057f0503aed5c7911c70fa8ca914c06';
 
 @ProviderFor(SupportContactSave)
 final supportContactSaveProvider = SupportContactSaveProvider._();

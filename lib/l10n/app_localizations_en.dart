@@ -2935,4 +2935,202 @@ class AppLocalizationsEn extends AppLocalizations {
   String sosStartedAt(String time) {
     return 'Since $time';
   }
+
+  @override
+  String get importTitle => 'Import pilgrims';
+
+  @override
+  String get importSubtitle =>
+      'Add or update pilgrims from an Excel or CSV file.';
+
+  @override
+  String get importPickTitle => 'Import from Excel / CSV';
+
+  @override
+  String get importPickDescription =>
+      'Pick an .xlsx or .csv file. The first row must be the column headers. Existing pilgrims are matched by passport number and updated; the rest are created.';
+
+  @override
+  String get importPickFile => 'Choose file';
+
+  @override
+  String get importMappingTitle => 'Match columns';
+
+  @override
+  String get importMappingDescription =>
+      'We matched your file columns to pilgrim fields. Review and fix any that look wrong.';
+
+  @override
+  String get importColumnIgnore => 'Ignore this column';
+
+  @override
+  String get importFileColumn => 'File column';
+
+  @override
+  String get importMapsTo => 'Maps to';
+
+  @override
+  String get importEmailColumnLabel => 'Login email';
+
+  @override
+  String get importPreviewTitle => 'Preview';
+
+  @override
+  String importNewCount(int count) {
+    return '$count new';
+  }
+
+  @override
+  String importUpdateCount(int count) {
+    return '$count to update';
+  }
+
+  @override
+  String importErrorCount(int count) {
+    return '$count with errors';
+  }
+
+  @override
+  String importIgnoredColumns(int count) {
+    return '$count columns ignored';
+  }
+
+  @override
+  String get importColRow => 'Row';
+
+  @override
+  String get importColName => 'Name';
+
+  @override
+  String get importColAction => 'Action';
+
+  @override
+  String get importColIssues => 'Issues';
+
+  @override
+  String get importActionCreate => 'New';
+
+  @override
+  String get importActionUpdate => 'Update';
+
+  @override
+  String get importActionError => 'Error';
+
+  @override
+  String importConfirmButton(int count) {
+    return 'Import $count pilgrims';
+  }
+
+  @override
+  String get importCommitting => 'Importing…';
+
+  @override
+  String get importResultTitle => 'Import complete';
+
+  @override
+  String importResultCreated(int count) {
+    return '$count created';
+  }
+
+  @override
+  String importResultUpdated(int count) {
+    return '$count updated';
+  }
+
+  @override
+  String importResultFailed(int count) {
+    return '$count failed';
+  }
+
+  @override
+  String get importResultErrorsTitle => 'Errors';
+
+  @override
+  String get importAnother => 'Import another file';
+
+  @override
+  String get importChangeFile => 'Choose a different file';
+
+  @override
+  String get importNoRows => 'No data rows were found in the file.';
+
+  @override
+  String get importNothingToImport => 'There are no valid rows to import.';
+
+  @override
+  String get importGenericError =>
+      'Could not read the file. Make sure it is a valid Excel or CSV file.';
+
+  @override
+  String get importIssueMissingName => 'Arabic full name is required';
+
+  @override
+  String get importIssueInvalidDate => 'Invalid date';
+
+  @override
+  String get importIssueInvalidGender => 'Unrecognized gender';
+
+  @override
+  String get importIssueInvalidBoolean => 'Unrecognized yes/no value';
+
+  @override
+  String get importIssueDuplicatePassport => 'Duplicate passport in file';
+
+  @override
+  String get exportButton => 'Export';
+
+  @override
+  String get exportTemplateButton => 'Template';
+
+  @override
+  String get exportEmpty => 'There are no pilgrims to export.';
+
+  @override
+  String get exportDownloadStarted => 'Export ready — check your downloads.';
+
+  @override
+  String exportSavedTo(String path) {
+    return 'Saved to $path';
+  }
+
+  @override
+  String get exportFailed => 'Export failed. Please try again.';
+
+  @override
+  String get bulkEditAction => 'Bulk edit';
+
+  @override
+  String bulkEditTitle(int count) {
+    return 'Bulk edit $count pilgrims';
+  }
+
+  @override
+  String get bulkEditDescription =>
+      'Only the fields you enable will change. Fields left off keep each pilgrim\'s current value.';
+
+  @override
+  String get bulkEditEnableField => 'Update this field';
+
+  @override
+  String get bulkEditNotify => 'Notify pilgrims of changes';
+
+  @override
+  String get bulkEditNotifyHint =>
+      'Pilgrims with the app get a notification when their hotel, flight, or other logistics change.';
+
+  @override
+  String bulkEditApply(int count) {
+    return 'Apply to $count pilgrims';
+  }
+
+  @override
+  String get bulkEditNoFields => 'Enable at least one field to update.';
+
+  @override
+  String bulkEditSuccess(int count) {
+    return 'Updated $count pilgrims';
+  }
+
+  @override
+  String get bulkEditError => 'Could not apply the changes. Please try again.';
 }

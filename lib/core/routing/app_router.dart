@@ -52,6 +52,7 @@ import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/opera
 import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_login_screen.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_pilgrim_detail_screen.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_pilgrim_list_screen.dart';
+import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/pilgrim_import_screen.dart';
 import 'package:rafiq_alhajj/features/profile/presentation/widgets/profile_screen.dart';
 import 'package:rafiq_alhajj/features/services/presentation/widgets/services_hub_screen.dart';
 import 'package:rafiq_alhajj/features/sos/presentation/widgets/sos_monitor_screen.dart';
@@ -488,6 +489,11 @@ ShellRoute _staffWebShellRoute() {
         path: AppRoutes.operatorPilgrims,
         name: 'operatorPilgrims',
         builder: (context, state) => const OperatorPilgrimListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.operatorPilgrimsImport,
+        name: 'operatorPilgrimsImport',
+        builder: (context, state) => const PilgrimImportScreen(),
       ),
       GoRoute(
         path: AppRoutes.operatorPilgrimDetail,

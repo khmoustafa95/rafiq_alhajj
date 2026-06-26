@@ -2893,4 +2893,201 @@ class AppLocalizationsAr extends AppLocalizations {
   String sosStartedAt(String time) {
     return 'منذ $time';
   }
+
+  @override
+  String get importTitle => 'استيراد الحجاج';
+
+  @override
+  String get importSubtitle => 'أضف أو حدّث الحجاج من ملف إكسل أو CSV.';
+
+  @override
+  String get importPickTitle => 'استيراد من إكسل / CSV';
+
+  @override
+  String get importPickDescription =>
+      'اختر ملف ‎.xlsx أو ‎.csv. يجب أن يكون الصف الأول عناوين الأعمدة. تتم مطابقة الحجاج الحاليين برقم الجواز وتحديثهم، وإنشاء الباقي.';
+
+  @override
+  String get importPickFile => 'اختيار ملف';
+
+  @override
+  String get importMappingTitle => 'مطابقة الأعمدة';
+
+  @override
+  String get importMappingDescription =>
+      'طابقنا أعمدة ملفك مع حقول الحاج. راجع وصحّح أي مطابقة غير صحيحة.';
+
+  @override
+  String get importColumnIgnore => 'تجاهل هذا العمود';
+
+  @override
+  String get importFileColumn => 'عمود الملف';
+
+  @override
+  String get importMapsTo => 'يطابق';
+
+  @override
+  String get importEmailColumnLabel => 'بريد الدخول';
+
+  @override
+  String get importPreviewTitle => 'معاينة';
+
+  @override
+  String importNewCount(int count) {
+    return '$count جديد';
+  }
+
+  @override
+  String importUpdateCount(int count) {
+    return '$count للتحديث';
+  }
+
+  @override
+  String importErrorCount(int count) {
+    return '$count بها أخطاء';
+  }
+
+  @override
+  String importIgnoredColumns(int count) {
+    return 'تم تجاهل $count عمود';
+  }
+
+  @override
+  String get importColRow => 'الصف';
+
+  @override
+  String get importColName => 'الاسم';
+
+  @override
+  String get importColAction => 'الإجراء';
+
+  @override
+  String get importColIssues => 'الملاحظات';
+
+  @override
+  String get importActionCreate => 'جديد';
+
+  @override
+  String get importActionUpdate => 'تحديث';
+
+  @override
+  String get importActionError => 'خطأ';
+
+  @override
+  String importConfirmButton(int count) {
+    return 'استيراد $count حاج';
+  }
+
+  @override
+  String get importCommitting => 'جارٍ الاستيراد…';
+
+  @override
+  String get importResultTitle => 'اكتمل الاستيراد';
+
+  @override
+  String importResultCreated(int count) {
+    return '$count تم إنشاؤه';
+  }
+
+  @override
+  String importResultUpdated(int count) {
+    return '$count تم تحديثه';
+  }
+
+  @override
+  String importResultFailed(int count) {
+    return '$count فشل';
+  }
+
+  @override
+  String get importResultErrorsTitle => 'الأخطاء';
+
+  @override
+  String get importAnother => 'استيراد ملف آخر';
+
+  @override
+  String get importChangeFile => 'اختيار ملف مختلف';
+
+  @override
+  String get importNoRows => 'لم يتم العثور على صفوف بيانات في الملف.';
+
+  @override
+  String get importNothingToImport => 'لا توجد صفوف صالحة للاستيراد.';
+
+  @override
+  String get importGenericError =>
+      'تعذّر قراءة الملف. تأكد من أنه ملف إكسل أو CSV صالح.';
+
+  @override
+  String get importIssueMissingName => 'الاسم الكامل بالعربية مطلوب';
+
+  @override
+  String get importIssueInvalidDate => 'تاريخ غير صالح';
+
+  @override
+  String get importIssueInvalidGender => 'جنس غير معروف';
+
+  @override
+  String get importIssueInvalidBoolean => 'قيمة نعم/لا غير معروفة';
+
+  @override
+  String get importIssueDuplicatePassport => 'رقم جواز مكرر في الملف';
+
+  @override
+  String get exportButton => 'تصدير';
+
+  @override
+  String get exportTemplateButton => 'نموذج';
+
+  @override
+  String get exportEmpty => 'لا يوجد حجاج للتصدير.';
+
+  @override
+  String get exportDownloadStarted => 'التصدير جاهز — تحقق من التنزيلات.';
+
+  @override
+  String exportSavedTo(String path) {
+    return 'تم الحفظ في $path';
+  }
+
+  @override
+  String get exportFailed => 'فشل التصدير. حاول مرة أخرى.';
+
+  @override
+  String get bulkEditAction => 'تعديل جماعي';
+
+  @override
+  String bulkEditTitle(int count) {
+    return 'تعديل جماعي لـ $count حاج';
+  }
+
+  @override
+  String get bulkEditDescription =>
+      'تتغيّر فقط الحقول التي تفعّلها. الحقول غير المفعّلة تبقى بقيمتها الحالية لكل حاج.';
+
+  @override
+  String get bulkEditEnableField => 'تحديث هذا الحقل';
+
+  @override
+  String get bulkEditNotify => 'إشعار الحجاج بالتعديلات';
+
+  @override
+  String get bulkEditNotifyHint =>
+      'يصل الحجاج الذين لديهم التطبيق إشعار عند تغيير الفندق أو الرحلة أو غيرها من اللوجستيات.';
+
+  @override
+  String bulkEditApply(int count) {
+    return 'تطبيق على $count حاج';
+  }
+
+  @override
+  String get bulkEditNoFields => 'فعّل حقلاً واحداً على الأقل للتحديث.';
+
+  @override
+  String bulkEditSuccess(int count) {
+    return 'تم تحديث $count حاج';
+  }
+
+  @override
+  String get bulkEditError => 'تعذّر تطبيق التعديلات. حاول مرة أخرى.';
 }

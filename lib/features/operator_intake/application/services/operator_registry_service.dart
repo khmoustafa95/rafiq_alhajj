@@ -56,4 +56,19 @@ class OperatorRegistryService {
         groupId: groupId,
         tripId: tripId,
       );
+
+  Future<void> bulkUpdateEnrollments({
+    required List<String> pilgrimIds,
+    Map<String, dynamic> person = const {},
+    Map<String, dynamic> enrollment = const {},
+    String? tripId,
+    bool notify = true,
+  }) =>
+      _repository.bulkUpdateEnrollments(
+        pilgrimIds: pilgrimIds,
+        person: person,
+        enrollment: enrollment,
+        tripId: tripId,
+        notify: notify,
+      );
 }

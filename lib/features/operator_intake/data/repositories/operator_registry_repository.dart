@@ -103,6 +103,8 @@ class OperatorRegistryRepository {
     }
   }
 
+  /// Saves a single pilgrim through the unified write+notify RPC, so single and
+  /// bulk edits share one path. Curated logistics changes notify the owner.
   Future<void> savePilgrim({
     required String pilgrimId,
     required OperatorPilgrimUpdate update,
@@ -115,22 +117,45 @@ class OperatorRegistryRepository {
     }
     final remote = _remote!;
     try {
-      await remote.updatePilgrimPerson(pilgrimId, update.toPersonPayload());
-
-      await remote.updateEnrollment(
-        pilgrimId,
-        update.toEnrollmentPayload(includeGroup: includeProfileFields),
-        enrollmentId: enrollmentId,
+      await remote.bulkUpdatePilgrimEnrollments(
+        pilgrimIds: [pilgrimId],
         tripId: tripId,
+        person: update.person,
+        enrollment: update.enrollment,
+        groupId: update.groupId,
+        setGroup: includeProfileFields,
+        setProfile: includeProfileFields,
+        notify: true,
       );
+    } on PostgrestException catch (e) {
+      throw OperatorRegistryException(e.message);
+    }
+  }
 
-      if (includeProfileFields) {
-        final pilgrim = await remote.fetchPilgrimProfileId(pilgrimId);
-        final profileId = pilgrim?['profile_id'] as String?;
-        if (profileId != null) {
-          await remote.updateProfile(profileId, update.toProfilePayload());
-        }
-      }
+  /// Applies the same field map to many pilgrims at once (bulk edit). Only the
+  /// keys present in [person]/[enrollment] are written.
+  Future<void> bulkUpdateEnrollments({
+    required List<String> pilgrimIds,
+    Map<String, dynamic> person = const {},
+    Map<String, dynamic> enrollment = const {},
+    String? tripId,
+    bool notify = true,
+  }) async {
+    if (!isAvailable) {
+      throw const OperatorRegistryException('Supabase is not configured');
+    }
+    if (pilgrimIds.isEmpty) {
+      return;
+    }
+    final remote = _remote!;
+    try {
+      await remote.bulkUpdatePilgrimEnrollments(
+        pilgrimIds: pilgrimIds,
+        tripId: tripId,
+        person: person,
+        enrollment: enrollment,
+        notify: notify,
+      );
     } on PostgrestException catch (e) {
       throw OperatorRegistryException(e.message);
     }

@@ -136,6 +136,32 @@ class OperatorRegistryRemoteDataSource {
     await request;
   }
 
+  /// Calls the unified write+notify RPC for one or many pilgrims.
+  Future<void> bulkUpdatePilgrimEnrollments({
+    required List<String> pilgrimIds,
+    String? tripId,
+    Map<String, dynamic> person = const {},
+    Map<String, dynamic> enrollment = const {},
+    String? groupId,
+    bool setGroup = false,
+    bool setProfile = false,
+    bool notify = false,
+  }) async {
+    await _client.rpc<dynamic>(
+      'bulk_update_pilgrim_enrollments',
+      params: {
+        'p_pilgrim_ids': pilgrimIds,
+        'p_trip_id': tripId,
+        'p_person': person,
+        'p_enrollment': enrollment,
+        'p_group_id': groupId,
+        'p_set_group': setGroup,
+        'p_set_profile': setProfile,
+        'p_notify': notify,
+      },
+    );
+  }
+
   String _sortColumn(StaffTableQuery query) {
     return switch (query.sortColumnId) {
       'passport' => 'passport_number',

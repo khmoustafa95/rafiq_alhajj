@@ -1244,5 +1244,97 @@
   "sosStartedAt": "Since {time}",
   "@sosStartedAt": {
     "placeholders": {"time": {"type": "String"}}
-  }
+  },
+  "importTitle": "Import pilgrims",
+  "importSubtitle": "Add or update pilgrims from an Excel or CSV file.",
+  "importPickTitle": "Import from Excel / CSV",
+  "importPickDescription": "Pick an .xlsx or .csv file. The first row must be the column headers. Existing pilgrims are matched by passport number and updated; the rest are created.",
+  "importPickFile": "Choose file",
+  "importMappingTitle": "Match columns",
+  "importMappingDescription": "We matched your file columns to pilgrim fields. Review and fix any that look wrong.",
+  "importColumnIgnore": "Ignore this column",
+  "importFileColumn": "File column",
+  "importMapsTo": "Maps to",
+  "importEmailColumnLabel": "Login email",
+  "importPreviewTitle": "Preview",
+  "importNewCount": "{count} new",
+  "@importNewCount": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "importUpdateCount": "{count} to update",
+  "@importUpdateCount": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "importErrorCount": "{count} with errors",
+  "@importErrorCount": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "importIgnoredColumns": "{count} columns ignored",
+  "@importIgnoredColumns": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "importColRow": "Row",
+  "importColName": "Name",
+  "importColAction": "Action",
+  "importColIssues": "Issues",
+  "importActionCreate": "New",
+  "importActionUpdate": "Update",
+  "importActionError": "Error",
+  "importConfirmButton": "Import {count} pilgrims",
+  "@importConfirmButton": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "importCommitting": "Importing…",
+  "importResultTitle": "Import complete",
+  "importResultCreated": "{count} created",
+  "@importResultCreated": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "importResultUpdated": "{count} updated",
+  "@importResultUpdated": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "importResultFailed": "{count} failed",
+  "@importResultFailed": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "importResultErrorsTitle": "Errors",
+  "importAnother": "Import another file",
+  "importChangeFile": "Choose a different file",
+  "importNoRows": "No data rows were found in the file.",
+  "importNothingToImport": "There are no valid rows to import.",
+  "importGenericError": "Could not read the file. Make sure it is a valid Excel or CSV file.",
+  "importIssueMissingName": "Arabic full name is required",
+  "importIssueInvalidDate": "Invalid date",
+  "importIssueInvalidGender": "Unrecognized gender",
+  "importIssueInvalidBoolean": "Unrecognized yes/no value",
+  "importIssueDuplicatePassport": "Duplicate passport in file",
+  "exportButton": "Export",
+  "exportTemplateButton": "Template",
+  "exportEmpty": "There are no pilgrims to export.",
+  "exportDownloadStarted": "Export ready — check your downloads.",
+  "exportSavedTo": "Saved to {path}",
+  "@exportSavedTo": {
+    "placeholders": {"path": {"type": "String"}}
+  },
+  "exportFailed": "Export failed. Please try again.",
+  "bulkEditAction": "Bulk edit",
+  "bulkEditTitle": "Bulk edit {count} pilgrims",
+  "@bulkEditTitle": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "bulkEditDescription": "Only the fields you enable will change. Fields left off keep each pilgrim's current value.",
+  "bulkEditEnableField": "Update this field",
+  "bulkEditNotify": "Notify pilgrims of changes",
+  "bulkEditNotifyHint": "Pilgrims with the app get a notification when their hotel, flight, or other logistics change.",
+  "bulkEditApply": "Apply to {count} pilgrims",
+  "@bulkEditApply": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "bulkEditNoFields": "Enable at least one field to update.",
+  "bulkEditSuccess": "Updated {count} pilgrims",
+  "@bulkEditSuccess": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "bulkEditError": "Could not apply the changes. Please try again."
 }

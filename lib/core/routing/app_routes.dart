@@ -40,6 +40,7 @@ abstract final class AppRoutes {
   static const String operatorLogin = '/operator/login';
   static const String operatorIntake = '/operator/intake';
   static const String operatorPilgrims = '/operator/pilgrims';
+  static const String operatorPilgrimsImport = '/operator/pilgrims/import';
   static const String operatorPilgrimDetail = '/operator/pilgrims/:pilgrimId';
 
   static String operatorPilgrimDetailPath(String pilgrimId) =>

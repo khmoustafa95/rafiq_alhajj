@@ -114,6 +114,34 @@ class PilgrimPasswordReset extends _$PilgrimPasswordReset {
 }
 
 @riverpod
+class PilgrimBulkEdit extends _$PilgrimBulkEdit {
+  @override
+  FutureOr<void> build() {}
+
+  /// Applies [person]/[enrollment] field maps to all [pilgrimIds] at once.
+  Future<bool> apply({
+    required List<String> pilgrimIds,
+    required Map<String, dynamic> person,
+    required Map<String, dynamic> enrollment,
+    required bool notify,
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final tripId = await ref.read(activeTripProvider.future);
+      await ref.read(operatorRegistryServiceProvider).bulkUpdateEnrollments(
+            pilgrimIds: pilgrimIds,
+            person: person,
+            enrollment: enrollment,
+            tripId: tripId,
+            notify: notify,
+          );
+      ref.invalidate(operatorPilgrimRegistryPageProvider);
+    });
+    return !state.hasError;
+  }
+}
+
+@riverpod
 class PilgrimBulkAssignGroup extends _$PilgrimBulkAssignGroup {
   @override
   FutureOr<void> build() {}

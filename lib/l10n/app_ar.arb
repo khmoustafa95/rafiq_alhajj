@@ -973,5 +973,97 @@
   "sosStartedAt": "منذ {time}",
   "@sosStartedAt": {
     "placeholders": {"time": {"type": "String"}}
-  }
+  },
+  "importTitle": "استيراد الحجاج",
+  "importSubtitle": "أضف أو حدّث الحجاج من ملف إكسل أو CSV.",
+  "importPickTitle": "استيراد من إكسل / CSV",
+  "importPickDescription": "اختر ملف ‎.xlsx أو ‎.csv. يجب أن يكون الصف الأول عناوين الأعمدة. تتم مطابقة الحجاج الحاليين برقم الجواز وتحديثهم، وإنشاء الباقي.",
+  "importPickFile": "اختيار ملف",
+  "importMappingTitle": "مطابقة الأعمدة",
+  "importMappingDescription": "طابقنا أعمدة ملفك مع حقول الحاج. راجع وصحّح أي مطابقة غير صحيحة.",
+  "importColumnIgnore": "تجاهل هذا العمود",
+  "importFileColumn": "عمود الملف",
+  "importMapsTo": "يطابق",
+  "importEmailColumnLabel": "بريد الدخول",
+  "importPreviewTitle": "معاينة",
+  "importNewCount": "{count} جديد",
+  "@importNewCount": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "importUpdateCount": "{count} للتحديث",
+  "@importUpdateCount": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "importErrorCount": "{count} بها أخطاء",
+  "@importErrorCount": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "importIgnoredColumns": "تم تجاهل {count} عمود",
+  "@importIgnoredColumns": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "importColRow": "الصف",
+  "importColName": "الاسم",
+  "importColAction": "الإجراء",
+  "importColIssues": "الملاحظات",
+  "importActionCreate": "جديد",
+  "importActionUpdate": "تحديث",
+  "importActionError": "خطأ",
+  "importConfirmButton": "استيراد {count} حاج",
+  "@importConfirmButton": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "importCommitting": "جارٍ الاستيراد…",
+  "importResultTitle": "اكتمل الاستيراد",
+  "importResultCreated": "{count} تم إنشاؤه",
+  "@importResultCreated": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "importResultUpdated": "{count} تم تحديثه",
+  "@importResultUpdated": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "importResultFailed": "{count} فشل",
+  "@importResultFailed": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "importResultErrorsTitle": "الأخطاء",
+  "importAnother": "استيراد ملف آخر",
+  "importChangeFile": "اختيار ملف مختلف",
+  "importNoRows": "لم يتم العثور على صفوف بيانات في الملف.",
+  "importNothingToImport": "لا توجد صفوف صالحة للاستيراد.",
+  "importGenericError": "تعذّر قراءة الملف. تأكد من أنه ملف إكسل أو CSV صالح.",
+  "importIssueMissingName": "الاسم الكامل بالعربية مطلوب",
+  "importIssueInvalidDate": "تاريخ غير صالح",
+  "importIssueInvalidGender": "جنس غير معروف",
+  "importIssueInvalidBoolean": "قيمة نعم/لا غير معروفة",
+  "importIssueDuplicatePassport": "رقم جواز مكرر في الملف",
+  "exportButton": "تصدير",
+  "exportTemplateButton": "نموذج",
+  "exportEmpty": "لا يوجد حجاج للتصدير.",
+  "exportDownloadStarted": "التصدير جاهز — تحقق من التنزيلات.",
+  "exportSavedTo": "تم الحفظ في {path}",
+  "@exportSavedTo": {
+    "placeholders": {"path": {"type": "String"}}
+  },
+  "exportFailed": "فشل التصدير. حاول مرة أخرى.",
+  "bulkEditAction": "تعديل جماعي",
+  "bulkEditTitle": "تعديل جماعي لـ {count} حاج",
+  "@bulkEditTitle": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "bulkEditDescription": "تتغيّر فقط الحقول التي تفعّلها. الحقول غير المفعّلة تبقى بقيمتها الحالية لكل حاج.",
+  "bulkEditEnableField": "تحديث هذا الحقل",
+  "bulkEditNotify": "إشعار الحجاج بالتعديلات",
+  "bulkEditNotifyHint": "يصل الحجاج الذين لديهم التطبيق إشعار عند تغيير الفندق أو الرحلة أو غيرها من اللوجستيات.",
+  "bulkEditApply": "تطبيق على {count} حاج",
+  "@bulkEditApply": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "bulkEditNoFields": "فعّل حقلاً واحداً على الأقل للتحديث.",
+  "bulkEditSuccess": "تم تحديث {count} حاج",
+  "@bulkEditSuccess": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "bulkEditError": "تعذّر تطبيق التعديلات. حاول مرة أخرى."
 }

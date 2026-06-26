@@ -373,6 +373,50 @@ abstract class _$PilgrimPasswordReset extends $AsyncNotifier<void> {
   }
 }
 
+@ProviderFor(PilgrimBulkEdit)
+final pilgrimBulkEditProvider = PilgrimBulkEditProvider._();
+
+final class PilgrimBulkEditProvider
+    extends $AsyncNotifierProvider<PilgrimBulkEdit, void> {
+  PilgrimBulkEditProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'pilgrimBulkEditProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$pilgrimBulkEditHash();
+
+  @$internal
+  @override
+  PilgrimBulkEdit create() => PilgrimBulkEdit();
+}
+
+String _$pilgrimBulkEditHash() => r'3ee6884b4de34578b2a6e925af1bf9dd331caced';
+
+abstract class _$PilgrimBulkEdit extends $AsyncNotifier<void> {
+  FutureOr<void> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<void>, void>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<void>, void>,
+              AsyncValue<void>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(PilgrimBulkAssignGroup)
 final pilgrimBulkAssignGroupProvider = PilgrimBulkAssignGroupProvider._();
 

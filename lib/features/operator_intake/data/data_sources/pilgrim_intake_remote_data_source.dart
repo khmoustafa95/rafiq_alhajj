@@ -18,6 +18,10 @@ class PilgrimIntakeRemoteDataSource {
     return _client.functions.invoke('create-pilgrim', body: body);
   }
 
+  Future<FunctionResponse> importPilgrims(Map<String, dynamic> body) {
+    return _client.functions.invoke('import-pilgrims', body: body);
+  }
+
   Future<void> uploadDocument({
     required String storagePath,
     required Uint8List bytes,
