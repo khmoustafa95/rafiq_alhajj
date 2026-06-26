@@ -111,15 +111,16 @@ class _AdminContentListScreenState extends ConsumerState<AdminContentListScreen>
 
   List<Widget> _toolbarActions(AppLocalizations l10n) {
     return [
-      OutlinedButton.icon(
+      StaffToolbarButton(
+        icon: Icons.collections_bookmark_outlined,
+        label: l10n.adminContentTopicsManage,
         onPressed: _openTopics,
-        icon: const Icon(Icons.collections_bookmark_outlined),
-        label: Text(l10n.adminContentTopicsManage),
       ),
-      FilledButton.icon(
+      StaffToolbarButton(
+        icon: Icons.add_rounded,
+        label: l10n.adminContentAdd,
         onPressed: _openNew,
-        icon: const Icon(Icons.add_rounded),
-        label: Text(l10n.adminContentAdd),
+        primary: true,
       ),
     ];
   }
@@ -305,19 +306,16 @@ List<StaffTableColumn<ContentItem>> _buildColumns(AppLocalizations l10n) {
       label: l10n.adminContentVisibilityLabel,
       flex: 2,
       sortable: true,
-      cellBuilder: (context, item) => Text(
-        contentVisibilityLabel(l10n, item.visibility),
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
+      cellBuilder: (context, item) =>
+          StaffCellText(contentVisibilityLabel(l10n, item.visibility)),
     ),
     StaffTableColumn(
       id: 'created_at',
       label: l10n.staffTableColumnCreated,
       flex: 2,
       sortable: true,
-      cellBuilder: (context, item) => Text(
+      cellBuilder: (context, item) => StaffCellText(
         MaterialLocalizations.of(context).formatMediumDate(item.createdAt),
-        style: Theme.of(context).textTheme.bodyMedium,
       ),
     ),
   ];

@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
 import 'package:rafiq_alhajj/core/telemetry/agent_debug_log.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_button_styles.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_table_density_provider.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
@@ -40,6 +42,7 @@ class StaffTableColumn<T> {
     required this.label,
     required this.cellBuilder,
     this.flex = 1,
+    this.minWidth = 140,
     this.sortable = false,
     this.alignment = AlignmentDirectional.centerStart,
   });
@@ -47,6 +50,12 @@ class StaffTableColumn<T> {
   final String id;
   final String label;
   final int flex;
+
+  /// Minimum width this column needs to stay readable. When the sum of all
+  /// column min-widths exceeds the viewport the table scrolls horizontally and
+  /// each column is laid out at [minWidth]; otherwise columns share the extra
+  /// space by [flex].
+  final double minWidth;
   final bool sortable;
   final AlignmentDirectional alignment;
   final Widget Function(BuildContext context, T item) cellBuilder;
@@ -70,7 +79,7 @@ class StaffTableBulkAction<T> {
   final void Function(List<T> items) onPressed;
 }
 
-class StaffDataTable<T> extends StatefulWidget {
+class StaffDataTable<T> extends ConsumerStatefulWidget {
   const StaffDataTable({
     required this.columns,
     required this.rows,
@@ -109,12 +118,19 @@ class StaffDataTable<T> extends StatefulWidget {
   final List<StaffTableBulkAction<T>> bulkActions;
 
   @override
-  State<StaffDataTable<T>> createState() => _StaffDataTableState<T>();
+  ConsumerState<StaffDataTable<T>> createState() => _StaffDataTableState<T>();
 }
 
-class _StaffDataTableState<T> extends State<StaffDataTable<T>> {
+class _StaffDataTableState<T> extends ConsumerState<StaffDataTable<T>> {
   final Set<String> _selectedKeys = {};
+  final ScrollController _horizontalController = ScrollController();
   int _buildCount = 0;
+
+  @override
+  void dispose() {
+    _horizontalController.dispose();
+    super.dispose();
+  }
 
   bool get _isSelectable =>
       widget.selectable && widget.rowKey != null && widget.bulkActions.isNotEmpty;
@@ -217,6 +233,7 @@ class _StaffDataTableState<T> extends State<StaffDataTable<T>> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final compact = ref.watch(staffTableCompactDensityProvider);
     _buildCount++;
     // #region agent log
     if (AppConfig.rebuildDebugLog) {
@@ -272,51 +289,7 @@ class _StaffDataTableState<T> extends State<StaffDataTable<T>> {
                           message: widget.emptyMessage ?? l10n.staffTableEmpty,
                           icon: widget.emptyIcon,
                         )
-                      : Column(
-                          children: [
-                            _HeaderRow(
-                              columns: widget.columns,
-                              query: widget.query,
-                              hasTrailing: widget.trailingBuilder != null,
-                              selectable: _isSelectable,
-                              headerCheckboxValue: _headerCheckboxValue,
-                              onToggleAll: _toggleAll,
-                              onSort: _toggleSort,
-                            ),
-                            const Divider(height: 1, color: AppColors.border),
-                            Expanded(
-                              child: ListView.separated(
-                                itemCount: widget.rows.length,
-                                separatorBuilder: (_, _) => const Divider(
-                                  height: 1,
-                                  color: AppColors.border,
-                                ),
-                                itemBuilder: (context, index) {
-                                  final item = widget.rows[index];
-                                  final key = _isSelectable
-                                      ? widget.rowKey!(item)
-                                      : null;
-                                  return _DataRow<T>(
-                                    item: item,
-                                    columns: widget.columns,
-                                    trailing: widget.trailingBuilder
-                                        ?.call(context, item),
-                                    onTap: widget.onRowTap == null
-                                        ? null
-                                        : () => widget.onRowTap!(item),
-                                    selectable: _isSelectable,
-                                    selected: key != null &&
-                                        _selectedKeys.contains(key),
-                                    onSelectedChanged: key == null
-                                        ? null
-                                        : (value) =>
-                                            _toggleRow(key, value ?? false),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
+                      : _buildTable(compact),
             ),
           ),
         ),
@@ -328,6 +301,9 @@ class _StaffDataTableState<T> extends State<StaffDataTable<T>> {
           totalPages: _totalPages,
           totalCount: widget.totalCount,
           pageSize: widget.query.pageSize,
+          compact: compact,
+          onToggleDensity: () =>
+              ref.read(staffTableCompactDensityProvider.notifier).toggle(),
           onPageChanged: (page) {
             _updateQuery(widget.query.copyWith(page: page));
           },
@@ -336,6 +312,88 @@ class _StaffDataTableState<T> extends State<StaffDataTable<T>> {
           },
         ),
       ],
+    );
+  }
+
+  Widget _buildTable(bool compact) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final selectionW =
+            _isSelectable ? staffTableSelectionColumnWidth : 0.0;
+        final actionsW =
+            widget.trailingBuilder != null ? staffTableActionsColumnWidth : 0.0;
+        final rowHorizontalPadding = sw(16) * 2;
+        final columnsMin = widget.columns
+            .fold<double>(0, (sum, column) => sum + column.minWidth);
+        final totalMin =
+            selectionW + actionsW + columnsMin + rowHorizontalPadding;
+        // Only scroll horizontally when columns can't fit; narrow tables keep
+        // the previous flex-distributed layout (no behaviour change).
+        final fixedWidths = totalMin > constraints.maxWidth;
+        final contentWidth = fixedWidths ? totalMin : constraints.maxWidth;
+
+        final table = SizedBox(
+          width: contentWidth,
+          child: Column(
+            children: [
+              _HeaderRow(
+                columns: widget.columns,
+                query: widget.query,
+                hasTrailing: widget.trailingBuilder != null,
+                selectable: _isSelectable,
+                headerCheckboxValue: _headerCheckboxValue,
+                onToggleAll: _toggleAll,
+                onSort: _toggleSort,
+                fixedWidths: fixedWidths,
+                compact: compact,
+              ),
+              const Divider(height: 1, color: AppColors.border),
+              Expanded(
+                child: ListView.separated(
+                  itemCount: widget.rows.length,
+                  separatorBuilder: (_, _) => const Divider(
+                    height: 1,
+                    color: AppColors.border,
+                  ),
+                  itemBuilder: (context, index) {
+                    final item = widget.rows[index];
+                    final key = _isSelectable ? widget.rowKey!(item) : null;
+                    return _DataRow<T>(
+                      item: item,
+                      columns: widget.columns,
+                      trailing: widget.trailingBuilder?.call(context, item),
+                      onTap: widget.onRowTap == null
+                          ? null
+                          : () => widget.onRowTap!(item),
+                      selectable: _isSelectable,
+                      selected: key != null && _selectedKeys.contains(key),
+                      onSelectedChanged: key == null
+                          ? null
+                          : (value) => _toggleRow(key, value ?? false),
+                      fixedWidths: fixedWidths,
+                      compact: compact,
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+
+        if (!fixedWidths) {
+          return table;
+        }
+
+        return Scrollbar(
+          controller: _horizontalController,
+          thumbVisibility: true,
+          child: SingleChildScrollView(
+            controller: _horizontalController,
+            scrollDirection: Axis.horizontal,
+            child: table,
+          ),
+        );
+      },
     );
   }
 }
@@ -636,6 +694,8 @@ class _HeaderRow extends StatelessWidget {
     required this.query,
     required this.hasTrailing,
     required this.onSort,
+    required this.fixedWidths,
+    required this.compact,
     this.selectable = false,
     this.headerCheckboxValue,
     this.onToggleAll,
@@ -645,6 +705,8 @@ class _HeaderRow extends StatelessWidget {
   final StaffTableQuery query;
   final bool hasTrailing;
   final ValueChanged<String> onSort;
+  final bool fixedWidths;
+  final bool compact;
   final bool selectable;
   final bool? headerCheckboxValue;
   final ValueChanged<bool?>? onToggleAll;
@@ -659,7 +721,10 @@ class _HeaderRow extends StatelessWidget {
     return ColoredBox(
       color: AppColors.surfaceMuted,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: sw(16), vertical: sh(12)),
+        padding: EdgeInsets.symmetric(
+          horizontal: sw(16),
+          vertical: compact ? sh(8) : sh(12),
+        ),
         child: Row(
           children: [
             if (selectable) ...[
@@ -675,48 +740,48 @@ class _HeaderRow extends StatelessWidget {
             ],
             ...columns.map((column) {
               final isActive = query.sortColumnId == column.id;
-              return Expanded(
-                flex: column.flex,
-                child: column.sortable
-                    ? InkWell(
-                        onTap: () => onSort(column.id),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Flexible(
-                              child: Text(
-                                column.label,
-                                style: style?.copyWith(
-                                  color: isActive
-                                      ? AppColors.primary
-                                      : AppColors.textSecondary,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+              final cell = column.sortable
+                  ? InkWell(
+                      onTap: () => onSort(column.id),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              column.label,
+                              style: style?.copyWith(
+                                color: isActive
+                                    ? AppColors.primary
+                                    : AppColors.textSecondary,
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            SizedBox(width: sw(4)),
-                            Icon(
-                              isActive
-                                  ? (query.sortAscending
-                                      ? Icons.arrow_upward_rounded
-                                      : Icons.arrow_downward_rounded)
-                                  : Icons.unfold_more_rounded,
-                              size: ss(16),
-                              color: isActive
-                                  ? AppColors.primary
-                                  : AppColors.textSecondary,
-                            ),
-                          ],
-                        ),
-                      )
-                    : Text(
-                        column.label,
-                        style: style,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                          ),
+                          SizedBox(width: sw(4)),
+                          Icon(
+                            isActive
+                                ? (query.sortAscending
+                                    ? Icons.arrow_upward_rounded
+                                    : Icons.arrow_downward_rounded)
+                                : Icons.unfold_more_rounded,
+                            size: ss(16),
+                            color: isActive
+                                ? AppColors.primary
+                                : AppColors.textSecondary,
+                          ),
+                        ],
                       ),
-              );
+                    )
+                  : Text(
+                      column.label,
+                      style: style,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    );
+              return fixedWidths
+                  ? SizedBox(width: column.minWidth, child: cell)
+                  : Expanded(flex: column.flex, child: cell);
             }),
             if (hasTrailing)
               const SizedBox(width: staffTableActionsColumnWidth),
@@ -733,6 +798,8 @@ class _DataRow<T> extends StatelessWidget {
     required this.columns,
     required this.trailing,
     required this.onTap,
+    required this.fixedWidths,
+    required this.compact,
     this.selectable = false,
     this.selected = false,
     this.onSelectedChanged,
@@ -742,6 +809,8 @@ class _DataRow<T> extends StatelessWidget {
   final List<StaffTableColumn<T>> columns;
   final Widget? trailing;
   final VoidCallback? onTap;
+  final bool fixedWidths;
+  final bool compact;
   final bool selectable;
   final bool selected;
   final ValueChanged<bool?>? onSelectedChanged;
@@ -756,7 +825,10 @@ class _DataRow<T> extends StatelessWidget {
         onTap: onTap,
         hoverColor: AppColors.primary.withValues(alpha: 0.04),
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: sw(16), vertical: sh(12)),
+          padding: EdgeInsets.symmetric(
+            horizontal: sw(16),
+            vertical: compact ? sh(7) : sh(12),
+          ),
           child: Row(
             children: [
               if (selectable) ...[
@@ -769,15 +841,15 @@ class _DataRow<T> extends StatelessWidget {
                   ),
                 ),
               ],
-              ...columns.map(
-                (column) => Expanded(
-                  flex: column.flex,
-                  child: Align(
-                    alignment: column.alignment,
-                    child: column.cellBuilder(context, item),
-                  ),
-                ),
-              ),
+              ...columns.map((column) {
+                final cell = Align(
+                  alignment: column.alignment,
+                  child: column.cellBuilder(context, item),
+                );
+                return fixedWidths
+                    ? SizedBox(width: column.minWidth, child: cell)
+                    : Expanded(flex: column.flex, child: cell);
+              }),
               if (trailing != null)
                 SizedBox(
                   width: staffTableActionsColumnWidth,
@@ -873,6 +945,8 @@ class _PaginationBar extends StatelessWidget {
     required this.totalPages,
     required this.totalCount,
     required this.pageSize,
+    required this.compact,
+    required this.onToggleDensity,
     required this.onPageChanged,
     required this.onPageSizeChanged,
   });
@@ -883,6 +957,8 @@ class _PaginationBar extends StatelessWidget {
   final int totalPages;
   final int totalCount;
   final int pageSize;
+  final bool compact;
+  final VoidCallback onToggleDensity;
   final ValueChanged<int> onPageChanged;
   final ValueChanged<int> onPageSizeChanged;
 
@@ -903,6 +979,19 @@ class _PaginationBar extends StatelessWidget {
     final controls = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
+        IconButton(
+          onPressed: onToggleDensity,
+          icon: Icon(
+            compact
+                ? Icons.density_small_rounded
+                : Icons.density_medium_rounded,
+          ),
+          tooltip: compact
+              ? l10n.staffTableDensityComfortable
+              : l10n.staffTableDensityCompact,
+          visualDensity: VisualDensity.compact,
+        ),
+        SizedBox(width: sw(8)),
         Text(
           l10n.staffTableRowsPerPage,
           style: theme.textTheme.bodySmall,
@@ -969,6 +1058,89 @@ class _PaginationBar extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+/// A staff table toolbar action.
+///
+/// Secondary actions render icon-only with a hover tooltip to save horizontal
+/// room (Airtable/Linear-style); the primary action keeps its label so the
+/// main task stays discoverable.
+class StaffToolbarButton extends StatelessWidget {
+  const StaffToolbarButton({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+    this.primary = false,
+    super.key,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback? onPressed;
+  final bool primary;
+
+  @override
+  Widget build(BuildContext context) {
+    if (primary) {
+      return FilledButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, size: ss(18)),
+        label: Text(label),
+      );
+    }
+    return IconButton.outlined(
+      onPressed: onPressed,
+      tooltip: label,
+      icon: Icon(icon, size: ss(20)),
+      style: IconButton.styleFrom(
+        minimumSize: Size(sw(44), sh(44)),
+        side: const BorderSide(color: AppColors.border),
+        foregroundColor: AppColors.textPrimary,
+      ),
+    );
+  }
+}
+
+/// Standardized data-table cell text: single line, ellipsis, and a hover
+/// tooltip exposing the full value. Renders a muted placeholder when empty so
+/// cramped columns stay scannable.
+class StaffCellText extends StatelessWidget {
+  const StaffCellText(
+    this.value, {
+    this.strong = false,
+    this.placeholder = '—',
+    super.key,
+  });
+
+  final String? value;
+  final bool strong;
+  final String placeholder;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final text = (value ?? '').trim();
+    if (text.isEmpty) {
+      return Text(
+        placeholder,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: AppColors.textSecondary,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+    return Tooltip(
+      message: text,
+      waitDuration: const Duration(milliseconds: 600),
+      child: Text(
+        text,
+        style: strong ? theme.textTheme.titleSmall : theme.textTheme.bodyMedium,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
     );
   }
 }

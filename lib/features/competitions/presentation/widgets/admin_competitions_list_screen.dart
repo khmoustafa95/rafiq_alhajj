@@ -119,10 +119,11 @@ class _AdminCompetitionsListScreenState
 
   List<Widget> _toolbarActions(AppLocalizations l10n) {
     return [
-      FilledButton.icon(
+      StaffToolbarButton(
+        icon: Icons.add_rounded,
+        label: l10n.adminCompetitionAdd,
         onPressed: _openNew,
-        icon: const Icon(Icons.add_rounded),
-        label: Text(l10n.adminCompetitionAdd),
+        primary: true,
       ),
     ];
   }
@@ -279,10 +280,9 @@ class _AdminCompetitionsListScreenState
         label: l10n.adminCompetitionStartsAt,
         flex: 2,
         sortable: true,
-        cellBuilder: (context, competition) => Text(
+        cellBuilder: (context, competition) => StaffCellText(
           MaterialLocalizations.of(context)
               .formatMediumDate(competition.startsAt),
-          style: Theme.of(context).textTheme.bodyMedium,
         ),
       ),
       StaffTableColumn(
@@ -290,9 +290,8 @@ class _AdminCompetitionsListScreenState
         label: l10n.adminCompetitionEndsAt,
         flex: 2,
         sortable: true,
-        cellBuilder: (context, competition) => Text(
+        cellBuilder: (context, competition) => StaffCellText(
           MaterialLocalizations.of(context).formatMediumDate(competition.endsAt),
-          style: Theme.of(context).textTheme.bodyMedium,
         ),
       ),
       StaffTableColumn(

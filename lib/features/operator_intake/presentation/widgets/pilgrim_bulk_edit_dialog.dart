@@ -17,10 +17,7 @@ class PilgrimBulkEditDialog extends ConsumerStatefulWidget {
 
   final List<String> pilgrimIds;
 
-  static Future<void> show(
-    BuildContext context,
-    List<String> pilgrimIds,
-  ) {
+  static Future<void> show(BuildContext context, List<String> pilgrimIds) {
     return showDialog<void>(
       context: context,
       builder: (_) => PilgrimBulkEditDialog(pilgrimIds: pilgrimIds),
@@ -42,7 +39,8 @@ class _PilgrimBulkEditDialogState extends ConsumerState<PilgrimBulkEditDialog> {
     super.initState();
     for (final field in pilgrimFields) {
       _entries[field.key] = _FieldEntry(
-        text: field.kind == PilgrimFieldKind.boolean ||
+        text:
+            field.kind == PilgrimFieldKind.boolean ||
                 field.kind == PilgrimFieldKind.date
             ? null
             : TextEditingController(),
@@ -86,12 +84,19 @@ class _PilgrimBulkEditDialogState extends ConsumerState<PilgrimBulkEditDialog> {
     }
 
     setState(() => _submitting = true);
-    final ok = await ref.read(pilgrimBulkEditProvider.notifier).apply(
-          pilgrimIds: widget.pilgrimIds,
-          person: person,
-          enrollment: enrollment,
-          notify: _notify,
-        );
+    bool ok;
+    try {
+      ok = await ref
+          .read(pilgrimBulkEditProvider.notifier)
+          .apply(
+            pilgrimIds: widget.pilgrimIds,
+            person: person,
+            enrollment: enrollment,
+            notify: _notify,
+          );
+    } on Object {
+      ok = false;
+    }
     if (!mounted) {
       return;
     }
@@ -111,82 +116,69 @@ class _PilgrimBulkEditDialogState extends ConsumerState<PilgrimBulkEditDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
-    return Dialog(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 720, maxHeight: 720),
-        child: Padding(
-          padding: EdgeInsets.all(sw(20)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                l10n.bulkEditTitle(widget.pilgrimIds.length),
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              SizedBox(height: sh(4)),
-              Text(
-                l10n.bulkEditDescription,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
-              ),
-              SizedBox(height: sh(16)),
-              Flexible(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      for (final section in pilgrimFieldSections)
-                        _SectionBlock(
-                          section: section,
-                          entries: _entries,
-                          enabled: !_submitting,
-                          onChanged: () => setState(() {}),
-                        ),
-                    ],
+    return AlertDialog(
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(l10n.bulkEditTitle(widget.pilgrimIds.length)),
+          SizedBox(height: sh(4)),
+          Text(
+            l10n.bulkEditDescription,
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+          ),
+        ],
+      ),
+      content: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 520),
+        child: SizedBox(
+          width: double.maxFinite,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final section in pilgrimFieldSections)
+                  _SectionBlock(
+                    section: section,
+                    entries: _entries,
+                    enabled: !_submitting,
+                    onChanged: () => setState(() {}),
                   ),
+                SwitchListTile(
+                  value: _notify,
+                  onChanged: _submitting
+                      ? null
+                      : (value) => setState(() => _notify = value),
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(l10n.bulkEditNotify),
+                  subtitle: Text(l10n.bulkEditNotifyHint),
                 ),
-              ),
-              SizedBox(height: sh(12)),
-              SwitchListTile(
-                value: _notify,
-                onChanged: _submitting
-                    ? null
-                    : (value) => setState(() => _notify = value),
-                contentPadding: EdgeInsets.zero,
-                title: Text(l10n.bulkEditNotify),
-                subtitle: Text(l10n.bulkEditNotifyHint),
-              ),
-              SizedBox(height: sh(8)),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: _submitting
-                        ? null
-                        : () => Navigator.of(context).pop(),
-                    child: Text(l10n.dialogCancel),
-                  ),
-                  SizedBox(width: sw(8)),
-                  FilledButton(
-                    onPressed: _submitting || _enabledCount == 0
-                        ? null
-                        : () => unawaited(_submit()),
-                    child: _submitting
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Text(l10n.bulkEditApply(widget.pilgrimIds.length)),
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
+      actions: [
+        TextButton(
+          onPressed: _submitting ? null : () => Navigator.of(context).pop(),
+          child: Text(l10n.dialogCancel),
+        ),
+        FilledButton(
+          onPressed: _submitting || _enabledCount == 0
+              ? null
+              : () => unawaited(_submit()),
+          child: _submitting
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(l10n.bulkEditApply(widget.pilgrimIds.length)),
+        ),
+      ],
     );
   }
 }
@@ -270,9 +262,7 @@ class _FieldRow extends StatelessWidget {
             visualDensity: VisualDensity.compact,
           ),
           SizedBox(width: sw(4)),
-          Expanded(
-            child: _input(context, l10n, label),
-          ),
+          Expanded(child: _input(context, l10n, label)),
         ],
       ),
     );
@@ -288,8 +278,8 @@ class _FieldRow extends StatelessWidget {
               child: Text(
                 label,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: active ? null : AppColors.textSecondary,
-                    ),
+                  color: active ? null : AppColors.textSecondary,
+                ),
               ),
             ),
             Switch(
@@ -326,7 +316,10 @@ class _FieldRow extends StatelessWidget {
           initialValue: entry.genderValue,
           decoration: InputDecoration(labelText: label, isDense: true),
           items: [
-            DropdownMenuItem(value: 'male', child: Text(l10n.pilgrimGenderMale)),
+            DropdownMenuItem(
+              value: 'male',
+              child: Text(l10n.pilgrimGenderMale),
+            ),
             DropdownMenuItem(
               value: 'female',
               child: Text(l10n.pilgrimGenderFemale),

@@ -1595,6 +1595,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get staffNavSettings => 'الإعدادات';
 
   @override
+  String get staffSidebarCollapse => 'طيّ الشريط الجانبي';
+
+  @override
+  String get staffSidebarExpand => 'توسيع الشريط الجانبي';
+
+  @override
   String get staffPortalSubtitle => 'بوابة المسؤول';
 
   @override
@@ -1793,6 +1799,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get staffTableRowsPerPage => 'صفوف لكل صفحة';
+
+  @override
+  String get staffTableDensityCompact => 'صفوف مضغوطة';
+
+  @override
+  String get staffTableDensityComfortable => 'صفوف مريحة';
 
   @override
   String get staffTablePreviousPage => 'الصفحة السابقة';

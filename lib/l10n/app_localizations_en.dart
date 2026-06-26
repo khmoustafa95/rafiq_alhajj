@@ -1617,6 +1617,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get staffNavSettings => 'Settings';
 
   @override
+  String get staffSidebarCollapse => 'Collapse sidebar';
+
+  @override
+  String get staffSidebarExpand => 'Expand sidebar';
+
+  @override
   String get staffPortalSubtitle => 'Admin Portal';
 
   @override
@@ -1822,6 +1828,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get staffTableRowsPerPage => 'Rows per page';
+
+  @override
+  String get staffTableDensityCompact => 'Compact rows';
+
+  @override
+  String get staffTableDensityComfortable => 'Comfortable rows';
 
   @override
   String get staffTablePreviousPage => 'Previous page';

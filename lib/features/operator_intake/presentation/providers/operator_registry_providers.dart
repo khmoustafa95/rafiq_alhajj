@@ -113,7 +113,10 @@ class PilgrimPasswordReset extends _$PilgrimPasswordReset {
   }
 }
 
-@riverpod
+// keepAlive: triggered from a dialog that never watches it, so an autoDispose
+// notifier would be torn down mid-flight (during the await) and throw
+// "Cannot use Ref after dispose" when it sets state / invalidates afterwards.
+@Riverpod(keepAlive: true)
 class PilgrimBulkEdit extends _$PilgrimBulkEdit {
   @override
   FutureOr<void> build() {}

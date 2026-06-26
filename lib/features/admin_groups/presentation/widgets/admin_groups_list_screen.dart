@@ -93,10 +93,11 @@ class _AdminGroupsListScreenState extends ConsumerState<AdminGroupsListScreen> {
 
   List<Widget> _toolbarActions(AppLocalizations l10n) {
     return [
-      FilledButton.icon(
+      StaffToolbarButton(
+        icon: Icons.group_add_rounded,
+        label: l10n.adminGroupAdd,
         onPressed: _openNew,
-        icon: const Icon(Icons.group_add_rounded),
-        label: Text(l10n.adminGroupAdd),
+        primary: true,
       ),
     ];
   }
@@ -211,12 +212,7 @@ class _AdminGroupsListScreenState extends ConsumerState<AdminGroupsListScreen> {
             _GroupLogo(logoUrl: group.logoUrl, size: sr(18)),
             SizedBox(width: sw(10)),
             Expanded(
-              child: Text(
-                group.name,
-                style: Theme.of(context).textTheme.titleSmall,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
+              child: StaffCellText(group.name, strong: true),
             ),
           ],
         ),
@@ -226,27 +222,18 @@ class _AdminGroupsListScreenState extends ConsumerState<AdminGroupsListScreen> {
         label: l10n.adminGroupPresidentName,
         flex: 2,
         sortable: true,
-        cellBuilder: (context, group) => Text(
-          group.presidentName ?? '—',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+        cellBuilder: (context, group) => StaffCellText(group.presidentName),
       ),
       StaffTableColumn(
         id: 'president_phone',
         label: l10n.adminGroupPresidentPhone,
         flex: 2,
-        cellBuilder: (context, group) => Text(
-          group.presidentPhone ?? '—',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+        cellBuilder: (context, group) => StaffCellText(group.presidentPhone),
       ),
       StaffTableColumn(
         id: 'members',
         label: l10n.adminGroupMembersCount,
-        cellBuilder: (context, group) => Text(
-          '${group.members.length}',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+        cellBuilder: (context, group) => StaffCellText('${group.members.length}'),
       ),
     ];
   }

@@ -225,30 +225,31 @@ class _OperatorPilgrimListScreenState
   ) {
     return [
       const TripSelector(),
-      OutlinedButton.icon(
+      StaffToolbarButton(
+        icon: Icons.view_column_outlined,
+        label: l10n.staffTableColumnsCustomize,
         onPressed: () => unawaited(_openColumnPicker(l10n, hiddenColumnIds)),
-        icon: const Icon(Icons.view_column_outlined),
-        label: Text(l10n.staffTableColumnsCustomize),
       ),
-      OutlinedButton.icon(
+      StaffToolbarButton(
+        icon: Icons.description_outlined,
+        label: l10n.exportTemplateButton,
         onPressed: () => unawaited(_downloadTemplate(l10n)),
-        icon: const Icon(Icons.description_outlined),
-        label: Text(l10n.exportTemplateButton),
       ),
-      OutlinedButton.icon(
+      StaffToolbarButton(
+        icon: Icons.file_download_outlined,
+        label: l10n.exportButton,
         onPressed: () => unawaited(_exportPilgrims(l10n)),
-        icon: const Icon(Icons.file_download_outlined),
-        label: Text(l10n.exportButton),
       ),
-      OutlinedButton.icon(
+      StaffToolbarButton(
+        icon: Icons.upload_file_outlined,
+        label: l10n.importTitle,
         onPressed: _openImport,
-        icon: const Icon(Icons.upload_file_outlined),
-        label: Text(l10n.importTitle),
       ),
-      FilledButton.icon(
+      StaffToolbarButton(
+        icon: Icons.person_add_outlined,
+        label: isAdmin ? l10n.adminPilgrimAdd : l10n.operatorIntakeTitle,
         onPressed: _openIntake,
-        icon: const Icon(Icons.person_add_outlined),
-        label: Text(isAdmin ? l10n.adminPilgrimAdd : l10n.operatorIntakeTitle),
+        primary: true,
       ),
     ];
   }
@@ -660,6 +661,7 @@ class _OperatorPilgrimListScreenState
         id: 'full_name',
         label: l10n.operatorFullName,
         flex: 3,
+        minWidth: 240,
         sortable: true,
         cellBuilder: (context, item) => Row(
           children: [
@@ -677,12 +679,7 @@ class _OperatorPilgrimListScreenState
             ),
             SizedBox(width: sw(10)),
             Expanded(
-              child: Text(
-                item.fullName,
-                style: Theme.of(context).textTheme.titleSmall,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
+              child: StaffCellText(item.fullName, strong: true),
             ),
           ],
         ),
@@ -690,132 +687,94 @@ class _OperatorPilgrimListScreenState
       StaffTableColumn(
         id: 'gender',
         label: l10n.staffTableFilterGender,
+        minWidth: 110,
         sortable: true,
-        cellBuilder: (context, item) => Text(
-          _genderLabel(l10n, item.gender),
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+        cellBuilder: (context, item) =>
+            StaffCellText(_genderLabel(l10n, item.gender)),
       ),
       StaffTableColumn(
         id: 'group',
         label: l10n.staffTableFilterGroup,
         flex: 2,
         sortable: true,
-        cellBuilder: (context, item) => Text(
-          item.groupName ?? '—',
-          style: Theme.of(context).textTheme.bodyMedium,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
+        cellBuilder: (context, item) => StaffCellText(item.groupName),
       ),
       StaffTableColumn(
         id: 'passport',
         label: l10n.operatorPassport,
         flex: 2,
         sortable: true,
-        cellBuilder: (context, item) => Text(
-          item.passportNumber ?? '—',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+        cellBuilder: (context, item) => StaffCellText(item.passportNumber),
       ),
       StaffTableColumn(
         id: 'travel_permit',
         label: l10n.operatorTravelPermit,
         flex: 2,
         sortable: true,
-        cellBuilder: (context, item) => Text(
-          item.travelPermitNumber ?? '—',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+        cellBuilder: (context, item) => StaffCellText(item.travelPermitNumber),
       ),
       StaffTableColumn(
         id: 'medical_test',
         label: l10n.pilgrimMedicalStatus,
         flex: 2,
         sortable: true,
-        cellBuilder: (context, item) => Text(
-          item.medicalTestStatus ?? '—',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+        cellBuilder: (context, item) => StaffCellText(item.medicalTestStatus),
       ),
       StaffTableColumn(
         id: 'travel_date',
         label: l10n.pilgrimTravelDate,
         flex: 2,
         sortable: true,
-        cellBuilder: (context, item) => Text(
+        cellBuilder: (context, item) => StaffCellText(
           item.travelDate == null
               ? l10n.operatorPilgrimTravelDateUnset
               : MaterialLocalizations.of(context)
                   .formatMediumDate(item.travelDate!),
-          style: Theme.of(context).textTheme.bodyMedium,
         ),
       ),
       StaffTableColumn(
         id: 'hotel',
         label: l10n.pilgrimHotel,
         flex: 2,
+        minWidth: 190,
         sortable: true,
-        cellBuilder: (context, item) => Text(
-          item.hotelName ?? '—',
-          style: Theme.of(context).textTheme.bodyMedium,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
+        cellBuilder: (context, item) => StaffCellText(item.hotelName),
       ),
       StaffTableColumn(
         id: 'cluster',
         label: l10n.pilgrimLabelCluster,
         flex: 2,
         sortable: true,
-        cellBuilder: (context, item) => Text(
-          item.cluster ?? '—',
-          style: Theme.of(context).textTheme.bodyMedium,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
+        cellBuilder: (context, item) => StaffCellText(item.cluster),
       ),
       StaffTableColumn(
         id: 'sticker',
         label: l10n.pilgrimLabelSticker,
         flex: 2,
         sortable: true,
-        cellBuilder: (context, item) => Text(
-          item.stickerNumber ?? '—',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+        cellBuilder: (context, item) => StaffCellText(item.stickerNumber),
       ),
       StaffTableColumn(
         id: 'makkah_hotel',
         label: l10n.pilgrimLabelMakkahHotel,
         flex: 2,
+        minWidth: 190,
         sortable: true,
-        cellBuilder: (context, item) => Text(
-          item.makkahHotel ?? '—',
-          style: Theme.of(context).textTheme.bodyMedium,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
+        cellBuilder: (context, item) => StaffCellText(item.makkahHotel),
       ),
       StaffTableColumn(
         id: 'phone',
         label: l10n.pilgrimLabelPhone,
         flex: 2,
         sortable: true,
-        cellBuilder: (context, item) => Text(
-          item.phoneNumber ?? '—',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+        cellBuilder: (context, item) => StaffCellText(item.phoneNumber),
       ),
       StaffTableColumn(
         id: 'whatsapp',
         label: l10n.pilgrimLabelWhatsapp,
         flex: 2,
         sortable: true,
-        cellBuilder: (context, item) => Text(
-          item.whatsappNumber ?? '—',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+        cellBuilder: (context, item) => StaffCellText(item.whatsappNumber),
       ),
     ];
   }

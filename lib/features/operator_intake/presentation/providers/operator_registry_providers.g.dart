@@ -384,7 +384,7 @@ final class PilgrimBulkEditProvider
         argument: null,
         retry: null,
         name: r'pilgrimBulkEditProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -397,7 +397,7 @@ final class PilgrimBulkEditProvider
   PilgrimBulkEdit create() => PilgrimBulkEdit();
 }
 
-String _$pilgrimBulkEditHash() => r'3ee6884b4de34578b2a6e925af1bf9dd331caced';
+String _$pilgrimBulkEditHash() => r'c63b43077652558d12d58c03399404449a64fccb';
 
 abstract class _$PilgrimBulkEdit extends $AsyncNotifier<void> {
   FutureOr<void> build();

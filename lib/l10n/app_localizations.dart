@@ -3013,6 +3013,18 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get staffNavSettings;
 
+  /// No description provided for @staffSidebarCollapse.
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse sidebar'**
+  String get staffSidebarCollapse;
+
+  /// No description provided for @staffSidebarExpand.
+  ///
+  /// In en, this message translates to:
+  /// **'Expand sidebar'**
+  String get staffSidebarExpand;
+
   /// No description provided for @staffPortalSubtitle.
   ///
   /// In en, this message translates to:
@@ -3390,6 +3402,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rows per page'**
   String get staffTableRowsPerPage;
+
+  /// No description provided for @staffTableDensityCompact.
+  ///
+  /// In en, this message translates to:
+  /// **'Compact rows'**
+  String get staffTableDensityCompact;
+
+  /// No description provided for @staffTableDensityComfortable.
+  ///
+  /// In en, this message translates to:
+  /// **'Comfortable rows'**
+  String get staffTableDensityComfortable;
 
   /// No description provided for @staffTablePreviousPage.
   ///

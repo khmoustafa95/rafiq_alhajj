@@ -7,6 +7,7 @@ import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/language_switcher.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_button_styles.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_connectivity_banner.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_sidebar_provider.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/controllers/sign_out_controller.dart';
@@ -24,6 +25,7 @@ class StaffWebShell extends ConsumerStatefulWidget {
 
   static const compactBreakpoint = 960.0;
   static const sidebarWidth = 260.0;
+  static const collapsedSidebarWidth = 76.0;
 
   @override
   ConsumerState<StaffWebShell> createState() => _StaffWebShellState();
@@ -49,6 +51,10 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
     );
     final isCompact =
         MediaQuery.sizeOf(context).width < StaffWebShell.compactBreakpoint;
+    // Collapsing only applies to the wide (persistent) sidebar; the compact
+    // drawer always shows full-width labels.
+    final collapsed =
+        !isCompact && ref.watch(staffSidebarCollapsedProvider);
 
     final navItems = isAdmin
         ? _adminNavItems(l10n, location)
@@ -59,8 +65,14 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
       profileName: profileName,
       isAdmin: isAdmin,
       navItems: navItems,
+      collapsed: collapsed,
+      // Collapsing is a wide-layout affordance only; hide the toggle in the
+      // compact drawer where the sidebar is always full-width.
+      canCollapse: !isCompact,
       onNavigate: _navigate,
       onSignOut: () => ref.read(signOutControllerProvider.notifier).signOut(),
+      onToggleCollapse: () =>
+          ref.read(staffSidebarCollapsedProvider.notifier).toggle(),
     );
 
     final pageBody = Column(
@@ -105,7 +117,14 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
       backgroundColor: AppColors.background,
       body: Row(
         children: [
-          SizedBox(width: StaffWebShell.sidebarWidth, child: sidebar),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeInOut,
+            width: collapsed
+                ? StaffWebShell.collapsedSidebarWidth
+                : StaffWebShell.sidebarWidth,
+            child: sidebar,
+          ),
           Expanded(
             child: Material(
               color: AppColors.background,
@@ -252,16 +271,22 @@ class _StaffSidebar extends StatelessWidget {
     required this.profileName,
     required this.isAdmin,
     required this.navItems,
+    required this.collapsed,
+    required this.canCollapse,
     required this.onNavigate,
     required this.onSignOut,
+    required this.onToggleCollapse,
   });
 
   final AppLocalizations l10n;
   final String? profileName;
   final bool isAdmin;
   final List<_StaffNavItem> navItems;
+  final bool collapsed;
+  final bool canCollapse;
   final ValueChanged<String> onNavigate;
   final VoidCallback onSignOut;
+  final VoidCallback onToggleCollapse;
 
   @override
   Widget build(BuildContext context) {
@@ -270,55 +295,19 @@ class _StaffSidebar extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(
-                    Icons.mosque_rounded,
-                    color: AppColors.onPrimary,
-                    size: 22,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.appTitle,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w700,
-                            ),
-                      ),
-                      Text(
-                        isAdmin
-                            ? l10n.staffPortalSubtitle
-                            : l10n.staffOperatorPortalSubtitle,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _header(context),
           const Divider(height: 1),
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: EdgeInsets.symmetric(
+                horizontal: collapsed ? 8 : 12,
+                vertical: 8,
+              ),
               children: navItems
                   .map(
                     (item) => _SidebarTile(
                       item: item,
+                      collapsed: collapsed,
                       onTap: () => onNavigate(item.route),
                     ),
                   )
@@ -326,40 +315,137 @@ class _StaffSidebar extends StatelessWidget {
             ),
           ),
           const Divider(height: 1),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
+          _footer(context),
+        ],
+      ),
+    );
+  }
+
+  Widget _header(BuildContext context) {
+    final logo = Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: const Icon(
+        Icons.mosque_rounded,
+        color: AppColors.onPrimary,
+        size: 22,
+      ),
+    );
+
+    if (collapsed) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+        child: Column(
+          children: [
+            logo,
+            const SizedBox(height: 12),
+            IconButton(
+              onPressed: onToggleCollapse,
+              icon: const Icon(Icons.menu_open_rounded),
+              tooltip: l10n.staffSidebarExpand,
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 8, 16),
+      child: Row(
+        children: [
+          logo,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-                  child: const Icon(Icons.person, color: AppColors.primary, size: 20),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        profileName ?? l10n.staffDefaultUser,
-                        style: Theme.of(context).textTheme.titleSmall,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                Text(
+                  l10n.appTitle,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w700,
                       ),
-                      Text(
-                        isAdmin ? l10n.staffAdminRole : l10n.staffOperatorRole,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
                 ),
-                IconButton(
-                  onPressed: onSignOut,
-                  icon: const Icon(Icons.logout_rounded, size: 20),
-                  tooltip: l10n.signOut,
+                Text(
+                  isAdmin
+                      ? l10n.staffPortalSubtitle
+                      : l10n.staffOperatorPortalSubtitle,
+                  style: Theme.of(context).textTheme.bodySmall,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
+          ),
+          if (canCollapse)
+            IconButton(
+              onPressed: onToggleCollapse,
+              icon: const Icon(Icons.menu_open_rounded),
+              tooltip: l10n.staffSidebarCollapse,
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _footer(BuildContext context) {
+    final avatar = CircleAvatar(
+      radius: 20,
+      backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+      child: const Icon(Icons.person, color: AppColors.primary, size: 20),
+    );
+
+    if (collapsed) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+        child: Column(
+          children: [
+            Tooltip(
+              message: profileName ?? l10n.staffDefaultUser,
+              child: avatar,
+            ),
+            const SizedBox(height: 8),
+            IconButton(
+              onPressed: onSignOut,
+              icon: const Icon(Icons.logout_rounded, size: 20),
+              tooltip: l10n.signOut,
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          avatar,
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  profileName ?? l10n.staffDefaultUser,
+                  style: Theme.of(context).textTheme.titleSmall,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  isAdmin ? l10n.staffAdminRole : l10n.staffOperatorRole,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: onSignOut,
+            icon: const Icon(Icons.logout_rounded, size: 20),
+            tooltip: l10n.signOut,
           ),
         ],
       ),
@@ -384,37 +470,36 @@ class _StaffNavItem {
 class _SidebarTile extends StatelessWidget {
   const _SidebarTile({
     required this.item,
+    required this.collapsed,
     required this.onTap,
   });
 
   final _StaffNavItem item;
+  final bool collapsed;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: Material(
-        color: item.isActive ? AppColors.primary : Colors.transparent,
-        borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
-          child: Padding(
+    final iconColor =
+        item.isActive ? AppColors.onPrimary : AppColors.textSecondary;
+    final icon = Icon(item.icon, size: 20, color: iconColor);
+
+    final content = collapsed
+        ? Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Center(child: icon),
+          )
+        : Padding(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             child: Row(
               children: [
-                Icon(
-                  item.icon,
-                  size: 20,
-                  color: item.isActive
-                      ? AppColors.onPrimary
-                      : AppColors.textSecondary,
-                ),
+                icon,
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     item.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                           color: item.isActive
                               ? AppColors.onPrimary
@@ -424,8 +509,27 @@ class _SidebarTile extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-        ),
+          );
+
+    Widget tappable = InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
+      child: content,
+    );
+    if (collapsed) {
+      tappable = Tooltip(
+        message: item.label,
+        waitDuration: const Duration(milliseconds: 300),
+        child: tappable,
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Material(
+        color: item.isActive ? AppColors.primary : Colors.transparent,
+        borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
+        child: tappable,
       ),
     );
   }

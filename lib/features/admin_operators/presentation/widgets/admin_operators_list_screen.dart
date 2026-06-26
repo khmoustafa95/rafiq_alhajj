@@ -58,10 +58,11 @@ class _AdminOperatorsListScreenState
 
   List<Widget> _toolbarActions(AppLocalizations l10n) {
     return [
-      FilledButton.icon(
+      StaffToolbarButton(
+        icon: Icons.person_add_alt_1_rounded,
+        label: l10n.adminOperatorAdd,
         onPressed: () => _openNew(context),
-        icon: const Icon(Icons.person_add_alt_1_rounded),
-        label: Text(l10n.adminOperatorAdd),
+        primary: true,
       ),
     ];
   }
@@ -203,12 +204,7 @@ class _AdminOperatorsListScreenState
             ),
             SizedBox(width: sw(10)),
             Expanded(
-              child: Text(
-                operator.fullName,
-                style: Theme.of(context).textTheme.titleSmall,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
+              child: StaffCellText(operator.fullName, strong: true),
             ),
           ],
         ),
@@ -218,12 +214,7 @@ class _AdminOperatorsListScreenState
         label: l10n.adminOperatorEmail,
         flex: 3,
         sortable: true,
-        cellBuilder: (context, operator) => Text(
-          operator.email,
-          style: Theme.of(context).textTheme.bodyMedium,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
+        cellBuilder: (context, operator) => StaffCellText(operator.email),
       ),
       StaffTableColumn(
         id: 'is_active',
