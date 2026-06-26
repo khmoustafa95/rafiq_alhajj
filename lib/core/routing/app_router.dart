@@ -885,7 +885,7 @@ GoRouter appRouter(Ref ref) {
       }
 
       if (isFieldOperatorRoute && location != AppRoutes.fieldOperatorLogin) {
-        return AppRoutes.fieldOperatorLogin;
+        return AppRoutes.home;
       }
 
       if (isPilgrim && location == AppRoutes.login) {

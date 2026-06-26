@@ -12,8 +12,6 @@ import 'package:go_router/go_router.dart';
 
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 
-import 'package:rafiq_alhajj/core/platform/app_platform.dart';
-
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
@@ -241,24 +239,6 @@ class _HomeBody extends ConsumerWidget {
                             ],
 
                             JourneyCtaCard(isPilgrim: isPilgrim),
-
-                            if (!AppPlatform.isWeb && !isPilgrim) ...[
-
-                              SizedBox(height: 12.h),
-
-                              TextButton(
-
-                                onPressed: () => unawaited(
-
-                                  context.push(AppRoutes.fieldOperatorLogin),
-
-                                ),
-
-                                child: Text(l10n.homeFieldOperatorSignIn),
-
-                              ),
-
-                            ],
 
                             if (!AppConfig.hasSupabase) ...[
 
