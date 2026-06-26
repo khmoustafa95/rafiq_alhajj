@@ -4453,6 +4453,48 @@ abstract class AppLocalizations {
   /// **'Media preview'**
   String get adminContentTopicMediaPreview;
 
+  /// No description provided for @uploadErrorTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'File is too large. Maximum allowed size is {maxMb} MB.'**
+  String uploadErrorTooLarge(int maxMb);
+
+  /// No description provided for @uploadErrorUnsupportedType.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsupported file type. Allowed: {types}.'**
+  String uploadErrorUnsupportedType(String types);
+
+  /// No description provided for @uploadErrorEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected file is empty or could not be read.'**
+  String get uploadErrorEmpty;
+
+  /// No description provided for @uploadInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading… {percent}%'**
+  String uploadInProgress(int percent);
+
+  /// No description provided for @mediaCompressing.
+  ///
+  /// In en, this message translates to:
+  /// **'Compressing… {percent}%'**
+  String mediaCompressing(int percent);
+
+  /// No description provided for @adminContentMediaUploadCover.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload image'**
+  String get adminContentMediaUploadCover;
+
+  /// No description provided for @adminContentVideoExternalHint.
+  ///
+  /// In en, this message translates to:
+  /// **'For large or long videos, paste a YouTube/Vimeo link instead of uploading the file.'**
+  String get adminContentVideoExternalHint;
+
   /// No description provided for @contentOfflineTitle.
   ///
   /// In en, this message translates to:
@@ -4512,6 +4554,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Background download started.'**
   String get contentTopicOfflineStarted;
+
+  /// No description provided for @contentOfflineWifiOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Download over Wi-Fi only'**
+  String get contentOfflineWifiOnly;
+
+  /// No description provided for @contentOfflineWifiOnlySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Avoid using mobile data for downloads.'**
+  String get contentOfflineWifiOnlySubtitle;
+
+  /// No description provided for @contentOfflineWaitingWifi.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for Wi-Fi…'**
+  String get contentOfflineWaitingWifi;
+
+  /// No description provided for @contentOfflineStorageUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'{used} of {total} used'**
+  String contentOfflineStorageUsage(String used, String total);
+
+  /// No description provided for @contentTopicOfflineDownloaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Available offline'**
+  String get contentTopicOfflineDownloaded;
+
+  /// No description provided for @contentTopicOfflineDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove download'**
+  String get contentTopicOfflineDelete;
+
+  /// No description provided for @contentTopicOfflinePause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get contentTopicOfflinePause;
+
+  /// No description provided for @contentTopicOfflineResume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get contentTopicOfflineResume;
+
+  /// No description provided for @contentTopicOfflineRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get contentTopicOfflineRetry;
+
+  /// No description provided for @contentTopicOfflineDownloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading {percent}%'**
+  String contentTopicOfflineDownloading(int percent);
+
+  /// No description provided for @educationalMediaVideoError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t play this video.'**
+  String get educationalMediaVideoError;
 
   /// No description provided for @hajjJourneyMarkComplete.
   ///

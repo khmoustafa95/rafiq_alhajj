@@ -15,21 +15,54 @@ class ContentTopicOfflineActions extends ConsumerWidget {
 
   final ContentTopic topic;
 
-  int get _cacheableCount => topic.media
+  List<String> get _cacheableIds => topic.media
       .where((m) => ContentMediaUrlRules.isCacheable(m.url))
-      .length;
+      .map((m) => m.id)
+      .toList();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    if (_cacheableCount == 0) {
+    final cacheableIds = _cacheableIds;
+    if (cacheableIds.isEmpty) {
       return const SizedBox.shrink();
     }
 
     final downloadAsync = ref.watch(contentMediaDownloadControllerProvider);
     final cacheAsync = ref.watch(contentMediaCacheServiceProvider);
+    final controller =
+        ref.read(contentMediaDownloadControllerProvider.notifier);
+    final state = downloadAsync.value ?? const ContentDownloadState();
     final cachedForTopic = cacheAsync.value?.cachedCountForTopic(topic.id) ?? 0;
-    final isProcessing = downloadAsync.value?.isProcessing ?? false;
+
+    final jobs = [
+      for (final id in cacheableIds)
+        if (state.jobs[id] != null) state.jobs[id]!,
+    ];
+    final downloading = jobs
+        .where(
+          (j) =>
+              j.status == MediaDownloadStatus.downloading ||
+              j.status == MediaDownloadStatus.queued,
+        )
+        .toList();
+    final hasFailed =
+        jobs.any((j) => j.status == MediaDownloadStatus.failed);
+    final allCached = cachedForTopic >= cacheableIds.length;
+
+    final String subtitle;
+    if (downloading.isNotEmpty) {
+      final avg = downloading.fold<double>(0, (sum, j) => sum + j.progress) /
+          downloading.length;
+      subtitle = state.waitingForWifi
+          ? l10n.contentOfflineWaitingWifi
+          : l10n.contentTopicOfflineDownloading((avg * 100).round());
+    } else if (allCached) {
+      subtitle = l10n.contentTopicOfflineDownloaded;
+    } else {
+      subtitle =
+          l10n.contentTopicOfflineProgress(cachedForTopic, cacheableIds.length);
+    }
 
     return DecoratedBox(
       decoration: AppDecorations.card(color: AppColors.surfaceMuted),
@@ -49,7 +82,7 @@ class ContentTopicOfflineActions extends ConsumerWidget {
                   ),
                   SizedBox(height: 4.h),
                   Text(
-                    l10n.contentTopicOfflineProgress(cachedForTopic, _cacheableCount),
+                    subtitle,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppColors.textSecondary,
                         ),
@@ -57,24 +90,74 @@ class ContentTopicOfflineActions extends ConsumerWidget {
                 ],
               ),
             ),
-            FilledButton.tonalIcon(
-              onPressed: isProcessing
-                  ? null
-                  : () async {
-                      await ref
-                          .read(contentMediaDownloadControllerProvider.notifier)
-                          .enqueueTopic(topic);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(l10n.contentTopicOfflineStarted)),
-                        );
-                      }
-                    },
-              icon: const Icon(Icons.download_outlined),
-              label: Text(l10n.contentTopicOfflineDownload),
+            _TopicActionButton(
+              downloading: downloading.isNotEmpty,
+              allCached: allCached,
+              hasFailed: hasFailed,
+              onDownload: () async {
+                await controller.enqueueTopic(topic);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(l10n.contentTopicOfflineStarted)),
+                  );
+                }
+              },
+              onPause: () {
+                for (final job in downloading) {
+                  controller.pause(job.mediaId);
+                }
+              },
+              onDelete: () => controller.removeTopicDownloads(topic.id),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _TopicActionButton extends StatelessWidget {
+  const _TopicActionButton({
+    required this.downloading,
+    required this.allCached,
+    required this.hasFailed,
+    required this.onDownload,
+    required this.onPause,
+    required this.onDelete,
+  });
+
+  final bool downloading;
+  final bool allCached;
+  final bool hasFailed;
+  final Future<void> Function() onDownload;
+  final VoidCallback onPause;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    if (downloading) {
+      return TextButton.icon(
+        onPressed: onPause,
+        icon: const Icon(Icons.pause_circle_outline),
+        label: Text(l10n.contentTopicOfflinePause),
+      );
+    }
+    if (allCached) {
+      return TextButton.icon(
+        onPressed: onDelete,
+        icon: const Icon(Icons.delete_outline),
+        label: Text(l10n.contentTopicOfflineDelete),
+      );
+    }
+    return FilledButton.tonalIcon(
+      onPressed: () => onDownload(),
+      icon: Icon(hasFailed ? Icons.refresh : Icons.download_outlined),
+      label: Text(
+        hasFailed
+            ? l10n.contentTopicOfflineRetry
+            : l10n.contentTopicOfflineDownload,
       ),
     );
   }

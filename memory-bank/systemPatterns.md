@@ -43,6 +43,13 @@ Widget → Controller → Service → Repository → DataSource → Supabase
 - **Repository** builds its data source in the constructor from the injected client — `Repo([SupabaseClient? client]) : _remote = client == null ? null : XRemoteDataSource(client);` — so **providers/DI are unchanged**. The repo keeps ALL DTO/row→domain mapping and ALL `try/catch`, and exposes `isAvailable => _remote != null`.
 - Canonical reference: `lib/features/trips/data/`.
 
+## Offline secure media (pilgrims, 2026-06-26)
+- **Two storage buckets:** public `content-media` for `public` topics; private `content-media-private` for `pilgrim_only` (storage RLS: SELECT=admins or `profiles.role='pilgrim'`, write=admins). Private objects are referenced in the DB as a `private://<path>` sentinel; public ones keep full `https` URLs. No content-table schema change.
+- **Resolver order** (`ContentMediaCacheService.resolvePlaybackUrl`): encrypted local copy (decrypt-to-temp) → signed URL for `private://` → plain URL. YouTube/Vimeo are never cached (skipped) and play via WebView; local-file/direct/signed MP4 play via `video_player`+`chewie`.
+- **Encryption at rest:** `MediaEncryptionService` — 256-bit key in `flutter_secure_storage` (iOS device-bound), AES-CTR chunked via `keyStreamIndex` (1 MiB chunks). Encrypted blobs in `ApplicationSupport/content_media_enc/` (Android backup-excluded via `res/xml/*` rules); plaintext only briefly in `Temp/content_media_dec/`. Logout wipes both + rotates the key.
+- **Downloads** route through `ContentMediaDownloadController`: per-media states + progress, Dio `CancelToken` pause, retry w/ backoff, Wi-Fi-only gate (`connectivity_plus`), quota (1 GiB default) + LRU eviction, Content-Type/size validation (rejects HTML/oversized).
+- Admin uploads route to the bucket matching topic visibility (`uploadBytes(isPrivate:)`); `ensureBucketForRef` re-homes objects across buckets when visibility changes.
+
 ## Forms (implemented across all validation forms, 2026-06-20)
 - Use **`reactive_forms`**: one `FormGroup` (built in `initState`, `dispose()`d), `ReactiveForm` wrapper, `ReactiveTextField` / `ReactiveDropdownField`, `Validators.*` + `validationMessages` mapping to l10n keys. Int fields use `IntValueAccessor()` + `FormControl<int>`. Submit: `if (!form.valid) { form.markAllAsTouched(); return; }`.
 - Canonical reference: `lib/features/trips/presentation/widgets/trip_editor_dialog.dart`.

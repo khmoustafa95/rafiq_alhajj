@@ -6,15 +6,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/routing/staff_navigation.dart';
+import 'package:rafiq_alhajj/core/theme/app_colors.dart';
+import 'package:rafiq_alhajj/core/utils/file_pick_upload.dart';
+import 'package:rafiq_alhajj/core/utils/upload_validation.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
+import 'package:rafiq_alhajj/core/widgets/upload_progress_banner.dart';
 import 'package:rafiq_alhajj/features/admin_content/domain/models/content_editor_input.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/providers/admin_content_providers.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/utils/content_meta_l10n.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_item.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_type.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_visibility.dart';
+import 'package:rafiq_alhajj/features/content/presentation/providers/content_media_providers.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -31,6 +36,9 @@ class AdminContentEditScreen extends ConsumerStatefulWidget {
 class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen> {
   late final FormGroup _form;
   bool _loaded = false;
+  bool _isUploading = false;
+  bool _isCompressing = false;
+  double? _uploadProgress;
 
   bool get _isEditing => widget.contentId != null;
 
@@ -116,6 +124,82 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
     );
   }
 
+  Future<void> _uploadImage() async {
+    final l10n = AppLocalizations.of(context);
+    const constraints = UploadConstraints.image;
+
+    PickedUpload? picked;
+    try {
+      picked = await pickValidatedUpload(
+        constraints,
+        kind: UploadMediaKind.image,
+        onCompressProgress: (progress) {
+          if (mounted) {
+            setState(() {
+              _isUploading = true;
+              _isCompressing = true;
+              _uploadProgress = progress;
+            });
+          }
+        },
+      );
+    } on UploadValidationException catch (e) {
+      _resetUploadState();
+      _showSnack(uploadErrorMessage(l10n, e, constraints: constraints));
+      return;
+    }
+    if (picked == null || !mounted) {
+      _resetUploadState();
+      return;
+    }
+
+    setState(() {
+      _isUploading = true;
+      _isCompressing = false;
+      _uploadProgress = 0;
+    });
+
+    try {
+      final url = await ref.read(contentMediaStorageServiceProvider).uploadBytes(
+            bytes: picked.bytes,
+            fileName: picked.fileName,
+            folder: 'content',
+            onProgress: (progress) {
+              if (mounted) {
+                setState(() => _uploadProgress = progress);
+              }
+            },
+          );
+      _form.control('mediaUrl').updateValue(url);
+      if (mounted) {
+        _showSnack(l10n.adminContentTopicUploadSuccess);
+      }
+    } catch (e) {
+      _showSnack(uploadErrorMessage(l10n, e, constraints: constraints));
+    } finally {
+      _resetUploadState();
+    }
+  }
+
+  void _resetUploadState() {
+    if (mounted) {
+      setState(() {
+        _isUploading = false;
+        _isCompressing = false;
+        _uploadProgress = null;
+      });
+    }
+  }
+
+  void _showSnack(String message) {
+    if (!mounted) {
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
   Widget _loadingState(AppLocalizations l10n) {
     return StaffAdaptivePage(
       web: StaffWebPage(
@@ -194,61 +278,94 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
   }
 
   Widget _buildForm(AppLocalizations l10n, bool isSaving) {
+    final isBusy = isSaving || _isUploading;
     final form = ReactiveForm(
       formGroup: _form,
       child: StaffFormSection(
         icon: Icons.article_outlined,
         title: l10n.adminContentListTitle,
-        child: ResponsiveFormGrid(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ReactiveTextField<String>(
-              formControlName: 'title',
-              decoration: InputDecoration(labelText: l10n.adminContentTitleLabel),
-              validationMessages: {
-                ValidationMessage.required: (_) =>
-                    l10n.adminContentTitleRequired,
-              },
+            ResponsiveFormGrid(
+              children: [
+                ReactiveTextField<String>(
+                  formControlName: 'title',
+                  decoration: InputDecoration(
+                    labelText: l10n.adminContentTitleLabel,
+                  ),
+                  validationMessages: {
+                    ValidationMessage.required: (_) =>
+                        l10n.adminContentTitleRequired,
+                  },
+                ),
+                ReactiveTextField<String>(
+                  formControlName: 'mediaUrl',
+                  decoration: InputDecoration(
+                    labelText: l10n.adminContentMediaUrlLabel,
+                  ),
+                  keyboardType: TextInputType.url,
+                ),
+                ReactiveTextField<String>(
+                  formControlName: 'description',
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    labelText: l10n.adminContentDescriptionLabel,
+                  ),
+                ),
+                ReactiveDropdownField<ContentType>(
+                  formControlName: 'type',
+                  decoration: InputDecoration(
+                    labelText: l10n.adminContentTypeLabel,
+                  ),
+                  items: ContentType.values
+                      .map(
+                        (type) => DropdownMenuItem(
+                          value: type,
+                          child: Text(contentTypeLabel(l10n, type)),
+                        ),
+                      )
+                      .toList(),
+                ),
+                ReactiveDropdownField<ContentVisibility>(
+                  formControlName: 'visibility',
+                  decoration: InputDecoration(
+                    labelText: l10n.adminContentVisibilityLabel,
+                  ),
+                  items: ContentVisibility.values
+                      .map(
+                        (v) => DropdownMenuItem(
+                          value: v,
+                          child: Text(contentVisibilityLabel(l10n, v)),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ],
             ),
-            ReactiveTextField<String>(
-              formControlName: 'mediaUrl',
-              decoration: InputDecoration(
-                labelText: l10n.adminContentMediaUrlLabel,
+            SizedBox(height: 12.h),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: OutlinedButton.icon(
+                onPressed: isBusy ? null : _uploadImage,
+                icon: const Icon(Icons.upload_file_outlined),
+                label: Text(l10n.adminContentMediaUploadCover),
               ),
-              keyboardType: TextInputType.url,
             ),
-            ReactiveTextField<String>(
-              formControlName: 'description',
-              maxLines: 4,
-              decoration: InputDecoration(
-                labelText: l10n.adminContentDescriptionLabel,
+            SizedBox(height: 6.h),
+            Text(
+              l10n.adminContentVideoExternalHint,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+            ),
+            if (_isUploading) ...[
+              SizedBox(height: 12.h),
+              UploadProgressBanner(
+                progress: _uploadProgress,
+                compressing: _isCompressing,
               ),
-            ),
-            ReactiveDropdownField<ContentType>(
-              formControlName: 'type',
-              decoration: InputDecoration(labelText: l10n.adminContentTypeLabel),
-              items: ContentType.values
-                  .map(
-                    (type) => DropdownMenuItem(
-                      value: type,
-                      child: Text(contentTypeLabel(l10n, type)),
-                    ),
-                  )
-                  .toList(),
-            ),
-            ReactiveDropdownField<ContentVisibility>(
-              formControlName: 'visibility',
-              decoration: InputDecoration(
-                labelText: l10n.adminContentVisibilityLabel,
-              ),
-              items: ContentVisibility.values
-                  .map(
-                    (v) => DropdownMenuItem(
-                      value: v,
-                      child: Text(contentVisibilityLabel(l10n, v)),
-                    ),
-                  )
-                  .toList(),
-            ),
+            ],
           ],
         ),
       ),

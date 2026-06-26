@@ -2375,6 +2375,36 @@ class AppLocalizationsAr extends AppLocalizations {
   String get adminContentTopicMediaPreview => 'معاينة الوسائط';
 
   @override
+  String uploadErrorTooLarge(int maxMb) {
+    return 'حجم الملف كبير جداً. الحد الأقصى المسموح $maxMb ميغابايت.';
+  }
+
+  @override
+  String uploadErrorUnsupportedType(String types) {
+    return 'نوع الملف غير مدعوم. المسموح: $types.';
+  }
+
+  @override
+  String get uploadErrorEmpty => 'الملف المحدد فارغ أو تعذرت قراءته.';
+
+  @override
+  String uploadInProgress(int percent) {
+    return 'جاري الرفع… $percent%';
+  }
+
+  @override
+  String mediaCompressing(int percent) {
+    return 'جاري الضغط… $percent%';
+  }
+
+  @override
+  String get adminContentMediaUploadCover => 'رفع صورة';
+
+  @override
+  String get adminContentVideoExternalHint =>
+      'للفيديوهات الكبيرة أو الطويلة، الصق رابط YouTube/Vimeo بدلاً من رفع الملف.';
+
+  @override
   String get contentOfflineTitle => 'المحتوى دون إنترنت';
 
   @override
@@ -2408,6 +2438,44 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get contentTopicOfflineStarted => 'بدأ التحميل في الخلفية.';
+
+  @override
+  String get contentOfflineWifiOnly => 'التحميل عبر Wi-Fi فقط';
+
+  @override
+  String get contentOfflineWifiOnlySubtitle =>
+      'تجنّب استهلاك بيانات الجوّال أثناء التحميل.';
+
+  @override
+  String get contentOfflineWaitingWifi => 'بانتظار اتصال Wi-Fi…';
+
+  @override
+  String contentOfflineStorageUsage(String used, String total) {
+    return '$used من $total مُستخدَمة';
+  }
+
+  @override
+  String get contentTopicOfflineDownloaded => 'متاح دون إنترنت';
+
+  @override
+  String get contentTopicOfflineDelete => 'إزالة التحميل';
+
+  @override
+  String get contentTopicOfflinePause => 'إيقاف مؤقت';
+
+  @override
+  String get contentTopicOfflineResume => 'استئناف';
+
+  @override
+  String get contentTopicOfflineRetry => 'إعادة المحاولة';
+
+  @override
+  String contentTopicOfflineDownloading(int percent) {
+    return 'جارٍ التحميل $percent%';
+  }
+
+  @override
+  String get educationalMediaVideoError => 'تعذّر تشغيل هذا الفيديو.';
 
   @override
   String get hajjJourneyMarkComplete => 'تم الإنجاز';

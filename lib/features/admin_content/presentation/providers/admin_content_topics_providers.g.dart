@@ -202,7 +202,7 @@ final class AdminContentTopicSaveProvider
 }
 
 String _$adminContentTopicSaveHash() =>
-    r'1594b33dff71cc8029a05de2cc489ccea68c6da9';
+    r'17124e4f4bd1113f4466391e5ec8399b0d6678af';
 
 abstract class _$AdminContentTopicSave extends $AsyncNotifier<void> {
   FutureOr<void> build();

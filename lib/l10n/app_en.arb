@@ -1050,6 +1050,33 @@
   "adminContentTopicUploadSuccess": "File uploaded successfully.",
   "adminContentTopicUploadError": "Could not upload file.",
   "adminContentTopicMediaPreview": "Media preview",
+  "uploadErrorTooLarge": "File is too large. Maximum allowed size is {maxMb} MB.",
+  "@uploadErrorTooLarge": {
+    "placeholders": {
+      "maxMb": {"type": "int"}
+    }
+  },
+  "uploadErrorUnsupportedType": "Unsupported file type. Allowed: {types}.",
+  "@uploadErrorUnsupportedType": {
+    "placeholders": {
+      "types": {"type": "String"}
+    }
+  },
+  "uploadErrorEmpty": "The selected file is empty or could not be read.",
+  "uploadInProgress": "Uploading… {percent}%",
+  "@uploadInProgress": {
+    "placeholders": {
+      "percent": {"type": "int"}
+    }
+  },
+  "mediaCompressing": "Compressing… {percent}%",
+  "@mediaCompressing": {
+    "placeholders": {
+      "percent": {"type": "int"}
+    }
+  },
+  "adminContentMediaUploadCover": "Upload image",
+  "adminContentVideoExternalHint": "For large or long videos, paste a YouTube/Vimeo link instead of uploading the file.",
   "contentOfflineTitle": "Offline content",
   "contentOfflineSubtitle": "Download educational topics (audio and images) for use without internet.",
   "contentOfflineEnable": "Enable automatic download",
@@ -1071,6 +1098,28 @@
   },
   "contentTopicOfflineDownload": "Download",
   "contentTopicOfflineStarted": "Background download started.",
+  "contentOfflineWifiOnly": "Download over Wi-Fi only",
+  "contentOfflineWifiOnlySubtitle": "Avoid using mobile data for downloads.",
+  "contentOfflineWaitingWifi": "Waiting for Wi-Fi…",
+  "contentOfflineStorageUsage": "{used} of {total} used",
+  "@contentOfflineStorageUsage": {
+    "placeholders": {
+      "used": {"type": "String"},
+      "total": {"type": "String"}
+    }
+  },
+  "contentTopicOfflineDownloaded": "Available offline",
+  "contentTopicOfflineDelete": "Remove download",
+  "contentTopicOfflinePause": "Pause",
+  "contentTopicOfflineResume": "Resume",
+  "contentTopicOfflineRetry": "Retry",
+  "contentTopicOfflineDownloading": "Downloading {percent}%",
+  "@contentTopicOfflineDownloading": {
+    "placeholders": {
+      "percent": {"type": "int"}
+    }
+  },
+  "educationalMediaVideoError": "Couldn't play this video.",
   "hajjJourneyMarkComplete": "Mark complete",
   "hajjJourneyAlreadyCompleted": "Completed — back to path",
   "hajjJourneyCompletedSnack": "Well done! Ritual marked complete.",

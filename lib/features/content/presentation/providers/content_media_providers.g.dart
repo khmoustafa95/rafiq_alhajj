@@ -51,6 +51,54 @@ final class ContentMediaCacheStoreProvider
 String _$contentMediaCacheStoreHash() =>
     r'83b4a5582dadf8087a8c2d09ccdd24355ff0854f';
 
+@ProviderFor(mediaEncryptionService)
+final mediaEncryptionServiceProvider = MediaEncryptionServiceProvider._();
+
+final class MediaEncryptionServiceProvider
+    extends
+        $FunctionalProvider<
+          MediaEncryptionService,
+          MediaEncryptionService,
+          MediaEncryptionService
+        >
+    with $Provider<MediaEncryptionService> {
+  MediaEncryptionServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'mediaEncryptionServiceProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$mediaEncryptionServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<MediaEncryptionService> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  MediaEncryptionService create(Ref ref) {
+    return mediaEncryptionService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(MediaEncryptionService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<MediaEncryptionService>(value),
+    );
+  }
+}
+
+String _$mediaEncryptionServiceHash() =>
+    r'd6fc97966d457e5cb01b61ee681cff86feaec5ca';
+
 @ProviderFor(contentMediaCacheService)
 final contentMediaCacheServiceProvider = ContentMediaCacheServiceProvider._();
 
@@ -91,7 +139,7 @@ final class ContentMediaCacheServiceProvider
 }
 
 String _$contentMediaCacheServiceHash() =>
-    r'3b751dc52f6dc044c7cdb82f98465efd198ee92e';
+    r'd72b4c58821356b169d1dff2f83663472eb0f45b';
 
 @ProviderFor(contentMediaStorageService)
 final contentMediaStorageServiceProvider =
@@ -172,7 +220,7 @@ final class ContentMediaDownloadControllerProvider
 }
 
 String _$contentMediaDownloadControllerHash() =>
-    r'133e0455c43dd2f59fa18c1b6e3aa89dab6543cd';
+    r'892f1dfceb882a5b4e1ac98a0b1ad6d4b04f0792';
 
 abstract class _$ContentMediaDownloadController
     extends $AsyncNotifier<ContentDownloadState> {

@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,7 +11,17 @@ import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_media_providers.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_media_widgets.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
+import 'package:video_player/video_player.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+
+/// YouTube/Vimeo links are played via their web embeds; everything else
+/// (direct/signed MP4 or a decrypted local file) uses the native player.
+bool _isExternalVideo(String url) {
+  final lower = url.toLowerCase();
+  return lower.contains('youtube.com') ||
+      lower.contains('youtu.be') ||
+      lower.contains('vimeo.com');
+}
 
 class EducationalMediaViewer extends StatefulWidget {
   const EducationalMediaViewer({
@@ -227,6 +239,11 @@ class _ResolvedVideoEmbed extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // YouTube/Vimeo embeds keep using the WebView player and never get cached.
+    if (_isExternalVideo(media.url)) {
+      return _VideoEmbed(url: media.url);
+    }
+
     final urlAsync = ref.watch(
       resolvedMediaPlaybackUrlProvider(media.id, media.url),
     );
@@ -236,8 +253,115 @@ class _ResolvedVideoEmbed extends ConsumerWidget {
         height: 200.h,
         child: const Center(child: CircularProgressIndicator()),
       ),
-      error: (_, _) => _VideoEmbed(url: media.url),
-      data: (url) => _VideoEmbed(url: url),
+      error: (_, _) => _NativeVideoPlayer(source: media.url),
+      data: (url) => _NativeVideoPlayer(source: url),
+    );
+  }
+}
+
+/// Native player (controls / seek / fullscreen) for a local decrypted file or a
+/// direct/signed MP4 URL.
+class _NativeVideoPlayer extends StatefulWidget {
+  const _NativeVideoPlayer({required this.source});
+
+  final String source;
+
+  @override
+  State<_NativeVideoPlayer> createState() => _NativeVideoPlayerState();
+}
+
+class _NativeVideoPlayerState extends State<_NativeVideoPlayer> {
+  VideoPlayerController? _videoController;
+  ChewieController? _chewieController;
+  bool _initialized = false;
+  Object? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_setUp());
+  }
+
+  @override
+  void didUpdateWidget(covariant _NativeVideoPlayer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.source != widget.source) {
+      _disposeControllers();
+      _initialized = false;
+      _error = null;
+      unawaited(_setUp());
+    }
+  }
+
+  Future<void> _setUp() async {
+    try {
+      final source = widget.source;
+      final controller = source.startsWith('http')
+          ? VideoPlayerController.networkUrl(Uri.parse(source))
+          : VideoPlayerController.file(File(source));
+      _videoController = controller;
+      await controller.initialize();
+      if (!mounted) {
+        return;
+      }
+      _chewieController = ChewieController(
+        videoPlayerController: controller,
+        aspectRatio: controller.value.aspectRatio == 0
+            ? 16 / 9
+            : controller.value.aspectRatio,
+      );
+      setState(() => _initialized = true);
+    } catch (e) {
+      if (mounted) {
+        setState(() => _error = e);
+      }
+    }
+  }
+
+  void _disposeControllers() {
+    _chewieController?.dispose();
+    _chewieController = null;
+    unawaited(_videoController?.dispose());
+    _videoController = null;
+  }
+
+  @override
+  void dispose() {
+    _disposeControllers();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    if (_error != null) {
+      return SizedBox(
+        height: 200.h,
+        child: ColoredBox(
+          color: AppColors.surfaceMuted,
+          child: Center(
+            child: Text(
+              l10n.educationalMediaVideoError,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+            ),
+          ),
+        ),
+      );
+    }
+    if (!_initialized || _chewieController == null) {
+      return SizedBox(
+        height: 200.h,
+        child: const Center(child: CircularProgressIndicator()),
+      );
+    }
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
+      child: AspectRatio(
+        aspectRatio: _chewieController!.aspectRatio ?? 16 / 9,
+        child: Chewie(controller: _chewieController!),
+      ),
     );
   }
 }
@@ -281,6 +405,15 @@ class _VideoEmbedState extends State<_VideoEmbed> {
       final id = Uri.parse(url).queryParameters['v'];
       if (id != null) {
         return 'https://www.youtube.com/embed/$id';
+      }
+    }
+    if (url.contains('vimeo.com/')) {
+      if (url.contains('player.vimeo.com')) {
+        return url;
+      }
+      final id = RegExp(r'vimeo\.com/(?:video/)?(\d+)').firstMatch(url)?.group(1);
+      if (id != null) {
+        return 'https://player.vimeo.com/video/$id';
       }
     }
     return url;

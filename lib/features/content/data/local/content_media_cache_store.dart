@@ -2,44 +2,89 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// A single encrypted-at-rest offline media entry.
 class CachedContentMediaEntry {
   const CachedContentMediaEntry({
     required this.mediaId,
-    required this.remoteUrl,
-    required this.localPath,
+    required this.remoteRef,
+    required this.encryptedPath,
+    required this.nonce,
     required this.topicId,
     required this.mediaType,
+    required this.bytes,
+    required this.lastAccessMs,
     required this.updatedAtMs,
+    this.mimeType,
   });
 
   final String mediaId;
-  final String remoteUrl;
-  final String localPath;
+
+  /// The original DB ref (`https://...` or `private://...`). Used to detect
+  /// content changes and to re-resolve a signed URL when the local copy is gone.
+  final String remoteRef;
+
+  /// Absolute path of the encrypted blob in the (backup-excluded) support dir.
+  final String encryptedPath;
+
+  /// Base64 AES-CTR nonce for [encryptedPath].
+  final String nonce;
   final String topicId;
   final String mediaType;
+
+  /// Encrypted blob size on disk (== plaintext size for AES-CTR).
+  final int bytes;
+  final String? mimeType;
+  final int lastAccessMs;
   final int updatedAtMs;
+
+  CachedContentMediaEntry copyWith({
+    String? remoteRef,
+    int? lastAccessMs,
+  }) {
+    return CachedContentMediaEntry(
+      mediaId: mediaId,
+      remoteRef: remoteRef ?? this.remoteRef,
+      encryptedPath: encryptedPath,
+      nonce: nonce,
+      topicId: topicId,
+      mediaType: mediaType,
+      bytes: bytes,
+      mimeType: mimeType,
+      lastAccessMs: lastAccessMs ?? this.lastAccessMs,
+      updatedAtMs: updatedAtMs,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         'mediaId': mediaId,
-        'remoteUrl': remoteUrl,
-        'localPath': localPath,
+        'remoteRef': remoteRef,
+        'encryptedPath': encryptedPath,
+        'nonce': nonce,
         'topicId': topicId,
         'mediaType': mediaType,
+        'bytes': bytes,
+        'mimeType': mimeType,
+        'lastAccessMs': lastAccessMs,
         'updatedAtMs': updatedAtMs,
       };
 
   static CachedContentMediaEntry? fromJson(Map<String, dynamic> json) {
     final mediaId = json['mediaId'] as String?;
-    final localPath = json['localPath'] as String?;
-    if (mediaId == null || localPath == null) {
+    final encryptedPath = json['encryptedPath'] as String?;
+    final nonce = json['nonce'] as String?;
+    if (mediaId == null || encryptedPath == null || nonce == null) {
       return null;
     }
     return CachedContentMediaEntry(
       mediaId: mediaId,
-      remoteUrl: json['remoteUrl'] as String? ?? '',
-      localPath: localPath,
+      remoteRef: json['remoteRef'] as String? ?? '',
+      encryptedPath: encryptedPath,
+      nonce: nonce,
       topicId: json['topicId'] as String? ?? '',
       mediaType: json['mediaType'] as String? ?? '',
+      bytes: json['bytes'] as int? ?? 0,
+      mimeType: json['mimeType'] as String?,
+      lastAccessMs: json['lastAccessMs'] as int? ?? 0,
       updatedAtMs: json['updatedAtMs'] as int? ?? 0,
     );
   }
@@ -48,16 +93,31 @@ class CachedContentMediaEntry {
 class ContentMediaCacheStore {
   ContentMediaCacheStore(this._prefs);
 
-  static const _manifestKey = 'content_media_cache_manifest_v1';
+  static const _manifestKey = 'content_media_cache_manifest_v2';
   static const _offlineEnabledKey = 'content_offline_enabled_v1';
+  static const _wifiOnlyKey = 'content_offline_wifi_only_v1';
+  static const _quotaBytesKey = 'content_offline_quota_bytes_v1';
+
+  /// Default storage cap for offline media: 1 GiB.
+  static const defaultQuotaBytes = 1024 * 1024 * 1024;
 
   final SharedPreferences _prefs;
 
   bool get offlineEnabled => _prefs.getBool(_offlineEnabledKey) ?? false;
 
-  Future<void> setOfflineEnabled(bool value) async {
-    await _prefs.setBool(_offlineEnabledKey, value);
-  }
+  Future<void> setOfflineEnabled(bool value) =>
+      _prefs.setBool(_offlineEnabledKey, value);
+
+  /// Whether downloads should only run on Wi-Fi/ethernet. Defaults to true to
+  /// protect pilgrims' mobile data (Coursera-style).
+  bool get wifiOnly => _prefs.getBool(_wifiOnlyKey) ?? true;
+
+  Future<void> setWifiOnly(bool value) => _prefs.setBool(_wifiOnlyKey, value);
+
+  int get quotaBytes => _prefs.getInt(_quotaBytesKey) ?? defaultQuotaBytes;
+
+  Future<void> setQuotaBytes(int value) =>
+      _prefs.setInt(_quotaBytesKey, value);
 
   Map<String, CachedContentMediaEntry> readManifest() {
     final raw = _prefs.getString(_manifestKey);

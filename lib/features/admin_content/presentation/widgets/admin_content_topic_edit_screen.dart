@@ -1,12 +1,15 @@
 import 'dart:async';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/core/domain/models/educational_media.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
+import 'package:rafiq_alhajj/core/utils/file_pick_upload.dart';
+import 'package:rafiq_alhajj/core/utils/upload_validation.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
+import 'package:rafiq_alhajj/core/widgets/upload_progress_banner.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/providers/admin_content_topics_providers.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/utils/content_meta_l10n.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_topic.dart';
@@ -54,6 +57,12 @@ class _AdminContentTopicEditScreenState
   final List<_MediaDraft> _media = [];
   bool _initialized = false;
   bool _isUploading = false;
+  bool _isCompressing = false;
+  double? _uploadProgress;
+
+  /// URLs present when the topic loaded — used to clean up orphaned storage
+  /// objects when media is replaced or removed before saving.
+  final Set<String> _initialMediaUrls = {};
 
   @override
   void initState() {
@@ -89,7 +98,11 @@ class _AdminContentTopicEditScreenState
     _form.control('sortOrder').updateValue('${topic.sortOrder}');
     _form.control('visibility').updateValue(topic.visibility);
     _isActive = topic.isActive;
+    if (topic.coverImageUrl != null && topic.coverImageUrl!.isNotEmpty) {
+      _initialMediaUrls.add(topic.coverImageUrl!);
+    }
     for (final m in topic.media) {
+      _initialMediaUrls.add(m.url);
       _media.add(
         _MediaDraft(
           mediaType: m.mediaType,
@@ -117,68 +130,126 @@ class _AdminContentTopicEditScreenState
     ];
   }
 
+  UploadConstraints _constraintsFor(EducationalMediaType type) {
+    return switch (type) {
+      EducationalMediaType.video => UploadConstraints.video,
+      EducationalMediaType.audio => UploadConstraints.audio,
+      EducationalMediaType.image => UploadConstraints.image,
+    };
+  }
+
+  UploadMediaKind _kindFor(EducationalMediaType type) {
+    return switch (type) {
+      EducationalMediaType.video => UploadMediaKind.video,
+      EducationalMediaType.audio => UploadMediaKind.audio,
+      EducationalMediaType.image => UploadMediaKind.image,
+    };
+  }
+
   Future<void> _uploadCover() async {
     await _pickAndUpload(
       onUploaded: (url) => _form.control('coverUrl').updateValue(url),
       folder: 'covers',
+      constraints: UploadConstraints.image,
+      kind: UploadMediaKind.image,
     );
   }
 
   Future<void> _uploadMediaFile(int index) async {
+    final type = _media[index].mediaType;
     await _pickAndUpload(
       onUploaded: (url) => _media[index].urlController.text = url,
       folder: 'media',
+      constraints: _constraintsFor(type),
+      kind: _kindFor(type),
     );
   }
 
   Future<void> _pickAndUpload({
     required void Function(String url) onUploaded,
     required String folder,
+    required UploadConstraints constraints,
+    required UploadMediaKind kind,
   }) async {
     final l10n = AppLocalizations.of(context);
-    final result = await FilePicker.platform.pickFiles(withData: true);
-    if (result == null || result.files.isEmpty) {
-      return;
-    }
 
-    final file = result.files.first;
-    final bytes = file.bytes;
-    if (bytes == null) {
-      if (!mounted) {
-        return;
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.adminContentTopicUploadError)),
+    PickedUpload? picked;
+    try {
+      picked = await pickValidatedUpload(
+        constraints,
+        kind: kind,
+        onCompressProgress: (progress) {
+          if (mounted) {
+            setState(() {
+              _isUploading = true;
+              _isCompressing = true;
+              _uploadProgress = progress;
+            });
+          }
+        },
       );
+    } on UploadValidationException catch (e) {
+      _resetUploadState();
+      _showSnack(uploadErrorMessage(l10n, e, constraints: constraints));
+      return;
+    }
+    if (picked == null || !mounted) {
+      _resetUploadState();
       return;
     }
 
-    setState(() => _isUploading = true);
+    setState(() {
+      _isUploading = true;
+      _isCompressing = false;
+      _uploadProgress = 0;
+    });
+
+    final isPrivate = (_form.control('visibility').value as ContentVisibility) ==
+        ContentVisibility.pilgrimOnly;
+
     try {
       final url = await ref.read(contentMediaStorageServiceProvider).uploadBytes(
-            bytes: bytes,
-            fileName: file.name,
+            bytes: picked.bytes,
+            fileName: picked.fileName,
             topicId: widget.topicId,
             folder: folder,
+            constraints: constraints,
+            isPrivate: isPrivate,
+            onProgress: (progress) {
+              if (mounted) {
+                setState(() => _uploadProgress = progress);
+              }
+            },
           );
       onUploaded(url);
       if (mounted) {
         setState(() {});
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.adminContentTopicUploadSuccess)),
-        );
+        _showSnack(l10n.adminContentTopicUploadSuccess);
       }
-    } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.adminContentTopicUploadError)),
-        );
-      }
+    } catch (e) {
+      _showSnack(uploadErrorMessage(l10n, e, constraints: constraints));
     } finally {
-      if (mounted) {
-        setState(() => _isUploading = false);
-      }
+      _resetUploadState();
     }
+  }
+
+  void _resetUploadState() {
+    if (mounted) {
+      setState(() {
+        _isUploading = false;
+        _isCompressing = false;
+        _uploadProgress = null;
+      });
+    }
+  }
+
+  void _showSnack(String message) {
+    if (!mounted) {
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   void _addMedia() {
@@ -206,18 +277,17 @@ class _AdminContentTopicEditScreenState
     final title = (_form.control('title').value as String).trim();
 
     if (title.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.adminContentTopicTitleRequired)),
-      );
+      _showSnack(l10n.adminContentTopicTitleRequired);
       return;
     }
 
     final sortOrder =
         int.tryParse((_form.control('sortOrder').value as String).trim()) ?? 1;
+    final coverUrl = (_form.control('coverUrl').value as String).trim();
     final input = ContentTopicEditorInput(
       title: title,
       description: (_form.control('description').value as String).trim(),
-      coverImageUrl: (_form.control('coverUrl').value as String).trim(),
+      coverImageUrl: coverUrl,
       visibility: _form.control('visibility').value as ContentVisibility,
       sortOrder: sortOrder,
       isActive: _isActive,
@@ -240,16 +310,39 @@ class _AdminContentTopicEditScreenState
     }
 
     if (!ok) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.adminContentTopicSaveError)),
-      );
+      _showSnack(l10n.adminContentTopicSaveError);
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.adminContentTopicSaveSuccess)),
-    );
+    // Best-effort: drop storage objects that are no longer referenced.
+    await _cleanupOrphanedMedia(coverUrl, media);
+
+    if (!mounted) {
+      return;
+    }
+    _showSnack(l10n.adminContentTopicSaveSuccess);
     Navigator.pop(context);
+  }
+
+  Future<void> _cleanupOrphanedMedia(
+    String coverUrl,
+    List<ContentTopicMediaInput> media,
+  ) async {
+    if (_initialMediaUrls.isEmpty) {
+      return;
+    }
+    final stillReferenced = <String>{
+      if (coverUrl.isNotEmpty) coverUrl,
+      for (final m in media) m.url,
+    };
+    final orphans =
+        _initialMediaUrls.where((url) => !stillReferenced.contains(url));
+    if (orphans.isEmpty) {
+      return;
+    }
+    await ref
+        .read(contentMediaStorageServiceProvider)
+        .removeStorageRefs(orphans);
   }
 
   @override
@@ -261,193 +354,168 @@ class _AdminContentTopicEditScreenState
         : const AsyncValue.data(null);
     final isSaving = ref.watch(adminContentTopicSaveProvider).isLoading;
     final isBusy = isSaving || _isUploading;
+    final title = isEditing
+        ? l10n.adminContentTopicEditTitle
+        : l10n.adminContentTopicNewTitle;
 
-    return Scaffold(
-      appBar: RafiqAppBar(
-        title: Text(
-          isEditing
-              ? l10n.adminContentTopicEditTitle
-              : l10n.adminContentTopicNewTitle,
+    final body = topicAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (_, _) => Center(child: Text(l10n.adminContentTopicLoadError)),
+      data: (topic) {
+        if (topic != null) {
+          _populate(topic);
+        }
+        return _buildForm(l10n, isBusy);
+      },
+    );
+
+    return StaffAdaptivePage(
+      web: StaffWebPage(
+        title: title,
+        body: body,
+        bottomBar: StaffFormActionsBar(
+          primaryLabel: l10n.adminContentSave,
+          onPrimary: isBusy ? null : _save,
+          isLoading: isSaving,
         ),
-        actions: [
-          TextButton(
-            onPressed: isBusy ? null : _save,
-            child: isSaving
-                ? SizedBox(
-                    width: 20.w,
-                    height: 20.w,
-                    child: const CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : Text(l10n.adminContentSave),
-          ),
-        ],
       ),
-      body: topicAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) => Center(child: Text(l10n.adminContentTopicLoadError)),
-        data: (topic) {
-          if (topic != null) {
-            _populate(topic);
-          }
-
-          return ReactiveForm(
-            formGroup: _form,
-            child: ListView(
-            padding: EdgeInsets.all(16.w),
-            children: [
-              ReactiveTextField<String>(
-                formControlName: 'title',
-                decoration: InputDecoration(
-                  labelText: l10n.adminContentTitleLabel,
-                ),
-              ),
-              SizedBox(height: 12.h),
-              ReactiveTextField<String>(
-                formControlName: 'description',
-                decoration: InputDecoration(
-                  labelText: l10n.adminContentTopicDescription,
-                ),
-                minLines: 3,
-                maxLines: 6,
-              ),
-              SizedBox(height: 12.h),
-              ReactiveTextField<String>(
-                formControlName: 'coverUrl',
-                decoration: InputDecoration(
-                  labelText: l10n.adminContentTopicCoverUrl,
-                ),
-              ),
-              SizedBox(height: 8.h),
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: OutlinedButton.icon(
-                  onPressed: isBusy ? null : _uploadCover,
-                  icon: const Icon(Icons.upload_file_outlined),
-                  label: Text(l10n.adminContentTopicUploadCover),
-                ),
-              ),
-              SizedBox(height: 12.h),
-              ReactiveTextField<String>(
-                formControlName: 'sortOrder',
-                decoration: InputDecoration(
-                  labelText: l10n.adminHajjJourneySortOrder,
-                ),
-                keyboardType: TextInputType.number,
-              ),
-              SizedBox(height: 8.h),
-              ReactiveDropdownField<ContentVisibility>(
-                formControlName: 'visibility',
-                decoration: InputDecoration(
-                  labelText: l10n.adminContentVisibilityLabel,
-                ),
-                items: ContentVisibility.values
-                    .map(
-                      (v) => DropdownMenuItem(
-                        value: v,
-                        child: Text(contentVisibilityLabel(l10n, v)),
-                      ),
+      mobile: Scaffold(
+        appBar: RafiqAppBar(
+          title: Text(title),
+          actions: [
+            TextButton(
+              onPressed: isBusy ? null : _save,
+              child: isSaving
+                  ? SizedBox(
+                      width: 20.w,
+                      height: 20.w,
+                      child: const CircularProgressIndicator(strokeWidth: 2),
                     )
-                    .toList(),
-              ),
-              SizedBox(height: 8.h),
-              SwitchListTile(
-                value: _isActive,
-                onChanged: (v) => setState(() => _isActive = v),
-                title: Text(l10n.adminHajjJourneyActive),
-              ),
-              SizedBox(height: 16.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      l10n.adminContentTopicMediaSection,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: _addMedia,
-                    icon: const Icon(Icons.add_circle_outline),
-                  ),
-                ],
-              ),
-              for (var i = 0; i < _media.length; i++) ...[
-                Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(12.w),
-                    child: Column(
-                      children: [
-                        DropdownButtonFormField<EducationalMediaType>(
-                          initialValue: _media[i].mediaType,
-                          decoration: InputDecoration(
-                            labelText: l10n.adminHajjJourneyMediaType,
-                          ),
-                          items: EducationalMediaType.values
-                              .map(
-                                (type) => DropdownMenuItem(
-                                  value: type,
-                                  child: Text(_mediaTypeLabel(l10n, type)),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: (v) {
-                            if (v != null) {
-                              setState(() => _media[i].mediaType = v);
-                            }
-                          },
-                        ),
-                        SizedBox(height: 8.h),
-                        TextField(
-                          controller: _media[i].titleController,
-                          decoration: InputDecoration(
-                            labelText: l10n.adminHajjJourneyMediaTitle,
-                          ),
-                          onChanged: (_) => setState(() {}),
-                        ),
-                        SizedBox(height: 8.h),
-                        TextField(
-                          controller: _media[i].urlController,
-                          decoration: InputDecoration(
-                            labelText: l10n.adminHajjJourneyMediaUrl,
-                          ),
-                          onChanged: (_) => setState(() {}),
-                        ),
-                        SizedBox(height: 8.h),
-                        Align(
-                          alignment: AlignmentDirectional.centerStart,
-                          child: OutlinedButton.icon(
-                            onPressed: isBusy ? null : () => _uploadMediaFile(i),
-                            icon: const Icon(Icons.upload_file_outlined),
-                            label: Text(l10n.adminContentTopicUploadMedia),
-                          ),
-                        ),
-                        Align(
-                          alignment: AlignmentDirectional.centerEnd,
-                          child: TextButton.icon(
-                            onPressed: () => _removeMedia(i),
-                            icon: const Icon(
-                              Icons.delete_outline,
-                              color: AppColors.error,
-                            ),
-                            label: Text(
-                              l10n.adminHajjJourneyRemoveMedia,
-                              style: const TextStyle(color: AppColors.error),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(height: 8.h),
-              ],
-              if (_previewMedia.isNotEmpty) ...[
-                SizedBox(height: 8.h),
-                AdminContentMediaPreview(media: _previewMedia),
-              ],
-            ],
+                  : Text(l10n.adminContentSave),
             ),
-          );
-        },
+          ],
+        ),
+        body: body,
+      ),
+    );
+  }
+
+  Widget _buildForm(AppLocalizations l10n, bool isBusy) {
+    return ReactiveForm(
+      formGroup: _form,
+      child: ListView(
+        padding: EdgeInsets.all(16.w),
+        children: [
+          if (_isUploading)
+            Padding(
+              padding: EdgeInsets.only(bottom: 16.h),
+              child: UploadProgressBanner(
+                progress: _uploadProgress,
+                compressing: _isCompressing,
+              ),
+            ),
+          ReactiveTextField<String>(
+            formControlName: 'title',
+            decoration: InputDecoration(
+              labelText: l10n.adminContentTitleLabel,
+            ),
+          ),
+          SizedBox(height: 12.h),
+          ReactiveTextField<String>(
+            formControlName: 'description',
+            decoration: InputDecoration(
+              labelText: l10n.adminContentTopicDescription,
+            ),
+            minLines: 3,
+            maxLines: 6,
+          ),
+          SizedBox(height: 12.h),
+          ReactiveTextField<String>(
+            formControlName: 'coverUrl',
+            decoration: InputDecoration(
+              labelText: l10n.adminContentTopicCoverUrl,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: OutlinedButton.icon(
+              onPressed: isBusy ? null : _uploadCover,
+              icon: const Icon(Icons.upload_file_outlined),
+              label: Text(l10n.adminContentTopicUploadCover),
+            ),
+          ),
+          SizedBox(height: 12.h),
+          ReactiveTextField<String>(
+            formControlName: 'sortOrder',
+            decoration: InputDecoration(
+              labelText: l10n.adminHajjJourneySortOrder,
+            ),
+            keyboardType: TextInputType.number,
+          ),
+          SizedBox(height: 8.h),
+          ReactiveDropdownField<ContentVisibility>(
+            formControlName: 'visibility',
+            decoration: InputDecoration(
+              labelText: l10n.adminContentVisibilityLabel,
+            ),
+            items: ContentVisibility.values
+                .map(
+                  (v) => DropdownMenuItem(
+                    value: v,
+                    child: Text(contentVisibilityLabel(l10n, v)),
+                  ),
+                )
+                .toList(),
+          ),
+          SizedBox(height: 8.h),
+          SwitchListTile(
+            value: _isActive,
+            onChanged: (v) => setState(() => _isActive = v),
+            title: Text(l10n.adminHajjJourneyActive),
+          ),
+          SizedBox(height: 16.h),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  l10n.adminContentTopicMediaSection,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              IconButton(
+                onPressed: _addMedia,
+                icon: const Icon(Icons.add_circle_outline),
+              ),
+            ],
+          ),
+          Padding(
+            padding: EdgeInsets.only(bottom: 8.h),
+            child: Text(
+              l10n.adminContentVideoExternalHint,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+            ),
+          ),
+          for (var i = 0; i < _media.length; i++) ...[
+            _MediaDraftCard(
+              draft: _media[i],
+              isBusy: isBusy,
+              onTypeChanged: (v) => setState(() => _media[i].mediaType = v),
+              onUpload: () => _uploadMediaFile(i),
+              onRemove: () => _removeMedia(i),
+              onChanged: () => setState(() {}),
+              mediaTypeLabel: (type) => _mediaTypeLabel(l10n, type),
+              l10n: l10n,
+            ),
+            SizedBox(height: 8.h),
+          ],
+          if (_previewMedia.isNotEmpty) ...[
+            SizedBox(height: 8.h),
+            AdminContentMediaPreview(media: _previewMedia),
+          ],
+        ],
       ),
     );
   }
@@ -458,5 +526,98 @@ class _AdminContentTopicEditScreenState
       EducationalMediaType.audio => l10n.hajjJourneyMediaAudio,
       EducationalMediaType.image => l10n.hajjJourneyMediaImage,
     };
+  }
+}
+
+class _MediaDraftCard extends StatelessWidget {
+  const _MediaDraftCard({
+    required this.draft,
+    required this.isBusy,
+    required this.onTypeChanged,
+    required this.onUpload,
+    required this.onRemove,
+    required this.onChanged,
+    required this.mediaTypeLabel,
+    required this.l10n,
+  });
+
+  final _MediaDraft draft;
+  final bool isBusy;
+  final ValueChanged<EducationalMediaType> onTypeChanged;
+  final VoidCallback onUpload;
+  final VoidCallback onRemove;
+  final VoidCallback onChanged;
+  final String Function(EducationalMediaType) mediaTypeLabel;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: EdgeInsets.all(12.w),
+        child: Column(
+          children: [
+            DropdownButtonFormField<EducationalMediaType>(
+              initialValue: draft.mediaType,
+              decoration: InputDecoration(
+                labelText: l10n.adminHajjJourneyMediaType,
+              ),
+              items: EducationalMediaType.values
+                  .map(
+                    (type) => DropdownMenuItem(
+                      value: type,
+                      child: Text(mediaTypeLabel(type)),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (v) {
+                if (v != null) {
+                  onTypeChanged(v);
+                }
+              },
+            ),
+            SizedBox(height: 8.h),
+            TextField(
+              controller: draft.titleController,
+              decoration: InputDecoration(
+                labelText: l10n.adminHajjJourneyMediaTitle,
+              ),
+              onChanged: (_) => onChanged(),
+            ),
+            SizedBox(height: 8.h),
+            TextField(
+              controller: draft.urlController,
+              decoration: InputDecoration(
+                labelText: l10n.adminHajjJourneyMediaUrl,
+              ),
+              onChanged: (_) => onChanged(),
+            ),
+            SizedBox(height: 8.h),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: OutlinedButton.icon(
+                onPressed: isBusy ? null : onUpload,
+                icon: const Icon(Icons.upload_file_outlined),
+                label: Text(l10n.adminContentTopicUploadMedia),
+              ),
+            ),
+            Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: TextButton.icon(
+                onPressed: onRemove,
+                icon: const Icon(
+                  Icons.delete_outline,
+                  color: AppColors.error,
+                ),
+                label: Text(
+                  l10n.adminHajjJourneyRemoveMedia,
+                  style: const TextStyle(color: AppColors.error),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

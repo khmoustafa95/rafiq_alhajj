@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android 12+ data extraction rules (cloud backup + device transfer).
+  Exclude the encrypted offline media cache so downloaded pilgrim content
+  never leaves the device.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="file" path="content_media_enc/" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="file" path="content_media_enc/" />
+    </device-transfer>
+</data-extraction-rules>

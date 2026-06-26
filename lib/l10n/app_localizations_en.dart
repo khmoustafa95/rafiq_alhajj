@@ -2409,6 +2409,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminContentTopicMediaPreview => 'Media preview';
 
   @override
+  String uploadErrorTooLarge(int maxMb) {
+    return 'File is too large. Maximum allowed size is $maxMb MB.';
+  }
+
+  @override
+  String uploadErrorUnsupportedType(String types) {
+    return 'Unsupported file type. Allowed: $types.';
+  }
+
+  @override
+  String get uploadErrorEmpty =>
+      'The selected file is empty or could not be read.';
+
+  @override
+  String uploadInProgress(int percent) {
+    return 'Uploading… $percent%';
+  }
+
+  @override
+  String mediaCompressing(int percent) {
+    return 'Compressing… $percent%';
+  }
+
+  @override
+  String get adminContentMediaUploadCover => 'Upload image';
+
+  @override
+  String get adminContentVideoExternalHint =>
+      'For large or long videos, paste a YouTube/Vimeo link instead of uploading the file.';
+
+  @override
   String get contentOfflineTitle => 'Offline content';
 
   @override
@@ -2442,6 +2473,44 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get contentTopicOfflineStarted => 'Background download started.';
+
+  @override
+  String get contentOfflineWifiOnly => 'Download over Wi-Fi only';
+
+  @override
+  String get contentOfflineWifiOnlySubtitle =>
+      'Avoid using mobile data for downloads.';
+
+  @override
+  String get contentOfflineWaitingWifi => 'Waiting for Wi-Fi…';
+
+  @override
+  String contentOfflineStorageUsage(String used, String total) {
+    return '$used of $total used';
+  }
+
+  @override
+  String get contentTopicOfflineDownloaded => 'Available offline';
+
+  @override
+  String get contentTopicOfflineDelete => 'Remove download';
+
+  @override
+  String get contentTopicOfflinePause => 'Pause';
+
+  @override
+  String get contentTopicOfflineResume => 'Resume';
+
+  @override
+  String get contentTopicOfflineRetry => 'Retry';
+
+  @override
+  String contentTopicOfflineDownloading(int percent) {
+    return 'Downloading $percent%';
+  }
+
+  @override
+  String get educationalMediaVideoError => 'Couldn\'t play this video.';
 
   @override
   String get hajjJourneyMarkComplete => 'Mark complete';

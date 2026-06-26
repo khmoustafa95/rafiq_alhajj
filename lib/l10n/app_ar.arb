@@ -779,6 +779,33 @@
   "adminContentTopicUploadSuccess": "تم رفع الملف بنجاح.",
   "adminContentTopicUploadError": "تعذر رفع الملف.",
   "adminContentTopicMediaPreview": "معاينة الوسائط",
+  "uploadErrorTooLarge": "حجم الملف كبير جداً. الحد الأقصى المسموح {maxMb} ميغابايت.",
+  "@uploadErrorTooLarge": {
+    "placeholders": {
+      "maxMb": {"type": "int"}
+    }
+  },
+  "uploadErrorUnsupportedType": "نوع الملف غير مدعوم. المسموح: {types}.",
+  "@uploadErrorUnsupportedType": {
+    "placeholders": {
+      "types": {"type": "String"}
+    }
+  },
+  "uploadErrorEmpty": "الملف المحدد فارغ أو تعذرت قراءته.",
+  "uploadInProgress": "جاري الرفع… {percent}%",
+  "@uploadInProgress": {
+    "placeholders": {
+      "percent": {"type": "int"}
+    }
+  },
+  "mediaCompressing": "جاري الضغط… {percent}%",
+  "@mediaCompressing": {
+    "placeholders": {
+      "percent": {"type": "int"}
+    }
+  },
+  "adminContentMediaUploadCover": "رفع صورة",
+  "adminContentVideoExternalHint": "للفيديوهات الكبيرة أو الطويلة، الصق رابط YouTube/Vimeo بدلاً من رفع الملف.",
   "contentOfflineTitle": "المحتوى دون إنترنت",
   "contentOfflineSubtitle": "حمّل المواضيع التعليمية (صوت وصور) للاستماع والمشاهدة بدون اتصال.",
   "contentOfflineEnable": "تفعيل التحميل التلقائي",
@@ -800,6 +827,28 @@
   },
   "contentTopicOfflineDownload": "تحميل",
   "contentTopicOfflineStarted": "بدأ التحميل في الخلفية.",
+  "contentOfflineWifiOnly": "التحميل عبر Wi-Fi فقط",
+  "contentOfflineWifiOnlySubtitle": "تجنّب استهلاك بيانات الجوّال أثناء التحميل.",
+  "contentOfflineWaitingWifi": "بانتظار اتصال Wi-Fi…",
+  "contentOfflineStorageUsage": "{used} من {total} مُستخدَمة",
+  "@contentOfflineStorageUsage": {
+    "placeholders": {
+      "used": {"type": "String"},
+      "total": {"type": "String"}
+    }
+  },
+  "contentTopicOfflineDownloaded": "متاح دون إنترنت",
+  "contentTopicOfflineDelete": "إزالة التحميل",
+  "contentTopicOfflinePause": "إيقاف مؤقت",
+  "contentTopicOfflineResume": "استئناف",
+  "contentTopicOfflineRetry": "إعادة المحاولة",
+  "contentTopicOfflineDownloading": "جارٍ التحميل {percent}%",
+  "@contentTopicOfflineDownloading": {
+    "placeholders": {
+      "percent": {"type": "int"}
+    }
+  },
+  "educationalMediaVideoError": "تعذّر تشغيل هذا الفيديو.",
   "hajjJourneyMarkComplete": "تم الإنجاز",
   "hajjJourneyAlreadyCompleted": "مكتمل — العودة للمسار",
   "hajjJourneyCompletedSnack": "بارك الله فيك! تم إنجاز النسك.",

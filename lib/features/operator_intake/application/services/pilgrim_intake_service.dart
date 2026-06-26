@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/utils/upload_validation.dart';
 import 'package:rafiq_alhajj/features/operator_intake/data/data_sources/pilgrim_intake_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/created_pilgrim_account.dart';
 import 'package:rafiq_alhajj/features/operator_intake/domain/models/pilgrim_import_models.dart';
@@ -22,10 +23,9 @@ class PilgrimIntakeService {
 
   final PilgrimIntakeRemoteDataSource? _remote;
 
-  /// Hard cap per uploaded document (10 MB) and the allowed file types. These
-  /// are enforced client-side; storage RLS additionally restricts the bucket.
-  static const _maxFileBytes = 10 * 1024 * 1024;
-  static const _allowedExtensions = {'pdf', 'jpg', 'jpeg', 'png'};
+  /// Hard cap per uploaded document and the allowed file types (shared
+  /// [UploadConstraints]). Enforced client-side; storage RLS guards the bucket.
+  static const _constraints = UploadConstraints.pilgrimDocuments;
 
   bool get isAvailable => AppConfig.hasSupabase && _remote != null;
 
@@ -137,16 +137,17 @@ class PilgrimIntakeService {
         failures.add(file.name);
         continue;
       }
-      if (extension == null || !_allowedExtensions.contains(extension)) {
+      if (extension == null ||
+          !_constraints.allowedExtensions.contains(extension)) {
         failures.add(file.name);
         continue;
       }
-      if (bytes.length > _maxFileBytes) {
+      if (bytes.length > _constraints.maxBytes) {
         failures.add(file.name);
         continue;
       }
 
-      final safeName = file.name.replaceAll(RegExp(r'[^\w.\-]'), '_');
+      final safeName = sanitizeUploadFileName(file.name);
       final storagePath =
           '$profileId/${DateTime.now().millisecondsSinceEpoch}_$safeName';
 
@@ -154,7 +155,7 @@ class PilgrimIntakeService {
         await remote.uploadDocument(
           storagePath: storagePath,
           bytes: bytes,
-          contentType: _mimeFromExtension(extension),
+          contentType: mimeFromExtension(extension),
         );
         await remote.insertDocumentMetadata({
           'profile_id': profileId,
@@ -178,14 +179,5 @@ class PilgrimIntakeService {
     }
 
     return uploaded;
-  }
-
-  String? _mimeFromExtension(String ext) {
-    return switch (ext.toLowerCase()) {
-      'pdf' => 'application/pdf',
-      'jpg' || 'jpeg' => 'image/jpeg',
-      'png' => 'image/png',
-      _ => null,
-    };
   }
 }

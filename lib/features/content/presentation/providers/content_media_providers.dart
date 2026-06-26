@@ -1,6 +1,12 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:dio/dio.dart';
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/domain/models/educational_media.dart';
 import 'package:rafiq_alhajj/features/content/application/services/content_media_cache_service.dart';
 import 'package:rafiq_alhajj/features/content/data/local/content_media_cache_store.dart';
+import 'package:rafiq_alhajj/features/content/data/local/media_encryption_service.dart';
 import 'package:rafiq_alhajj/features/content/data/storage/content_media_storage_service.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_topic.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -16,9 +22,16 @@ Future<ContentMediaCacheStore> contentMediaCacheStore(Ref ref) async {
 }
 
 @Riverpod(keepAlive: true)
+MediaEncryptionService mediaEncryptionService(Ref ref) {
+  return MediaEncryptionService();
+}
+
+@Riverpod(keepAlive: true)
 Future<ContentMediaCacheService> contentMediaCacheService(Ref ref) async {
   final store = await ref.watch(contentMediaCacheStoreProvider.future);
-  return ContentMediaCacheService(store);
+  final encryption = ref.watch(mediaEncryptionServiceProvider);
+  final storage = ref.watch(contentMediaStorageServiceProvider);
+  return ContentMediaCacheService(store, encryption, storage);
 }
 
 @Riverpod(keepAlive: true)
@@ -28,13 +41,63 @@ ContentMediaStorageService contentMediaStorageService(Ref ref) {
   );
 }
 
+class _PendingMedia {
+  const _PendingMedia({
+    required this.mediaId,
+    required this.url,
+    required this.topicId,
+    required this.mediaType,
+  });
+
+  final String mediaId;
+  final String url;
+  final String topicId;
+  final EducationalMediaType mediaType;
+}
+
 @Riverpod(keepAlive: true)
 class ContentMediaDownloadController extends _$ContentMediaDownloadController {
+  static const _maxAttempts = 3;
+
+  final Map<String, _PendingMedia> _pending = {};
+  final Map<String, CancelToken> _tokens = {};
+  StreamSubscription<List<ConnectivityResult>>? _connectivitySub;
+  bool _processing = false;
+
   @override
   Future<ContentDownloadState> build() async {
     final store = await ref.watch(contentMediaCacheStoreProvider.future);
-    return ContentDownloadState(offlineEnabled: store.offlineEnabled);
+    final cache = await ref.watch(contentMediaCacheServiceProvider.future);
+
+    _connectivitySub ??=
+        Connectivity().onConnectivityChanged.listen((results) {
+      final onWifi = results.any(
+        (r) =>
+            r == ConnectivityResult.wifi || r == ConnectivityResult.ethernet,
+      );
+      final current = state.value;
+      if (onWifi && (current?.waitingForWifi ?? false)) {
+        unawaited(_processQueue());
+      }
+    });
+
+    ref.onDispose(() {
+      unawaited(_connectivitySub?.cancel());
+      for (final token in _tokens.values) {
+        token.cancel('disposed');
+      }
+    });
+
+    return ContentDownloadState(
+      offlineEnabled: store.offlineEnabled,
+      wifiOnly: store.wifiOnly,
+      quotaBytes: store.quotaBytes,
+      usageBytes: cache.usageBytes,
+    );
   }
+
+  ContentDownloadState get _state =>
+      state.value ?? const ContentDownloadState();
 
   Future<void> setOfflineEnabled(
     bool enabled, {
@@ -42,21 +105,24 @@ class ContentMediaDownloadController extends _$ContentMediaDownloadController {
   }) async {
     final store = await ref.read(contentMediaCacheStoreProvider.future);
     await store.setOfflineEnabled(enabled);
-    state = AsyncData(
-      (state.value ?? const ContentDownloadState()).copyWith(
-        offlineEnabled: enabled,
-      ),
-    );
+    state = AsyncData(_state.copyWith(offlineEnabled: enabled));
 
     if (enabled && topics.isNotEmpty) {
       await enqueueTopics(topics);
     }
   }
 
+  Future<void> setWifiOnly(bool value) async {
+    final store = await ref.read(contentMediaCacheStoreProvider.future);
+    await store.setWifiOnly(value);
+    state = AsyncData(_state.copyWith(wifiOnly: value));
+    if (!value && _state.waitingForWifi) {
+      await _processQueue();
+    }
+  }
+
   Future<void> enqueueTopics(List<ContentTopic> topics) async {
-    final cache = await ref.read(contentMediaCacheServiceProvider.future);
-    final current = state.value ?? const ContentDownloadState();
-    final jobs = Map<String, MediaDownloadJob>.from(current.jobs);
+    final jobs = Map<String, MediaDownloadJob>.from(_state.jobs);
 
     for (final topic in topics) {
       for (final media in topic.media) {
@@ -67,6 +133,16 @@ class ContentMediaDownloadController extends _$ContentMediaDownloadController {
           );
           continue;
         }
+        // Don't re-queue a completed item.
+        if (jobs[media.id]?.status == MediaDownloadStatus.completed) {
+          continue;
+        }
+        _pending[media.id] = _PendingMedia(
+          mediaId: media.id,
+          url: media.url,
+          topicId: topic.id,
+          mediaType: media.mediaType,
+        );
         jobs[media.id] = MediaDownloadJob(
           mediaId: media.id,
           status: MediaDownloadStatus.queued,
@@ -74,79 +150,166 @@ class ContentMediaDownloadController extends _$ContentMediaDownloadController {
       }
     }
 
-    state = AsyncData(
-      current.copyWith(jobs: jobs, isProcessing: true),
-    );
-
-    await _processQueue(topics, cache);
+    state = AsyncData(_state.copyWith(jobs: jobs));
+    await _processQueue();
   }
 
-  Future<void> enqueueTopic(ContentTopic topic) {
-    return enqueueTopics([topic]);
+  Future<void> enqueueTopic(ContentTopic topic) => enqueueTopics([topic]);
+
+  void pause(String mediaId) {
+    _tokens[mediaId]?.cancel('paused');
+    _setJob(mediaId, MediaDownloadStatus.paused);
+  }
+
+  Future<void> retry(String mediaId) async {
+    if (!_pending.containsKey(mediaId)) {
+      return;
+    }
+    _setJob(mediaId, MediaDownloadStatus.queued, progress: 0);
+    await _processQueue();
+  }
+
+  Future<void> removeTopicDownloads(String topicId) async {
+    final cache = await ref.read(contentMediaCacheServiceProvider.future);
+    await cache.removeTopic(topicId);
+    final jobs = Map<String, MediaDownloadJob>.from(_state.jobs);
+    _pending.removeWhere((id, p) {
+      if (p.topicId == topicId) {
+        _tokens.remove(id)?.cancel('removed');
+        jobs.remove(id);
+        return true;
+      }
+      return false;
+    });
+    // Also drop completed jobs for media that were enqueued elsewhere.
+    state = AsyncData(_state.copyWith(jobs: jobs, usageBytes: cache.usageBytes));
   }
 
   Future<void> clearCache() async {
     final store = await ref.read(contentMediaCacheStoreProvider.future);
     final cache = await ref.read(contentMediaCacheServiceProvider.future);
+    for (final token in _tokens.values) {
+      token.cancel('cleared');
+    }
+    _tokens.clear();
+    _pending.clear();
     await cache.clearAll();
     await store.setOfflineEnabled(false);
-    state = const AsyncData(ContentDownloadState());
-  }
-
-  Future<void> _processQueue(
-    List<ContentTopic> topics,
-    ContentMediaCacheService cache,
-  ) async {
-    final jobs = Map<String, MediaDownloadJob>.from(
-      state.value?.jobs ?? const {},
-    );
-
-    for (final topic in topics) {
-      for (final media in topic.media) {
-        if (!ContentMediaUrlRules.isCacheable(media.url)) {
-          continue;
-        }
-
-        jobs[media.id] = MediaDownloadJob(
-          mediaId: media.id,
-          status: MediaDownloadStatus.downloading,
-        );
-        state = AsyncData(
-          (state.value ?? const ContentDownloadState()).copyWith(
-            jobs: Map.from(jobs),
-            isProcessing: true,
-          ),
-        );
-
-        final result = await cache.downloadMedia(
-          mediaId: media.id,
-          remoteUrl: media.url,
-          topicId: topic.id,
-          mediaType: media.mediaType,
-          onProgress: (progress) {
-            jobs[media.id] = MediaDownloadJob(
-              mediaId: media.id,
-              status: MediaDownloadStatus.downloading,
-              progress: progress,
-            );
-            state = AsyncData(
-              (state.value ?? const ContentDownloadState()).copyWith(
-                jobs: Map.from(jobs),
-                isProcessing: true,
-              ),
-            );
-          },
-        );
-        jobs[media.id] = result;
-      }
-    }
-
     state = AsyncData(
-      (state.value ?? const ContentDownloadState()).copyWith(
-        jobs: jobs,
-        isProcessing: false,
+      ContentDownloadState(
+        wifiOnly: store.wifiOnly,
+        quotaBytes: store.quotaBytes,
       ),
     );
+  }
+
+  Future<bool> _isWifi() async {
+    final results = await Connectivity().checkConnectivity();
+    return results.any(
+      (r) => r == ConnectivityResult.wifi || r == ConnectivityResult.ethernet,
+    );
+  }
+
+  Future<void> _processQueue() async {
+    if (_processing) {
+      return;
+    }
+    _processing = true;
+    final cache = await ref.read(contentMediaCacheServiceProvider.future);
+    final store = await ref.read(contentMediaCacheStoreProvider.future);
+    try {
+      state = AsyncData(
+        _state.copyWith(isProcessing: true, waitingForWifi: false),
+      );
+
+      while (true) {
+        final next = _nextQueued();
+        if (next == null) {
+          break;
+        }
+        if (store.wifiOnly && !await _isWifi()) {
+          state = AsyncData(
+            _state.copyWith(isProcessing: false, waitingForWifi: true),
+          );
+          return;
+        }
+        await _downloadOne(next, cache);
+      }
+
+      state = AsyncData(
+        _state.copyWith(
+          isProcessing: false,
+          waitingForWifi: false,
+          usageBytes: cache.usageBytes,
+        ),
+      );
+    } finally {
+      _processing = false;
+    }
+  }
+
+  _PendingMedia? _nextQueued() {
+    for (final pending in _pending.values) {
+      if (_state.jobs[pending.mediaId]?.status == MediaDownloadStatus.queued) {
+        return pending;
+      }
+    }
+    return null;
+  }
+
+  Future<void> _downloadOne(
+    _PendingMedia pending,
+    ContentMediaCacheService cache,
+  ) async {
+    final token = CancelToken();
+    _tokens[pending.mediaId] = token;
+
+    var attempt = 0;
+    while (true) {
+      attempt++;
+      _setJob(pending.mediaId, MediaDownloadStatus.downloading, progress: 0);
+
+      final result = await cache.downloadMedia(
+        mediaId: pending.mediaId,
+        remoteUrl: pending.url,
+        topicId: pending.topicId,
+        mediaType: pending.mediaType,
+        cancelToken: token,
+        onProgress: (progress) {
+          _setJob(
+            pending.mediaId,
+            MediaDownloadStatus.downloading,
+            progress: progress,
+          );
+        },
+      );
+
+      if (result.status == MediaDownloadStatus.failed &&
+          attempt < _maxAttempts &&
+          !token.isCancelled) {
+        await Future<void>.delayed(Duration(seconds: attempt * 2));
+        continue;
+      }
+
+      _tokens.remove(pending.mediaId);
+      state = AsyncData(_state.copyWith(jobs: {..._state.jobs, pending.mediaId: result}));
+      return;
+    }
+  }
+
+  void _setJob(
+    String mediaId,
+    MediaDownloadStatus status, {
+    double? progress,
+  }) {
+    final jobs = Map<String, MediaDownloadJob>.from(_state.jobs);
+    final existing = jobs[mediaId];
+    jobs[mediaId] = MediaDownloadJob(
+      mediaId: mediaId,
+      status: status,
+      progress: progress ?? existing?.progress ?? 0,
+    );
+    state = AsyncData(_state.copyWith(jobs: jobs));
   }
 }
 

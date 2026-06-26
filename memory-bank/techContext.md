@@ -18,6 +18,9 @@
 | Codegen runner | `build_runner` | ^2.15.0 |
 | Lints | `flutter_lints` | ^6.0.0 |
 | Push (FCM) | `firebase_core` / `firebase_messaging` | ^3.15 / ^15.2 |
+| Video | `video_player` / `chewie` | ^2.11.1 / ^1.13.1 |
+| Secure key store | `flutter_secure_storage` | ^10.3.1 |
+| Crypto (AES-CTR) | `cryptography` | ^2.9.0 |
 
 > **Removed:** `google_fonts` (unused — app uses the bundled system text theme via `AppTypography`).
 > **Fonts:** Inter `.ttf` files exist under `assets/fonts/` but are not currently declared/wired (system theme used).

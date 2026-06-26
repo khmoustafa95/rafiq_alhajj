@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android < 12 auto-backup rules.
+  Exclude the encrypted offline media cache from cloud backup: downloaded
+  pilgrim content must not leave the device. (getApplicationSupportDirectory()
+  maps to the app files dir = backup domain "file".)
+-->
+<full-backup-content>
+    <exclude domain="file" path="content_media_enc/" />
+</full-backup-content>
