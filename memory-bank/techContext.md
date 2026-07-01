@@ -26,9 +26,13 @@
 > **Fonts:** Inter `.ttf` files exist under `assets/fonts/` but are not currently declared/wired (system theme used).
 
 ## Dev environment
-- **OS:** Windows 10
-- **Supabase local:** CLI v2.90.0 via Docker (not set up in repo)
+- **OS:** Windows 10 (primary) / Ubuntu 24.04 cloud VM (Cursor Cloud — see `AGENTS.md`)
+- **Supabase local:** CLI **v2.90.0** via Docker (not set up in repo). **Pin to 2.90.0** — newer CLIs
+  (2.10x) ship a Postgres image whose `postgres`-role default privileges omit SELECT/INSERT/UPDATE for
+  `anon`/`authenticated`/`service_role`, so every migration (RLS-only, no explicit `GRANT ON TABLE`)
+  fails with `42501 permission denied for table` and the app can't read/auth.
 - **Android emulator localhost:** `10.0.2.2` for Supabase/API
+- **Cloud VM setup/run caveats:** `AGENTS.md` → `## Cursor Cloud specific instructions`.
 
 ## Linting (`analysis_options.yaml`)
 - Base: `package:flutter_lints/flutter.yaml`
