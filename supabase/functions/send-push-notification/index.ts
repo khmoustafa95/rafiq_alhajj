@@ -3,11 +3,25 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 type NotificationRecord = {
   id: string;
   recipient_id: string;
+  type: string;
   title_ar: string;
   title_en: string;
   body_ar: string | null;
   body_en: string | null;
   payload: Record<string, unknown>;
+};
+
+type NotificationPreferencesRow = {
+  profile_id: string;
+  push_enabled: boolean;
+  push_announcements: boolean;
+  push_content: boolean;
+  push_competitions: boolean;
+  push_urgent: boolean;
+  quiet_hours_enabled: boolean;
+  quiet_hours_start: string;
+  quiet_hours_end: string;
+  timezone_offset_minutes: number | null;
 };
 
 type WebhookBody = {
@@ -23,6 +37,23 @@ type ServiceAccount = {
   client_email: string;
   private_key: string;
   token_uri?: string;
+};
+
+type FcmSendResult = "sent" | "stale" | "failed";
+
+type FailureRow = {
+  notification_id: string;
+  recipient_id: string;
+  device_token: string;
+  error: string;
+  attempts: number;
+};
+
+type SendJob = {
+  notificationId: string;
+  recipientId: string;
+  token: string;
+  message: { message: Record<string, unknown> };
 };
 
 function loadServiceAccount(): ServiceAccount | null {
@@ -43,6 +74,187 @@ function loadServiceAccount(): ServiceAccount | null {
 
 function pickBody(record: NotificationRecord): string {
   return (record.body_en ?? record.body_ar ?? "").slice(0, 200);
+}
+
+function defaultPreferences(profileId: string): NotificationPreferencesRow {
+  return {
+    profile_id: profileId,
+    push_enabled: true,
+    push_announcements: true,
+    push_content: true,
+    push_competitions: true,
+    push_urgent: true,
+    quiet_hours_enabled: false,
+    quiet_hours_start: "22:00:00",
+    quiet_hours_end: "07:00:00",
+    timezone_offset_minutes: null,
+  };
+}
+
+function isUrgentType(type: string): boolean {
+  return type === "ritual_update" || type === "system";
+}
+
+function parseTimeToMinutes(raw: string): number {
+  const parts = raw.split(":");
+  const hour = Number.parseInt(parts[0] ?? "0", 10);
+  const minute = Number.parseInt(parts[1] ?? "0", 10);
+  return hour * 60 + minute;
+}
+
+function isInQuietHours(prefs: NotificationPreferencesRow): boolean {
+  if (!prefs.quiet_hours_enabled) {
+    return false;
+  }
+
+  const offsetMinutes = prefs.timezone_offset_minutes ?? 0;
+  const utcNow = new Date();
+  const localMs = utcNow.getTime() + offsetMinutes * 60_000;
+  const local = new Date(localMs);
+  const currentMinutes = local.getUTCHours() * 60 + local.getUTCMinutes();
+
+  const start = parseTimeToMinutes(prefs.quiet_hours_start);
+  const end = parseTimeToMinutes(prefs.quiet_hours_end);
+
+  if (start === end) {
+    return false;
+  }
+
+  if (start < end) {
+    return currentMinutes >= start && currentMinutes < end;
+  }
+
+  // Spans midnight (e.g. 22:00 → 07:00).
+  return currentMinutes >= start || currentMinutes < end;
+}
+
+function androidChannelId(type: string): string {
+  switch (type) {
+    case "announcement":
+      return "rafiq_announcements";
+    case "content_published":
+      return "rafiq_content";
+    case "competition":
+      return "rafiq_competitions";
+    case "ritual_update":
+    case "system":
+      return "rafiq_urgent";
+    default:
+      return "rafiq_announcements";
+  }
+}
+
+function isCategoryAllowed(
+  prefs: NotificationPreferencesRow,
+  type: string,
+): boolean {
+  if (!prefs.push_enabled) {
+    return false;
+  }
+
+  switch (type) {
+    case "announcement":
+      return prefs.push_announcements;
+    case "content_published":
+      return prefs.push_content;
+    case "competition":
+      return prefs.push_competitions;
+    case "ritual_update":
+    case "system":
+      return prefs.push_urgent;
+    default:
+      return true;
+  }
+}
+
+const FCM_SEND_CONCURRENCY = 50;
+const MAX_SEND_ATTEMPTS = 3;
+const RETRY_BASE_MS = 500;
+
+async function runWithConcurrency<T>(
+  items: T[],
+  limit: number,
+  worker: (item: T) => Promise<void>,
+): Promise<void> {
+  if (items.length === 0) {
+    return;
+  }
+
+  const queue = [...items];
+  const workers = Array.from(
+    { length: Math.min(limit, queue.length) },
+    async () => {
+      while (queue.length > 0) {
+        const item = queue.shift();
+        if (item === undefined) {
+          return;
+        }
+        await worker(item);
+      }
+    },
+  );
+
+  await Promise.all(workers);
+}
+
+function isStaleTokenError(status: number, text: string): boolean {
+  return status === 404 ||
+    /UNREGISTERED|registration-token-not-registered/i.test(text);
+}
+
+function isRetryableError(status: number): boolean {
+  return status === 429 || (status >= 500 && status <= 599);
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function sendFcmMessage(
+  endpoint: string,
+  accessToken: string,
+  message: unknown,
+): Promise<{ result: FcmSendResult; error?: string; attempts: number }> {
+  let lastError = "send failed";
+
+  for (let attempt = 1; attempt <= MAX_SEND_ATTEMPTS; attempt++) {
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(message),
+      });
+
+      if (response.ok) {
+        return { result: "sent", attempts: attempt };
+      }
+
+      const text = await response.text();
+      lastError = text;
+
+      if (isStaleTokenError(response.status, text)) {
+        return { result: "stale", error: text, attempts: attempt };
+      }
+
+      if (isRetryableError(response.status) && attempt < MAX_SEND_ATTEMPTS) {
+        await sleep(RETRY_BASE_MS * 2 ** (attempt - 1));
+        continue;
+      }
+
+      return { result: "failed", error: text, attempts: attempt };
+    } catch (error) {
+      lastError = error instanceof Error ? error.message : "send failed";
+      if (attempt < MAX_SEND_ATTEMPTS) {
+        await sleep(RETRY_BASE_MS * 2 ** (attempt - 1));
+        continue;
+      }
+    }
+  }
+
+  return { result: "failed", error: lastError, attempts: MAX_SEND_ATTEMPTS };
 }
 
 function base64Url(input: ArrayBuffer | string): string {
@@ -121,14 +333,22 @@ Deno.serve(async (req) => {
   }
 
   const expectedSecret = Deno.env.get("PUSH_WEBHOOK_SECRET");
-  if (expectedSecret) {
-    const provided = req.headers.get("x-push-secret");
-    if (provided !== expectedSecret) {
-      return new Response(JSON.stringify({ error: "Invalid push secret" }), {
-        status: 401,
+  if (!expectedSecret) {
+    return new Response(
+      JSON.stringify({ error: "PUSH_WEBHOOK_SECRET not configured" }),
+      {
+        status: 500,
         headers: { "Content-Type": "application/json" },
-      });
-    }
+      },
+    );
+  }
+
+  const provided = req.headers.get("x-push-secret");
+  if (provided !== expectedSecret) {
+    return new Response(JSON.stringify({ error: "Invalid push secret" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const serviceAccount = loadServiceAccount();
@@ -149,8 +369,6 @@ Deno.serve(async (req) => {
     });
   }
 
-  // Accept a batched `records` array (statement-level trigger) or a single
-  // `record` (legacy / DB webhook).
   const records: NotificationRecord[] = Array.isArray(body.records)
     ? body.records
     : body.record
@@ -169,8 +387,76 @@ Deno.serve(async (req) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const supabaseAdmin = createClient(supabaseUrl, serviceKey);
 
-  // One query for every recipient's tokens, grouped by profile id.
+  const { data: globalSettings } = await supabaseAdmin
+    .from("system_settings")
+    .select("enable_push_notifications")
+    .eq("id", "global")
+    .maybeSingle();
+
+  if (globalSettings?.enable_push_notifications === false) {
+    return new Response(
+      JSON.stringify({ ok: true, skipped: "push disabled globally" }),
+      { status: 200, headers: { "Content-Type": "application/json" } },
+    );
+  }
+
   const recipientIds = [...new Set(validRecords.map((r) => r.recipient_id))];
+
+  const { data: preferenceRows, error: preferenceError } = await supabaseAdmin
+    .from("notification_preferences")
+    .select(
+      "profile_id, push_enabled, push_announcements, push_content, push_competitions, push_urgent, quiet_hours_enabled, quiet_hours_start, quiet_hours_end, timezone_offset_minutes",
+    )
+    .in("profile_id", recipientIds);
+
+  if (preferenceError) {
+    return new Response(JSON.stringify({ error: preferenceError.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const preferencesByRecipient = new Map<string, NotificationPreferencesRow>();
+  for (const profileId of recipientIds) {
+    preferencesByRecipient.set(profileId, defaultPreferences(profileId));
+  }
+  for (const row of preferenceRows ?? []) {
+    preferencesByRecipient.set(row.profile_id as string, {
+      profile_id: row.profile_id as string,
+      push_enabled: row.push_enabled as boolean,
+      push_announcements: row.push_announcements as boolean,
+      push_content: row.push_content as boolean,
+      push_competitions: row.push_competitions as boolean,
+      push_urgent: row.push_urgent as boolean,
+      quiet_hours_enabled: row.quiet_hours_enabled as boolean,
+      quiet_hours_start: (row.quiet_hours_start as string) ?? "22:00:00",
+      quiet_hours_end: (row.quiet_hours_end as string) ?? "07:00:00",
+      timezone_offset_minutes: row.timezone_offset_minutes as number | null,
+    });
+  }
+
+  const deliverableRecords = validRecords.filter((record) => {
+    const prefs = preferencesByRecipient.get(record.recipient_id);
+    if (!prefs) {
+      return true;
+    }
+    if (!isCategoryAllowed(prefs, record.type ?? "system")) {
+      return false;
+    }
+    const type = record.type ?? "system";
+    if (!isUrgentType(type) && isInQuietHours(prefs)) {
+      return false;
+    }
+    return true;
+  });
+
+  if (deliverableRecords.length === 0) {
+    return new Response(
+      JSON.stringify({ ok: true, sent: 0, reason: "all_recipients_opted_out" }),
+      { status: 200, headers: { "Content-Type": "application/json" } },
+    );
+  }
+
   const { data: tokenRows, error: tokenError } = await supabaseAdmin
     .from("device_tokens")
     .select("profile_id, token")
@@ -218,14 +504,13 @@ Deno.serve(async (req) => {
 
   let sent = 0;
   let failed = 0;
+  let retried = 0;
   const errors: string[] = [];
-  // Tokens FCM reports as no longer valid; removed from device_tokens below so
-  // the table doesn't accumulate dead registrations.
   const staleTokens = new Set<string>();
+  const failureRows: FailureRow[] = [];
+  const sends: SendJob[] = [];
 
-  // Build one FCM message per (recipient token × notification), then send all.
-  const sends: Promise<void>[] = [];
-  for (const record of validRecords) {
+  for (const record of deliverableRecords) {
     const tokens = tokensByRecipient.get(record.recipient_id) ?? [];
     if (tokens.length === 0) {
       continue;
@@ -235,51 +520,91 @@ Deno.serve(async (req) => {
     const id = typeof payload.id === "string" ? payload.id : "";
     const title = record.title_en || record.title_ar;
     const bodyText = pickBody(record);
+    const type = record.type ?? "system";
+    const data = {
+      route,
+      id,
+      type,
+      notification_id: record.id,
+      title_ar: record.title_ar ?? "",
+      title_en: record.title_en ?? "",
+      body_ar: (record.body_ar ?? "").slice(0, 200),
+      body_en: (record.body_en ?? "").slice(0, 200),
+    };
+    const channelId = androidChannelId(type);
+    const urgent = isUrgentType(type);
 
     for (const token of tokens) {
-      const message = {
+      sends.push({
+        notificationId: record.id,
+        recipientId: record.recipient_id,
+        token,
         message: {
-          token,
-          notification: { title, body: bodyText },
-          data: { route, id, notification_id: record.id },
-          android: { priority: "HIGH" },
-          apns: { payload: { aps: { sound: "default" } } },
-        },
-      };
-      sends.push((async () => {
-        try {
-          const response = await fetch(endpoint, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              "Content-Type": "application/json",
+          message: {
+            token,
+            notification: { title, body: bodyText },
+            data,
+            android: {
+              priority: urgent ? "HIGH" : "NORMAL",
+              collapse_key: type,
+              notification: { channel_id: channelId },
             },
-            body: JSON.stringify(message),
-          });
-          if (response.ok) {
-            sent++;
-            return;
-          }
-          failed++;
-          const text = await response.text();
-          errors.push(text);
-          // 404 / UNREGISTERED means the token is dead (app uninstalled, token
-          // rotated, etc.). Mark it for deletion.
-          if (
-            response.status === 404 ||
-            /UNREGISTERED|registration-token-not-registered/i.test(text)
-          ) {
-            staleTokens.add(token);
-          }
-        } catch (error) {
-          failed++;
-          errors.push(error instanceof Error ? error.message : "send failed");
-        }
-      })());
+            apns: {
+              headers: urgent
+                ? { "apns-priority": "10" }
+                : { "apns-priority": "5" },
+              payload: {
+                aps: {
+                  sound: "default",
+                  ...(urgent ? { "interruption-level": "time-sensitive" } : {}),
+                },
+              },
+            },
+          },
+        },
+      });
     }
   }
 
-  await Promise.all(sends);
+  await runWithConcurrency(sends, FCM_SEND_CONCURRENCY, async (job) => {
+    const outcome = await sendFcmMessage(endpoint, accessToken, job.message);
+    if (outcome.attempts > 1) {
+      retried++;
+    }
+
+    switch (outcome.result) {
+      case "sent":
+        sent++;
+        return;
+      case "stale":
+        staleTokens.add(job.token);
+        return;
+      case "failed":
+        failed++;
+        if (outcome.error) {
+          errors.push(outcome.error);
+        }
+        failureRows.push({
+          notification_id: job.notificationId,
+          recipient_id: job.recipientId,
+          device_token: job.token,
+          error: (outcome.error ?? "send failed").slice(0, 2000),
+          attempts: outcome.attempts,
+        });
+    }
+  });
+
+  let logged = 0;
+  if (failureRows.length > 0) {
+    const { error: logError, count } = await supabaseAdmin
+      .from("push_dispatch_failures")
+      .insert(failureRows, { count: "exact" });
+    if (logError) {
+      errors.push(`failure_log: ${logError.message}`);
+    } else {
+      logged = count ?? failureRows.length;
+    }
+  }
 
   let cleaned = 0;
   if (staleTokens.size > 0) {
@@ -295,7 +620,15 @@ Deno.serve(async (req) => {
   }
 
   return new Response(
-    JSON.stringify({ ok: true, sent, failed, cleaned, errors: errors.slice(0, 3) }),
+    JSON.stringify({
+      ok: true,
+      sent,
+      failed,
+      retried,
+      logged,
+      cleaned,
+      errors: errors.slice(0, 3),
+    }),
     { status: 200, headers: { "Content-Type": "application/json" } },
   );
 });

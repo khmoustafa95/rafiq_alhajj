@@ -28,35 +28,66 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
+function pickLocalizedField(data, arKey, enKey) {
+  const locale = (self.navigator.language || 'en').toLowerCase();
+  if (locale.startsWith('ar')) {
+    return data[arKey] || data[enKey] || '';
+  }
+  return data[enKey] || data[arKey] || '';
+}
+
 // Shown only while the page is not focused (closed tab / background). Foreground
 // messages are handled inside the Flutter app via the Realtime in-app toast.
 messaging.onBackgroundMessage((message) => {
   const notification = message.notification || {};
   const data = message.data || {};
-  const title = notification.title || data.title || 'رفيق الحاج';
+  const title =
+    pickLocalizedField(data, 'title_ar', 'title_en') ||
+    notification.title ||
+    'رفيق الحاج';
+  const body =
+    pickLocalizedField(data, 'body_ar', 'body_en') || notification.body || '';
   const options = {
-    body: notification.body || data.body || '',
+    body,
     icon: '/icons/Icon-192.png',
     badge: '/icons/Icon-192.png',
-    data: data,
+    data,
   };
   self.registration.showNotification(title, options);
 });
 
+function buildLaunchUrl(data) {
+  const route = data.route || 'notifications';
+  const id = data.id || '';
+  const params = new URLSearchParams({ push_route: route });
+  if (id) {
+    params.set('push_id', id);
+  }
+  return '/?' + params.toString();
+}
+
 // Focus/open the app when the user clicks a background notification.
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
+  const data = event.notification.data || {};
+  const launchUrl = buildLaunchUrl(data);
+  const clickEnvelope = JSON.stringify({
+    type: 'push_notification_click',
+    data,
+  });
+
   event.waitUntil(
     self.clients
       .matchAll({ type: 'window', includeUncontrolled: true })
       .then((clientList) => {
         for (const client of clientList) {
           if ('focus' in client) {
+            client.postMessage(clickEnvelope);
             return client.focus();
           }
         }
         if (self.clients.openWindow) {
-          return self.clients.openWindow('/');
+          return self.clients.openWindow(launchUrl);
         }
         return undefined;
       }),

@@ -3,7 +3,19 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
-**Content management redesign — three surfaces (Announcements / News / Educational Library)** (2026-06-26): split content into three clear surfaces and removed the broken standalone `video` content type (root cause of "uploaded video doesn't show on mobile"). Announcements + News are `content_library` (rich text + an **inline cover image**, no external-launch button); the Educational Library is `content_topics`/`content_topic_media` with rich media (video/audio/image-stories/**PDF**).
+**Push notifications hardening** (2026-07-02): full audit follow-up across client, Edge Function, web SW, iOS, and global-app UX patterns (rounds 1–4).
+- **Token lifecycle:** unregister on session end; token rotation cleanup; post-login permission.
+- **Navigation:** pending push queue for cold start; web deep links; **mark inbox as read on push tap**.
+- **Locale:** bilingual FCM `data` fields; device-locale foreground display.
+- **Edge fn:** required webhook secret; 50-concurrent cap; 3× retry + `push_dispatch_failures` log; respects `system_settings.enable_push_notifications` + per-user `notification_preferences` categories + **quiet hours** (urgent bypass).
+- **Production guard:** migration `20260702120000` — no dev fallback when `app.push_environment=production`.
+- **Global-app UX (round 3):** `notification_preferences` table + **Profile → Notification preferences** (master + category toggles); **permission rationale dialog** + open-settings fallback (`app_settings`); **app icon badge** sync (`app_badge_plus`); `system_settings` enforced for push binding + in-app toasts; **admin Push delivery log** at `/admin/notifications/failures`; Android notification grouping.
+- **Global-app UX (round 4):** **Quiet hours** (schedule + timezone offset); **per-category Android channels** (`rafiq_*`) + FCM `channel_id`/`collapse_key`; iOS `time-sensitive` for urgent; **admin retry** failed delivery (`admin_retry_push_failure` RPC + UI).
+- **iOS:** RunnerDebug/RunnerRelease entitlements.
+- **Verified:** `flutter analyze` (notifications/profile) → **No issues found**. ⚠ `supabase db reset` + device smoke test pending.
+
+## Earlier focus — Content management redesign (2026-06-26)
+Split content into three clear surfaces and removed the broken standalone `video` content type (root cause of "uploaded video doesn't show on mobile"). Announcements + News are `content_library` (rich text + an **inline cover image**, no external-launch button); the Educational Library is `content_topics`/`content_topic_media` with rich media (video/audio/image-stories/**PDF**).
 - **Deps:** `pdfx ^2.9.2` (cross-platform PDF render; web needs pdf.js — added the CDN `<script>` to `web/index.html`).
 - **DB (3 new migrations):** `20260626170000_content_media_add_pdf_type.sql` adds `'pdf'` to the `content_media_type` enum (**standalone** migration — Postgres can't add + use an enum value in one tx); `20260626170100_content_media_allow_pdf.sql` adds `application/pdf` to `allowed_mime_types` on both `content-media` + `content-media-private`; `20260626170200_content_notify_opt_in.sql` **drops** the auto `on_content_library_notify_pilgrims` trigger + its fn and adds admin-guarded RPC `publish_content_notification(p_title_ar,p_title_en,p_route,p_id,p_visibility)` (inserts `content_published` rows; existing statement-level dispatch fans out FCM), and converts existing `type='video'` `content_library` rows → `news`. Seed updated likewise. The unused `video` enum value stays (removing an in-use Postgres enum value is unsafe) — the app just stops offering it.
 - **Domain/data:** `EducationalMediaType` gained `pdf` (+ `typeKey`/`typeFromKey`/`ContentTopicMediaInput.mediaTypeKey`). `UploadConstraints.pdf` (`{pdf}`, 25 MiB); topic editor `_constraintsFor`/`_kindFor` map `pdf`→`UploadMediaKind.other` (non-compressible). `PublicContentFeed` split into `{announcements, news, topics}` (+ `newsAndAnnouncements` back-compat getter); data source/repo/`ContentService.loadHomeFeed`/`UnavailableContentRepository`/`widget_test` updated.

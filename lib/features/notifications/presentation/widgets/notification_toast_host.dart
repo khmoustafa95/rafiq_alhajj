@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/features/admin_settings/presentation/providers/system_settings_providers.dart';
 import 'package:rafiq_alhajj/features/notifications/application/utils/notification_navigation.dart';
 import 'package:rafiq_alhajj/features/notifications/domain/models/inbox_notification.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/providers/notification_providers.dart';
@@ -30,7 +31,12 @@ class NotificationToastHost extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (!_systemNotificationsHandleForeground) {
+    final settings = ref.watch(systemSettingsProvider).value;
+    final inAppEnabled = settings?.enableInAppNotifications ?? true;
+    final showToastFallback =
+        !_systemNotificationsHandleForeground && inAppEnabled;
+
+    if (showToastFallback) {
       ref.listen<AsyncValue<InboxNotification>>(
         notificationToastEventsProvider,
         (previous, next) {

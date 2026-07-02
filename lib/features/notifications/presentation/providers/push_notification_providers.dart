@@ -1,9 +1,14 @@
 import 'dart:async';
 
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/platform/app_platform.dart';
+import 'package:rafiq_alhajj/features/admin_settings/presentation/providers/system_settings_providers.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/features/notifications/application/services/push_notification_service.dart';
+import 'package:rafiq_alhajj/features/notifications/application/services/push_open_handler.dart';
+import 'package:rafiq_alhajj/features/notifications/application/services/web_push_bridge.dart';
 import 'package:rafiq_alhajj/features/notifications/data/repositories/device_token_repository.dart';
+import 'package:rafiq_alhajj/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -35,12 +40,64 @@ Future<void> pushNotificationInit(Ref ref) async {
 void pushNotificationBinding(Ref ref) {
   ref.watch(pushNotificationInitProvider);
 
+  PushOpenHandler.onOpen = (data) async {
+    final notificationId = data['notification_id'] as String?;
+    if (notificationId == null || notificationId.isEmpty) {
+      return;
+    }
+    await ref.read(notificationInboxProvider.notifier).markAsRead(notificationId);
+    ref.invalidate(unreadNotificationCountProvider);
+  };
+
+  if (AppPlatform.isWeb) {
+    startWebPushClickListener();
+    consumeWebPushLaunchParams();
+  }
+
   ref.listen(authProfileIdProvider, (previous, next) {
     if (previous == next) {
       return;
     }
-    unawaited(
-      ref.read(pushNotificationServiceProvider).bindUser(next),
-    );
+
+    unawaited(_syncPushBinding(ref, previous, next));
   }, fireImmediately: true);
+
+  ref.listen(systemSettingsProvider, (previous, next) {
+    final profileId = ref.read(authProfileIdProvider);
+    if (profileId == null) {
+      return;
+    }
+    final prevEnabled = previous?.value?.enablePushNotifications ?? true;
+    final nextEnabled = next.value?.enablePushNotifications ?? true;
+    if (prevEnabled != nextEnabled) {
+      unawaited(_syncPushBinding(ref, profileId, profileId));
+    }
+  });
+}
+
+Future<void> _syncPushBinding(
+  Ref ref,
+  String? previousProfileId,
+  String? nextProfileId,
+) async {
+  final service = ref.read(pushNotificationServiceProvider);
+
+  if (previousProfileId != null &&
+      nextProfileId == null &&
+      previousProfileId != nextProfileId) {
+    await service.unregisterCurrentUser();
+    return;
+  }
+
+  if (nextProfileId == null) {
+    return;
+  }
+
+  final settings = await ref.read(systemSettingsProvider.future);
+  if (!settings.enablePushNotifications) {
+    await service.unregisterCurrentUser();
+    return;
+  }
+
+  await service.bindUser(nextProfileId);
 }

@@ -48,6 +48,7 @@ import 'package:rafiq_alhajj/features/islamic_tools/presentation/widgets/qibla_s
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/widgets/quran_surah_detail_screen.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/widgets/quran_surah_list_screen.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/widgets/admin_notification_broadcast_screen.dart';
+import 'package:rafiq_alhajj/features/notifications/presentation/widgets/admin_push_failures_screen.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_list_screen.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_intake_screen.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_login_screen.dart';
@@ -336,6 +337,11 @@ List<RouteBase> _mobilePilgrimRoutes() => [
         builder: (context, state) => const AdminNotificationBroadcastScreen(),
       ),
       GoRoute(
+        path: AppRoutes.adminPushFailures,
+        name: 'adminPushFailures',
+        builder: (context, state) => const AdminPushFailuresScreen(),
+      ),
+      GoRoute(
         path: AppRoutes.adminContent,
         name: 'adminContent',
         builder: (context, state) => const AdminContentListScreen(),
@@ -537,6 +543,11 @@ ShellRoute _staffWebShellRoute() {
         name: 'adminNotificationSend',
         builder: (context, state) =>
             const AdminNotificationBroadcastScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminPushFailures,
+        name: 'staffAdminPushFailures',
+        builder: (context, state) => const AdminPushFailuresScreen(),
       ),
       GoRoute(
         path: AppRoutes.adminContent,

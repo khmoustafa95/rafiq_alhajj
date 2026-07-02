@@ -381,7 +381,7 @@ final class AdminContentSaveProvider
   AdminContentSave create() => AdminContentSave();
 }
 
-String _$adminContentSaveHash() => r'fed34e0f1f448f8b959b81227db5030b28dea450';
+String _$adminContentSaveHash() => r'6176798d578b7471dd630f607a86f85c9d57a133';
 
 abstract class _$AdminContentSave extends $AsyncNotifier<void> {
   FutureOr<void> build();

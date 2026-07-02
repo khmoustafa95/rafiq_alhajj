@@ -6,6 +6,7 @@ import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/firebase/app_firebase.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/features/notifications/application/services/local_notifications_service.dart';
+import 'package:rafiq_alhajj/features/notifications/application/services/notification_permission_prompt.dart';
 import 'package:rafiq_alhajj/features/notifications/application/utils/push_message_navigation.dart';
 import 'package:rafiq_alhajj/features/notifications/data/repositories/device_token_repository.dart';
 
@@ -25,6 +26,7 @@ class PushNotificationService {
   StreamSubscription<RemoteMessage>? _foregroundSub;
   String? _currentProfileId;
   String? _lastRegisteredToken;
+  bool _permissionRequested = false;
   // Guards against handling the same opened message twice (e.g. both
   // getInitialMessage and onMessageOpenedApp firing for one tap).
   final Set<String> _handledOpenedMessageIds = {};
@@ -70,8 +72,6 @@ class PushNotificationService {
       );
     }
 
-    await _requestPermission();
-
     _foregroundSub = FirebaseMessaging.onMessage.listen(_handleForeground);
     FirebaseMessaging.onMessageOpenedApp.listen(_handleRemoteMessage);
     final initial = await _messaging!.getInitialMessage();
@@ -80,7 +80,7 @@ class PushNotificationService {
     }
 
     _tokenRefreshSub = _messaging!.onTokenRefresh.listen((token) {
-      unawaited(_persistToken(token));
+      unawaited(_onTokenRefreshed(token));
     });
   }
 
@@ -93,7 +93,6 @@ class PushNotificationService {
           'FCM bindUser skipped: supported=$isSupported profile=$profileId',
         );
       }
-      _clearRegistration();
       return;
     }
 
@@ -102,6 +101,7 @@ class PushNotificationService {
     // relaunch with an already-signed-in user); calling getToken too early
     // returns null. `initialize()` is idempotent so this is cheap when done.
     await initialize();
+    await _requestPermissionIfNeeded();
 
     String? token;
     try {
@@ -164,11 +164,39 @@ class PushNotificationService {
     _lastRegisteredToken = null;
   }
 
-  Future<void> _requestPermission() async {
-    final settings = await _messaging!.requestPermission();
-    if (kDebugMode) {
-      debugPrint('FCM permission: ${settings.authorizationStatus}');
+  Future<void> _requestPermissionIfNeeded() async {
+    if (_permissionRequested) {
+      return;
     }
+    _permissionRequested = true;
+
+    final granted = await NotificationPermissionPrompt.ensureGranted(_messaging!);
+    if (kDebugMode) {
+      debugPrint('FCM permission granted=$granted');
+    }
+  }
+
+  Future<void> _onTokenRefreshed(String newToken) async {
+    final profileId = _currentProfileId;
+    final oldToken = _lastRegisteredToken;
+
+    if (profileId != null &&
+        oldToken != null &&
+        oldToken.isNotEmpty &&
+        oldToken != newToken) {
+      try {
+        await _tokenRepository.deleteToken(
+          profileId: profileId,
+          token: oldToken,
+        );
+      } on DeviceTokenException catch (e) {
+        if (kDebugMode) {
+          debugPrint('Push token rotation cleanup failed: $e');
+        }
+      }
+    }
+
+    await _persistToken(newToken);
   }
 
   Future<void> _persistToken(String token) async {

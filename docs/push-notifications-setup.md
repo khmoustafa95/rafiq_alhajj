@@ -13,6 +13,9 @@ Arabic summary is in [runbook-ar.md](./runbook-ar.md#push-fcm) (add anchor secti
   `ERR_NOT_IMPLEMENTED`.
 - The function also **cleans up dead tokens**: any token FCM reports as `404` /
   `UNREGISTERED` is deleted from `device_tokens` (response includes `cleaned`).
+- Transient FCM errors (`429`, `5xx`, network) are **retried up to 3 times**
+  with exponential backoff. Sends that still fail are logged to
+  `push_dispatch_failures` (admins can query via SQL).
 
 ## Notification display behavior
 
@@ -23,8 +26,12 @@ Arabic summary is in [runbook-ar.md](./runbook-ar.md#push-fcm) (add anchor secti
   `default_notification_color` = `@color/notification_color`).
 - **Foreground (Android):** `PushNotificationService` listens to
   `FirebaseMessaging.onMessage` and renders a heads-up notification via
-  `flutter_local_notifications` (channel created in `LocalNotificationsService`,
-  id must match the manifest default). Tapping routes via `navigateFromPushData`.
+  `flutter_local_notifications`. **Per-category Android channels** are created
+  in `LocalNotificationsService` (`rafiq_announcements`, `rafiq_content`,
+  `rafiq_competitions`, `rafiq_urgent`) so users can mute categories in OS
+  settings. The Edge Function sets matching `android.notification.channel_id`
+  on background FCM payloads. Tapping routes via `navigateFromPushData` and
+  marks the inbox row as read when `notification_id` is present.
 - **Foreground (iOS):** shown by the OS via
   `setForegroundNotificationPresentationOptions(alert/badge/sound)`.
 - **Fallback:** on web / when Firebase isn't configured, the in-app `SnackBar`
@@ -44,7 +51,12 @@ Arabic summary is in [runbook-ar.md](./runbook-ar.md#push-fcm) (add anchor secti
    - In `android/app/build.gradle.kts` add `id("com.google.gms.google-services")`
      to the `plugins { }` block (already applied in this repo).
 6. Download `GoogleService-Info.plist` → `ios/Runner/GoogleService-Info.plist` (gitignored).
-7. Enable **Cloud Messaging**; create a **Service account** key (JSON) for the Edge Function.
+7. Enable **Cloud Messaging**; upload an **APNs key** in Firebase Console.
+8. iOS push entitlements are in `ios/Runner/RunnerDebug.entitlements` (development,
+   used for Debug/Profile) and `ios/Runner/RunnerRelease.entitlements` (production,
+   used for Release/App Store). Enable the **Push Notifications** capability in
+   Xcode if codesign complains.
+9. Create a **Service account** key (JSON) for the Edge Function.
 
 ## 2. Dart defines (mobile)
 
@@ -105,10 +117,53 @@ npm run setup
 
 ## 6. Production webhook (hosted)
 
-The SQL trigger uses `pg_net` with `host.docker.internal` for local dev. On hosted Supabase, either:
+The SQL trigger uses `pg_net` with `host.docker.internal` for local dev. On hosted Supabase, configure **all three** database settings (SQL editor or `psql`):
 
-- Set database settings: `app.supabase_functions_url` and `app.push_webhook_secret`, or
-- Add a **Database Webhook** on `public.notifications` INSERT → `send-push-notification` with header `x-push-secret`.
+```sql
+-- Required on hosted Supabase (replace values for your project):
+alter database postgres set app.push_environment = 'production';
+alter database postgres set app.supabase_functions_url =
+  'https://YOUR_PROJECT_REF.supabase.co/functions/v1/send-push-notification';
+alter database postgres set app.push_webhook_secret = 'your-production-push-secret';
+```
+
+> When `app.push_environment = 'production'`, the trigger **skips** push dispatch
+> (with a Postgres log line) if either URL or secret is missing — it will **not**
+> fall back to the local-dev defaults. The in-app inbox still works via Realtime.
+
+Also set Edge Function secrets in the hosted dashboard:
+
+- `FIREBASE_SERVICE_ACCOUNT_JSON`
+- `PUSH_WEBHOOK_SECRET` (must match `app.push_webhook_secret` above)
+
+Alternative: add a **Database Webhook** on `public.notifications` INSERT →
+`send-push-notification` with header `x-push-secret` (still set the secrets).
+
+### Monitoring failed sends
+
+After the Edge Function exhausts retries, rows land in `push_dispatch_failures`:
+
+```sql
+select created_at, notification_id, recipient_id, attempts, left(error, 120)
+from public.push_dispatch_failures
+order by created_at desc
+limit 20;
+```
+
+Only admins can read this table (RLS). Admins can also open **Push delivery log**
+from the broadcast screen (`/admin/notifications/failures`).
+
+### Per-user notification preferences
+
+Pilgrims manage push categories from **Profile → Notification preferences**
+(`notification_preferences` table). The Edge Function skips FCM delivery when a
+category is opted out or during **quiet hours** (non-urgent only; SOS / field
+updates still deliver). In-app inbox rows are unaffected.
+
+Admins can **retry** a failed delivery from the Push delivery log UI (calls
+`admin_retry_push_failure` RPC → re-queues the same webhook).
+
+The inbox row still exists — pilgrims see the notification in-app even when FCM delivery fails.
 
 ## Troubleshooting
 
@@ -116,5 +171,9 @@ The SQL trigger uses `pg_net` with `host.docker.internal` for local dev. On host
 |-------|--------|
 | No token in DB | `AppConfig.hasFirebase`, signed-in user, Android 13+ notification permission |
 | Edge returns `FCM not configured` | `FIREBASE_SERVICE_ACCOUNT_JSON` secret |
+| Edge returns `PUSH_WEBHOOK_SECRET not configured` | Set `PUSH_WEBHOOK_SECRET` in Supabase secrets / `supabase/.env` |
+| Edge returns `Invalid push secret` | `PUSH_WEBHOOK_SECRET` must match DB trigger `x-push-secret` |
 | Trigger never calls function | `pg_net` extension, Supabase functions URL reachable from DB container |
+| Production pushes silently skipped | Set `app.push_environment`, `app.supabase_functions_url`, `app.push_webhook_secret` on the database |
+| FCM keeps failing for one device | Query `push_dispatch_failures` for the error; check token row in `device_tokens` |
 | Android build | `android/app/google-services.json` exists → Google Services plugin applied |
