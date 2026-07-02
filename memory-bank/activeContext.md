@@ -3,13 +3,14 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
-**Push notifications hardening** (2026-07-02): full audit follow-up across client, Edge Function, web SW, iOS, and global-app UX patterns.
+**Push notifications hardening** (2026-07-02): full audit follow-up across client, Edge Function, web SW, iOS, and global-app UX patterns (rounds 1–4).
 - **Token lifecycle:** unregister on session end; token rotation cleanup; post-login permission.
-- **Navigation:** pending push queue for cold start; web deep links.
+- **Navigation:** pending push queue for cold start; web deep links; **mark inbox as read on push tap**.
 - **Locale:** bilingual FCM `data` fields; device-locale foreground display.
-- **Edge fn:** required webhook secret; 50-concurrent cap; 3× retry + `push_dispatch_failures` log; respects `system_settings.enable_push_notifications` + per-user `notification_preferences` categories.
+- **Edge fn:** required webhook secret; 50-concurrent cap; 3× retry + `push_dispatch_failures` log; respects `system_settings.enable_push_notifications` + per-user `notification_preferences` categories + **quiet hours** (urgent bypass).
 - **Production guard:** migration `20260702120000` — no dev fallback when `app.push_environment=production`.
-- **Global-app UX (round 3):** `notification_preferences` table + **Profile → Notification preferences** (master + category toggles); **permission rationale dialog** before OS prompt + open-settings fallback (`app_settings`); **app icon badge** sync (`app_badge_plus`); `system_settings` now enforced for push binding + in-app toasts; **admin Push delivery log** at `/admin/notifications/failures`; Android notification grouping.
+- **Global-app UX (round 3):** `notification_preferences` table + **Profile → Notification preferences** (master + category toggles); **permission rationale dialog** + open-settings fallback (`app_settings`); **app icon badge** sync (`app_badge_plus`); `system_settings` enforced for push binding + in-app toasts; **admin Push delivery log** at `/admin/notifications/failures`; Android notification grouping.
+- **Global-app UX (round 4):** **Quiet hours** (schedule + timezone offset); **per-category Android channels** (`rafiq_*`) + FCM `channel_id`/`collapse_key`; iOS `time-sensitive` for urgent; **admin retry** failed delivery (`admin_retry_push_failure` RPC + UI).
 - **iOS:** RunnerDebug/RunnerRelease entitlements.
 - **Verified:** `flutter analyze` (notifications/profile) → **No issues found**. ⚠ `supabase db reset` + device smoke test pending.
 
