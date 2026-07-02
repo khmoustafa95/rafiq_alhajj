@@ -11,8 +11,9 @@ class AdminContentTopicsRemoteDataSource {
   final SupabaseClient _client;
 
   static const topicColumns =
-      'id, title, description, cover_image_url, visibility, '
-      'sort_order, is_active, created_at, '
+      'id, title, title_ar, title_en, description, description_ar, '
+      'description_en, cover_image_url, visibility, sort_order, is_active, '
+      'publication_status, published_at, created_at, '
       'content_topic_media(id, media_type, title, url, sort_order)';
 
   Future<List<Map<String, dynamic>>> fetchAll() async {

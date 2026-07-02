@@ -1,4 +1,5 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
 import 'package:rafiq_alhajj/core/supabase/realtime_invalidation_registry.dart';
 import 'package:rafiq_alhajj/core/supabase/realtime_sync_attach.dart';
 import 'package:rafiq_alhajj/core/supabase/realtime_sync_providers.dart';
@@ -30,6 +31,68 @@ Future<List<ContentTopic>> adminContentTopicsList(Ref ref) {
   );
 
   return ref.read(adminContentTopicsRepositoryProvider).fetchAll();
+}
+
+@riverpod
+Future<PaginatedResult<ContentTopic>> adminContentTopicsPage(
+  Ref ref,
+  StaffTableQuery query,
+) async {
+  attachRealtimeSync(
+    ref,
+    syncKey: RealtimeSyncKeys.contentFeed,
+    ensureSyncActive: (ref) => ref.watch(realtimeSyncContentFeedProvider),
+    handlerId: 'admin_content_topics_page',
+    onInvalidate: (ref) => ref.invalidate(adminContentTopicsPageProvider),
+  );
+
+  var topics = await ref.watch(adminContentTopicsListProvider.future);
+
+  final search = query.search.trim().toLowerCase();
+  if (search.isNotEmpty) {
+    topics = topics
+        .where(
+          (t) =>
+              t.titleAr.toLowerCase().contains(search) ||
+              (t.titleEn?.toLowerCase().contains(search) ?? false) ||
+              (t.descriptionAr?.toLowerCase().contains(search) ?? false),
+        )
+        .toList();
+  }
+
+  final visibility = query.filters['visibility'];
+  if (visibility != null && visibility.isNotEmpty) {
+    topics = topics.where((t) => t.visibility.name == visibility).toList();
+  }
+
+  final status = query.filters['publication_status'];
+  if (status != null && status.isNotEmpty) {
+    topics =
+        topics.where((t) => t.publicationStatus.name == status).toList();
+  }
+
+  final sortColumn = query.sortColumnId;
+  topics = [...topics]
+    ..sort((a, b) {
+      final cmp = switch (sortColumn) {
+        'visibility' => a.visibility.name.compareTo(b.visibility.name),
+        'publication_status' =>
+          a.publicationStatus.name.compareTo(b.publicationStatus.name),
+        'sort_order' => a.sortOrder.compareTo(b.sortOrder),
+        'created_at' => a.createdAt.compareTo(b.createdAt),
+        _ => a.titleAr.compareTo(b.titleAr),
+      };
+      return query.sortAscending ? cmp : -cmp;
+    });
+
+  final total = topics.length;
+  final pageItems = topics.skip(query.from).take(query.pageSize).toList();
+
+  return PaginatedResult(
+    items: pageItems,
+    totalCount: total,
+    pageSize: query.pageSize,
+  );
 }
 
 @riverpod
@@ -99,12 +162,16 @@ class AdminContentTopicSave extends _$AdminContentTopicSave {
       return input;
     }
     return ContentTopicEditorInput(
-      title: input.title,
-      description: input.description,
+      titleAr: input.titleAr,
+      titleEn: input.titleEn,
+      descriptionAr: input.descriptionAr,
+      descriptionEn: input.descriptionEn,
       coverImageUrl: newCover,
       visibility: input.visibility,
       sortOrder: input.sortOrder,
       isActive: input.isActive,
+      publicationStatus: input.publicationStatus,
+      publishedAt: input.publishedAt,
     );
   }
 
@@ -144,7 +211,26 @@ class AdminContentTopicDelete extends _$AdminContentTopicDelete {
   Future<bool> deleteTopic(String id) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
+      final topic =
+          await ref.read(adminContentTopicsRepositoryProvider).fetchById(id);
       await ref.read(adminContentTopicsRepositoryProvider).deleteTopic(id);
+
+      if (topic != null) {
+        final refs = <String>{
+          if (topic.coverImageUrl != null && topic.coverImageUrl!.isNotEmpty)
+            topic.coverImageUrl!,
+          ...topic.media.map((m) => m.url),
+        };
+        if (refs.isNotEmpty) {
+          await ref
+              .read(contentMediaStorageServiceProvider)
+              .removeStorageRefs(refs);
+        }
+        await ref
+            .read(contentMediaDownloadControllerProvider.notifier)
+            .removeTopicDownloads(id);
+      }
+
       ref.invalidate(adminContentTopicsListProvider);
     });
     return !state.hasError;

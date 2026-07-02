@@ -2,25 +2,43 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_async_table_body.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_data_table.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_table_definition_cache.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/providers/admin_content_topics_providers.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/utils/content_meta_l10n.dart';
+import 'package:rafiq_alhajj/features/content/domain/models/content_publication_status.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_topic.dart';
+import 'package:rafiq_alhajj/features/content/domain/models/content_visibility.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
-class AdminContentTopicsListScreen extends ConsumerWidget {
+class AdminContentTopicsListScreen extends ConsumerStatefulWidget {
   const AdminContentTopicsListScreen({this.embedded = false, super.key});
 
-  /// When embedded inside a parent surface (e.g. the content tabs), drop the
-  /// page chrome (header/app bar) and just render the bounded list + add action
-  /// so the inner [ListView] gets a bounded height from the parent.
   final bool embedded;
+
+  @override
+  ConsumerState<AdminContentTopicsListScreen> createState() =>
+      _AdminContentTopicsListScreenState();
+}
+
+class _AdminContentTopicsListScreenState
+    extends ConsumerState<AdminContentTopicsListScreen> {
+  late StaffTableQuery _query = const StaffTableQuery(sortColumnId: 'title_ar');
+
+  late final StaffTableDefinitionCache<ContentTopic> _tableDefs =
+      StaffTableDefinitionCache<ContentTopic>(
+    buildColumns: _buildColumns,
+    buildFilters: _buildFilters,
+  );
 
   void _openNew(BuildContext context) {
     const path = AppRoutes.adminContentTopicNew;
@@ -42,7 +60,6 @@ class AdminContentTopicsListScreen extends ConsumerWidget {
 
   Future<void> _confirmDelete(
     BuildContext context,
-    WidgetRef ref,
     ContentTopic topic,
   ) async {
     final l10n = AppLocalizations.of(context);
@@ -50,7 +67,7 @@ class AdminContentTopicsListScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.adminContentTopicDeleteTitle),
-        content: Text(l10n.adminContentTopicDeleteMessage(topic.title)),
+        content: Text(l10n.adminContentTopicDeleteMessage(topic.titleAr)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -88,90 +105,48 @@ class AdminContentTopicsListScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final topicsAsync = ref.watch(adminContentTopicsListProvider);
+    final pageAsync = ref.watch(adminContentTopicsPageProvider(_query));
 
-    final body = topicsAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (_, _) => Center(child: Text(l10n.adminContentTopicLoadError)),
-      data: (topics) {
-        if (topics.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(l10n.adminContentTopicEmpty),
-                SizedBox(height: 12.h),
-                FilledButton.icon(
-                  onPressed: () => _openNew(context),
-                  icon: const Icon(Icons.add),
-                  label: Text(l10n.adminContentTopicAdd),
-                ),
-              ],
-            ),
-          );
-        }
-
-        return ListView.separated(
-          padding: EdgeInsets.all(16.w),
-          itemCount: topics.length,
-          separatorBuilder: (_, _) => SizedBox(height: 8.h),
-          itemBuilder: (context, index) {
-            final topic = topics[index];
-            return Card(
-              child: ListTile(
-                title: Text(topic.title),
-                subtitle: Text(
-                  '${contentVisibilityLabel(l10n, topic.visibility)} · '
-                  '${topic.media.length} ${l10n.adminContentTopicMediaItems}',
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit_outlined),
-                      onPressed: () => _openEdit(context, topic.id),
-                    ),
-                    IconButton(
-                      icon: const Icon(
-                        Icons.delete_outline,
-                        color: AppColors.error,
-                      ),
-                      onPressed: () =>
-                          unawaited(_confirmDelete(context, ref, topic)),
-                    ),
-                  ],
-                ),
-                onTap: () => _openEdit(context, topic.id),
-              ),
-            );
-          },
-        );
-      },
+    final table = StaffAsyncTableBody<ContentTopic>(
+      tableKey: const ValueKey('admin-content-topics-table'),
+      pageAsync: pageAsync,
+      query: _query,
+      onQueryChanged: (query) => setState(() => _query = query),
+      columns: _tableDefs.columns(context),
+      searchHint: l10n.staffTableSearchContent,
+      filters: _tableDefs.filters(context),
+      toolbarActions: [
+        StaffToolbarButton(
+          icon: Icons.add_rounded,
+          label: l10n.adminContentTopicAdd,
+          onPressed: () => _openNew(context),
+          primary: true,
+        ),
+      ],
+      onRetry: () => ref.invalidate(adminContentTopicsPageProvider(_query)),
+      onRowTap: (topic) => _openEdit(context, topic.id),
+      trailingBuilder: (context, topic) => StaffTableRowActions(
+        children: [
+          StaffTableRowActions.iconButton(
+            icon: Icons.edit_outlined,
+            onPressed: () => _openEdit(context, topic.id),
+          ),
+          StaffTableRowActions.iconButton(
+            icon: Icons.delete_outline,
+            onPressed: () => unawaited(_confirmDelete(context, topic)),
+          ),
+        ],
+      ),
+      emptyMessage: l10n.adminContentTopicEmpty,
+      emptyIcon: Icons.menu_book_outlined,
     );
 
     if (AppPlatform.isWeb) {
-      // Embedded (inside the content tabs): no nested StaffWebPage chrome.
-      // A bare Column with Expanded gives the ListView a bounded height.
-      if (embedded) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Align(
-              alignment: Alignment.centerRight,
-              child: FilledButton.icon(
-                onPressed: () => _openNew(context),
-                icon: const Icon(Icons.add_rounded),
-                label: Text(l10n.adminContentTopicAdd),
-              ),
-            ),
-            SizedBox(height: 12.h),
-            Expanded(child: body),
-          ],
-        );
+      if (widget.embedded) {
+        return table;
       }
-
       return StaffWebPage(
         title: l10n.adminContentTopicsListTitle,
         scrollable: false,
@@ -182,13 +157,12 @@ class AdminContentTopicsListScreen extends ConsumerWidget {
             label: Text(l10n.adminContentTopicAdd),
           ),
         ],
-        body: body,
+        body: table,
       );
     }
 
     return Scaffold(
-      // Embedded: omit the app bar (the parent screen already provides one).
-      appBar: embedded
+      appBar: widget.embedded
           ? null
           : RafiqAppBar(
               title: Text(l10n.adminContentTopicsListTitle),
@@ -202,7 +176,124 @@ class AdminContentTopicsListScreen extends ConsumerWidget {
         icon: const Icon(Icons.add),
         label: Text(l10n.adminContentTopicAdd),
       ),
-      body: body,
+      body: pageAsync.when(
+        skipLoadingOnReload: true,
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (_, _) => Center(child: Text(l10n.adminContentTopicLoadError)),
+        data: (page) {
+          if (page.items.isEmpty) {
+            return Center(child: Text(l10n.adminContentTopicEmpty));
+          }
+          return ListView.builder(
+            padding: EdgeInsets.all(sw(16)),
+            itemCount: page.items.length,
+            itemBuilder: (context, index) {
+              final topic = page.items[index];
+              return Card(
+                child: ListTile(
+                  title: Text(topic.titleAr),
+                  subtitle: Text(
+                    '${contentVisibilityLabel(l10n, topic.visibility)} · '
+                    '${topic.media.length} ${l10n.adminContentTopicMediaItems}',
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(
+                      Icons.delete_outline,
+                      color: AppColors.error,
+                    ),
+                    onPressed: () => unawaited(_confirmDelete(context, topic)),
+                  ),
+                  onTap: () => _openEdit(context, topic.id),
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
+}
+
+List<StaffTableFilter> _buildFilters(AppLocalizations l10n) {
+  return [
+    StaffTableFilter(
+      id: 'visibility',
+      label: l10n.adminContentVisibilityLabel,
+      allLabel: l10n.staffTableFilterAll,
+      options: ContentVisibility.values
+          .map(
+            (visibility) => StaffTableFilterOption(
+              value: visibility.name,
+              label: contentVisibilityLabel(l10n, visibility),
+            ),
+          )
+          .toList(),
+    ),
+    StaffTableFilter(
+      id: 'publication_status',
+      label: l10n.adminContentPublicationStatusLabel,
+      allLabel: l10n.staffTableFilterAll,
+      options: ContentPublicationStatus.values
+          .map(
+            (status) => StaffTableFilterOption(
+              value: status.name,
+              label: status == ContentPublicationStatus.draft
+                  ? l10n.adminContentPublicationDraft
+                  : l10n.adminContentPublicationPublished,
+            ),
+          )
+          .toList(),
+    ),
+  ];
+}
+
+List<StaffTableColumn<ContentTopic>> _buildColumns(AppLocalizations l10n) {
+  return [
+    StaffTableColumn(
+      id: 'title_ar',
+      label: l10n.adminContentTitleArLabel,
+      flex: 4,
+      sortable: true,
+      cellBuilder: (context, topic) => Text(
+        topic.titleAr,
+        style: Theme.of(context).textTheme.titleSmall,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+    ),
+    StaffTableColumn(
+      id: 'visibility',
+      label: l10n.adminContentVisibilityLabel,
+      flex: 2,
+      sortable: true,
+      cellBuilder: (context, topic) =>
+          StaffCellText(contentVisibilityLabel(l10n, topic.visibility)),
+    ),
+    StaffTableColumn(
+      id: 'publication_status',
+      label: l10n.adminContentPublicationStatusLabel,
+      flex: 2,
+      sortable: true,
+      cellBuilder: (context, topic) => StaffCellText(
+        topic.publicationStatus == ContentPublicationStatus.draft
+            ? l10n.adminContentPublicationDraft
+            : l10n.adminContentPublicationPublished,
+      ),
+    ),
+    StaffTableColumn(
+      id: 'sort_order',
+      label: l10n.adminHajjJourneySortOrder,
+      sortable: true,
+      cellBuilder: (context, topic) => StaffCellText('${topic.sortOrder}'),
+    ),
+    StaffTableColumn(
+      id: 'created_at',
+      label: l10n.staffTableColumnCreated,
+      flex: 2,
+      sortable: true,
+      cellBuilder: (context, topic) => StaffCellText(
+        MaterialLocalizations.of(context).formatMediumDate(topic.createdAt),
+      ),
+    ),
+  ];
 }

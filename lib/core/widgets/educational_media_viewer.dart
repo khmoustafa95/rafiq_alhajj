@@ -34,6 +34,8 @@ class EducationalMediaViewer extends ConsumerStatefulWidget {
     this.emptyMessage,
     this.progressTopicId,
     this.progressTopicTitle,
+    this.initialMediaId,
+    this.initialPositionMs,
     super.key,
   });
 
@@ -42,6 +44,8 @@ class EducationalMediaViewer extends ConsumerStatefulWidget {
   final String? emptyMessage;
   final String? progressTopicId;
   final String? progressTopicTitle;
+  final String? initialMediaId;
+  final int? initialPositionMs;
 
   @override
   ConsumerState<EducationalMediaViewer> createState() =>
@@ -55,6 +59,16 @@ class _EducationalMediaViewerState extends ConsumerState<EducationalMediaViewer>
   @override
   void initState() {
     super.initState();
+    final initialId = widget.initialMediaId;
+    if (initialId != null) {
+      final index = widget.media.indexWhere((m) => m.id == initialId);
+      if (index >= 0) {
+        _selectedIndex = index;
+      }
+    }
+    if (widget.initialPositionMs != null && widget.initialPositionMs! > 0) {
+      _currentPositionMs = widget.initialPositionMs!;
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _prefetchNext(_selectedIndex);
     });
@@ -144,6 +158,12 @@ class _EducationalMediaViewerState extends ConsumerState<EducationalMediaViewer>
 
     final selected =
         widget.media[_selectedIndex.clamp(0, widget.media.length - 1)];
+    final progressAsync = ref.watch(myLearningProgressProvider);
+    final completedIds = progressAsync.asData?.value
+            .where((p) => p.completed)
+            .map((p) => p.mediaId)
+            .toSet() ??
+        const <String>{};
 
     return DecoratedBox(
       decoration: AppDecorations.card(radius: AppDecorations.radiusLg),
@@ -159,41 +179,44 @@ class _EducationalMediaViewerState extends ConsumerState<EducationalMediaViewer>
                   ),
             ),
             SizedBox(height: 12.h),
-            if (widget.media.length > 1)
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    for (var i = 0; i < widget.media.length; i++)
-                      Padding(
-                        padding: EdgeInsetsDirectional.only(end: 8.w),
-                        child: ChoiceChip(
-                          label: Text(
-                            widget.media[i].title ??
-                                _mediaTypeLabel(
-                                  l10n,
-                                  widget.media[i].mediaType,
-                                ),
-                          ),
-                          selected: _selectedIndex == i,
-                          onSelected: (_) {
-                            _recordProgress(completed: false);
-                            setState(() {
-                              _currentPositionMs = 0;
-                              _selectedIndex = i;
-                            });
-                            _prefetchNext(i);
-                          },
-                        ),
-                      ),
-                  ],
-                ),
+            if (widget.media.length > 1) ...[
+              Text(
+                l10n.contentLessonsListTitle,
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
+              SizedBox(height: 8.h),
+              Column(
+                children: [
+                  for (var i = 0; i < widget.media.length; i++)
+                    _LessonTile(
+                      index: i + 1,
+                      media: widget.media[i],
+                      label: widget.media[i].title ??
+                          _mediaTypeLabel(l10n, widget.media[i].mediaType),
+                      selected: _selectedIndex == i,
+                      completed: completedIds.contains(widget.media[i].id),
+                      onTap: () {
+                        _recordProgress(completed: false);
+                        setState(() {
+                          _currentPositionMs = 0;
+                          _selectedIndex = i;
+                        });
+                        _prefetchNext(i);
+                      },
+                    ),
+                ],
+              ),
+            ],
             SizedBox(height: 12.h),
             _MediaContent(
               media: selected,
               images: _images,
               progressTopicId: widget.progressTopicId,
+              explicitPositionMs: selected.id == widget.initialMediaId
+                  ? widget.initialPositionMs
+                  : null,
               onPositionChanged: _onPositionChanged,
             ),
           ],
@@ -212,25 +235,106 @@ class _EducationalMediaViewerState extends ConsumerState<EducationalMediaViewer>
   }
 }
 
+class _LessonTile extends StatelessWidget {
+  const _LessonTile({
+    required this.index,
+    required this.media,
+    required this.label,
+    required this.selected,
+    required this.completed,
+    required this.onTap,
+  });
+
+  final int index;
+  final EducationalMediaItem media;
+  final String label;
+  final bool selected;
+  final bool completed;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 6.h),
+      child: Material(
+        color: selected
+            ? AppColors.primary.withValues(alpha: 0.08)
+            : AppColors.surfaceMuted,
+        borderRadius: BorderRadius.circular(10),
+        child: ListTile(
+          dense: true,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: selected
+                ? const BorderSide(color: AppColors.primary, width: 1.5)
+                : BorderSide.none,
+          ),
+          leading: CircleAvatar(
+            radius: 14.r,
+            backgroundColor:
+                completed ? AppColors.success : AppColors.primary,
+            child: completed
+                ? Icon(Icons.check, size: 16.sp, color: AppColors.onPrimary)
+                : Text(
+                    '$index',
+                    style: TextStyle(
+                      color: AppColors.onPrimary,
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+          ),
+          title: Text(
+            label,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                ),
+          ),
+          trailing: Icon(
+            _iconForType(media.mediaType),
+            size: 20.sp,
+            color: AppColors.textSecondary,
+          ),
+          onTap: onTap,
+        ),
+      ),
+    );
+  }
+
+  IconData _iconForType(EducationalMediaType type) {
+    return switch (type) {
+      EducationalMediaType.video => Icons.play_circle_outline,
+      EducationalMediaType.audio => Icons.headphones_outlined,
+      EducationalMediaType.image => Icons.image_outlined,
+      EducationalMediaType.pdf => Icons.picture_as_pdf_outlined,
+    };
+  }
+}
+
 class _MediaContent extends ConsumerWidget {
   const _MediaContent({
     required this.media,
     required this.images,
     this.progressTopicId,
+    this.explicitPositionMs,
     this.onPositionChanged,
   });
 
   final EducationalMediaItem media;
   final List<EducationalMediaItem> images;
   final String? progressTopicId;
+  final int? explicitPositionMs;
   final ValueChanged<int>? onPositionChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final resumeMs = progressTopicId == null
-        ? null
-        : ref.watch(mediaResumePositionMsProvider(media.id)).asData?.value;
+    final resumeMs = explicitPositionMs ??
+        (progressTopicId == null
+            ? null
+            : ref.watch(mediaResumePositionMsProvider(media.id)).asData?.value);
 
     return switch (media.mediaType) {
       EducationalMediaType.video => _ResolvedVideoEmbed(

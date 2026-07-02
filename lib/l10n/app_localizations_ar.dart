@@ -2673,6 +2673,61 @@ class AppLocalizationsAr extends AppLocalizations {
   String get contentSearchEmpty => 'لا نتائج في المحتوى المحفوظ';
 
   @override
+  String get contentMyLearningTitle => 'تعلّمي';
+
+  @override
+  String get contentMyLearningEmpty =>
+      'لا يوجد تقدم بعد. ابدأ موضوعاً من المكتبة التعليمية.';
+
+  @override
+  String get contentMyLearningInProgress => 'قيد المتابعة';
+
+  @override
+  String get contentMyLearningCompleted => 'مكتمل';
+
+  @override
+  String get contentMyLearningCompletedLabel => 'مكتمل';
+
+  @override
+  String get contentMyLearningResumeHint => 'اضغط للمتابعة';
+
+  @override
+  String get contentLessonsListTitle => 'الدروس';
+
+  @override
+  String get contentArticleOfflineSave => 'حفظ الغلاف دون إنترنت';
+
+  @override
+  String get contentArticleOfflineSaved => 'تم حفظ الغلاف';
+
+  @override
+  String get adminContentTitleArLabel => 'العنوان (عربي)';
+
+  @override
+  String get adminContentTitleEnLabel => 'العنوان (إنجليزي)';
+
+  @override
+  String get adminContentDescriptionArLabel => 'الوصف (عربي)';
+
+  @override
+  String get adminContentDescriptionEnLabel => 'الوصف (إنجليزي)';
+
+  @override
+  String get adminContentPublicationStatusLabel => 'النشر';
+
+  @override
+  String get adminContentPublicationDraft => 'مسودة';
+
+  @override
+  String get adminContentPublicationPublished => 'منشور';
+
+  @override
+  String get adminContentCoverPreviewLabel => 'معاينة الغلاف';
+
+  @override
+  String get adminContentMarkdownPreviewLabel => 'معاينة';
+
+  @override
   String get competitionQuizQueuedOffline =>
       'تم حفظ الإجابة — ستُزامَن عند عودة الاتصال';
 

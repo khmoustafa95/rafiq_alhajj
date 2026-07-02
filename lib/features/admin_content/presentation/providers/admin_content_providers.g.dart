@@ -337,7 +337,7 @@ final class AdminContentDeleteProvider
 }
 
 String _$adminContentDeleteHash() =>
-    r'e88b7c50fd8531026674b322e82b2ec4446fbe2d';
+    r'f97e9b6aba79796799c5430d0ea780cd5a416030';
 
 abstract class _$AdminContentDelete extends $AsyncNotifier<void> {
   FutureOr<void> build();

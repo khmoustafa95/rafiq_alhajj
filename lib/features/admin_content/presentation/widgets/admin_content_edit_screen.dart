@@ -16,9 +16,13 @@ import 'package:rafiq_alhajj/features/admin_content/domain/models/content_editor
 import 'package:rafiq_alhajj/features/admin_content/presentation/providers/admin_content_providers.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/utils/content_meta_l10n.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_item.dart';
+import 'package:rafiq_alhajj/features/content/domain/models/content_publication_status.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_type.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_visibility.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_media_providers.dart';
+import 'package:rafiq_alhajj/features/content/presentation/utils/content_cover_utils.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/content_markdown_preview.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/resolved_cover_image.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -57,14 +61,19 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
   void initState() {
     super.initState();
     _form = FormGroup({
-      'title': FormControl<String>(value: '', validators: [Validators.required]),
+      'titleAr': FormControl<String>(value: '', validators: [Validators.required]),
+      'titleEn': FormControl<String>(value: ''),
+      'descriptionAr': FormControl<String>(value: ''),
+      'descriptionEn': FormControl<String>(value: ''),
       'mediaUrl': FormControl<String>(value: ''),
-      'description': FormControl<String>(value: ''),
       'type': FormControl<ContentType>(
         value: widget.initialType ?? ContentType.news,
       ),
       'visibility': FormControl<ContentVisibility>(
         value: ContentVisibility.public,
+      ),
+      'publicationStatus': FormControl<ContentPublicationStatus>(
+        value: ContentPublicationStatus.published,
       ),
     });
   }
@@ -79,11 +88,14 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
     if (_loaded) {
       return;
     }
-    _form.control('title').updateValue(item.title);
-    _form.control('description').updateValue(item.description ?? '');
+    _form.control('titleAr').updateValue(item.titleAr);
+    _form.control('titleEn').updateValue(item.titleEn ?? '');
+    _form.control('descriptionAr').updateValue(item.descriptionAr ?? '');
+    _form.control('descriptionEn').updateValue(item.descriptionEn ?? '');
     _form.control('mediaUrl').updateValue(item.mediaUrl ?? '');
     _form.control('type').updateValue(item.type);
     _form.control('visibility').updateValue(item.visibility);
+    _form.control('publicationStatus').updateValue(item.publicationStatus);
     _loaded = true;
   }
 
@@ -100,11 +112,15 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
     final l10n = AppLocalizations.of(context);
     final input = ContentEditorInput(
       id: widget.contentId,
-      title: _form.control('title').value as String,
-      description: _form.control('description').value as String,
+      titleAr: _form.control('titleAr').value as String,
+      titleEn: _form.control('titleEn').value as String,
+      descriptionAr: _form.control('descriptionAr').value as String,
+      descriptionEn: _form.control('descriptionEn').value as String,
       mediaUrl: _form.control('mediaUrl').value as String,
       type: _form.control('type').value as ContentType,
       visibility: _form.control('visibility').value as ContentVisibility,
+      publicationStatus:
+          _form.control('publicationStatus').value as ContentPublicationStatus,
     );
 
     final savedId =
@@ -117,7 +133,7 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
     if (savedId != null) {
       if (_notifyPilgrims) {
         await ref.read(contentNotificationServiceProvider).publish(
-              title: input.title,
+              title: input.titleAr,
               route: 'content',
               id: savedId,
               visibility: input.visibility,
@@ -299,6 +315,9 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
 
   Widget _buildForm(AppLocalizations l10n, bool isSaving) {
     final isBusy = isSaving || _isUploading;
+    final mediaUrl = _form.control('mediaUrl').value as String? ?? '';
+    final descriptionAr = _form.control('descriptionAr').value as String? ?? '';
+
     final form = ReactiveForm(
       formGroup: _form,
       child: StaffFormSection(
@@ -310,14 +329,20 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
             ResponsiveFormGrid(
               children: [
                 ReactiveTextField<String>(
-                  formControlName: 'title',
+                  formControlName: 'titleAr',
                   decoration: InputDecoration(
-                    labelText: l10n.adminContentTitleLabel,
+                    labelText: l10n.adminContentTitleArLabel,
                   ),
                   validationMessages: {
                     ValidationMessage.required: (_) =>
                         l10n.adminContentTitleRequired,
                   },
+                ),
+                ReactiveTextField<String>(
+                  formControlName: 'titleEn',
+                  decoration: InputDecoration(
+                    labelText: l10n.adminContentTitleEnLabel,
+                  ),
                 ),
                 ReactiveTextField<String>(
                   formControlName: 'mediaUrl',
@@ -326,11 +351,38 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
                   ),
                   keyboardType: TextInputType.url,
                 ),
-                ReactiveTextField<String>(
-                  formControlName: 'description',
-                  maxLines: 4,
+                ReactiveDropdownField<ContentPublicationStatus>(
+                  formControlName: 'publicationStatus',
                   decoration: InputDecoration(
-                    labelText: l10n.adminContentDescriptionLabel,
+                    labelText: l10n.adminContentPublicationStatusLabel,
+                  ),
+                  items: ContentPublicationStatus.values
+                      .map(
+                        (status) => DropdownMenuItem(
+                          value: status,
+                          child: Text(
+                            status == ContentPublicationStatus.draft
+                                ? l10n.adminContentPublicationDraft
+                                : l10n.adminContentPublicationPublished,
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+                ReactiveTextField<String>(
+                  formControlName: 'descriptionAr',
+                  maxLines: 6,
+                  decoration: InputDecoration(
+                    labelText: l10n.adminContentDescriptionArLabel,
+                    alignLabelWithHint: true,
+                  ),
+                ),
+                ReactiveTextField<String>(
+                  formControlName: 'descriptionEn',
+                  maxLines: 6,
+                  decoration: InputDecoration(
+                    labelText: l10n.adminContentDescriptionEnLabel,
+                    alignLabelWithHint: true,
                   ),
                 ),
                 ReactiveDropdownField<ContentVisibility>(
@@ -349,6 +401,39 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
                 ),
               ],
             ),
+            if (isContentCoverImageUrl(mediaUrl)) ...[
+              SizedBox(height: 12.h),
+              Text(
+                l10n.adminContentCoverPreviewLabel,
+                style: Theme.of(context).textTheme.labelLarge,
+              ),
+              SizedBox(height: 8.h),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12.r),
+                child: widget.contentId != null
+                    ? ResolvedCoverImage(
+                        cacheMediaId: ContentMediaDownloadController
+                            .contentCoverMediaId(widget.contentId!),
+                        remoteUrl: mediaUrl,
+                        fit: BoxFit.cover,
+                        height: 160.h,
+                      )
+                    : Image.network(
+                        mediaUrl,
+                        height: 160.h,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                      ),
+              ),
+            ],
+            if (descriptionAr.trim().isNotEmpty) ...[
+              SizedBox(height: 12.h),
+              ContentMarkdownPreview(
+                label: l10n.adminContentMarkdownPreviewLabel,
+                markdown: descriptionAr,
+              ),
+            ],
             SizedBox(height: 12.h),
             Align(
               alignment: AlignmentDirectional.centerStart,

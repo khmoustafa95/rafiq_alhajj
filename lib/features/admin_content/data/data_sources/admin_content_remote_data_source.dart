@@ -12,7 +12,9 @@ class AdminContentRemoteDataSource {
   final SupabaseClient _client;
 
   static const contentColumns =
-      'id, title, description, media_url, type, visibility, created_at';
+      'id, title, title_ar, title_en, description, description_ar, '
+      'description_en, media_url, type, visibility, publication_status, '
+      'published_at, created_at';
 
   Future<Map<String, dynamic>?> fetchById(String id) async {
     final row = await _client
@@ -35,7 +37,8 @@ class AdminContentRemoteDataSource {
     if (search.isNotEmpty) {
       final term = sanitizePostgrestSearchTerm(search);
       request = request.or(
-        'title.ilike.%$term%,description.ilike.%$term%',
+        'title.ilike.%$term%,title_ar.ilike.%$term%,title_en.ilike.%$term%,'
+        'description.ilike.%$term%,description_ar.ilike.%$term%',
       );
     }
 
