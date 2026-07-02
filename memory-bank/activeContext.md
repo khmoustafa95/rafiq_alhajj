@@ -3,6 +3,8 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
+**Code unification (phase 3)** (2026-07-02): Freezed for `NotificationPreferences` + all CMS editor inputs (`TripEditorInput`, `CompetitionEditorInput`, `CompetitionQuestionEditorInput`, `ContentEditorInput`, `GroupEditorInput`, `OperatorEditorInput`); `LocalNotificationsService.syncChannels` + locale listener in `pushNotificationBinding` updates Android channel labels when user switches language. Verified: `build_runner` + `flutter analyze lib` → **No issues found**.
+
 **Code unification (phase 2)** (2026-07-02): `TripsService` + providers; Freezed for Trip/TripOffice/TripGroupOption, Competition models, InboxNotification, HajjJourneyStep/Media/State/inputs; `staff_web_layout` migrated to `sw/sh/ss`; Android notification channels localized via `notification_channel_labels.dart` + persisted app locale at FCM init. Verified: `build_runner` + `gen-l10n` + `flutter analyze lib` → **No issues found**.
 
 **Code unification (phase 1)** (2026-07-02): implemented audit priorities 1–6. **Data layer:** `ContentMediaRemoteDataSource` + `ContentNotificationRemoteDataSource`; services no longer call Supabase directly. **Infra:** shared `@riverpod dio`. **Application services:** `HajjJourneyService`, `CompetitionsService` (cache fallback moved out of providers). **Location:** `LocationRepository` gained `ensureTrackingPermission` / `readCurrentPositionOrNull` / `watchPosition`; SOS screen uses it. **Staff UX:** `StaffAdaptivePage` on 9 list screens + fixed `admin_hajj_journey_list_screen` (`sw/sh/ss`); `StaffNetworkImage` for admin group logos. Verified: `build_runner` + `flutter analyze lib` → **No issues found**.
