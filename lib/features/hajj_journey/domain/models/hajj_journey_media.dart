@@ -1,23 +1,24 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'hajj_journey_media.freezed.dart';
+
 enum HajjMediaType {
   video,
   audio,
   image,
 }
 
-class HajjJourneyMedia {
-  const HajjJourneyMedia({
-    required this.id,
-    required this.mediaType,
-    required this.url,
-    this.title,
-    this.sortOrder = 0,
-  });
+@freezed
+abstract class HajjJourneyMedia with _$HajjJourneyMedia {
+  const factory HajjJourneyMedia({
+    required String id,
+    required HajjMediaType mediaType,
+    required String url,
+    String? title,
+    @Default(0) int sortOrder,
+  }) = _HajjJourneyMedia;
 
-  final String id;
-  final HajjMediaType mediaType;
-  final String? title;
-  final String url;
-  final int sortOrder;
+  const HajjJourneyMedia._();
 
   static HajjMediaType mediaTypeFromString(String value) {
     return switch (value) {

@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:rafiq_alhajj/features/notifications/application/utils/notification_channel_labels.dart';
 import 'package:rafiq_alhajj/features/notifications/application/utils/push_message_navigation.dart';
 import 'package:rafiq_alhajj/features/notifications/application/utils/push_notification_channels.dart';
+import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 /// Renders system-tray (heads-up) notifications for foreground FCM messages,
 /// matching the behavior users expect from most apps. Android relies on this
@@ -14,42 +16,19 @@ class LocalNotificationsService {
 
   static const String _groupKey = 'rafiq_alhajj_notifications';
 
-  static const _channels = <({String id, String name, String description, Importance importance})>[
-    (
-      id: PushNotificationChannels.announcements,
-      name: 'إعلانات',
-      description: 'إعلانات عامة من إدارة الرحلة',
-      importance: Importance.defaultImportance,
-    ),
-    (
-      id: PushNotificationChannels.content,
-      name: 'محتوى جديد',
-      description: 'أخبار ومحتوى تعليمي جديد',
-      importance: Importance.defaultImportance,
-    ),
-    (
-      id: PushNotificationChannels.competitions,
-      name: 'مسابقات',
-      description: 'مسابقات وتحديات جديدة',
-      importance: Importance.defaultImportance,
-    ),
-    (
-      id: PushNotificationChannels.urgent,
-      name: 'تنبيهات عاجلة',
-      description: 'النجدة وتحديثات الحالة وتنبيهات النظام',
-      importance: Importance.high,
-    ),
-  ];
+  List<NotificationChannelDescriptor> _channels = const [];
 
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
 
   bool _initialized = false;
 
-  Future<void> initialize() async {
+  Future<void> initialize({required AppLocalizations labels}) async {
     if (_initialized) {
       return;
     }
+
+    final channels = notificationChannelDescriptors(labels);
 
     const androidSettings =
         AndroidInitializationSettings('@drawable/ic_stat_notification');
@@ -71,7 +50,7 @@ class LocalNotificationsService {
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>();
 
-    for (final channel in _channels) {
+    for (final channel in channels) {
       await androidPlugin?.createNotificationChannel(
         AndroidNotificationChannel(
           channel.id,
@@ -82,6 +61,7 @@ class LocalNotificationsService {
       );
     }
 
+    _channels = channels;
     _initialized = true;
   }
 

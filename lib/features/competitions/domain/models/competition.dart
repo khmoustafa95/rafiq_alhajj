@@ -1,19 +1,19 @@
-class Competition {
-  const Competition({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.startsAt,
-    required this.endsAt,
-    required this.isActive,
-  });
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  final String id;
-  final String title;
-  final String? description;
-  final DateTime startsAt;
-  final DateTime endsAt;
-  final bool isActive;
+part 'competition.freezed.dart';
+
+@freezed
+abstract class Competition with _$Competition {
+  const factory Competition({
+    required String id,
+    required String title,
+    String? description,
+    required DateTime startsAt,
+    required DateTime endsAt,
+    required bool isActive,
+  }) = _Competition;
+
+  const Competition._();
 
   bool get isOpen {
     final now = DateTime.now().toUtc();
@@ -21,32 +21,23 @@ class Competition {
   }
 }
 
-class CompetitionEntry {
-  const CompetitionEntry({
-    required this.id,
-    required this.competitionId,
-    required this.profileId,
-    required this.participantName,
-    required this.score,
-    required this.joinedAt,
-  });
-
-  final String id;
-  final String competitionId;
-  final String profileId;
-  final String participantName;
-  final int score;
-  final DateTime joinedAt;
+@freezed
+abstract class CompetitionEntry with _$CompetitionEntry {
+  const factory CompetitionEntry({
+    required String id,
+    required String competitionId,
+    required String profileId,
+    required String participantName,
+    required int score,
+    required DateTime joinedAt,
+  }) = _CompetitionEntry;
 }
 
-class CompetitionWithEntries {
-  const CompetitionWithEntries({
-    required this.competition,
-    required this.entries,
-    this.myEntry,
-  });
-
-  final Competition competition;
-  final List<CompetitionEntry> entries;
-  final CompetitionEntry? myEntry;
+@freezed
+abstract class CompetitionWithEntries with _$CompetitionWithEntries {
+  const factory CompetitionWithEntries({
+    required Competition competition,
+    required List<CompetitionEntry> entries,
+    CompetitionEntry? myEntry,
+  }) = _CompetitionWithEntries;
 }

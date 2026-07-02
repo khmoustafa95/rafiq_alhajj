@@ -2295,6 +2295,34 @@ class AppLocalizationsEn extends AppLocalizations {
       'SOS, field status updates, and system alerts.';
 
   @override
+  String get notificationChannelAnnouncementsName => 'Announcements';
+
+  @override
+  String get notificationChannelAnnouncementsDescription =>
+      'General announcements from trip administration';
+
+  @override
+  String get notificationChannelContentName => 'New content';
+
+  @override
+  String get notificationChannelContentDescription =>
+      'News and new educational content';
+
+  @override
+  String get notificationChannelCompetitionsName => 'Competitions';
+
+  @override
+  String get notificationChannelCompetitionsDescription =>
+      'New competitions and challenges';
+
+  @override
+  String get notificationChannelUrgentName => 'Urgent alerts';
+
+  @override
+  String get notificationChannelUrgentDescription =>
+      'SOS, status updates, and system alerts';
+
+  @override
   String get notificationSettingsQuietHoursTitle => 'Quiet hours';
 
   @override

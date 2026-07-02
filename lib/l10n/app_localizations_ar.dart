@@ -2259,6 +2259,34 @@ class AppLocalizationsAr extends AppLocalizations {
       'النجدة وتحديثات الحالة الميدانية وتنبيهات النظام.';
 
   @override
+  String get notificationChannelAnnouncementsName => 'إعلانات';
+
+  @override
+  String get notificationChannelAnnouncementsDescription =>
+      'إعلانات عامة من إدارة الرحلة';
+
+  @override
+  String get notificationChannelContentName => 'محتوى جديد';
+
+  @override
+  String get notificationChannelContentDescription =>
+      'أخبار ومحتوى تعليمي جديد';
+
+  @override
+  String get notificationChannelCompetitionsName => 'مسابقات';
+
+  @override
+  String get notificationChannelCompetitionsDescription =>
+      'مسابقات وتحديات جديدة';
+
+  @override
+  String get notificationChannelUrgentName => 'تنبيهات عاجلة';
+
+  @override
+  String get notificationChannelUrgentDescription =>
+      'النجدة وتحديثات الحالة وتنبيهات النظام';
+
+  @override
   String get notificationSettingsQuietHoursTitle => 'ساعات الهدوء';
 
   @override

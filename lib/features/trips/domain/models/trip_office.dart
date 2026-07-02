@@ -1,35 +1,31 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'trip_office.freezed.dart';
+
 /// A travel office (`groups` row) participating in a trip via `trip_groups`.
-class TripOffice {
-  const TripOffice({
-    required this.tripGroupId,
-    required this.tripId,
-    required this.groupId,
-    required this.groupName,
-    this.status = 'active',
-    this.presidentName,
-    this.joinedAt,
-    this.withdrawnAt,
-  });
+@freezed
+abstract class TripOffice with _$TripOffice {
+  const factory TripOffice({
+    required String tripGroupId,
+    required String tripId,
+    required String groupId,
+    required String groupName,
+    @Default('active') String status,
+    String? presidentName,
+    DateTime? joinedAt,
+    DateTime? withdrawnAt,
+  }) = _TripOffice;
 
-  /// `trip_groups.id` (the participation row).
-  final String tripGroupId;
-  final String tripId;
-  final String groupId;
-  final String groupName;
-
-  /// `active` or `withdrawn`.
-  final String status;
-  final String? presidentName;
-  final DateTime? joinedAt;
-  final DateTime? withdrawnAt;
+  const TripOffice._();
 
   bool get isActive => status == 'active';
 }
 
 /// A lightweight office option used when adding a group to a trip.
-class TripGroupOption {
-  const TripGroupOption({required this.id, required this.name});
-
-  final String id;
-  final String name;
+@freezed
+abstract class TripGroupOption with _$TripGroupOption {
+  const factory TripGroupOption({
+    required String id,
+    required String name,
+  }) = _TripGroupOption;
 }

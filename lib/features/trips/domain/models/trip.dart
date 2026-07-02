@@ -1,39 +1,32 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'trip.freezed.dart';
+
 /// A seasonal journey (Hajj or Umrah) for a specific year.
 ///
 /// Travel offices (`groups`) join a trip via `trip_groups`, and pilgrims are
 /// enrolled in a trip via `trip_enrollments`. A pilgrim can take part in more
 /// than one trip across seasons.
-class Trip {
-  const Trip({
-    required this.id,
-    required this.type,
-    required this.seasonYear,
-    required this.name,
-    this.status = 'planning',
-    this.startDate,
-    this.endDate,
-    this.officeCount = 0,
-    this.pilgrimCount = 0,
-    this.createdAt,
-    this.updatedAt,
-  });
+@freezed
+abstract class Trip with _$Trip {
+  const factory Trip({
+    required String id,
+    required String type,
+    required int seasonYear,
+    required String name,
+    @Default('planning') String status,
+    DateTime? startDate,
+    DateTime? endDate,
+    @Default(0) int officeCount,
+    @Default(0) int pilgrimCount,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) = _Trip;
 
-  final String id;
+  const Trip._();
 
   /// `hajj` or `umrah`.
-  final String type;
-  final int seasonYear;
-  final String name;
-
-  /// `planning`, `active`, `completed`, or `cancelled`.
-  final String status;
-  final DateTime? startDate;
-  final DateTime? endDate;
-  final int officeCount;
-  final int pilgrimCount;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
-
   bool get isHajj => type == 'hajj';
+
   bool get isUmrah => type == 'umrah';
 }

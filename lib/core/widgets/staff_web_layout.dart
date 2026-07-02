@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
@@ -93,7 +92,7 @@ class StaffWebPage extends StatelessWidget {
       children: [
         if (top != null) ...[
           top!,
-          SizedBox(height: 16.h),
+          SizedBox(height: sh(16)),
         ],
         Expanded(child: body),
       ],
@@ -131,14 +130,14 @@ class StaffFormSection extends StatelessWidget {
             children: [
               if (icon != null) ...[
                 Container(
-                  padding: EdgeInsets.all(10.w),
+                  padding: EdgeInsets.all(sw(10)),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(icon, color: AppColors.primary, size: 22.sp),
+                  child: Icon(icon, color: AppColors.primary, size: ss(22)),
                 ),
-                SizedBox(width: 14.w),
+                SizedBox(width: sw(14)),
               ],
               Expanded(
                 child: Column(
@@ -151,7 +150,7 @@ class StaffFormSection extends StatelessWidget {
                           ),
                     ),
                     if (subtitle != null) ...[
-                      SizedBox(height: 4.h),
+                      SizedBox(height: sh(4)),
                       Text(
                         subtitle!,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -177,7 +176,7 @@ class StaffFormSection extends StatelessWidget {
                 ),
             ],
           ),
-          SizedBox(height: 20.h),
+          SizedBox(height: sh(20)),
           child,
         ],
       ),
@@ -380,7 +379,7 @@ class StaffFormMobileActionsBar extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        padding: EdgeInsets.symmetric(horizontal: sw(16), vertical: sh(12)),
         child: Align(
           alignment: Alignment.centerLeft,
           child: StaffFormActionButtons(

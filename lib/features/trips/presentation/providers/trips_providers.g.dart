@@ -9,6 +9,47 @@ part of 'trips_providers.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(tripsService)
+final tripsServiceProvider = TripsServiceProvider._();
+
+final class TripsServiceProvider
+    extends $FunctionalProvider<TripsService, TripsService, TripsService>
+    with $Provider<TripsService> {
+  TripsServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'tripsServiceProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$tripsServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<TripsService> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  TripsService create(Ref ref) {
+    return tripsService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(TripsService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<TripsService>(value),
+    );
+  }
+}
+
+String _$tripsServiceHash() => r'3526102b3456969391b5bbd966afd9e688fdeef5';
+
 @ProviderFor(tripsRepository)
 final tripsRepositoryProvider = TripsRepositoryProvider._();
 
@@ -87,7 +128,7 @@ final class TripsListProvider
   }
 }
 
-String _$tripsListHash() => r'b0e5312abd5b45babc3a144f87ee9a1b31c8de8f';
+String _$tripsListHash() => r'cafe492c27b26c70270215944598e201b5807141';
 
 @ProviderFor(tripDetail)
 final tripDetailProvider = TripDetailFamily._();
@@ -138,7 +179,7 @@ final class TripDetailProvider
   }
 }
 
-String _$tripDetailHash() => r'5722f50e47f3502a1e195376aa4eb13bf8128cfe';
+String _$tripDetailHash() => r'cad910ede3138981050d155405a794e24ab8d9b2';
 
 final class TripDetailFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<Trip>, String> {
@@ -213,7 +254,7 @@ final class TripOfficesProvider
   }
 }
 
-String _$tripOfficesHash() => r'48196806d25cdc6af1dadf21b4be650fef339acd';
+String _$tripOfficesHash() => r'b4aa28636b17ef9fcd61a2189c2dd464a89e7e69';
 
 final class TripOfficesFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<TripOffice>>, String> {
@@ -291,7 +332,7 @@ final class TripAvailableGroupsProvider
 }
 
 String _$tripAvailableGroupsHash() =>
-    r'7a198aa11888bb68690b9b8661a7caba3f98c76a';
+    r'5d352091f4b14ed8658933d344119823fc5ead62';
 
 final class TripAvailableGroupsFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<TripGroupOption>>, String> {
@@ -339,7 +380,7 @@ final class ActiveTripProvider
   ActiveTrip create() => ActiveTrip();
 }
 
-String _$activeTripHash() => r'2f2e34f2a01689ce34da25e62e2c3552af43bd6f';
+String _$activeTripHash() => r'b444837020b16c63010de4a8830895603f18e37a';
 
 /// Currently selected trip id used to scope pilgrim reads. Null = all trips.
 
@@ -384,7 +425,7 @@ final class TripSaveProvider extends $AsyncNotifierProvider<TripSave, void> {
   TripSave create() => TripSave();
 }
 
-String _$tripSaveHash() => r'dd393cbb728ad835c1214ae68b30a294558ee3e4';
+String _$tripSaveHash() => r'4108a3895b0dbb709501151f695370e18dd9bbe1';
 
 abstract class _$TripSave extends $AsyncNotifier<void> {
   FutureOr<void> build();
@@ -428,7 +469,7 @@ final class TripDeleteProvider
   TripDelete create() => TripDelete();
 }
 
-String _$tripDeleteHash() => r'cd4d13a4fddecbe4442f91c5837bdb4d91e37147';
+String _$tripDeleteHash() => r'fc3dde0e2a3f46eb358460704324fa5504c2fa77';
 
 abstract class _$TripDelete extends $AsyncNotifier<void> {
   FutureOr<void> build();
@@ -473,7 +514,7 @@ final class TripOfficeMutationProvider
 }
 
 String _$tripOfficeMutationHash() =>
-    r'09b214b44efd562e832cfa3a287b4230e8a12f69';
+    r'30becb70a6151ce0f80526b1db28871e550df4e4';
 
 abstract class _$TripOfficeMutation extends $AsyncNotifier<void> {
   FutureOr<void> build();

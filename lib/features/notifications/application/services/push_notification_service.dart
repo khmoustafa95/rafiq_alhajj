@@ -4,11 +4,14 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/firebase/app_firebase.dart';
+import 'package:rafiq_alhajj/core/l10n/app_locale_settings.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/features/notifications/application/services/local_notifications_service.dart';
 import 'package:rafiq_alhajj/features/notifications/application/services/notification_permission_prompt.dart';
 import 'package:rafiq_alhajj/features/notifications/application/utils/push_message_navigation.dart';
 import 'package:rafiq_alhajj/features/notifications/data/repositories/device_token_repository.dart';
+import 'package:rafiq_alhajj/l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Registers FCM tokens and handles notification open events.
 class PushNotificationService {
@@ -60,7 +63,7 @@ class PushNotificationService {
     // messages are surfaced by the Realtime in-app toast and background ones by
     // the `firebase-messaging-sw.js` service worker.
     if (!AppPlatform.isWeb) {
-      await _localNotifications.initialize();
+      await _localNotifications.initialize(labels: await _loadNotificationLabels());
 
       // iOS presents foreground notifications itself via these options; on
       // Android we render them through [_localNotifications] in
@@ -82,6 +85,14 @@ class PushNotificationService {
     _tokenRefreshSub = _messaging!.onTokenRefresh.listen((token) {
       unawaited(_onTokenRefreshed(token));
     });
+  }
+
+  Future<AppLocalizations> _loadNotificationLabels() async {
+    final prefs = await SharedPreferences.getInstance();
+    final code = prefs.getString(AppLocaleSettings.storageKey);
+    final locale = AppLocaleSettings.fromLanguageCode(code) ??
+        AppLocaleSettings.defaultLocale;
+    return lookupAppLocalizations(locale);
   }
 
   Future<void> bindUser(String? profileId) async {

@@ -4243,6 +4243,54 @@ abstract class AppLocalizations {
   /// **'SOS, field status updates, and system alerts.'**
   String get notificationSettingsCategoryUrgentHint;
 
+  /// No description provided for @notificationChannelAnnouncementsName.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcements'**
+  String get notificationChannelAnnouncementsName;
+
+  /// No description provided for @notificationChannelAnnouncementsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'General announcements from trip administration'**
+  String get notificationChannelAnnouncementsDescription;
+
+  /// No description provided for @notificationChannelContentName.
+  ///
+  /// In en, this message translates to:
+  /// **'New content'**
+  String get notificationChannelContentName;
+
+  /// No description provided for @notificationChannelContentDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'News and new educational content'**
+  String get notificationChannelContentDescription;
+
+  /// No description provided for @notificationChannelCompetitionsName.
+  ///
+  /// In en, this message translates to:
+  /// **'Competitions'**
+  String get notificationChannelCompetitionsName;
+
+  /// No description provided for @notificationChannelCompetitionsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'New competitions and challenges'**
+  String get notificationChannelCompetitionsDescription;
+
+  /// No description provided for @notificationChannelUrgentName.
+  ///
+  /// In en, this message translates to:
+  /// **'Urgent alerts'**
+  String get notificationChannelUrgentName;
+
+  /// No description provided for @notificationChannelUrgentDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS, status updates, and system alerts'**
+  String get notificationChannelUrgentDescription;
+
   /// No description provided for @notificationSettingsQuietHoursTitle.
   ///
   /// In en, this message translates to:

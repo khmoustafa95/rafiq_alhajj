@@ -1,83 +1,51 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/domain/models/hajj_journey_media.dart';
 
-class HajjJourneyStep {
-  const HajjJourneyStep({
-    required this.id,
-    required this.ritualKey,
-    required this.sortOrder,
-    required this.titleAr,
-    required this.titleEn,
-    required this.descriptionAr,
-    required this.descriptionEn,
-    this.isActive = true,
-    this.media = const [],
-  });
+part 'hajj_journey_step.freezed.dart';
 
-  final String id;
-  final String ritualKey;
-  final int sortOrder;
-  final String titleAr;
-  final String titleEn;
-  final String descriptionAr;
-  final String descriptionEn;
-  final bool isActive;
-  final List<HajjJourneyMedia> media;
+@freezed
+abstract class HajjJourneyStep with _$HajjJourneyStep {
+  const factory HajjJourneyStep({
+    required String id,
+    required String ritualKey,
+    required int sortOrder,
+    required String titleAr,
+    required String titleEn,
+    required String descriptionAr,
+    required String descriptionEn,
+    @Default(true) bool isActive,
+    @Default([]) List<HajjJourneyMedia> media,
+  }) = _HajjJourneyStep;
+
+  const HajjJourneyStep._();
 
   String titleForLocale(String languageCode) =>
       languageCode == 'ar' ? titleAr : titleEn;
 
   String descriptionForLocale(String languageCode) =>
       languageCode == 'ar' ? descriptionAr : descriptionEn;
-
-  HajjJourneyStep copyWith({
-    String? id,
-    String? ritualKey,
-    int? sortOrder,
-    String? titleAr,
-    String? titleEn,
-    String? descriptionAr,
-    String? descriptionEn,
-    bool? isActive,
-    List<HajjJourneyMedia>? media,
-  }) {
-    return HajjJourneyStep(
-      id: id ?? this.id,
-      ritualKey: ritualKey ?? this.ritualKey,
-      sortOrder: sortOrder ?? this.sortOrder,
-      titleAr: titleAr ?? this.titleAr,
-      titleEn: titleEn ?? this.titleEn,
-      descriptionAr: descriptionAr ?? this.descriptionAr,
-      descriptionEn: descriptionEn ?? this.descriptionEn,
-      isActive: isActive ?? this.isActive,
-      media: media ?? this.media,
-    );
-  }
 }
 
-class HajjJourneyStepWithStatus {
-  const HajjJourneyStepWithStatus({
-    required this.step,
-    required this.isCompleted,
-    this.completedAt,
-    this.pendingSync = false,
-  });
-
-  final HajjJourneyStep step;
-  final bool isCompleted;
-  final DateTime? completedAt;
-  final bool pendingSync;
+@freezed
+abstract class HajjJourneyStepWithStatus with _$HajjJourneyStepWithStatus {
+  const factory HajjJourneyStepWithStatus({
+    required HajjJourneyStep step,
+    required bool isCompleted,
+    DateTime? completedAt,
+    @Default(false) bool pendingSync,
+  }) = _HajjJourneyStepWithStatus;
 }
 
-class HajjJourneyState {
-  const HajjJourneyState({
-    required this.steps,
-    this.hasPendingSync = false,
-  });
+@freezed
+abstract class HajjJourneyState with _$HajjJourneyState {
+  const factory HajjJourneyState({
+    required List<HajjJourneyStepWithStatus> steps,
+    @Default(false) bool hasPendingSync,
+  }) = _HajjJourneyState;
 
-  final List<HajjJourneyStepWithStatus> steps;
-  final bool hasPendingSync;
+  const HajjJourneyState._();
 
-  int get completedCount => steps.where((s) => s.isCompleted).length;
+  int get completedCount => steps.where((step) => step.isCompleted).length;
 
   int get totalCount => steps.length;
 
@@ -98,36 +66,25 @@ class HajjJourneyState {
   }
 }
 
-class HajjJourneyEditorInput {
-  const HajjJourneyEditorInput({
-    required this.ritualKey,
-    required this.sortOrder,
-    required this.titleAr,
-    required this.titleEn,
-    required this.descriptionAr,
-    required this.descriptionEn,
-    this.isActive = true,
-  });
-
-  final String ritualKey;
-  final int sortOrder;
-  final String titleAr;
-  final String titleEn;
-  final String descriptionAr;
-  final String descriptionEn;
-  final bool isActive;
+@freezed
+abstract class HajjJourneyEditorInput with _$HajjJourneyEditorInput {
+  const factory HajjJourneyEditorInput({
+    required String ritualKey,
+    required int sortOrder,
+    required String titleAr,
+    required String titleEn,
+    required String descriptionAr,
+    required String descriptionEn,
+    @Default(true) bool isActive,
+  }) = _HajjJourneyEditorInput;
 }
 
-class HajjJourneyMediaInput {
-  const HajjJourneyMediaInput({
-    required this.mediaType,
-    required this.url,
-    this.title,
-    this.sortOrder = 0,
-  });
-
-  final HajjMediaType mediaType;
-  final String? title;
-  final String url;
-  final int sortOrder;
+@freezed
+abstract class HajjJourneyMediaInput with _$HajjJourneyMediaInput {
+  const factory HajjJourneyMediaInput({
+    required HajjMediaType mediaType,
+    required String url,
+    String? title,
+    @Default(0) int sortOrder,
+  }) = _HajjJourneyMediaInput;
 }

@@ -197,7 +197,6 @@ class NotificationRepository {
       return InboxNotification(
         id: map['id'] as String,
         recipientId: 'guest',
-        senderId: null,
         type: InboxNotificationType.announcement,
         titleAr: map['title_ar'] as String,
         titleEn: map['title_en'] as String,
@@ -225,7 +224,6 @@ class NotificationRepository {
       return InboxNotification(
         id: 'content-${map['id']}',
         recipientId: 'guest',
-        senderId: null,
         type: notificationType,
         titleAr: title,
         titleEn: title,
