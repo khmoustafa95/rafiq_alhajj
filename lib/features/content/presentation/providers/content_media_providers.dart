@@ -4,6 +4,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/domain/models/educational_media.dart';
+import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/features/content/application/services/content_media_cache_service.dart';
 import 'package:rafiq_alhajj/features/content/data/local/content_media_cache_store.dart';
 import 'package:rafiq_alhajj/features/content/data/local/media_encryption_service.dart';
@@ -18,7 +19,9 @@ part 'content_media_providers.g.dart';
 @Riverpod(keepAlive: true)
 Future<ContentMediaCacheStore> contentMediaCacheStore(Ref ref) async {
   final prefs = await SharedPreferences.getInstance();
-  return ContentMediaCacheStore(prefs);
+  final profileId = ref.watch(authProfileIdProvider);
+  final profileKey = profileId ?? 'guest';
+  return ContentMediaCacheStore(prefs, profileKey: profileKey);
 }
 
 @Riverpod(keepAlive: true)
@@ -154,7 +157,88 @@ class ContentMediaDownloadController extends _$ContentMediaDownloadController {
     await _processQueue();
   }
 
-  Future<void> enqueueTopic(ContentTopic topic) => enqueueTopics([topic]);
+  Future<void> enqueueJourneyStepMedia({
+    required String ritualKey,
+    required List<({String mediaId, String url, EducationalMediaType mediaType})>
+        media,
+  }) async {
+    final topicId = 'journey_$ritualKey';
+    final jobs = Map<String, MediaDownloadJob>.from(_state.jobs);
+
+    for (final item in media) {
+      if (!ContentMediaUrlRules.isCacheable(item.url)) {
+        jobs[item.mediaId] = MediaDownloadJob(
+          mediaId: item.mediaId,
+          status: MediaDownloadStatus.skipped,
+        );
+        continue;
+      }
+      if (jobs[item.mediaId]?.status == MediaDownloadStatus.completed) {
+        continue;
+      }
+      _pending[item.mediaId] = _PendingMedia(
+        mediaId: item.mediaId,
+        url: item.url,
+        topicId: topicId,
+        mediaType: item.mediaType,
+      );
+      jobs[item.mediaId] = MediaDownloadJob(
+        mediaId: item.mediaId,
+        status: MediaDownloadStatus.queued,
+      );
+    }
+
+    state = AsyncData(_state.copyWith(jobs: jobs));
+    await _processQueue();
+  }
+
+  Future<void> enqueueTopic(ContentTopic topic) async {
+    await enqueueTopics([topic]);
+    final cache = await ref.read(contentMediaCacheServiceProvider.future);
+    final coverUrl = topic.coverImageUrl;
+    if (coverUrl != null &&
+        coverUrl.isNotEmpty &&
+        ContentMediaUrlRules.isCacheable(coverUrl)) {
+      await cache.downloadMedia(
+        mediaId: coverMediaId(topic.id),
+        remoteUrl: coverUrl,
+        topicId: topic.id,
+        mediaType: EducationalMediaType.image,
+      );
+    }
+  }
+
+  /// Synthetic media id for a topic cover image in the offline cache.
+  static String coverMediaId(String topicId) => 'cover_topic_$topicId';
+
+  /// Synthetic media id for a news/announcement cover image.
+  static String contentCoverMediaId(String contentId) =>
+      'cover_content_$contentId';
+
+  Future<int?> estimateTopicDownloadBytes(ContentTopic topic) async {
+    final cache = await ref.read(contentMediaCacheServiceProvider.future);
+    var total = 0;
+    var hasEstimate = false;
+    for (final media in topic.media) {
+      if (!ContentMediaUrlRules.isCacheable(media.url)) {
+        continue;
+      }
+      final bytes = await cache.estimateDownloadBytes(media.url);
+      if (bytes != null) {
+        total += bytes;
+        hasEstimate = true;
+      }
+    }
+    final cover = topic.coverImageUrl;
+    if (cover != null && ContentMediaUrlRules.isCacheable(cover)) {
+      final bytes = await cache.estimateDownloadBytes(cover);
+      if (bytes != null) {
+        total += bytes;
+        hasEstimate = true;
+      }
+    }
+    return hasEstimate ? total : null;
+  }
 
   void pause(String mediaId) {
     _tokens[mediaId]?.cancel('paused');

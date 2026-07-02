@@ -4879,6 +4879,42 @@ abstract class AppLocalizations {
   /// **'Downloading {percent}%'**
   String contentTopicOfflineDownloading(int percent);
 
+  /// No description provided for @contentOfflineBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re offline — showing saved content where available.'**
+  String get contentOfflineBanner;
+
+  /// No description provided for @contentContinueLearning.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue learning'**
+  String get contentContinueLearning;
+
+  /// No description provided for @contentTopicRequiresInternet.
+  ///
+  /// In en, this message translates to:
+  /// **'Some videos require an internet connection (YouTube/Vimeo).'**
+  String get contentTopicRequiresInternet;
+
+  /// No description provided for @contentDownloadAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Download all topics'**
+  String get contentDownloadAll;
+
+  /// No description provided for @contentTopicOfflineAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get contentTopicOfflineAvailable;
+
+  /// No description provided for @contentTopicDownloadSizeEstimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated download: {size} MB'**
+  String contentTopicDownloadSizeEstimate(String size);
+
   /// No description provided for @educationalMediaVideoError.
   ///
   /// In en, this message translates to:

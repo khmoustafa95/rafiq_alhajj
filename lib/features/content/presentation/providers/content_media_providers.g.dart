@@ -49,7 +49,7 @@ final class ContentMediaCacheStoreProvider
 }
 
 String _$contentMediaCacheStoreHash() =>
-    r'83b4a5582dadf8087a8c2d09ccdd24355ff0854f';
+    r'36e9d1432e83f996542df16d3d496ddd76453ec0';
 
 @ProviderFor(mediaEncryptionService)
 final mediaEncryptionServiceProvider = MediaEncryptionServiceProvider._();
@@ -220,7 +220,7 @@ final class ContentMediaDownloadControllerProvider
 }
 
 String _$contentMediaDownloadControllerHash() =>
-    r'892f1dfceb882a5b4e1ac98a0b1ad6d4b04f0792';
+    r'60a76e1fad9ae626aeb4bc8b168f2ff72767c1c1';
 
 abstract class _$ContentMediaDownloadController
     extends $AsyncNotifier<ContentDownloadState> {

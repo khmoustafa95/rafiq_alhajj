@@ -895,6 +895,17 @@
       "percent": {"type": "int"}
     }
   },
+  "contentOfflineBanner": "أنت غير متصل — يُعرض المحتوى المحفوظ حيثما أمكن.",
+  "contentContinueLearning": "تابع التعلم",
+  "contentTopicRequiresInternet": "بعض الفيديوهات تتطلب اتصالاً بالإنترنت (يوتيوب/فيميو).",
+  "contentDownloadAll": "تحميل كل المواضيع",
+  "contentTopicOfflineAvailable": "دون إنترنت",
+  "contentTopicDownloadSizeEstimate": "الحجم التقديري للتحميل: {size} ميغابايت",
+  "@contentTopicDownloadSizeEstimate": {
+    "placeholders": {
+      "size": {"type": "String"}
+    }
+  },
   "educationalMediaVideoError": "تعذّر تشغيل هذا الفيديو.",
   "hajjJourneyMarkComplete": "تم الإنجاز",
   "hajjJourneyAlreadyCompleted": "مكتمل — العودة للمسار",

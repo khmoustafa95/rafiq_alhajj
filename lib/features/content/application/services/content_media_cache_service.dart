@@ -137,9 +137,11 @@ class ContentMediaCacheService {
   /// In-memory map of mediaId -> decrypted temp file path for the session.
   final Map<String, String> _decryptedPaths = {};
 
+  String get _profileSuffix => _store.profileKey;
+
   Future<Directory> _encryptedDir() async {
     final base = await getApplicationSupportDirectory();
-    final dir = Directory('${base.path}/content_media_enc');
+    final dir = Directory('${base.path}/content_media_enc_$_profileSuffix');
     if (!dir.existsSync()) {
       await dir.create(recursive: true);
     }
@@ -148,7 +150,7 @@ class ContentMediaCacheService {
 
   Future<Directory> _decryptDir() async {
     final base = await getTemporaryDirectory();
-    final dir = Directory('${base.path}/content_media_dec');
+    final dir = Directory('${base.path}/content_media_dec_$_profileSuffix');
     if (!dir.existsSync()) {
       await dir.create(recursive: true);
     }
@@ -488,6 +490,33 @@ class ContentMediaCacheService {
       }
     } catch (_) {
       // best-effort
+    }
+  }
+
+  /// Best-effort HEAD request to estimate download size before enqueueing.
+  Future<int?> estimateDownloadBytes(String remoteUrl) async {
+    if (!ContentMediaUrlRules.isCacheable(remoteUrl)) {
+      return null;
+    }
+    try {
+      final downloadUrl = await _resolveDownloadUrl(remoteUrl);
+      if (downloadUrl == null) {
+        return null;
+      }
+      final response = await _dio.head<void>(
+        downloadUrl,
+        options: Options(
+          followRedirects: true,
+          validateStatus: (status) => status != null && status < 400,
+        ),
+      );
+      final length = response.headers.value(Headers.contentLengthHeader);
+      if (length == null) {
+        return null;
+      }
+      return int.tryParse(length);
+    } catch (_) {
+      return null;
     }
   }
 

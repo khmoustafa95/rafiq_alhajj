@@ -13,9 +13,10 @@ class SignOutController extends _$SignOutController {
   Future<void> signOut() async {
     state = const AsyncLoading();
     final result = await AsyncValue.guard(() async {
-      // Privacy: wipe encrypted offline media + decrypt-temp and rotate the
-      // encryption key so no downloaded pilgrim content survives logout.
-      await _wipeOfflineMedia();
+      // Privacy: wipe only plaintext decrypt-temp files. Encrypted blobs and
+      // per-profile manifests are kept so pilgrims can resume offline content
+      // after signing back in on the same device.
+      await _wipeDecryptTemp();
       await ref.read(pushNotificationServiceProvider).unregisterCurrentUser();
       await ref.read(authServiceProvider).signOut();
     });
@@ -25,11 +26,10 @@ class SignOutController extends _$SignOutController {
     state = result;
   }
 
-  Future<void> _wipeOfflineMedia() async {
+  Future<void> _wipeDecryptTemp() async {
     try {
       final cache = await ref.read(contentMediaCacheServiceProvider.future);
-      await cache.clearAll();
-      await ref.read(mediaEncryptionServiceProvider).wipeKey();
+      await cache.wipeDecryptTemp();
     } catch (_) {
       // Best-effort: never block sign-out on cache cleanup.
     }

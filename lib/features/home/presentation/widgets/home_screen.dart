@@ -28,6 +28,7 @@ import 'package:rafiq_alhajj/features/content/presentation/providers/public_cont
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_media_widgets.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_section.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_topics_section.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/continue_learning_card.dart';
 
 import 'package:rafiq_alhajj/features/home/presentation/widgets/journey_cta_card.dart';
 
@@ -303,6 +304,11 @@ class _HomeBody extends ConsumerWidget {
                       ),
 
                     ),
+
+                    if (isPilgrim)
+                      const SliverToBoxAdapter(
+                        child: ContinueLearningCard(),
+                      ),
 
                     SliverToBoxAdapter(
                       child: ContentSection(

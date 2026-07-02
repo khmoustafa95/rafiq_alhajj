@@ -1,15 +1,19 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
+import 'package:rafiq_alhajj/features/content/application/services/content_media_cache_service.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_topic.dart';
+import 'package:rafiq_alhajj/features/content/presentation/providers/content_media_providers.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/resolved_cover_image.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 enum ContentTopicCardLayout { horizontal, featured }
 
-class ContentTopicCard extends StatelessWidget {
+class ContentTopicCard extends ConsumerWidget {
   const ContentTopicCard({
     required this.topic,
     required this.onTap,
@@ -22,7 +26,7 @@ class ContentTopicCard extends StatelessWidget {
   final ContentTopicCardLayout layout;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
 
     return switch (layout) {
@@ -30,13 +34,29 @@ class ContentTopicCard extends StatelessWidget {
           topic: topic,
           onTap: onTap,
           l10n: l10n,
+          isOffline: _isOfflineReady(ref),
         ),
       ContentTopicCardLayout.horizontal => _HorizontalCard(
           topic: topic,
           onTap: onTap,
           l10n: l10n,
+          isOffline: _isOfflineReady(ref),
         ),
     };
+  }
+
+  bool _isOfflineReady(WidgetRef ref) {
+    final cacheable = topic.media
+        .where((m) => ContentMediaUrlRules.isCacheable(m.url))
+        .length;
+    if (cacheable == 0) {
+      return false;
+    }
+    final cache = ref.watch(contentMediaCacheServiceProvider).value;
+    if (cache == null) {
+      return false;
+    }
+    return cache.cachedCountForTopic(topic.id) >= cacheable;
   }
 }
 
@@ -45,11 +65,13 @@ class _HorizontalCard extends StatelessWidget {
     required this.topic,
     required this.onTap,
     required this.l10n,
+    required this.isOffline,
   });
 
   final ContentTopic topic;
   final VoidCallback onTap;
   final AppLocalizations l10n;
+  final bool isOffline;
 
   @override
   Widget build(BuildContext context) {
@@ -71,8 +93,10 @@ class _HorizontalCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _CoverImage(
-                  url: topic.coverImageUrl,
+                  topic: topic,
                   height: 130.h,
+                  isOffline: isOffline,
+                  l10n: l10n,
                 ),
                 Expanded(
                   child: Padding(
@@ -127,11 +151,13 @@ class _FeaturedCard extends StatelessWidget {
     required this.topic,
     required this.onTap,
     required this.l10n,
+    required this.isOffline,
   });
 
   final ContentTopic topic;
   final VoidCallback onTap;
   final AppLocalizations l10n;
+  final bool isOffline;
 
   @override
   Widget build(BuildContext context) {
@@ -146,8 +172,10 @@ class _FeaturedCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _CoverImage(
-                url: topic.coverImageUrl,
+                topic: topic,
                 height: 180.h,
+                isOffline: isOffline,
+                l10n: l10n,
               ),
               Padding(
                 padding: EdgeInsets.all(16.w),
@@ -185,10 +213,17 @@ class _FeaturedCard extends StatelessWidget {
 }
 
 class _CoverImage extends StatelessWidget {
-  const _CoverImage({required this.url, required this.height});
+  const _CoverImage({
+    required this.topic,
+    required this.height,
+    required this.isOffline,
+    required this.l10n,
+  });
 
-  final String? url;
+  final ContentTopic topic;
   final double height;
+  final bool isOffline;
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
@@ -199,13 +234,52 @@ class _CoverImage extends StatelessWidget {
       child: SizedBox(
         height: height,
         width: double.infinity,
-        child: url != null && url!.isNotEmpty
-            ? Image.network(
-                url!,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (topic.coverImageUrl != null && topic.coverImageUrl!.isNotEmpty)
+              ResolvedCoverImage(
+                cacheMediaId:
+                    ContentMediaDownloadController.coverMediaId(topic.id),
+                remoteUrl: topic.coverImageUrl!,
                 fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => const _CoverPlaceholder(),
+                height: height,
               )
-            : const _CoverPlaceholder(),
+            else
+              const _CoverPlaceholder(),
+            if (isOffline)
+              Positioned(
+                top: 8,
+                right: 8,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.9),
+                    borderRadius:
+                        BorderRadius.circular(AppDecorations.radiusSm),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.download_done,
+                        size: 14.sp,
+                        color: AppColors.textOnDark,
+                      ),
+                      SizedBox(width: 4.w),
+                      Text(
+                        l10n.contentTopicOfflineAvailable,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: AppColors.textOnDark,
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
