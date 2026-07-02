@@ -3,6 +3,7 @@
 > **Update this file after every completed task.**
 
 ## Changelog
+- **2026-07-02 — Code unification (phases 1–3) MERGED to `main`:** PR #7 merged (`cursor/code-unification-8b95` → `main`).
 - **2026-07-02 — Code unification (phase 3):** Freezed for `NotificationPreferences` (incl. `TimeOfDay`) + all editor inputs (trip/competition/question/content/group/operator). `LocalNotificationsService.syncChannels` + `PushNotificationService.syncNotificationChannels`; `pushNotificationBinding` listens to `localeControllerProvider` to refresh Android channel labels on language change. `build_runner` + `flutter analyze lib` → **No issues found**.
 - **2026-07-02 — Code unification (phase 2):** `TripsService`; Freezed on Trip/TripOffice/TripGroupOption, Competition*, InboxNotification, HajjJourney* models; `staff_web_layout` → `sw/sh/ss`; localized Android notification channels (`notification_channel_labels.dart`, ARB keys en+ar). `build_runner` + `gen-l10n` + `flutter analyze lib` → **No issues found**.
 - **2026-07-02 — Code unification (phase 1):** Moved Supabase storage/RPC to `content_media_remote_data_source` + `content_notification_remote_data_source`; refactored `ContentMediaStorageService` + `ContentNotificationService`. Added shared `dioProvider`. Added `HajjJourneyService` + `CompetitionsService` (cache fallback). Extended `LocationRepository` for SOS tracking. Migrated 9 staff list screens + Hajj journey admin list to `StaffAdaptivePage` + web metrics; added `StaffNetworkImage` for group logos. `build_runner` + `flutter analyze lib` → **No issues found**.
