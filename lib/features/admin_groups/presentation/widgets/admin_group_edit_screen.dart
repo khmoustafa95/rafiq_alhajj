@@ -13,6 +13,7 @@ import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_button_styles.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_network_image.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/features/admin_groups/domain/models/group_editor_input.dart';
@@ -274,15 +275,10 @@ class _AdminGroupEditScreenState extends ConsumerState<AdminGroupEditScreen> {
       );
     }
     if (_logoUrl != null && _logoUrl!.isNotEmpty) {
-      return ClipRRect(
+      return StaffNetworkImage(
+        imageUrl: _logoUrl,
+        size: sw(96),
         borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
-        child: Image.network(
-          _logoUrl!,
-          width: sw(96),
-          height: sh(96),
-          fit: BoxFit.cover,
-          errorBuilder: (_, _, _) => _logoPlaceholder(),
-        ),
       );
     }
     return _logoPlaceholder();
@@ -308,14 +304,11 @@ class _AdminGroupEditScreenState extends ConsumerState<AdminGroupEditScreen> {
       );
     }
     if (row.photoUrl != null && row.photoUrl!.isNotEmpty) {
-      return ClipOval(
-        child: Image.network(
-          row.photoUrl!,
-          width: sw(56),
-          height: sh(56),
-          fit: BoxFit.cover,
-          errorBuilder: (_, _, _) => _memberPhotoPlaceholder(),
-        ),
+      return StaffNetworkImage(
+        imageUrl: row.photoUrl,
+        size: sw(56),
+        fallbackIcon: Icons.person_outline,
+        borderRadius: BorderRadius.circular(sw(28)),
       );
     }
     return _memberPhotoPlaceholder();

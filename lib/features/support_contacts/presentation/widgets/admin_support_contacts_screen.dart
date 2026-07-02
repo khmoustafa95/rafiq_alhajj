@@ -119,8 +119,8 @@ class AdminSupportContactsScreen extends ConsumerWidget {
       },
     );
 
-    if (AppPlatform.isWeb) {
-      return StaffWebPage(
+    return StaffAdaptivePage(
+      web: StaffWebPage(
         title: l10n.adminSupportContactsTitle,
         subtitle: l10n.adminSupportContactsSubtitle,
         scrollable: false,
@@ -132,17 +132,16 @@ class AdminSupportContactsScreen extends ConsumerWidget {
           ),
         ],
         body: body,
-      );
-    }
-
-    return Scaffold(
-      appBar: RafiqAppBar(title: Text(l10n.adminSupportContactsTitle)),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _openNew(context),
-        icon: const Icon(Icons.add_call),
-        label: Text(l10n.adminSupportContactAdd),
       ),
-      body: body,
+      mobile: Scaffold(
+        appBar: RafiqAppBar(title: Text(l10n.adminSupportContactsTitle)),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () => _openNew(context),
+          icon: const Icon(Icons.add_call),
+          label: Text(l10n.adminSupportContactAdd),
+        ),
+        body: body,
+      ),
     );
   }
 }

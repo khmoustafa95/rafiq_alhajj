@@ -3,6 +3,7 @@ import 'package:rafiq_alhajj/core/supabase/realtime_invalidation_registry.dart';
 import 'package:rafiq_alhajj/core/supabase/realtime_sync_attach.dart';
 import 'package:rafiq_alhajj/core/supabase/realtime_sync_providers.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:rafiq_alhajj/features/competitions/application/services/competitions_service.dart';
 import 'package:rafiq_alhajj/features/competitions/data/repositories/admin_competition_questions_repository.dart';
 import 'package:rafiq_alhajj/features/competitions/data/repositories/admin_competitions_repository.dart';
 import 'package:rafiq_alhajj/features/competitions/data/repositories/competition_questions_repository.dart';
@@ -16,6 +17,13 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'competitions_providers.g.dart';
+
+@Riverpod(keepAlive: true)
+CompetitionsService competitionsService(Ref ref) {
+  return CompetitionsService(
+    ref.watch(competitionQuestionsRepositoryProvider),
+  );
+}
 
 @Riverpod(keepAlive: true)
 CompetitionsRepository competitionsRepository(Ref ref) {
@@ -116,38 +124,13 @@ Future<CompetitionQuizProgress> competitionQuizProgress(
 
   final profileId = ref.watch(authProfileIdProvider);
 
-  return ref.read(contentCatalogCacheProvider.future).then((cache) async {
-    if (profileId == null) {
-      return ref.read(competitionQuestionsRepositoryProvider).fetchQuizProgress(
-            competitionId: competitionId,
-            profileId: profileId,
-          );
-    }
-
-    try {
-      final progress = await ref
-          .read(competitionQuestionsRepositoryProvider)
-          .fetchQuizProgress(
-            competitionId: competitionId,
-            profileId: profileId,
-          );
-      await cache.writeQuizProgress(
-        competitionId: competitionId,
-        profileId: profileId,
-        progress: progress,
+  return ref.read(contentCatalogCacheProvider.future).then(
+        (cache) => ref.read(competitionsServiceProvider).fetchQuizProgress(
+              cache: cache,
+              competitionId: competitionId,
+              profileId: profileId,
+            ),
       );
-      return progress;
-    } catch (_) {
-      return cache.readQuizProgress(
-            competitionId: competitionId,
-            profileId: profileId,
-          ) ??
-          const CompetitionQuizProgress(
-            questions: [],
-            answeredQuestionIds: {},
-          );
-    }
-  });
 }
 
 @riverpod

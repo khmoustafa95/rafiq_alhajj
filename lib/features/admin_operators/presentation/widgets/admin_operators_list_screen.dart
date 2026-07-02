@@ -138,29 +138,28 @@ class _AdminOperatorsListScreenState
             },
           );
 
-    if (AppPlatform.isWeb) {
-      return StaffWebPage(
+    return StaffAdaptivePage(
+      web: StaffWebPage(
         title: l10n.adminOperatorsTitle,
         subtitle: l10n.adminOperatorsSubtitle,
         scrollable: false,
         body: body,
-      );
-    }
-
-    return Scaffold(
-      appBar: RafiqAppBar(
-        title: Text(l10n.adminOperatorsTitle),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go(AppRoutes.adminDashboard),
+      ),
+      mobile: Scaffold(
+        appBar: RafiqAppBar(
+          title: Text(l10n.adminOperatorsTitle),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go(AppRoutes.adminDashboard),
+          ),
         ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () => _openNew(context),
+          icon: const Icon(Icons.person_add_alt_1),
+          label: Text(l10n.adminOperatorAdd),
+        ),
+        body: body,
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _openNew(context),
-        icon: const Icon(Icons.person_add_alt_1),
-        label: Text(l10n.adminOperatorAdd),
-      ),
-      body: body,
     );
   }
 

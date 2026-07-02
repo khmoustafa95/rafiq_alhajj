@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
+import 'package:rafiq_alhajj/features/islamic_tools/presentation/providers/location_providers.dart';
 import 'package:rafiq_alhajj/features/sos/domain/models/sos_alert.dart';
 import 'package:rafiq_alhajj/features/sos/presentation/controllers/sos_controller.dart';
 import 'package:rafiq_alhajj/features/sos/presentation/providers/sos_providers.dart';
@@ -50,28 +51,8 @@ class _SosScreenState extends ConsumerState<SosScreen>
     }
   }
 
-  Future<Position?> _readPositionOrNull() async {
-    try {
-      if (!await Geolocator.isLocationServiceEnabled()) {
-        return null;
-      }
-      var permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-      if (permission == LocationPermission.denied ||
-          permission == LocationPermission.deniedForever) {
-        return null;
-      }
-      return await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          timeLimit: Duration(seconds: 15),
-        ),
-      );
-    } catch (_) {
-      return null;
-    }
+  Future<Position?> _readPositionOrNull() {
+    return ref.read(locationRepositoryProvider).readCurrentPositionOrNull();
   }
 
   void _startTracking(String alertId) {
@@ -80,12 +61,10 @@ class _SosScreenState extends ConsumerState<SosScreen>
     }
     _stopTracking();
     _trackingAlertId = alertId;
-    _positionSub = Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: 5,
-      ),
-    ).listen(
+    _positionSub = ref
+        .read(locationRepositoryProvider)
+        .watchPosition()
+        .listen(
       (position) {
         unawaited(
           ref

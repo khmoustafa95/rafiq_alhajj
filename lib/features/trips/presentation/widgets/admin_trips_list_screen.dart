@@ -144,8 +144,8 @@ class AdminTripsListScreen extends ConsumerWidget {
       },
     );
 
-    if (AppPlatform.isWeb) {
-      return StaffWebPage(
+    return StaffAdaptivePage(
+      web: StaffWebPage(
         title: l10n.adminTripsTitle,
         subtitle: l10n.adminTripsSubtitle,
         scrollable: false,
@@ -157,23 +157,22 @@ class AdminTripsListScreen extends ConsumerWidget {
           ),
         ],
         body: body,
-      );
-    }
-
-    return Scaffold(
-      appBar: RafiqAppBar(
-        title: Text(l10n.adminTripsTitle),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go(AppRoutes.adminDashboard),
+      ),
+      mobile: Scaffold(
+        appBar: RafiqAppBar(
+          title: Text(l10n.adminTripsTitle),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go(AppRoutes.adminDashboard),
+          ),
         ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () => _openEditor(context),
+          icon: const Icon(Icons.add),
+          label: Text(l10n.adminTripAdd),
+        ),
+        body: body,
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _openEditor(context),
-        icon: const Icon(Icons.add),
-        label: Text(l10n.adminTripAdd),
-      ),
-      body: body,
     );
   }
 }

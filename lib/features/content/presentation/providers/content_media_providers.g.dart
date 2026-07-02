@@ -139,7 +139,7 @@ final class ContentMediaCacheServiceProvider
 }
 
 String _$contentMediaCacheServiceHash() =>
-    r'd72b4c58821356b169d1dff2f83663472eb0f45b';
+    r'c9b88afbff6dabc752b3b572c16d5a470372372c';
 
 @ProviderFor(contentMediaStorageService)
 final contentMediaStorageServiceProvider =
@@ -188,7 +188,7 @@ final class ContentMediaStorageServiceProvider
 }
 
 String _$contentMediaStorageServiceHash() =>
-    r'77d5cf8f83c7a93b1141fd1b611b0380b64de432';
+    r'f2b62f02c7c0cf0c8f9ef4232362449faf2c968b';
 
 @ProviderFor(ContentMediaDownloadController)
 final contentMediaDownloadControllerProvider =

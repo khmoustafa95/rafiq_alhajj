@@ -122,8 +122,8 @@ class ContentMediaCacheService {
     this._store,
     this._encryption,
     this._storage, {
-    Dio? dio,
-  }) : _dio = dio ?? Dio();
+    required Dio dio,
+  }) : _dio = dio;
 
   /// Reject downloads whose body exceeds this hard cap (bucket limit is 50 MiB;
   /// allow a little headroom). Guards against a misbehaving server / wrong URL.

@@ -4,8 +4,10 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/domain/models/educational_media.dart';
+import 'package:rafiq_alhajj/core/network/dio_provider.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/features/content/application/services/content_media_cache_service.dart';
+import 'package:rafiq_alhajj/features/content/data/data_sources/content_media_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/content/data/local/content_media_cache_store.dart';
 import 'package:rafiq_alhajj/features/content/data/local/media_encryption_service.dart';
 import 'package:rafiq_alhajj/features/content/data/storage/content_media_storage_service.dart';
@@ -34,13 +36,17 @@ Future<ContentMediaCacheService> contentMediaCacheService(Ref ref) async {
   final store = await ref.watch(contentMediaCacheStoreProvider.future);
   final encryption = ref.watch(mediaEncryptionServiceProvider);
   final storage = ref.watch(contentMediaStorageServiceProvider);
-  return ContentMediaCacheService(store, encryption, storage);
+  final dio = ref.watch(dioProvider);
+  return ContentMediaCacheService(store, encryption, storage, dio: dio);
 }
 
 @Riverpod(keepAlive: true)
 ContentMediaStorageService contentMediaStorageService(Ref ref) {
+  final client = AppConfig.hasSupabase ? Supabase.instance.client : null;
   return ContentMediaStorageService(
-    AppConfig.hasSupabase ? Supabase.instance.client : null,
+    dataSource:
+        client != null ? ContentMediaRemoteDataSource(client) : null,
+    dio: ref.watch(dioProvider),
   );
 }
 

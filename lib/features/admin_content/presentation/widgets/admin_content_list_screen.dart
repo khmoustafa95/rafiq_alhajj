@@ -49,8 +49,8 @@ class AdminContentListScreen extends StatelessWidget {
       ],
     );
 
-    if (AppPlatform.isWeb) {
-      return DefaultTabController(
+    return StaffAdaptivePage(
+      web: DefaultTabController(
         length: 3,
         child: StaffWebPage(
           title: l10n.adminContentListTitle,
@@ -58,21 +58,20 @@ class AdminContentListScreen extends StatelessWidget {
           top: Align(alignment: Alignment.centerLeft, child: tabBar),
           body: views,
         ),
-      );
-    }
-
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: RafiqAppBar(
-          title: Text(l10n.adminContentListTitle),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => context.go(AppRoutes.adminDashboard),
+      ),
+      mobile: DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          appBar: RafiqAppBar(
+            title: Text(l10n.adminContentListTitle),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => context.go(AppRoutes.adminDashboard),
+            ),
+            bottom: tabBar,
           ),
-          bottom: tabBar,
+          body: views,
         ),
-        body: views,
       ),
     );
   }

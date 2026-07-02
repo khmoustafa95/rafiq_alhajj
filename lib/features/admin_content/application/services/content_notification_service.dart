@@ -1,3 +1,5 @@
+import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/features/admin_content/data/data_sources/content_notification_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_visibility.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -6,9 +8,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// notifications for eligible pilgrims (the DB push-dispatch trigger then fans
 /// them out to FCM).
 class ContentNotificationService {
-  const ContentNotificationService(this._client);
+  ContentNotificationService([SupabaseClient? client])
+      : _remote = AppConfig.hasSupabase && client != null
+            ? ContentNotificationRemoteDataSource(client)
+            : null;
 
-  final SupabaseClient? _client;
+  final ContentNotificationRemoteDataSource? _remote;
 
   /// Notifies eligible pilgrims about a created/updated content item or topic.
   /// [route] is `content` (feed item) or `contentTopic` (library topic).
@@ -19,20 +24,17 @@ class ContentNotificationService {
     required String id,
     required ContentVisibility visibility,
   }) async {
-    final client = _client;
-    if (client == null) {
+    final remote = _remote;
+    if (remote == null) {
       return;
     }
     try {
-      await client.rpc<dynamic>(
-        'publish_content_notification',
-        params: {
-          'p_title_ar': title,
-          'p_title_en': title,
-          'p_route': route,
-          'p_id': id,
-          'p_visibility': visibility.databaseValue,
-        },
+      await remote.publishContentNotification(
+        titleAr: title,
+        titleEn: title,
+        route: route,
+        id: id,
+        visibility: visibility.databaseValue,
       );
     } on PostgrestException {
       // best-effort: an admin can re-trigger from the editor if needed.

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
@@ -174,23 +173,22 @@ class _SosMonitorScreenState extends ConsumerState<SosMonitorScreen> {
       ),
     ];
 
-    if (AppPlatform.isWeb) {
-      return StaffWebPage(
+    return StaffAdaptivePage(
+      web: StaffWebPage(
         title: l10n.sosMonitorTitle,
         subtitle: l10n.sosMonitorSubtitle,
         scrollable: false,
         actions: actions,
         body: body,
-      );
-    }
-
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: RafiqAppBar(
-        title: Text(l10n.sosMonitorTitle),
-        actions: actions,
       ),
-      body: body,
+      mobile: Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: RafiqAppBar(
+          title: Text(l10n.sosMonitorTitle),
+          actions: actions,
+        ),
+        body: body,
+      ),
     );
   }
 }

@@ -9,6 +9,7 @@ import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/providers/admin_content_topics_providers.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/utils/content_meta_l10n.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_topic.dart';
@@ -151,28 +152,26 @@ class AdminContentTopicsListScreen extends ConsumerWidget {
       },
     );
 
-    if (AppPlatform.isWeb) {
-      // Embedded (inside the content tabs): no nested StaffWebPage chrome.
-      // A bare Column with Expanded gives the ListView a bounded height.
-      if (embedded) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Align(
-              alignment: Alignment.centerRight,
-              child: FilledButton.icon(
-                onPressed: () => _openNew(context),
-                icon: const Icon(Icons.add_rounded),
-                label: Text(l10n.adminContentTopicAdd),
-              ),
+    if (embedded && AppPlatform.isWeb) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Align(
+            alignment: Alignment.centerRight,
+            child: FilledButton.icon(
+              onPressed: () => _openNew(context),
+              icon: const Icon(Icons.add_rounded),
+              label: Text(l10n.adminContentTopicAdd),
             ),
-            SizedBox(height: 12.h),
-            Expanded(child: body),
-          ],
-        );
-      }
+          ),
+          SizedBox(height: sh(12)),
+          Expanded(child: body),
+        ],
+      );
+    }
 
-      return StaffWebPage(
+    return StaffAdaptivePage(
+      web: StaffWebPage(
         title: l10n.adminContentTopicsListTitle,
         scrollable: false,
         actions: [
@@ -183,26 +182,24 @@ class AdminContentTopicsListScreen extends ConsumerWidget {
           ),
         ],
         body: body,
-      );
-    }
-
-    return Scaffold(
-      // Embedded: omit the app bar (the parent screen already provides one).
-      appBar: embedded
-          ? null
-          : RafiqAppBar(
-              title: Text(l10n.adminContentTopicsListTitle),
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () => context.go(AppRoutes.adminContent),
-              ),
-            ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _openNew(context),
-        icon: const Icon(Icons.add),
-        label: Text(l10n.adminContentTopicAdd),
       ),
-      body: body,
+      mobile: Scaffold(
+        appBar: embedded
+            ? null
+            : RafiqAppBar(
+                title: Text(l10n.adminContentTopicsListTitle),
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () => context.go(AppRoutes.adminContent),
+                ),
+              ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () => _openNew(context),
+          icon: const Icon(Icons.add),
+          label: Text(l10n.adminContentTopicAdd),
+        ),
+        body: body,
+      ),
     );
   }
 }

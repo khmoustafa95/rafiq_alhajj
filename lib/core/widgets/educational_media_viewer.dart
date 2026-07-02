@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:rafiq_alhajj/core/domain/models/educational_media.dart';
+import 'package:rafiq_alhajj/core/network/dio_provider.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/video_embed/video_embed_view.dart';
@@ -394,16 +395,17 @@ class _PdfMedia extends ConsumerWidget {
         height: 200.h,
         child: const Center(child: CircularProgressIndicator()),
       ),
-      error: (_, _) => _PdfViewer(source: media.url),
-      data: (url) => _PdfViewer(source: url),
+      error: (_, _) => _PdfViewer(source: media.url, dio: ref.read(dioProvider)),
+      data: (url) => _PdfViewer(source: url, dio: ref.read(dioProvider)),
     );
   }
 }
 
 class _PdfViewer extends StatefulWidget {
-  const _PdfViewer({required this.source});
+  const _PdfViewer({required this.source, required this.dio});
 
   final String source;
+  final Dio dio;
 
   @override
   State<_PdfViewer> createState() => _PdfViewerState();
@@ -437,7 +439,7 @@ class _PdfViewerState extends State<_PdfViewer> {
       // bytes (also the only path that works on web).
       final Future<PdfDocument> document;
       if (source.startsWith('http')) {
-        final response = await Dio().get<List<int>>(
+        final response = await widget.dio.get<List<int>>(
           source,
           options: Options(responseType: ResponseType.bytes),
         );

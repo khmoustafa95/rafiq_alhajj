@@ -9,6 +9,54 @@ part of 'competitions_providers.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(competitionsService)
+final competitionsServiceProvider = CompetitionsServiceProvider._();
+
+final class CompetitionsServiceProvider
+    extends
+        $FunctionalProvider<
+          CompetitionsService,
+          CompetitionsService,
+          CompetitionsService
+        >
+    with $Provider<CompetitionsService> {
+  CompetitionsServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'competitionsServiceProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$competitionsServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<CompetitionsService> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  CompetitionsService create(Ref ref) {
+    return competitionsService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(CompetitionsService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<CompetitionsService>(value),
+    );
+  }
+}
+
+String _$competitionsServiceHash() =>
+    r'e63c3c4f1a836ec0e4aaf260462fc12e8cdfb53d';
+
 @ProviderFor(competitionsRepository)
 final competitionsRepositoryProvider = CompetitionsRepositoryProvider._();
 
@@ -408,7 +456,7 @@ final class CompetitionQuizProgressProvider
 }
 
 String _$competitionQuizProgressHash() =>
-    r'a9bf2189c6f92ffcc6c4a9fae813da25e9ec8bf1';
+    r'f64726c5d0cfbec63883d61042c5b7158cae3780';
 
 final class CompetitionQuizProgressFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<CompetitionQuizProgress>, String> {

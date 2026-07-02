@@ -1,6 +1,6 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_catalog_providers.dart';
-import 'package:rafiq_alhajj/features/hajj_journey/data/hajj_journey_fallback_data.dart';
+import 'package:rafiq_alhajj/features/hajj_journey/application/services/hajj_journey_service.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/data/repositories/admin_hajj_journey_repository.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/data/repositories/hajj_journey_repository.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/domain/models/hajj_journey_step.dart';
@@ -9,6 +9,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'hajj_journey_providers.g.dart';
+
+@Riverpod(keepAlive: true)
+HajjJourneyService hajjJourneyService(Ref ref) {
+  return HajjJourneyService(ref.watch(hajjJourneyRepositoryProvider));
+}
 
 @Riverpod(keepAlive: true)
 HajjJourneyRepository hajjJourneyRepository(Ref ref) {
@@ -26,20 +31,8 @@ AdminHajjJourneyRepository adminHajjJourneyRepository(Ref ref) {
 
 @riverpod
 Future<List<HajjJourneyStep>> hajjJourneySteps(Ref ref) async {
-  final repo = ref.read(hajjJourneyRepositoryProvider);
   final cache = await ref.read(contentCatalogCacheProvider.future);
-
-  try {
-    final steps = await repo.fetchActiveSteps();
-    await cache.writeJourneySteps(steps);
-    return steps;
-  } catch (_) {
-    final cached = cache.readJourneySteps();
-    if (cached != null && cached.isNotEmpty) {
-      return cached;
-    }
-    return HajjJourneyFallbackData.steps();
-  }
+  return ref.read(hajjJourneyServiceProvider).loadActiveSteps(cache: cache);
 }
 
 @riverpod

@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/utils/upload_validation.dart';
+import 'package:rafiq_alhajj/features/content/data/data_sources/content_media_remote_data_source.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ContentMediaStorageException implements Exception {
@@ -14,21 +14,26 @@ class ContentMediaStorageException implements Exception {
 }
 
 class ContentMediaStorageService {
-  ContentMediaStorageService([SupabaseClient? client]) : _client = client;
+  ContentMediaStorageService({
+    ContentMediaRemoteDataSource? dataSource,
+    Dio? dio,
+  })  : _remote = dataSource,
+        _dio = dio;
 
   /// Public bucket: media for `public` topics (anon-readable).
-  static const bucket = 'content-media';
+  static const bucket = ContentMediaRemoteDataSource.bucket;
 
   /// Private bucket: media for `pilgrim_only` topics. Served via short-lived
   /// signed URLs; objects are referenced in the DB as `private://<path>`.
-  static const bucketPrivate = 'content-media-private';
+  static const bucketPrivate = ContentMediaRemoteDataSource.bucketPrivate;
 
   /// Sentinel prefix stored in `content_topic_media.url` for private objects.
   static const privateScheme = 'private://';
 
-  final SupabaseClient? _client;
+  final ContentMediaRemoteDataSource? _remote;
+  final Dio? _dio;
 
-  bool get isAvailable => AppConfig.hasSupabase && _client != null;
+  bool get isAvailable => _remote != null;
 
   /// True when [ref] points at the private bucket (`private://...`).
   static bool isPrivateRef(String ref) =>
@@ -61,7 +66,8 @@ class ContentMediaStorageService {
     bool isPrivate = false,
     void Function(double progress)? onProgress,
   }) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       throw const ContentMediaStorageException('Supabase unavailable');
     }
 
@@ -81,23 +87,37 @@ class ContentMediaStorageService {
 
     try {
       if (onProgress != null) {
-        await _uploadWithProgress(
+        final dio = _dio;
+        if (dio == null) {
+          throw const ContentMediaStorageException('Upload client unavailable');
+        }
+        try {
+          await remote.uploadWithProgress(
+            dio: dio,
+            targetBucket: targetBucket,
+            path: path,
+            bytes: bytes,
+            contentType: contentType,
+            onProgress: onProgress,
+          );
+        } on DioException catch (e) {
+          final data = e.response?.data;
+          final message = data is Map
+              ? (data['message'] ?? data['error'])?.toString()
+              : e.message;
+          throw ContentMediaStorageException(message);
+        }
+      } else {
+        await remote.uploadBinary(
           targetBucket: targetBucket,
           path: path,
           bytes: bytes,
           contentType: contentType,
-          onProgress: onProgress,
         );
-      } else {
-        await _client!.storage.from(targetBucket).uploadBinary(
-              path,
-              bytes,
-              fileOptions: FileOptions(upsert: true, contentType: contentType),
-            );
       }
       return isPrivate
           ? '$privateScheme$path'
-          : _client!.storage.from(bucket).getPublicUrl(path);
+          : remote.getPublicUrl(path);
     } on StorageException catch (e) {
       throw ContentMediaStorageException(e.message);
     }
@@ -110,7 +130,8 @@ class ContentMediaStorageService {
     String ref, {
     int ttlSeconds = 7200,
   }) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       return null;
     }
     final path = privatePathFromRef(ref);
@@ -118,9 +139,7 @@ class ContentMediaStorageService {
       return null;
     }
     try {
-      return await _client!.storage
-          .from(bucketPrivate)
-          .createSignedUrl(path, ttlSeconds);
+      return await remote.createSignedUrl(path: path, ttlSeconds: ttlSeconds);
     } on StorageException {
       return null;
     }
@@ -137,7 +156,8 @@ class ContentMediaStorageService {
     String? topicId,
     String folder = 'media',
   }) async {
-    if (!isAvailable || ref.trim().isEmpty) {
+    final remote = _remote;
+    if (remote == null || ref.trim().isEmpty) {
       return ref;
     }
     final isPriv = isPrivateRef(ref);
@@ -154,7 +174,10 @@ class ContentMediaStorageService {
     }
 
     try {
-      final bytes = await _client!.storage.from(sourceBucket).download(sourcePath);
+      final bytes = await remote.download(
+        fromBucket: sourceBucket,
+        path: sourcePath,
+      );
       final fileName = sourcePath.split('/').last;
       final contentType = mimeFromExtension(fileExtension(fileName));
       final targetBucket = wantPrivate ? bucketPrivate : bucket;
@@ -163,15 +186,16 @@ class ContentMediaStorageService {
         folder: folder,
         fileName: fileName,
       );
-      await _client.storage.from(targetBucket).uploadBinary(
-            newPath,
-            bytes,
-            fileOptions: FileOptions(upsert: true, contentType: contentType),
-          );
-      await _client.storage.from(sourceBucket).remove([sourcePath]);
+      await remote.uploadBinary(
+        targetBucket: targetBucket,
+        path: newPath,
+        bytes: bytes,
+        contentType: contentType,
+      );
+      await remote.remove(fromBucket: sourceBucket, paths: [sourcePath]);
       return wantPrivate
           ? '$privateScheme$newPath'
-          : _client.storage.from(bucket).getPublicUrl(newPath);
+          : remote.getPublicUrl(newPath);
     } on StorageException {
       return ref;
     }
@@ -181,7 +205,8 @@ class ContentMediaStorageService {
   /// `private://` paths). Best-effort: external links and failures are ignored
   /// so a save is never blocked by orphan cleanup.
   Future<void> removeStorageRefs(Iterable<String> refs) async {
-    if (!isAvailable) {
+    final remote = _remote;
+    if (remote == null) {
       return;
     }
     final publicPaths = <String>[];
@@ -199,16 +224,20 @@ class ContentMediaStorageService {
         }
       }
     }
-    await _removeFrom(bucket, publicPaths);
-    await _removeFrom(bucketPrivate, privatePaths);
+    await _removeFrom(remote, bucket, publicPaths);
+    await _removeFrom(remote, bucketPrivate, privatePaths);
   }
 
-  Future<void> _removeFrom(String fromBucket, List<String> paths) async {
+  Future<void> _removeFrom(
+    ContentMediaRemoteDataSource remote,
+    String fromBucket,
+    List<String> paths,
+  ) async {
     if (paths.isEmpty) {
       return;
     }
     try {
-      await _client!.storage.from(fromBucket).remove(paths);
+      await remote.remove(fromBucket: fromBucket, paths: paths);
     } on StorageException {
       // Orphan cleanup is best-effort; never surface to the caller.
     }
@@ -234,57 +263,5 @@ class ContentMediaStorageService {
     }
     final raw = url.substring(index + marker.length).split('?').first;
     return raw.isEmpty ? null : Uri.decodeComponent(raw);
-  }
-
-  Future<void> _uploadWithProgress({
-    required String targetBucket,
-    required String path,
-    required Uint8List bytes,
-    required String? contentType,
-    required void Function(double progress) onProgress,
-  }) async {
-    final token =
-        _client!.auth.currentSession?.accessToken ?? AppConfig.supabaseAnonKey;
-    final uri = '${AppConfig.supabaseUrl}/storage/v1/object/$targetBucket/$path';
-    final dio = Dio();
-
-    try {
-      await dio.post<dynamic>(
-        uri,
-        data: kIsWeb ? bytes : _chunked(bytes),
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-            'apikey': AppConfig.supabaseAnonKey,
-            'x-upsert': 'true',
-            'cache-control': '3600',
-            'content-length': bytes.length,
-            'content-type': ?contentType,
-          },
-        ),
-        onSendProgress: (sent, total) {
-          if (total > 0) {
-            onProgress((sent / total).clamp(0.0, 1.0));
-          }
-        },
-      );
-    } on DioException catch (e) {
-      final data = e.response?.data;
-      final message = data is Map
-          ? (data['message'] ?? data['error'])?.toString()
-          : e.message;
-      throw ContentMediaStorageException(message);
-    } finally {
-      dio.close(force: true);
-    }
-  }
-
-  Stream<List<int>> _chunked(Uint8List bytes, [int chunkSize = 64 * 1024]) async* {
-    for (var i = 0; i < bytes.length; i += chunkSize) {
-      yield bytes.sublist(
-        i,
-        i + chunkSize > bytes.length ? bytes.length : i + chunkSize,
-      );
-    }
   }
 }

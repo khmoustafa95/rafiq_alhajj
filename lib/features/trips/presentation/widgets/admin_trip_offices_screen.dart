@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
@@ -157,8 +156,8 @@ class AdminTripOfficesScreen extends ConsumerWidget {
       orElse: () => l10n.adminTripOfficesTitle,
     );
 
-    if (AppPlatform.isWeb) {
-      return StaffWebPage(
+    return StaffAdaptivePage(
+      web: StaffWebPage(
         title: title,
         subtitle: l10n.adminTripOfficesSubtitle,
         scrollable: false,
@@ -170,23 +169,22 @@ class AdminTripOfficesScreen extends ConsumerWidget {
           ),
         ],
         body: body,
-      );
-    }
-
-    return Scaffold(
-      appBar: RafiqAppBar(
-        title: Text(title),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go(AppRoutes.adminTrips),
+      ),
+      mobile: Scaffold(
+        appBar: RafiqAppBar(
+          title: Text(title),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go(AppRoutes.adminTrips),
+          ),
         ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () => unawaited(_addOffice(context, ref)),
+          icon: const Icon(Icons.add),
+          label: Text(l10n.adminTripAddOffice),
+        ),
+        body: body,
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => unawaited(_addOffice(context, ref)),
-        icon: const Icon(Icons.add),
-        label: Text(l10n.adminTripAddOffice),
-      ),
-      body: body,
     );
   }
 }

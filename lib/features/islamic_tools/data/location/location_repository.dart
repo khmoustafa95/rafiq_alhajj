@@ -41,6 +41,48 @@ class LocationRepository {
     return gps;
   }
 
+  /// Returns whether location permission is granted for foreground tracking.
+  Future<bool> ensureTrackingPermission({bool requestIfDenied = true}) async {
+    if (!await Geolocator.isLocationServiceEnabled()) {
+      return false;
+    }
+    var permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied && requestIfDenied) {
+      permission = await Geolocator.requestPermission();
+    }
+    return permission == LocationPermission.always ||
+        permission == LocationPermission.whileInUse;
+  }
+
+  /// One-shot GPS read for SOS raise; returns null when unavailable.
+  Future<Position?> readCurrentPositionOrNull() async {
+    try {
+      if (!await ensureTrackingPermission()) {
+        return null;
+      }
+      return await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 15),
+        ),
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Stream<Position> watchPosition({
+    int distanceFilter = 5,
+    LocationAccuracy accuracy = LocationAccuracy.high,
+  }) {
+    return Geolocator.getPositionStream(
+      locationSettings: LocationSettings(
+        accuracy: accuracy,
+        distanceFilter: distanceFilter,
+      ),
+    );
+  }
+
   Future<GeoLocation> _readGps() async {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {

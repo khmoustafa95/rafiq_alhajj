@@ -6,12 +6,12 @@ import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
-import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_async_table_body.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_data_table.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_network_image.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_table_definition_cache.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
@@ -174,29 +174,28 @@ class _AdminGroupsListScreenState extends ConsumerState<AdminGroupsListScreen> {
             },
           );
 
-    if (AppPlatform.isWeb) {
-      return StaffWebPage(
+    return StaffAdaptivePage(
+      web: StaffWebPage(
         title: l10n.adminGroupsTitle,
         subtitle: l10n.adminGroupsSubtitle,
         scrollable: false,
         body: body,
-      );
-    }
-
-    return Scaffold(
-      appBar: RafiqAppBar(
-        title: Text(l10n.adminGroupsTitle),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go(AppRoutes.adminDashboard),
+      ),
+      mobile: Scaffold(
+        appBar: RafiqAppBar(
+          title: Text(l10n.adminGroupsTitle),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go(AppRoutes.adminDashboard),
+          ),
         ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: _openNew,
+          icon: const Icon(Icons.group_add),
+          label: Text(l10n.adminGroupAdd),
+        ),
+        body: body,
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _openNew,
-        icon: const Icon(Icons.group_add),
-        label: Text(l10n.adminGroupAdd),
-      ),
-      body: body,
     );
   }
 
@@ -250,26 +249,11 @@ class _GroupLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (logoUrl != null && logoUrl!.isNotEmpty) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(AppDecorations.radiusSm),
-        child: Image.network(
-          logoUrl!,
-          width: size * 2,
-          height: size * 2,
-          fit: BoxFit.cover,
-          errorBuilder: (_, _, _) => _placeholder(size),
-        ),
-      );
-    }
-    return _placeholder(size);
-  }
-
-  Widget _placeholder(double radius) {
-    return CircleAvatar(
-      radius: radius,
-      backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-      child: Icon(Icons.groups_outlined, size: radius, color: AppColors.primary),
+    return StaffNetworkImage(
+      imageUrl: logoUrl,
+      size: size * 2,
+      fallbackIcon: Icons.groups_outlined,
+      borderRadius: BorderRadius.circular(AppDecorations.radiusSm),
     );
   }
 }

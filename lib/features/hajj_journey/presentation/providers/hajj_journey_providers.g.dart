@@ -9,6 +9,54 @@ part of 'hajj_journey_providers.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(hajjJourneyService)
+final hajjJourneyServiceProvider = HajjJourneyServiceProvider._();
+
+final class HajjJourneyServiceProvider
+    extends
+        $FunctionalProvider<
+          HajjJourneyService,
+          HajjJourneyService,
+          HajjJourneyService
+        >
+    with $Provider<HajjJourneyService> {
+  HajjJourneyServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'hajjJourneyServiceProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$hajjJourneyServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<HajjJourneyService> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  HajjJourneyService create(Ref ref) {
+    return hajjJourneyService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(HajjJourneyService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<HajjJourneyService>(value),
+    );
+  }
+}
+
+String _$hajjJourneyServiceHash() =>
+    r'78e0511f0a62b8283d7c5e81d4b757e13ce66ae5';
+
 @ProviderFor(hajjJourneyRepository)
 final hajjJourneyRepositoryProvider = HajjJourneyRepositoryProvider._();
 
@@ -145,7 +193,7 @@ final class HajjJourneyStepsProvider
   }
 }
 
-String _$hajjJourneyStepsHash() => r'aedbc4a8a99bd3afcaed7db3c61a8ff3c79b2629';
+String _$hajjJourneyStepsHash() => r'7ecf19ba24acc29c5ab4e4d06104913f6946cda3';
 
 @ProviderFor(hajjJourneyStepByKey)
 final hajjJourneyStepByKeyProvider = HajjJourneyStepByKeyFamily._();

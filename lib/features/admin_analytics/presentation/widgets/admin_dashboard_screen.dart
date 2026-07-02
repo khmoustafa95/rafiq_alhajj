@@ -26,10 +26,10 @@ class AdminDashboardScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (AppPlatform.isWeb) {
-      return const _AdminDashboardWebBody();
-    }
-    return _AdminDashboardMobileScaffold(ref: ref);
+    return StaffAdaptivePage(
+      web: const _AdminDashboardWebBody(),
+      mobile: _AdminDashboardMobileScaffold(ref: ref),
+    );
   }
 }
 
