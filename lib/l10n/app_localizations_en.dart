@@ -2660,6 +2660,59 @@ class AppLocalizationsEn extends AppLocalizations {
       'You\'re offline — showing saved content where available.';
 
   @override
+  String get contentCatalogCached => 'Showing saved catalog — pull to refresh';
+
+  @override
+  String get contentCatalogRefreshing => 'Updating content…';
+
+  @override
+  String get contentWifiOnboardingTitle => 'Save data while downloading';
+
+  @override
+  String get contentWifiOnboardingBody =>
+      'Educational topics can download automatically for offline use. We recommend Wi-Fi only to protect your mobile data.';
+
+  @override
+  String get contentWifiOnboardingConfirm => 'Use Wi-Fi only';
+
+  @override
+  String get contentWifiOnboardingLater => 'Not now';
+
+  @override
+  String get contentDownloadsTitle => 'My downloads';
+
+  @override
+  String get contentDownloadsEmpty =>
+      'No downloaded content yet. Enable offline downloads in your profile.';
+
+  @override
+  String contentDownloadsTopicSummary(int count, String size) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count files',
+      one: '1 file',
+    );
+    return '$_temp0 · $size';
+  }
+
+  @override
+  String get contentSearchTitle => 'Search saved content';
+
+  @override
+  String get contentSearchHint => 'Search topics, news, announcements…';
+
+  @override
+  String get contentSearchPrompt => 'Search your saved catalog while offline';
+
+  @override
+  String get contentSearchEmpty => 'No matches in saved content';
+
+  @override
+  String get competitionQuizQueuedOffline =>
+      'Answer saved — will sync when you\'re back online';
+
+  @override
   String get contentContinueLearning => 'Continue learning';
 
   @override

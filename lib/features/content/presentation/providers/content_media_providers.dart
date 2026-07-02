@@ -208,6 +208,36 @@ class ContentMediaDownloadController extends _$ContentMediaDownloadController {
     }
   }
 
+  /// Enqueues a single media item (sequential prefetch / push prefetch).
+  Future<void> enqueueMedia({
+    required String mediaId,
+    required String url,
+    required String topicId,
+    required EducationalMediaType mediaType,
+  }) async {
+    if (!ContentMediaUrlRules.isCacheable(url)) {
+      return;
+    }
+
+    final jobs = Map<String, MediaDownloadJob>.from(_state.jobs);
+    if (jobs[mediaId]?.status == MediaDownloadStatus.completed) {
+      return;
+    }
+
+    _pending[mediaId] = _PendingMedia(
+      mediaId: mediaId,
+      url: url,
+      topicId: topicId,
+      mediaType: mediaType,
+    );
+    jobs[mediaId] = MediaDownloadJob(
+      mediaId: mediaId,
+      status: MediaDownloadStatus.queued,
+    );
+    state = AsyncData(_state.copyWith(jobs: jobs));
+    await _processQueue();
+  }
+
   /// Synthetic media id for a topic cover image in the offline cache.
   static String coverMediaId(String topicId) => 'cover_topic_$topicId';
 

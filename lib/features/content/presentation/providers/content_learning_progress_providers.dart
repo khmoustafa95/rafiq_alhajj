@@ -14,6 +14,20 @@ Future<ContentMediaProgress?> continueLearningProgress(Ref ref) async {
   return ContentMediaProgressCache.readLatest(profileId);
 }
 
+@riverpod
+Future<int?> mediaResumePositionMs(Ref ref, String mediaId) async {
+  final profileId = ref.watch(authProfileIdProvider);
+  if (profileId == null) {
+    return null;
+  }
+  final progress =
+      await ContentMediaProgressCache.readForMedia(profileId, mediaId);
+  if (progress == null || progress.positionMs <= 0) {
+    return null;
+  }
+  return progress.positionMs;
+}
+
 @Riverpod(keepAlive: true)
 class ContentLearningProgressRecorder extends _$ContentLearningProgressRecorder {
   @override

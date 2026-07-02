@@ -13,6 +13,7 @@ import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_p
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_media_providers.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_topics_providers.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_offline_banner.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/content_stale_indicator.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_topic_card.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
@@ -35,13 +36,18 @@ class ContentTopicsListScreen extends ConsumerWidget {
       appBar: RafiqAppBar(
         title: Text(l10n.contentTopicsSection),
         actions: [
+          IconButton(
+            tooltip: l10n.contentSearchTitle,
+            onPressed: () => unawaited(context.push(AppRoutes.contentSearch)),
+            icon: const Icon(Icons.search),
+          ),
           if (isPilgrim && !AppPlatform.isWeb)
             IconButton(
               tooltip: l10n.contentDownloadAll,
-              onPressed: topicsAsync.value == null
+              onPressed: topicsAsync.value?.data == null
                   ? null
                   : () async {
-                      final topics = topicsAsync.value!;
+                      final topics = topicsAsync.value!.data;
                       await ref
                           .read(contentMediaDownloadControllerProvider.notifier)
                           .enqueueTopics(topics);
@@ -60,6 +66,7 @@ class ContentTopicsListScreen extends ConsumerWidget {
       body: Column(
         children: [
           const ContentOfflineBanner(),
+          ContentStaleIndicator(snapshot: topicsAsync.value),
           Expanded(
             child: topicsAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
@@ -84,7 +91,8 @@ class ContentTopicsListScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              data: (topics) {
+              data: (snapshot) {
+                final topics = snapshot.data;
                 if (topics.isEmpty) {
                   return Center(
                     child: Padding(

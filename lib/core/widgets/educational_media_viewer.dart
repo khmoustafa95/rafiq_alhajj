@@ -50,11 +50,45 @@ class EducationalMediaViewer extends ConsumerStatefulWidget {
 
 class _EducationalMediaViewerState extends ConsumerState<EducationalMediaViewer> {
   int _selectedIndex = 0;
+  int _currentPositionMs = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _prefetchNext(_selectedIndex);
+    });
+  }
 
   @override
   void dispose() {
     _recordProgress(completed: false);
     super.dispose();
+  }
+
+  void _onPositionChanged(int positionMs) {
+    _currentPositionMs = positionMs;
+  }
+
+  void _prefetchNext(int index) {
+    final topicId = widget.progressTopicId;
+    if (topicId == null || index + 1 >= widget.media.length) {
+      return;
+    }
+    final downloadState =
+        ref.read(contentMediaDownloadControllerProvider).asData?.value;
+    if (!(downloadState?.offlineEnabled ?? false)) {
+      return;
+    }
+    final next = widget.media[index + 1];
+    unawaited(
+      ref.read(contentMediaDownloadControllerProvider.notifier).enqueueMedia(
+            mediaId: next.id,
+            url: next.url,
+            topicId: topicId,
+            mediaType: next.mediaType,
+          ),
+    );
   }
 
   void _recordProgress({required bool completed}) {
@@ -71,6 +105,7 @@ class _EducationalMediaViewerState extends ConsumerState<EducationalMediaViewer>
             mediaId: selected.id,
             topicTitle: topicTitle,
             mediaTitle: selected.title,
+            positionMs: _currentPositionMs,
             completed: completed,
           ),
     );
@@ -143,7 +178,11 @@ class _EducationalMediaViewerState extends ConsumerState<EducationalMediaViewer>
                           selected: _selectedIndex == i,
                           onSelected: (_) {
                             _recordProgress(completed: false);
-                            setState(() => _selectedIndex = i);
+                            setState(() {
+                              _currentPositionMs = 0;
+                              _selectedIndex = i;
+                            });
+                            _prefetchNext(i);
                           },
                         ),
                       ),
@@ -154,6 +193,8 @@ class _EducationalMediaViewerState extends ConsumerState<EducationalMediaViewer>
             _MediaContent(
               media: selected,
               images: _images,
+              progressTopicId: widget.progressTopicId,
+              onPositionChanged: _onPositionChanged,
             ),
           ],
         ),
@@ -175,18 +216,33 @@ class _MediaContent extends ConsumerWidget {
   const _MediaContent({
     required this.media,
     required this.images,
+    this.progressTopicId,
+    this.onPositionChanged,
   });
 
   final EducationalMediaItem media;
   final List<EducationalMediaItem> images;
+  final String? progressTopicId;
+  final ValueChanged<int>? onPositionChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final resumeMs = progressTopicId == null
+        ? null
+        : ref.watch(mediaResumePositionMsProvider(media.id)).asData?.value;
 
     return switch (media.mediaType) {
-      EducationalMediaType.video => _ResolvedVideoEmbed(media: media),
-      EducationalMediaType.audio => ResolvedAudioPlayer(media: media),
+      EducationalMediaType.video => _ResolvedVideoEmbed(
+          media: media,
+          initialPositionMs: resumeMs ?? 0,
+          onPositionChanged: onPositionChanged,
+        ),
+      EducationalMediaType.audio => ResolvedAudioPlayer(
+          media: media,
+          initialPositionMs: resumeMs ?? 0,
+          onPositionChanged: onPositionChanged,
+        ),
       EducationalMediaType.pdf => _PdfMedia(media: media),
       EducationalMediaType.image => _StoriesGallery(
           images: images.isEmpty ? [media] : images,
@@ -197,9 +253,15 @@ class _MediaContent extends ConsumerWidget {
 }
 
 class _ResolvedVideoEmbed extends ConsumerWidget {
-  const _ResolvedVideoEmbed({required this.media});
+  const _ResolvedVideoEmbed({
+    required this.media,
+    this.initialPositionMs = 0,
+    this.onPositionChanged,
+  });
 
   final EducationalMediaItem media;
+  final int initialPositionMs;
+  final ValueChanged<int>? onPositionChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -217,8 +279,16 @@ class _ResolvedVideoEmbed extends ConsumerWidget {
         height: 200.h,
         child: const Center(child: CircularProgressIndicator()),
       ),
-      error: (_, _) => _NativeVideoPlayer(source: media.url),
-      data: (url) => _NativeVideoPlayer(source: url),
+      error: (_, _) => _NativeVideoPlayer(
+        source: media.url,
+        initialPositionMs: initialPositionMs,
+        onPositionChanged: onPositionChanged,
+      ),
+      data: (url) => _NativeVideoPlayer(
+        source: url,
+        initialPositionMs: initialPositionMs,
+        onPositionChanged: onPositionChanged,
+      ),
     );
   }
 }
@@ -226,9 +296,15 @@ class _ResolvedVideoEmbed extends ConsumerWidget {
 /// Native player (controls / seek / fullscreen) for a local decrypted file or a
 /// direct/signed MP4 URL.
 class _NativeVideoPlayer extends StatefulWidget {
-  const _NativeVideoPlayer({required this.source});
+  const _NativeVideoPlayer({
+    required this.source,
+    this.initialPositionMs = 0,
+    this.onPositionChanged,
+  });
 
   final String source;
+  final int initialPositionMs;
+  final ValueChanged<int>? onPositionChanged;
 
   @override
   State<_NativeVideoPlayer> createState() => _NativeVideoPlayerState();
@@ -239,6 +315,7 @@ class _NativeVideoPlayerState extends State<_NativeVideoPlayer> {
   ChewieController? _chewieController;
   bool _initialized = false;
   Object? _error;
+  Timer? _positionTimer;
 
   @override
   void initState() {
@@ -265,6 +342,11 @@ class _NativeVideoPlayerState extends State<_NativeVideoPlayer> {
           : VideoPlayerController.file(File(source));
       _videoController = controller;
       await controller.initialize();
+      if (widget.initialPositionMs > 0) {
+        await controller.seekTo(
+          Duration(milliseconds: widget.initialPositionMs),
+        );
+      }
       if (!mounted) {
         return;
       }
@@ -274,6 +356,11 @@ class _NativeVideoPlayerState extends State<_NativeVideoPlayer> {
             ? 16 / 9
             : controller.value.aspectRatio,
       );
+      _positionTimer?.cancel();
+      _positionTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+        final position = controller.value.position;
+        widget.onPositionChanged?.call(position.inMilliseconds);
+      });
       setState(() => _initialized = true);
     } catch (e) {
       if (mounted) {
@@ -283,6 +370,12 @@ class _NativeVideoPlayerState extends State<_NativeVideoPlayer> {
   }
 
   void _disposeControllers() {
+    _positionTimer?.cancel();
+    _positionTimer = null;
+    final position = _videoController?.value.position;
+    if (position != null) {
+      widget.onPositionChanged?.call(position.inMilliseconds);
+    }
     _chewieController?.dispose();
     _chewieController = null;
     unawaited(_videoController?.dispose());

@@ -1,6 +1,7 @@
 import 'package:rafiq_alhajj/features/content/data/local/content_catalog_cache.dart';
 import 'package:rafiq_alhajj/features/content/data/repositories/content_repository.dart';
 import 'package:rafiq_alhajj/features/content/data/repositories/content_topics_repository.dart';
+import 'package:rafiq_alhajj/features/content/domain/models/catalog_snapshot.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_item.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_topic.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/public_content_feed.dart';
@@ -20,19 +21,43 @@ class ContentCatalogService {
   String _scope({required bool isPilgrim, String? profileId}) =>
       ContentCatalogCache.scopeKey(isPilgrim: isPilgrim, profileId: profileId);
 
+  CatalogSnapshot<PublicContentFeed>? readCachedFeedSnapshot({
+    required bool isPilgrim,
+    String? profileId,
+  }) {
+    final entry = _cache.readFeedEntry(
+      _scope(isPilgrim: isPilgrim, profileId: profileId),
+    );
+    if (entry == null) {
+      return null;
+    }
+    return CatalogSnapshot(
+      data: entry.feed,
+      cachedAt: entry.cachedAt,
+      isFromCache: true,
+    );
+  }
+
   PublicContentFeed? readCachedFeed({
     required bool isPilgrim,
     String? profileId,
   }) {
-    return _cache.readFeed(_scope(isPilgrim: isPilgrim, profileId: profileId));
+    return readCachedFeedSnapshot(
+      isPilgrim: isPilgrim,
+      profileId: profileId,
+    )?.data;
   }
 
-  Future<PublicContentFeed> loadHomeFeed({
+  Future<CatalogSnapshot<PublicContentFeed>> loadHomeFeedWithSwr({
     required bool isPilgrim,
     String? profileId,
+    void Function(CatalogSnapshot<PublicContentFeed>)? onRefresh,
   }) async {
     final scope = _scope(isPilgrim: isPilgrim, profileId: profileId);
-    final cached = _cache.readFeed(scope);
+    final cached = readCachedFeedSnapshot(
+      isPilgrim: isPilgrim,
+      profileId: profileId,
+    );
 
     try {
       final feed = await _repository.fetchBrowsableFeed(
@@ -45,7 +70,7 @@ class ContentCatalogService {
           includePilgrimOnly: isPilgrim,
         );
       } catch (_) {
-        topics = cached?.topics ?? const [];
+        topics = cached?.data.topics ?? const [];
       }
 
       final result = PublicContentFeed(
@@ -54,9 +79,79 @@ class ContentCatalogService {
         topics: topics,
       );
       await _cache.writeFeed(scope, result);
-      return result;
+      final snapshot = CatalogSnapshot(
+        data: result,
+        cachedAt: DateTime.now(),
+      );
+      onRefresh?.call(snapshot);
+      return snapshot;
     } catch (_) {
       if (cached != null) {
+        onRefresh?.call(cached);
+        return cached;
+      }
+      rethrow;
+    }
+  }
+
+  Future<PublicContentFeed> loadHomeFeed({
+    required bool isPilgrim,
+    String? profileId,
+  }) async {
+    final snapshot = await loadHomeFeedWithSwr(
+      isPilgrim: isPilgrim,
+      profileId: profileId,
+    );
+    return snapshot.data;
+  }
+
+  CatalogSnapshot<List<ContentTopic>>? readCachedTopicsSnapshot({
+    required bool isPilgrim,
+    String? profileId,
+  }) {
+    final scope = _scope(isPilgrim: isPilgrim, profileId: profileId);
+    final feedEntry = _cache.readFeedEntry(scope);
+    final listCached = _cache.readTopicsList(scope);
+    final topics = listCached ?? feedEntry?.feed.topics;
+    final cachedAt = feedEntry?.cachedAt;
+    if (topics == null || cachedAt == null) {
+      return null;
+    }
+    return CatalogSnapshot(
+      data: topics,
+      cachedAt: cachedAt,
+      isFromCache: true,
+    );
+  }
+
+  Future<CatalogSnapshot<List<ContentTopic>>> loadTopicsWithSwr({
+    required bool isPilgrim,
+    String? profileId,
+    void Function(CatalogSnapshot<List<ContentTopic>>)? onRefresh,
+  }) async {
+    final scope = _scope(isPilgrim: isPilgrim, profileId: profileId);
+    final cached = readCachedTopicsSnapshot(
+      isPilgrim: isPilgrim,
+      profileId: profileId,
+    );
+
+    try {
+      final topics = await _topicsRepository.fetchActive(
+        includePilgrimOnly: isPilgrim,
+      );
+      await _cache.writeTopicsList(scope, topics);
+      for (final topic in topics) {
+        await _cache.writeTopic(topic);
+      }
+      final snapshot = CatalogSnapshot(
+        data: topics,
+        cachedAt: DateTime.now(),
+      );
+      onRefresh?.call(snapshot);
+      return snapshot;
+    } catch (_) {
+      if (cached != null) {
+        onRefresh?.call(cached);
         return cached;
       }
       rethrow;
@@ -67,24 +162,18 @@ class ContentCatalogService {
     required bool isPilgrim,
     String? profileId,
   }) async {
-    final scope = _scope(isPilgrim: isPilgrim, profileId: profileId);
-    final cached = _cache.readTopicsList(scope) ?? _cache.readFeed(scope)?.topics;
+    final snapshot = await loadTopicsWithSwr(
+      isPilgrim: isPilgrim,
+      profileId: profileId,
+    );
+    return snapshot.data;
+  }
 
-    try {
-      final topics = await _topicsRepository.fetchActive(
-        includePilgrimOnly: isPilgrim,
-      );
-      await _cache.writeTopicsList(scope, topics);
-      for (final topic in topics) {
-        await _cache.writeTopic(topic);
-      }
-      return topics;
-    } catch (_) {
-      if (cached != null) {
-        return cached;
-      }
-      rethrow;
-    }
+  List<CatalogSearchHit> searchCached({
+    required String query,
+    required bool isPilgrim,
+  }) {
+    return _cache.searchLocal(query, isPilgrim: isPilgrim);
   }
 
   Future<ContentItem?> loadContentDetail(

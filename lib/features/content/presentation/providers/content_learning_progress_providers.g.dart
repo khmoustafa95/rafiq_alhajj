@@ -51,6 +51,76 @@ final class ContinueLearningProgressProvider
 String _$continueLearningProgressHash() =>
     r'00085b2b40ff71c82eaa6a5366d2771e5267bdb7';
 
+@ProviderFor(mediaResumePositionMs)
+final mediaResumePositionMsProvider = MediaResumePositionMsFamily._();
+
+final class MediaResumePositionMsProvider
+    extends $FunctionalProvider<AsyncValue<int?>, int?, FutureOr<int?>>
+    with $FutureModifier<int?>, $FutureProvider<int?> {
+  MediaResumePositionMsProvider._({
+    required MediaResumePositionMsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'mediaResumePositionMsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$mediaResumePositionMsHash();
+
+  @override
+  String toString() {
+    return r'mediaResumePositionMsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<int?> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<int?> create(Ref ref) {
+    final argument = this.argument as String;
+    return mediaResumePositionMs(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is MediaResumePositionMsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$mediaResumePositionMsHash() =>
+    r'42429bfda78eae7e4223f0e11c0a1ceac78eab32';
+
+final class MediaResumePositionMsFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<int?>, String> {
+  MediaResumePositionMsFamily._()
+    : super(
+        retry: null,
+        name: r'mediaResumePositionMsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  MediaResumePositionMsProvider call(String mediaId) =>
+      MediaResumePositionMsProvider._(argument: mediaId, from: this);
+
+  @override
+  String toString() => r'mediaResumePositionMsProvider';
+}
+
 @ProviderFor(ContentLearningProgressRecorder)
 final contentLearningProgressRecorderProvider =
     ContentLearningProgressRecorderProvider._();

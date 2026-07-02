@@ -54,4 +54,4 @@ final class ContentCatalogRefreshBindingProvider
 }
 
 String _$contentCatalogRefreshBindingHash() =>
-    r'83f024e4b98bee10e1b522c1d1ba3b8dbb5900fa';
+    r'7f9704463e26eb6bd8115897d7f65cb892b315e9';

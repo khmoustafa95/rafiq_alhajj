@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/routing/root_navigator_key.dart';
+import 'package:rafiq_alhajj/features/content/presentation/providers/content_prefetch_providers.dart';
 import 'package:rafiq_alhajj/features/notifications/application/services/push_open_handler.dart';
 import 'package:rafiq_alhajj/features/notifications/application/utils/notification_navigation.dart';
 import 'package:rafiq_alhajj/features/notifications/application/utils/pending_push_navigation.dart';
@@ -51,13 +53,18 @@ void _navigateWithContext(BuildContext context, Map<String, dynamic> data) {
   final route = data['route'] as String?;
   final id = data['id'] as String?;
 
+  // Prefetch catalog metadata before navigation (offline-first).
+  final container = ProviderScope.containerOf(context, listen: false);
+  final prefetch = container.read(contentPrefetchServiceProvider);
   switch (route) {
     case 'content':
       if (id != null && id.isNotEmpty) {
+        unawaited(prefetch.prefetchContent(id));
         unawaited(context.push(AppRoutes.contentDetailPath(id)));
       }
     case 'contentTopic':
       if (id != null && id.isNotEmpty) {
+        unawaited(prefetch.prefetchTopic(id));
         unawaited(context.push(AppRoutes.contentTopicDetailPath(id)));
       }
     case 'competition':

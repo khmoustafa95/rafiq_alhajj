@@ -5,6 +5,7 @@ import 'package:rafiq_alhajj/core/widgets/app_root.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/auth_session_state.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:rafiq_alhajj/features/content/domain/models/catalog_snapshot.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/public_content_feed.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/public_content_feed_provider.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/domain/models/prayer_times_schedule.dart';
@@ -19,11 +20,7 @@ void main() {
             (ref) => Stream.value(const AuthSessionState.guest()),
           ),
           homeContentFeedProvider(AppAccessMode.guest).overrideWith(
-            (ref) async => const PublicContentFeed(
-              announcements: [],
-              news: [],
-              topics: [],
-            ),
+            () => _TestHomeContentFeed(),
           ),
           prayerTimesScheduleProvider.overrideWith(
             (ref) async => PrayerTimesSchedule(
@@ -49,4 +46,18 @@ void main() {
     expect(find.byType(MaterialApp), findsOneWidget);
     expect(find.byIcon(Icons.home_rounded), findsOneWidget);
   });
+}
+
+class _TestHomeContentFeed extends HomeContentFeed {
+  @override
+  Future<CatalogSnapshot<PublicContentFeed>> build(AppAccessMode accessMode) async {
+    return CatalogSnapshot(
+      data: const PublicContentFeed(
+        announcements: [],
+        news: [],
+        topics: [],
+      ),
+      cachedAt: DateTime.now(),
+    );
+  }
 }

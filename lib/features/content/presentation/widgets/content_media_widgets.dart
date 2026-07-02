@@ -123,10 +123,14 @@ class ContentTopicsSectionSkeleton extends StatelessWidget {
 class ResolvedAudioPlayer extends ConsumerWidget {
   const ResolvedAudioPlayer({
     required this.media,
+    this.initialPositionMs = 0,
+    this.onPositionChanged,
     super.key,
   });
 
   final EducationalMediaItem media;
+  final int initialPositionMs;
+  final ValueChanged<int>? onPositionChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -139,8 +143,18 @@ class ResolvedAudioPlayer extends ConsumerWidget {
         height: 100.h,
         child: const Center(child: CircularProgressIndicator()),
       ),
-      error: (_, _) => NativeAudioPlayer(url: media.url, title: media.title),
-      data: (url) => NativeAudioPlayer(url: url, title: media.title),
+      error: (_, _) => NativeAudioPlayer(
+        url: media.url,
+        title: media.title,
+        initialPositionMs: initialPositionMs,
+        onPositionChanged: onPositionChanged,
+      ),
+      data: (url) => NativeAudioPlayer(
+        url: url,
+        title: media.title,
+        initialPositionMs: initialPositionMs,
+        onPositionChanged: onPositionChanged,
+      ),
     );
   }
 }

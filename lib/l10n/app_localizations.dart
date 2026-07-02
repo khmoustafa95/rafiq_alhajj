@@ -4885,6 +4885,90 @@ abstract class AppLocalizations {
   /// **'You\'re offline — showing saved content where available.'**
   String get contentOfflineBanner;
 
+  /// No description provided for @contentCatalogCached.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing saved catalog — pull to refresh'**
+  String get contentCatalogCached;
+
+  /// No description provided for @contentCatalogRefreshing.
+  ///
+  /// In en, this message translates to:
+  /// **'Updating content…'**
+  String get contentCatalogRefreshing;
+
+  /// No description provided for @contentWifiOnboardingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save data while downloading'**
+  String get contentWifiOnboardingTitle;
+
+  /// No description provided for @contentWifiOnboardingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Educational topics can download automatically for offline use. We recommend Wi-Fi only to protect your mobile data.'**
+  String get contentWifiOnboardingBody;
+
+  /// No description provided for @contentWifiOnboardingConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Use Wi-Fi only'**
+  String get contentWifiOnboardingConfirm;
+
+  /// No description provided for @contentWifiOnboardingLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get contentWifiOnboardingLater;
+
+  /// No description provided for @contentDownloadsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My downloads'**
+  String get contentDownloadsTitle;
+
+  /// No description provided for @contentDownloadsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No downloaded content yet. Enable offline downloads in your profile.'**
+  String get contentDownloadsEmpty;
+
+  /// No description provided for @contentDownloadsTopicSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 file} other{{count} files}} · {size}'**
+  String contentDownloadsTopicSummary(int count, String size);
+
+  /// No description provided for @contentSearchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search saved content'**
+  String get contentSearchTitle;
+
+  /// No description provided for @contentSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search topics, news, announcements…'**
+  String get contentSearchHint;
+
+  /// No description provided for @contentSearchPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Search your saved catalog while offline'**
+  String get contentSearchPrompt;
+
+  /// No description provided for @contentSearchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No matches in saved content'**
+  String get contentSearchEmpty;
+
+  /// No description provided for @competitionQuizQueuedOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer saved — will sync when you\'re back online'**
+  String get competitionQuizQueuedOffline;
+
   /// No description provided for @contentContinueLearning.
   ///
   /// In en, this message translates to:
