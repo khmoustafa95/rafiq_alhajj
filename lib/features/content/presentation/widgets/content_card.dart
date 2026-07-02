@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_item.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_type.dart';
+import 'package:rafiq_alhajj/features/content/presentation/providers/content_media_providers.dart';
+import 'package:rafiq_alhajj/features/content/presentation/utils/content_cover_utils.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/resolved_cover_image.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 enum ContentCardLayout { compact, featured, horizontal }
@@ -39,6 +43,9 @@ class _FeaturedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
+    final title = item.localizedTitle(locale);
+    final description = item.localizedDescription(locale);
 
     return Material(
       color: AppColors.surface,
@@ -53,30 +60,15 @@ class _FeaturedCard extends StatelessWidget {
             children: [
               Stack(
                 children: [
-                  Container(
+                  _ContentCover(
+                    item: item,
                     height: 160.h,
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(AppDecorations.radiusMd),
-                      ),
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          AppColors.primary.withValues(alpha: 0.85),
-                          AppColors.primaryDark,
-                        ],
-                      ),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(AppDecorations.radiusMd),
                     ),
-                    child: Center(
-                      child: Icon(
-                        item.type == ContentType.video
-                            ? Icons.play_circle_fill_rounded
-                            : Icons.article_rounded,
-                        size: 56.sp,
-                        color: AppColors.onPrimary.withValues(alpha: 0.9),
-                      ),
-                    ),
+                    fallbackIcon: item.type == ContentType.video
+                        ? Icons.play_circle_fill_rounded
+                        : Icons.article_rounded,
                   ),
                   Positioned(
                     top: 10,
@@ -124,16 +116,15 @@ class _FeaturedCard extends StatelessWidget {
                           ),
                           SizedBox(height: 6.h),
                           Text(
-                            item.title,
+                            title,
                             style: Theme.of(context).textTheme.titleMedium,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          if (item.description != null &&
-                              item.description!.isNotEmpty) ...[
+                          if (description != null && description.isNotEmpty) ...[
                             SizedBox(height: 4.h),
                             Text(
-                              item.description!,
+                              description,
                               style: Theme.of(context).textTheme.bodySmall,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
@@ -161,6 +152,9 @@ class _HorizontalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context).languageCode;
+    final title = item.localizedTitle(locale);
+
     return Material(
       color: AppColors.surface,
       borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
@@ -182,7 +176,7 @@ class _HorizontalCard extends StatelessWidget {
                     ),
                     SizedBox(height: 6.h),
                     Text(
-                      item.title,
+                      title,
                       style: Theme.of(context).textTheme.titleSmall,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -191,22 +185,14 @@ class _HorizontalCard extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 12.w),
-              Container(
+              SizedBox(
                 width: 72.w,
                 height: 72.w,
-                decoration: BoxDecoration(
+                child: _ContentCover(
+                  item: item,
+                  height: 72.w,
                   borderRadius: BorderRadius.circular(10),
-                  gradient: LinearGradient(
-                    colors: [
-                      AppColors.tertiary.withValues(alpha: 0.7),
-                      AppColors.primary,
-                    ],
-                  ),
-                ),
-                child: Icon(
-                  Icons.image_rounded,
-                  color: AppColors.onPrimary,
-                  size: 28.sp,
+                  fallbackIcon: Icons.image_rounded,
                 ),
               ),
             ],
@@ -225,6 +211,12 @@ class _CompactCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context).languageCode;
+    final title = item.localizedTitle(locale);
+    final description = item.localizedDescription(locale);
+    final hasCover =
+        isContentCoverImageUrl(item.mediaUrl);
+
     return Material(
       color: AppColors.surface,
       borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
@@ -236,37 +228,48 @@ class _CompactCard extends StatelessWidget {
           padding: EdgeInsets.all(14.w),
           child: Row(
             children: [
-              Container(
-                width: 44.w,
-                height: 44.w,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
+              if (hasCover)
+                SizedBox(
+                  width: 44.w,
+                  height: 44.w,
+                  child: _ContentCover(
+                    item: item,
+                    height: 44.w,
+                    borderRadius: BorderRadius.circular(10),
+                    fallbackIcon: Icons.article_outlined,
+                  ),
+                )
+              else
+                Container(
+                  width: 44.w,
+                  height: 44.w,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    item.type == ContentType.video
+                        ? Icons.play_circle_outline
+                        : Icons.article_outlined,
+                    color: AppColors.primary,
+                    size: 24.sp,
+                  ),
                 ),
-                child: Icon(
-                  item.type == ContentType.video
-                      ? Icons.play_circle_outline
-                      : Icons.article_outlined,
-                  color: AppColors.primary,
-                  size: 24.sp,
-                ),
-              ),
               SizedBox(width: 12.w),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      item.title,
+                      title,
                       style: Theme.of(context).textTheme.titleSmall,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    if (item.description != null &&
-                        item.description!.isNotEmpty) ...[
+                    if (description != null && description.isNotEmpty) ...[
                       SizedBox(height: 4.h),
                       Text(
-                        item.description!,
+                        description,
                         style: Theme.of(context).textTheme.bodySmall,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -282,6 +285,59 @@ class _CompactCard extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ContentCover extends ConsumerWidget {
+  const _ContentCover({
+    required this.item,
+    required this.height,
+    required this.borderRadius,
+    required this.fallbackIcon,
+  });
+
+  final ContentItem item;
+  final double height;
+  final BorderRadius borderRadius;
+  final IconData fallbackIcon;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final mediaUrl = item.mediaUrl;
+    if (isContentCoverImageUrl(mediaUrl)) {
+      return ClipRRect(
+        borderRadius: borderRadius,
+        child: ResolvedCoverImage(
+          cacheMediaId:
+              ContentMediaDownloadController.contentCoverMediaId(item.id),
+          remoteUrl: mediaUrl!,
+          fit: BoxFit.cover,
+          height: height,
+        ),
+      );
+    }
+
+    return Container(
+      height: height,
+      decoration: BoxDecoration(
+        borderRadius: borderRadius,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.primary.withValues(alpha: 0.85),
+            AppColors.primaryDark,
+          ],
+        ),
+      ),
+      child: Center(
+        child: Icon(
+          fallbackIcon,
+          size: 56.sp,
+          color: AppColors.onPrimary.withValues(alpha: 0.9),
         ),
       ),
     );

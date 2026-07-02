@@ -30,6 +30,7 @@ import 'package:rafiq_alhajj/features/content/domain/models/content_type.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_detail_screen.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_downloads_screen.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_list_screen.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/content_my_learning_screen.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_search_screen.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_topic_detail_screen.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_topics_list_screen.dart';
@@ -245,7 +246,14 @@ List<RouteBase> _mobilePilgrimRoutes() => [
         name: 'contentTopicDetail',
         builder: (context, state) {
           final id = state.pathParameters['id']!;
-          return ContentTopicDetailScreen(topicId: id);
+          final mediaId = state.uri.queryParameters['mediaId'];
+          final positionMs =
+              int.tryParse(state.uri.queryParameters['positionMs'] ?? '');
+          return ContentTopicDetailScreen(
+            topicId: id,
+            initialMediaId: mediaId,
+            initialPositionMs: positionMs,
+          );
         },
       ),
       GoRoute(
@@ -279,6 +287,11 @@ List<RouteBase> _mobilePilgrimRoutes() => [
         path: AppRoutes.contentSearch,
         name: 'contentSearch',
         builder: (context, state) => const ContentSearchScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.contentMyLearning,
+        name: 'contentMyLearning',
+        builder: (context, state) => const ContentMyLearningScreen(),
       ),
       GoRoute(
         path: AppRoutes.pilgrimDashboard,
@@ -747,7 +760,14 @@ List<RouteBase> _webRoutes() => [
         name: 'contentTopicDetailWeb',
         builder: (context, state) {
           final id = state.pathParameters['id']!;
-          return ContentTopicDetailScreen(topicId: id);
+          final mediaId = state.uri.queryParameters['mediaId'];
+          final positionMs =
+              int.tryParse(state.uri.queryParameters['positionMs'] ?? '');
+          return ContentTopicDetailScreen(
+            topicId: id,
+            initialMediaId: mediaId,
+            initialPositionMs: positionMs,
+          );
         },
       ),
       GoRoute(
@@ -781,6 +801,11 @@ List<RouteBase> _webRoutes() => [
         path: AppRoutes.contentSearch,
         name: 'contentSearch',
         builder: (context, state) => const ContentSearchScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.contentMyLearning,
+        name: 'contentMyLearning',
+        builder: (context, state) => const ContentMyLearningScreen(),
       ),
       GoRoute(
         path: AppRoutes.pilgrimDashboard,

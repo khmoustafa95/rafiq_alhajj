@@ -4963,6 +4963,114 @@ abstract class AppLocalizations {
   /// **'No matches in saved content'**
   String get contentSearchEmpty;
 
+  /// No description provided for @contentMyLearningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My learning'**
+  String get contentMyLearningTitle;
+
+  /// No description provided for @contentMyLearningEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No learning progress yet. Start a topic from the library.'**
+  String get contentMyLearningEmpty;
+
+  /// No description provided for @contentMyLearningInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get contentMyLearningInProgress;
+
+  /// No description provided for @contentMyLearningCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get contentMyLearningCompleted;
+
+  /// No description provided for @contentMyLearningCompletedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get contentMyLearningCompletedLabel;
+
+  /// No description provided for @contentMyLearningResumeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to resume'**
+  String get contentMyLearningResumeHint;
+
+  /// No description provided for @contentLessonsListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Lessons'**
+  String get contentLessonsListTitle;
+
+  /// No description provided for @contentArticleOfflineSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save cover for offline'**
+  String get contentArticleOfflineSave;
+
+  /// No description provided for @contentArticleOfflineSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover saved offline'**
+  String get contentArticleOfflineSaved;
+
+  /// No description provided for @adminContentTitleArLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Title (Arabic)'**
+  String get adminContentTitleArLabel;
+
+  /// No description provided for @adminContentTitleEnLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Title (English)'**
+  String get adminContentTitleEnLabel;
+
+  /// No description provided for @adminContentDescriptionArLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (Arabic)'**
+  String get adminContentDescriptionArLabel;
+
+  /// No description provided for @adminContentDescriptionEnLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (English)'**
+  String get adminContentDescriptionEnLabel;
+
+  /// No description provided for @adminContentPublicationStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Publication'**
+  String get adminContentPublicationStatusLabel;
+
+  /// No description provided for @adminContentPublicationDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get adminContentPublicationDraft;
+
+  /// No description provided for @adminContentPublicationPublished.
+  ///
+  /// In en, this message translates to:
+  /// **'Published'**
+  String get adminContentPublicationPublished;
+
+  /// No description provided for @adminContentCoverPreviewLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover preview'**
+  String get adminContentCoverPreviewLabel;
+
+  /// No description provided for @adminContentMarkdownPreviewLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get adminContentMarkdownPreviewLabel;
+
   /// No description provided for @competitionQuizQueuedOffline.
   ///
   /// In en, this message translates to:

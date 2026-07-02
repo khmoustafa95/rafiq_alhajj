@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ContentItem {
 
- String get id; String get title; String? get description; String? get mediaUrl; ContentType get type; ContentVisibility get visibility; DateTime get createdAt;
+ String get id; String get titleAr; String? get titleEn; String? get descriptionAr; String? get descriptionEn; String? get mediaUrl; ContentType get type; ContentVisibility get visibility; ContentPublicationStatus get publicationStatus; DateTime? get publishedAt; DateTime get createdAt;
 /// Create a copy of ContentItem
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $ContentItemCopyWith<ContentItem> get copyWith => _$ContentItemCopyWithImpl<Cont
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ContentItem&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.mediaUrl, mediaUrl) || other.mediaUrl == mediaUrl)&&(identical(other.type, type) || other.type == type)&&(identical(other.visibility, visibility) || other.visibility == visibility)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ContentItem&&(identical(other.id, id) || other.id == id)&&(identical(other.titleAr, titleAr) || other.titleAr == titleAr)&&(identical(other.titleEn, titleEn) || other.titleEn == titleEn)&&(identical(other.descriptionAr, descriptionAr) || other.descriptionAr == descriptionAr)&&(identical(other.descriptionEn, descriptionEn) || other.descriptionEn == descriptionEn)&&(identical(other.mediaUrl, mediaUrl) || other.mediaUrl == mediaUrl)&&(identical(other.type, type) || other.type == type)&&(identical(other.visibility, visibility) || other.visibility == visibility)&&(identical(other.publicationStatus, publicationStatus) || other.publicationStatus == publicationStatus)&&(identical(other.publishedAt, publishedAt) || other.publishedAt == publishedAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,title,description,mediaUrl,type,visibility,createdAt);
+int get hashCode => Object.hash(runtimeType,id,titleAr,titleEn,descriptionAr,descriptionEn,mediaUrl,type,visibility,publicationStatus,publishedAt,createdAt);
 
 @override
 String toString() {
-  return 'ContentItem(id: $id, title: $title, description: $description, mediaUrl: $mediaUrl, type: $type, visibility: $visibility, createdAt: $createdAt)';
+  return 'ContentItem(id: $id, titleAr: $titleAr, titleEn: $titleEn, descriptionAr: $descriptionAr, descriptionEn: $descriptionEn, mediaUrl: $mediaUrl, type: $type, visibility: $visibility, publicationStatus: $publicationStatus, publishedAt: $publishedAt, createdAt: $createdAt)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $ContentItemCopyWith<$Res>  {
   factory $ContentItemCopyWith(ContentItem value, $Res Function(ContentItem) _then) = _$ContentItemCopyWithImpl;
 @useResult
 $Res call({
- String id, String title, String? description, String? mediaUrl, ContentType type, ContentVisibility visibility, DateTime createdAt
+ String id, String titleAr, String? titleEn, String? descriptionAr, String? descriptionEn, String? mediaUrl, ContentType type, ContentVisibility visibility, ContentPublicationStatus publicationStatus, DateTime? publishedAt, DateTime createdAt
 });
 
 
@@ -62,15 +62,19 @@ class _$ContentItemCopyWithImpl<$Res>
 
 /// Create a copy of ContentItem
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? description = freezed,Object? mediaUrl = freezed,Object? type = null,Object? visibility = null,Object? createdAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? titleAr = null,Object? titleEn = freezed,Object? descriptionAr = freezed,Object? descriptionEn = freezed,Object? mediaUrl = freezed,Object? type = null,Object? visibility = null,Object? publicationStatus = null,Object? publishedAt = freezed,Object? createdAt = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String,titleAr: null == titleAr ? _self.titleAr : titleAr // ignore: cast_nullable_to_non_nullable
+as String,titleEn: freezed == titleEn ? _self.titleEn : titleEn // ignore: cast_nullable_to_non_nullable
+as String?,descriptionAr: freezed == descriptionAr ? _self.descriptionAr : descriptionAr // ignore: cast_nullable_to_non_nullable
+as String?,descriptionEn: freezed == descriptionEn ? _self.descriptionEn : descriptionEn // ignore: cast_nullable_to_non_nullable
 as String?,mediaUrl: freezed == mediaUrl ? _self.mediaUrl : mediaUrl // ignore: cast_nullable_to_non_nullable
 as String?,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as ContentType,visibility: null == visibility ? _self.visibility : visibility // ignore: cast_nullable_to_non_nullable
-as ContentVisibility,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as ContentVisibility,publicationStatus: null == publicationStatus ? _self.publicationStatus : publicationStatus // ignore: cast_nullable_to_non_nullable
+as ContentPublicationStatus,publishedAt: freezed == publishedAt ? _self.publishedAt : publishedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));
 }
@@ -156,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String? description,  String? mediaUrl,  ContentType type,  ContentVisibility visibility,  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String titleAr,  String? titleEn,  String? descriptionAr,  String? descriptionEn,  String? mediaUrl,  ContentType type,  ContentVisibility visibility,  ContentPublicationStatus publicationStatus,  DateTime? publishedAt,  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ContentItem() when $default != null:
-return $default(_that.id,_that.title,_that.description,_that.mediaUrl,_that.type,_that.visibility,_that.createdAt);case _:
+return $default(_that.id,_that.titleAr,_that.titleEn,_that.descriptionAr,_that.descriptionEn,_that.mediaUrl,_that.type,_that.visibility,_that.publicationStatus,_that.publishedAt,_that.createdAt);case _:
   return orElse();
 
 }
@@ -177,10 +181,10 @@ return $default(_that.id,_that.title,_that.description,_that.mediaUrl,_that.type
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String? description,  String? mediaUrl,  ContentType type,  ContentVisibility visibility,  DateTime createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String titleAr,  String? titleEn,  String? descriptionAr,  String? descriptionEn,  String? mediaUrl,  ContentType type,  ContentVisibility visibility,  ContentPublicationStatus publicationStatus,  DateTime? publishedAt,  DateTime createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _ContentItem():
-return $default(_that.id,_that.title,_that.description,_that.mediaUrl,_that.type,_that.visibility,_that.createdAt);case _:
+return $default(_that.id,_that.titleAr,_that.titleEn,_that.descriptionAr,_that.descriptionEn,_that.mediaUrl,_that.type,_that.visibility,_that.publicationStatus,_that.publishedAt,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +201,10 @@ return $default(_that.id,_that.title,_that.description,_that.mediaUrl,_that.type
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String? description,  String? mediaUrl,  ContentType type,  ContentVisibility visibility,  DateTime createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String titleAr,  String? titleEn,  String? descriptionAr,  String? descriptionEn,  String? mediaUrl,  ContentType type,  ContentVisibility visibility,  ContentPublicationStatus publicationStatus,  DateTime? publishedAt,  DateTime createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _ContentItem() when $default != null:
-return $default(_that.id,_that.title,_that.description,_that.mediaUrl,_that.type,_that.visibility,_that.createdAt);case _:
+return $default(_that.id,_that.titleAr,_that.titleEn,_that.descriptionAr,_that.descriptionEn,_that.mediaUrl,_that.type,_that.visibility,_that.publicationStatus,_that.publishedAt,_that.createdAt);case _:
   return null;
 
 }
@@ -211,16 +215,20 @@ return $default(_that.id,_that.title,_that.description,_that.mediaUrl,_that.type
 /// @nodoc
 
 
-class _ContentItem implements ContentItem {
-  const _ContentItem({required this.id, required this.title, required this.description, required this.mediaUrl, required this.type, required this.visibility, required this.createdAt});
+class _ContentItem extends ContentItem {
+  const _ContentItem({required this.id, required this.titleAr, this.titleEn, this.descriptionAr, this.descriptionEn, required this.mediaUrl, required this.type, required this.visibility, this.publicationStatus = ContentPublicationStatus.published, this.publishedAt, required this.createdAt}): super._();
   
 
 @override final  String id;
-@override final  String title;
-@override final  String? description;
+@override final  String titleAr;
+@override final  String? titleEn;
+@override final  String? descriptionAr;
+@override final  String? descriptionEn;
 @override final  String? mediaUrl;
 @override final  ContentType type;
 @override final  ContentVisibility visibility;
+@override@JsonKey() final  ContentPublicationStatus publicationStatus;
+@override final  DateTime? publishedAt;
 @override final  DateTime createdAt;
 
 /// Create a copy of ContentItem
@@ -233,16 +241,16 @@ _$ContentItemCopyWith<_ContentItem> get copyWith => __$ContentItemCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ContentItem&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.mediaUrl, mediaUrl) || other.mediaUrl == mediaUrl)&&(identical(other.type, type) || other.type == type)&&(identical(other.visibility, visibility) || other.visibility == visibility)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ContentItem&&(identical(other.id, id) || other.id == id)&&(identical(other.titleAr, titleAr) || other.titleAr == titleAr)&&(identical(other.titleEn, titleEn) || other.titleEn == titleEn)&&(identical(other.descriptionAr, descriptionAr) || other.descriptionAr == descriptionAr)&&(identical(other.descriptionEn, descriptionEn) || other.descriptionEn == descriptionEn)&&(identical(other.mediaUrl, mediaUrl) || other.mediaUrl == mediaUrl)&&(identical(other.type, type) || other.type == type)&&(identical(other.visibility, visibility) || other.visibility == visibility)&&(identical(other.publicationStatus, publicationStatus) || other.publicationStatus == publicationStatus)&&(identical(other.publishedAt, publishedAt) || other.publishedAt == publishedAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,title,description,mediaUrl,type,visibility,createdAt);
+int get hashCode => Object.hash(runtimeType,id,titleAr,titleEn,descriptionAr,descriptionEn,mediaUrl,type,visibility,publicationStatus,publishedAt,createdAt);
 
 @override
 String toString() {
-  return 'ContentItem(id: $id, title: $title, description: $description, mediaUrl: $mediaUrl, type: $type, visibility: $visibility, createdAt: $createdAt)';
+  return 'ContentItem(id: $id, titleAr: $titleAr, titleEn: $titleEn, descriptionAr: $descriptionAr, descriptionEn: $descriptionEn, mediaUrl: $mediaUrl, type: $type, visibility: $visibility, publicationStatus: $publicationStatus, publishedAt: $publishedAt, createdAt: $createdAt)';
 }
 
 
@@ -253,7 +261,7 @@ abstract mixin class _$ContentItemCopyWith<$Res> implements $ContentItemCopyWith
   factory _$ContentItemCopyWith(_ContentItem value, $Res Function(_ContentItem) _then) = __$ContentItemCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title, String? description, String? mediaUrl, ContentType type, ContentVisibility visibility, DateTime createdAt
+ String id, String titleAr, String? titleEn, String? descriptionAr, String? descriptionEn, String? mediaUrl, ContentType type, ContentVisibility visibility, ContentPublicationStatus publicationStatus, DateTime? publishedAt, DateTime createdAt
 });
 
 
@@ -270,15 +278,19 @@ class __$ContentItemCopyWithImpl<$Res>
 
 /// Create a copy of ContentItem
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? description = freezed,Object? mediaUrl = freezed,Object? type = null,Object? visibility = null,Object? createdAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? titleAr = null,Object? titleEn = freezed,Object? descriptionAr = freezed,Object? descriptionEn = freezed,Object? mediaUrl = freezed,Object? type = null,Object? visibility = null,Object? publicationStatus = null,Object? publishedAt = freezed,Object? createdAt = null,}) {
   return _then(_ContentItem(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String,titleAr: null == titleAr ? _self.titleAr : titleAr // ignore: cast_nullable_to_non_nullable
+as String,titleEn: freezed == titleEn ? _self.titleEn : titleEn // ignore: cast_nullable_to_non_nullable
+as String?,descriptionAr: freezed == descriptionAr ? _self.descriptionAr : descriptionAr // ignore: cast_nullable_to_non_nullable
+as String?,descriptionEn: freezed == descriptionEn ? _self.descriptionEn : descriptionEn // ignore: cast_nullable_to_non_nullable
 as String?,mediaUrl: freezed == mediaUrl ? _self.mediaUrl : mediaUrl // ignore: cast_nullable_to_non_nullable
 as String?,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as ContentType,visibility: null == visibility ? _self.visibility : visibility // ignore: cast_nullable_to_non_nullable
-as ContentVisibility,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as ContentVisibility,publicationStatus: null == publicationStatus ? _self.publicationStatus : publicationStatus // ignore: cast_nullable_to_non_nullable
+as ContentPublicationStatus,publishedAt: freezed == publishedAt ? _self.publishedAt : publishedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));
 }

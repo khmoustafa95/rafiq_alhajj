@@ -16,6 +16,7 @@ abstract final class AppRoutes {
   static const String contentDetail = '/content/:id';
   static const String contentDownloads = '/content/downloads';
   static const String contentSearch = '/content/search';
+  static const String contentMyLearning = '/content/my-learning';
   static const String tools = '/tools';
   static const String supportContacts = '/support-contacts';
   static const String sos = '/sos';

@@ -15,9 +15,16 @@ import 'package:rafiq_alhajj/features/content/presentation/widgets/resolved_cove
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 class ContentTopicDetailScreen extends ConsumerWidget {
-  const ContentTopicDetailScreen({required this.topicId, super.key});
+  const ContentTopicDetailScreen({
+    required this.topicId,
+    this.initialMediaId,
+    this.initialPositionMs,
+    super.key,
+  });
 
   final String topicId;
+  final String? initialMediaId;
+  final int? initialPositionMs;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -57,6 +64,10 @@ class ContentTopicDetailScreen extends ConsumerWidget {
             );
           }
 
+          final locale = Localizations.localeOf(context).languageCode;
+          final topicTitle = topic.localizedTitle(locale);
+          final topicDescription = topic.localizedDescription(locale);
+
           return CompetitionPageConstraint(
             child: RefreshIndicator(
               onRefresh: () async {
@@ -78,7 +89,7 @@ class ContentTopicDetailScreen extends ConsumerWidget {
                         end: 56.w,
                       ),
                       title: Text(
-                        topic.title,
+                        topicTitle,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -119,8 +130,8 @@ class ContentTopicDetailScreen extends ConsumerWidget {
                     padding: EdgeInsets.all(16.w),
                     sliver: SliverList(
                       delegate: SliverChildListDelegate([
-                        if (topic.description != null &&
-                            topic.description!.isNotEmpty) ...[
+                        if (topicDescription != null &&
+                            topicDescription.isNotEmpty) ...[
                           DecoratedBox(
                             decoration: AppDecorations.card(
                               radius: AppDecorations.radiusLg,
@@ -128,7 +139,7 @@ class ContentTopicDetailScreen extends ConsumerWidget {
                             child: Padding(
                               padding: EdgeInsets.all(16.w),
                               child: Text(
-                                topic.description!,
+                                topicDescription,
                                 style: Theme.of(context).textTheme.bodyLarge,
                               ),
                             ),
@@ -144,7 +155,9 @@ class ContentTopicDetailScreen extends ConsumerWidget {
                           sectionTitle: l10n.contentTopicMediaTitle,
                           emptyMessage: l10n.contentTopicNoMedia,
                           progressTopicId: topic.id,
-                          progressTopicTitle: topic.title,
+                          progressTopicTitle: topicTitle,
+                          initialMediaId: initialMediaId,
+                          initialPositionMs: initialPositionMs,
                         ),
                         SizedBox(height: 24.h),
                       ]),

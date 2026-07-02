@@ -100,6 +100,89 @@ final class AdminContentTopicsListProvider
 String _$adminContentTopicsListHash() =>
     r'b72f422f5b2d0b56a821ad17c666f01c285d551c';
 
+@ProviderFor(adminContentTopicsPage)
+final adminContentTopicsPageProvider = AdminContentTopicsPageFamily._();
+
+final class AdminContentTopicsPageProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<PaginatedResult<ContentTopic>>,
+          PaginatedResult<ContentTopic>,
+          FutureOr<PaginatedResult<ContentTopic>>
+        >
+    with
+        $FutureModifier<PaginatedResult<ContentTopic>>,
+        $FutureProvider<PaginatedResult<ContentTopic>> {
+  AdminContentTopicsPageProvider._({
+    required AdminContentTopicsPageFamily super.from,
+    required StaffTableQuery super.argument,
+  }) : super(
+         retry: null,
+         name: r'adminContentTopicsPageProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$adminContentTopicsPageHash();
+
+  @override
+  String toString() {
+    return r'adminContentTopicsPageProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<PaginatedResult<ContentTopic>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<PaginatedResult<ContentTopic>> create(Ref ref) {
+    final argument = this.argument as StaffTableQuery;
+    return adminContentTopicsPage(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is AdminContentTopicsPageProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$adminContentTopicsPageHash() =>
+    r'9b70ac64f929b80b672b6683e8ba0655605458b2';
+
+final class AdminContentTopicsPageFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<PaginatedResult<ContentTopic>>,
+          StaffTableQuery
+        > {
+  AdminContentTopicsPageFamily._()
+    : super(
+        retry: null,
+        name: r'adminContentTopicsPageProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  AdminContentTopicsPageProvider call(StaffTableQuery query) =>
+      AdminContentTopicsPageProvider._(argument: query, from: this);
+
+  @override
+  String toString() => r'adminContentTopicsPageProvider';
+}
+
 @ProviderFor(adminContentTopicDetail)
 final adminContentTopicDetailProvider = AdminContentTopicDetailFamily._();
 
@@ -202,7 +285,7 @@ final class AdminContentTopicSaveProvider
 }
 
 String _$adminContentTopicSaveHash() =>
-    r'830a1282098e0cf5b4eabdd8994077f542f7389c';
+    r'8cb6d9d2253663e27ada279b98fc2e33de0697b5';
 
 abstract class _$AdminContentTopicSave extends $AsyncNotifier<void> {
   FutureOr<void> build();
@@ -247,7 +330,7 @@ final class AdminContentTopicDeleteProvider
 }
 
 String _$adminContentTopicDeleteHash() =>
-    r'ab949175e0d92294b7ccc8f68a901bfc552111f0';
+    r'a307e153b546e71acdaf3e4a2949763db91b5230';
 
 abstract class _$AdminContentTopicDelete extends $AsyncNotifier<void> {
   FutureOr<void> build();

@@ -33,9 +33,17 @@ class ContinueLearningCard extends ConsumerWidget {
           child: DecoratedBox(
             decoration: AppDecorations.card(radius: AppDecorations.radiusLg),
             child: InkWell(
-              onTap: () => unawaited(
-                context.push(AppRoutes.contentTopicDetailPath(progress.topicId)),
-              ),
+              onTap: () {
+                final uri = Uri(
+                  path: AppRoutes.contentTopicDetailPath(progress.topicId),
+                  queryParameters: {
+                    'mediaId': progress.mediaId,
+                    if (progress.positionMs > 0)
+                      'positionMs': '${progress.positionMs}',
+                  },
+                );
+                unawaited(context.push(uri.toString()));
+              },
               borderRadius: BorderRadius.circular(AppDecorations.radiusLg),
               child: Padding(
                 padding: EdgeInsets.all(16.w),

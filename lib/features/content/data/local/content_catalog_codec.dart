@@ -2,6 +2,7 @@ import 'package:rafiq_alhajj/core/domain/models/educational_media.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition_question.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_item.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_topic.dart';
+import 'package:rafiq_alhajj/features/content/domain/models/content_publication_status.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_type.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_visibility.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/public_content_feed.dart';
@@ -31,25 +32,42 @@ abstract final class ContentCatalogCodec {
 
   static Map<String, dynamic> itemToJson(ContentItem item) => {
         'id': item.id,
-        'title': item.title,
-        'description': item.description,
+        'titleAr': item.titleAr,
+        'titleEn': item.titleEn,
+        'descriptionAr': item.descriptionAr,
+        'descriptionEn': item.descriptionEn,
         'mediaUrl': item.mediaUrl,
         'type': item.type.databaseValue,
         'visibility': item.visibility.databaseValue,
+        'publicationStatus': item.publicationStatus.databaseValue,
+        'publishedAt': item.publishedAt?.toIso8601String(),
         'createdAt': item.createdAt.toIso8601String(),
       };
 
   static ContentItem? itemFromJson(Map<String, dynamic> json) {
     try {
+      final titleAr =
+          json['titleAr'] as String? ?? json['title'] as String? ?? '';
       return ContentItem(
         id: json['id'] as String,
-        title: json['title'] as String,
-        description: json['description'] as String?,
+        titleAr: titleAr,
+        titleEn: json['titleEn'] as String?,
+        descriptionAr: json['descriptionAr'] as String? ??
+            json['description'] as String?,
+        descriptionEn: json['descriptionEn'] as String?,
         mediaUrl: json['mediaUrl'] as String?,
         type: ContentType.fromDatabase(json['type'] as String),
         visibility: ContentVisibility.fromDatabase(
           json['visibility'] as String,
         ),
+        publicationStatus: json['publicationStatus'] != null
+            ? ContentPublicationStatus.fromDatabase(
+                json['publicationStatus'] as String,
+              )
+            : ContentPublicationStatus.published,
+        publishedAt: json['publishedAt'] != null
+            ? DateTime.tryParse(json['publishedAt'] as String)
+            : null,
         createdAt: DateTime.parse(json['createdAt'] as String),
       );
     } catch (_) {
@@ -59,12 +77,16 @@ abstract final class ContentCatalogCodec {
 
   static Map<String, dynamic> topicToJson(ContentTopic topic) => {
         'id': topic.id,
-        'title': topic.title,
-        'description': topic.description,
+        'titleAr': topic.titleAr,
+        'titleEn': topic.titleEn,
+        'descriptionAr': topic.descriptionAr,
+        'descriptionEn': topic.descriptionEn,
         'coverImageUrl': topic.coverImageUrl,
         'visibility': topic.visibility.databaseValue,
         'sortOrder': topic.sortOrder,
         'isActive': topic.isActive,
+        'publicationStatus': topic.publicationStatus.databaseValue,
+        'publishedAt': topic.publishedAt?.toIso8601String(),
         'createdAt': topic.createdAt.toIso8601String(),
         'media': topic.media.map(mediaToJson).toList(),
       };
@@ -72,16 +94,29 @@ abstract final class ContentCatalogCodec {
   static ContentTopic? topicFromJson(Map<String, dynamic> json) {
     try {
       final mediaRows = json['media'] as List<dynamic>? ?? [];
+      final titleAr =
+          json['titleAr'] as String? ?? json['title'] as String? ?? '';
       return ContentTopic(
         id: json['id'] as String,
-        title: json['title'] as String,
-        description: json['description'] as String?,
+        titleAr: titleAr,
+        titleEn: json['titleEn'] as String?,
+        descriptionAr: json['descriptionAr'] as String? ??
+            json['description'] as String?,
+        descriptionEn: json['descriptionEn'] as String?,
         coverImageUrl: json['coverImageUrl'] as String?,
         visibility: ContentVisibility.fromDatabase(
           json['visibility'] as String,
         ),
         sortOrder: json['sortOrder'] as int? ?? 0,
         isActive: json['isActive'] as bool? ?? true,
+        publicationStatus: json['publicationStatus'] != null
+            ? ContentPublicationStatus.fromDatabase(
+                json['publicationStatus'] as String,
+              )
+            : ContentPublicationStatus.published,
+        publishedAt: json['publishedAt'] != null
+            ? DateTime.tryParse(json['publishedAt'] as String)
+            : null,
         createdAt: DateTime.parse(json['createdAt'] as String),
         media: mediaRows
             .map((m) => mediaFromJson(Map<String, dynamic>.from(m as Map)))

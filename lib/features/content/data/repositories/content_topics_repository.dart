@@ -1,6 +1,7 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/domain/models/educational_media.dart';
 import 'package:rafiq_alhajj/features/content/data/data_sources/content_topics_remote_data_source.dart';
+import 'package:rafiq_alhajj/features/content/domain/models/content_publication_status.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_topic.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_visibility.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -77,14 +78,25 @@ class ContentTopicsRepository {
 
     return ContentTopic(
       id: row['id'] as String,
-      title: row['title'] as String,
-      description: row['description'] as String?,
+      titleAr: (row['title_ar'] as String?) ?? row['title'] as String,
+      titleEn: row['title_en'] as String?,
+      descriptionAr:
+          (row['description_ar'] as String?) ?? row['description'] as String?,
+      descriptionEn: row['description_en'] as String?,
       coverImageUrl: row['cover_image_url'] as String?,
       visibility: ContentVisibility.fromDatabase(
         row['visibility'] as String,
       ),
       sortOrder: row['sort_order'] as int? ?? 0,
       isActive: row['is_active'] as bool? ?? true,
+      publicationStatus: row['publication_status'] != null
+          ? ContentPublicationStatus.fromDatabase(
+              row['publication_status'] as String,
+            )
+          : ContentPublicationStatus.published,
+      publishedAt: row['published_at'] != null
+          ? DateTime.parse(row['published_at'] as String)
+          : null,
       media: media,
       createdAt: DateTime.parse(row['created_at'] as String),
     );

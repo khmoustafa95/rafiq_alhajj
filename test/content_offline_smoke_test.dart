@@ -85,8 +85,8 @@ void main() {
         news: [
           ContentItem(
             id: 'news-1',
-            title: 'Hajj update',
-            description: 'Logistics news',
+            titleAr: 'Hajj update',
+            descriptionAr: 'Logistics news',
             mediaUrl: null,
             type: ContentType.news,
             visibility: ContentVisibility.public,
@@ -107,8 +107,8 @@ void main() {
       await cache.writeItem(
         ContentItem(
           id: 'ann-1',
-          title: 'Important announcement',
-          description: 'Group meeting tonight',
+          titleAr: 'Important announcement',
+          descriptionAr: 'Group meeting tonight',
           mediaUrl: null,
           type: ContentType.announcement,
           visibility: ContentVisibility.public,
@@ -118,8 +118,8 @@ void main() {
       await cache.writeTopic(
         ContentTopic(
           id: 'topic-1',
-          title: 'Tawaf guide',
-          description: 'Step by step tawaf',
+          titleAr: 'Tawaf guide',
+          descriptionAr: 'Step by step tawaf',
           visibility: ContentVisibility.public,
           createdAt: DateTime(2026, 1, 1),
         ),
@@ -135,7 +135,7 @@ void main() {
       await cache.writeTopic(
         ContentTopic(
           id: 'topic-private',
-          title: 'Private tawaf notes',
+          titleAr: 'Private tawaf notes',
           visibility: ContentVisibility.pilgrimOnly,
           createdAt: DateTime(2026, 1, 1),
         ),

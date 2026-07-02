@@ -13,9 +13,13 @@ import 'package:rafiq_alhajj/core/widgets/upload_progress_banner.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/providers/admin_content_providers.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/providers/admin_content_topics_providers.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/utils/content_meta_l10n.dart';
+import 'package:rafiq_alhajj/features/content/domain/models/content_publication_status.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_topic.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_visibility.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_media_providers.dart';
+import 'package:rafiq_alhajj/features/content/presentation/utils/content_cover_utils.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/content_markdown_preview.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/resolved_cover_image.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_topic_offline_actions.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 import 'package:reactive_forms/reactive_forms.dart';
@@ -70,12 +74,17 @@ class _AdminContentTopicEditScreenState
   void initState() {
     super.initState();
     _form = FormGroup({
-      'title': FormControl<String>(value: ''),
-      'description': FormControl<String>(value: ''),
+      'titleAr': FormControl<String>(value: ''),
+      'titleEn': FormControl<String>(value: ''),
+      'descriptionAr': FormControl<String>(value: ''),
+      'descriptionEn': FormControl<String>(value: ''),
       'coverUrl': FormControl<String>(value: ''),
       'sortOrder': FormControl<String>(value: '1'),
       'visibility': FormControl<ContentVisibility>(
         value: ContentVisibility.public,
+      ),
+      'publicationStatus': FormControl<ContentPublicationStatus>(
+        value: ContentPublicationStatus.published,
       ),
     });
   }
@@ -94,11 +103,14 @@ class _AdminContentTopicEditScreenState
     if (_initialized) {
       return;
     }
-    _form.control('title').updateValue(topic.title);
-    _form.control('description').updateValue(topic.description ?? '');
+    _form.control('titleAr').updateValue(topic.titleAr);
+    _form.control('titleEn').updateValue(topic.titleEn ?? '');
+    _form.control('descriptionAr').updateValue(topic.descriptionAr ?? '');
+    _form.control('descriptionEn').updateValue(topic.descriptionEn ?? '');
     _form.control('coverUrl').updateValue(topic.coverImageUrl ?? '');
     _form.control('sortOrder').updateValue('${topic.sortOrder}');
     _form.control('visibility').updateValue(topic.visibility);
+    _form.control('publicationStatus').updateValue(topic.publicationStatus);
     _isActive = topic.isActive;
     if (topic.coverImageUrl != null && topic.coverImageUrl!.isNotEmpty) {
       _initialMediaUrls.add(topic.coverImageUrl!);
@@ -278,9 +290,9 @@ class _AdminContentTopicEditScreenState
 
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context);
-    final title = (_form.control('title').value as String).trim();
+    final titleAr = (_form.control('titleAr').value as String).trim();
 
-    if (title.isEmpty) {
+    if (titleAr.isEmpty) {
       _showSnack(l10n.adminContentTopicTitleRequired);
       return;
     }
@@ -289,12 +301,16 @@ class _AdminContentTopicEditScreenState
         int.tryParse((_form.control('sortOrder').value as String).trim()) ?? 1;
     final coverUrl = (_form.control('coverUrl').value as String).trim();
     final input = ContentTopicEditorInput(
-      title: title,
-      description: (_form.control('description').value as String).trim(),
+      titleAr: titleAr,
+      titleEn: (_form.control('titleEn').value as String).trim(),
+      descriptionAr: (_form.control('descriptionAr').value as String).trim(),
+      descriptionEn: (_form.control('descriptionEn').value as String).trim(),
       coverImageUrl: coverUrl,
       visibility: _form.control('visibility').value as ContentVisibility,
       sortOrder: sortOrder,
       isActive: _isActive,
+      publicationStatus:
+          _form.control('publicationStatus').value as ContentPublicationStatus,
     );
 
     final media = [
@@ -320,7 +336,7 @@ class _AdminContentTopicEditScreenState
 
     if (_notifyPilgrims) {
       await ref.read(contentNotificationServiceProvider).publish(
-            title: input.title,
+            title: input.titleAr,
             route: 'contentTopic',
             id: savedId,
             visibility: input.visibility,
@@ -429,19 +445,53 @@ class _AdminContentTopicEditScreenState
               ),
             ),
           ReactiveTextField<String>(
-            formControlName: 'title',
+            formControlName: 'titleAr',
             decoration: InputDecoration(
-              labelText: l10n.adminContentTitleLabel,
+              labelText: l10n.adminContentTitleArLabel,
             ),
           ),
           SizedBox(height: 12.h),
           ReactiveTextField<String>(
-            formControlName: 'description',
+            formControlName: 'titleEn',
             decoration: InputDecoration(
-              labelText: l10n.adminContentTopicDescription,
+              labelText: l10n.adminContentTitleEnLabel,
+            ),
+          ),
+          SizedBox(height: 12.h),
+          ReactiveTextField<String>(
+            formControlName: 'descriptionAr',
+            decoration: InputDecoration(
+              labelText: l10n.adminContentDescriptionArLabel,
+              alignLabelWithHint: true,
             ),
             minLines: 3,
-            maxLines: 6,
+            maxLines: 8,
+          ),
+          SizedBox(height: 12.h),
+          ReactiveTextField<String>(
+            formControlName: 'descriptionEn',
+            decoration: InputDecoration(
+              labelText: l10n.adminContentDescriptionEnLabel,
+              alignLabelWithHint: true,
+            ),
+            minLines: 3,
+            maxLines: 8,
+          ),
+          Builder(
+            builder: (context) {
+              final descriptionAr =
+                  _form.control('descriptionAr').value as String? ?? '';
+              if (descriptionAr.trim().isEmpty) {
+                return const SizedBox.shrink();
+              }
+              return Padding(
+                padding: EdgeInsets.only(bottom: 12.h),
+                child: ContentMarkdownPreview(
+                  label: l10n.adminContentMarkdownPreviewLabel,
+                  markdown: descriptionAr,
+                ),
+              );
+            },
           ),
           SizedBox(height: 12.h),
           ReactiveTextField<String>(
@@ -449,6 +499,35 @@ class _AdminContentTopicEditScreenState
             decoration: InputDecoration(
               labelText: l10n.adminContentTopicCoverUrl,
             ),
+          ),
+          Builder(
+            builder: (context) {
+              final coverUrl = _form.control('coverUrl').value as String? ?? '';
+              if (!isContentCoverImageUrl(coverUrl)) {
+                return const SizedBox.shrink();
+              }
+              return Padding(
+                padding: EdgeInsets.symmetric(vertical: 12.h),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12.r),
+                  child: widget.topicId != null
+                      ? ResolvedCoverImage(
+                          cacheMediaId: ContentMediaDownloadController
+                              .coverMediaId(widget.topicId!),
+                          remoteUrl: coverUrl,
+                          fit: BoxFit.cover,
+                          height: 160.h,
+                        )
+                      : Image.network(
+                          coverUrl,
+                          height: 160.h,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                        ),
+                ),
+              );
+            },
           ),
           SizedBox(height: 8.h),
           Align(
@@ -466,6 +545,25 @@ class _AdminContentTopicEditScreenState
               labelText: l10n.adminHajjJourneySortOrder,
             ),
             keyboardType: TextInputType.number,
+          ),
+          SizedBox(height: 8.h),
+          ReactiveDropdownField<ContentPublicationStatus>(
+            formControlName: 'publicationStatus',
+            decoration: InputDecoration(
+              labelText: l10n.adminContentPublicationStatusLabel,
+            ),
+            items: ContentPublicationStatus.values
+                .map(
+                  (status) => DropdownMenuItem(
+                    value: status,
+                    child: Text(
+                      status == ContentPublicationStatus.draft
+                          ? l10n.adminContentPublicationDraft
+                          : l10n.adminContentPublicationPublished,
+                    ),
+                  ),
+                )
+                .toList(),
           ),
           SizedBox(height: 8.h),
           ReactiveDropdownField<ContentVisibility>(

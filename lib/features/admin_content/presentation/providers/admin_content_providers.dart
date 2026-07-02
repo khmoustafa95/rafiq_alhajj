@@ -9,6 +9,7 @@ import 'package:rafiq_alhajj/features/admin_content/data/repositories/admin_cont
 import 'package:rafiq_alhajj/features/admin_content/domain/models/content_editor_input.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_item.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:rafiq_alhajj/features/content/presentation/providers/content_media_providers.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'admin_content_providers.g.dart';
@@ -69,7 +70,14 @@ class AdminContentDelete extends _$AdminContentDelete {
   Future<bool> deleteItem(String id) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
+      final item = await ref.read(adminContentServiceProvider).getById(id);
       await ref.read(adminContentServiceProvider).remove(id);
+      final mediaUrl = item?.mediaUrl;
+      if (mediaUrl != null && mediaUrl.isNotEmpty) {
+        await ref
+            .read(contentMediaStorageServiceProvider)
+            .removeStorageRefs([mediaUrl]);
+      }
       ref.invalidate(adminContentListPageProvider);
     });
     return !state.hasError;

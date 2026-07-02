@@ -2709,6 +2709,61 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contentSearchEmpty => 'No matches in saved content';
 
   @override
+  String get contentMyLearningTitle => 'My learning';
+
+  @override
+  String get contentMyLearningEmpty =>
+      'No learning progress yet. Start a topic from the library.';
+
+  @override
+  String get contentMyLearningInProgress => 'In progress';
+
+  @override
+  String get contentMyLearningCompleted => 'Completed';
+
+  @override
+  String get contentMyLearningCompletedLabel => 'Completed';
+
+  @override
+  String get contentMyLearningResumeHint => 'Tap to resume';
+
+  @override
+  String get contentLessonsListTitle => 'Lessons';
+
+  @override
+  String get contentArticleOfflineSave => 'Save cover for offline';
+
+  @override
+  String get contentArticleOfflineSaved => 'Cover saved offline';
+
+  @override
+  String get adminContentTitleArLabel => 'Title (Arabic)';
+
+  @override
+  String get adminContentTitleEnLabel => 'Title (English)';
+
+  @override
+  String get adminContentDescriptionArLabel => 'Description (Arabic)';
+
+  @override
+  String get adminContentDescriptionEnLabel => 'Description (English)';
+
+  @override
+  String get adminContentPublicationStatusLabel => 'Publication';
+
+  @override
+  String get adminContentPublicationDraft => 'Draft';
+
+  @override
+  String get adminContentPublicationPublished => 'Published';
+
+  @override
+  String get adminContentCoverPreviewLabel => 'Cover preview';
+
+  @override
+  String get adminContentMarkdownPreviewLabel => 'Preview';
+
+  @override
   String get competitionQuizQueuedOffline =>
       'Answer saved — will sync when you\'re back online';
 

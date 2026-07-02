@@ -83,6 +83,15 @@ class ContentOfflineSettingsCard extends ConsumerWidget {
               title: Text(l10n.contentOfflineWifiOnly),
               subtitle: Text(l10n.contentOfflineWifiOnlySubtitle),
             ),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TextButton.icon(
+                onPressed: () =>
+                    unawaited(context.push(AppRoutes.contentMyLearning)),
+                icon: const Icon(Icons.school_outlined),
+                label: Text(l10n.contentMyLearningTitle),
+              ),
+            ),
             if (cachedCount > 0) ...[
               SizedBox(height: 8.h),
               Align(

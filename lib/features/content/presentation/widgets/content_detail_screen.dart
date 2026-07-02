@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_detail_provider.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_media_providers.dart';
+import 'package:rafiq_alhajj/features/content/presentation/utils/content_cover_utils.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/content_article_offline_action.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_offline_banner.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/resolved_cover_image.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
@@ -54,9 +57,13 @@ class ContentDetailScreen extends ConsumerWidget {
                   return Center(child: Text(l10n.contentNotFound));
                 }
 
+                final locale = Localizations.localeOf(context).languageCode;
+                final title = item.localizedTitle(locale);
+                final description = item.localizedDescription(locale);
                 final mediaUrl = item.mediaUrl;
                 final hasMedia = mediaUrl != null && mediaUrl.isNotEmpty;
-                final showInlineImage = hasMedia && _isImageUrl(mediaUrl);
+                final showInlineImage =
+                    hasMedia && isContentCoverImageUrl(mediaUrl);
 
                 return SingleChildScrollView(
                   padding: EdgeInsets.all(24.w),
@@ -72,18 +79,25 @@ class ContentDetailScreen extends ConsumerWidget {
                           height: 200.h,
                           borderRadius: BorderRadius.circular(16.r),
                         ),
-                        SizedBox(height: 20.h),
+                        SizedBox(height: 12.h),
+                        ContentArticleOfflineAction(
+                          contentId: item.id,
+                          coverUrl: mediaUrl,
+                        ),
+                        SizedBox(height: 8.h),
                       ],
                       Text(
-                        item.title,
+                        title,
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
-                      if (item.description != null &&
-                          item.description!.isNotEmpty) ...[
+                      if (description != null && description.isNotEmpty) ...[
                         SizedBox(height: 16.h),
-                        Text(
-                          item.description!,
-                          style: Theme.of(context).textTheme.bodyLarge,
+                        MarkdownBody(
+                          data: description,
+                          selectable: true,
+                          styleSheet: MarkdownStyleSheet.fromTheme(
+                            Theme.of(context),
+                          ),
                         ),
                       ],
                       if (hasMedia && !showInlineImage) ...[
@@ -103,15 +117,6 @@ class ContentDetailScreen extends ConsumerWidget {
         ],
       ),
     );
-  }
-
-  bool _isImageUrl(String url) {
-    final path = Uri.tryParse(url)?.path.toLowerCase() ?? url.toLowerCase();
-    return path.endsWith('.jpg') ||
-        path.endsWith('.jpeg') ||
-        path.endsWith('.png') ||
-        path.endsWith('.webp') ||
-        path.endsWith('.gif');
   }
 
   Future<void> _openMediaUrl(BuildContext context, String url) async {

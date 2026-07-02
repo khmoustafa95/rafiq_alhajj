@@ -12,7 +12,9 @@ class ContentRemoteDataSource {
   static const Duration _requestTimeout = Duration(seconds: 15);
 
   static const columns =
-      'id, title, description, media_url, type, visibility, created_at';
+      'id, title, title_ar, title_en, description, description_ar, '
+      'description_en, media_url, type, visibility, publication_status, '
+      'published_at, created_at';
 
   Future<List<Map<String, dynamic>>> fetchBrowsableFeed() async {
     final rows = await _client

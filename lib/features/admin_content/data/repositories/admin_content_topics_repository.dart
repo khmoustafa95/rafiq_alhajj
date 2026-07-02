@@ -3,6 +3,7 @@ import 'package:rafiq_alhajj/core/domain/models/educational_media.dart';
 import 'package:rafiq_alhajj/features/admin_content/data/data_sources/admin_content_topics_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/content/data/repositories/content_topics_repository.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_topic.dart';
+import 'package:rafiq_alhajj/features/content/domain/models/content_publication_status.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_visibility.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -61,12 +62,21 @@ class AdminContentTopicsRepository {
 
     try {
       final payload = {
-        'title': input.title.trim(),
-        'description': _nullIfEmpty(input.description),
+        'title': input.titleAr.trim(),
+        'title_ar': input.titleAr.trim(),
+        'title_en': _nullIfEmpty(input.titleEn),
+        'description_ar': _nullIfEmpty(input.descriptionAr),
+        'description_en': _nullIfEmpty(input.descriptionEn),
+        'description': _nullIfEmpty(input.descriptionAr),
         'cover_image_url': _nullIfEmpty(input.coverImageUrl),
         'visibility': input.visibility.databaseValue,
         'sort_order': input.sortOrder,
         'is_active': input.isActive,
+        'publication_status': input.publicationStatus.databaseValue,
+        'published_at': input.publicationStatus ==
+                ContentPublicationStatus.published
+            ? (input.publishedAt ?? DateTime.now().toUtc()).toIso8601String()
+            : null,
         'updated_at': DateTime.now().toUtc().toIso8601String(),
       };
 
@@ -139,14 +149,25 @@ class AdminContentTopicsRepository {
 
     return ContentTopic(
       id: row['id'] as String,
-      title: row['title'] as String,
-      description: row['description'] as String?,
+      titleAr: (row['title_ar'] as String?) ?? row['title'] as String,
+      titleEn: row['title_en'] as String?,
+      descriptionAr:
+          (row['description_ar'] as String?) ?? row['description'] as String?,
+      descriptionEn: row['description_en'] as String?,
       coverImageUrl: row['cover_image_url'] as String?,
       visibility: ContentVisibility.fromDatabase(
         row['visibility'] as String,
       ),
       sortOrder: row['sort_order'] as int? ?? 0,
       isActive: row['is_active'] as bool? ?? true,
+      publicationStatus: row['publication_status'] != null
+          ? ContentPublicationStatus.fromDatabase(
+              row['publication_status'] as String,
+            )
+          : ContentPublicationStatus.published,
+      publishedAt: row['published_at'] != null
+          ? DateTime.parse(row['published_at'] as String)
+          : null,
       media: media,
       createdAt: DateTime.parse(row['created_at'] as String),
     );
