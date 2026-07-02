@@ -3,7 +3,9 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
-**Content offline-first phases (P0–P2) — SHIPPED** (2026-07-02): implemented full catalog cache + stale-while-revalidate, unified cover images, learning progress, download UX, journey offline, background refresh, profile-scoped media cache, competitions offline-lite. `flutter analyze lib` → **No issues found**. ⚠ Device smoke test pending (offline feed/articles, continue learning card, download-all, journey media offline, quiz cache fallback).
+**Content offline enhancements (high/medium priority) — SHIPPED** (2026-07-02): built on Phase 1 branch `cursor/content-offline-phases-33a6`. **High:** true stale-while-revalidate (`CatalogSnapshot` + `HomeContentFeed`/`ContentTopicsList` notifiers), video/audio resume from `positionMs`, stale catalog badge (`ContentStaleIndicator`), Wi-Fi onboarding dialog, pending quiz attempts sync queue (`PendingQuizAttemptsCache` + `PendingQuizSyncService`). **Medium:** central **My Downloads** screen (`/content/downloads`), local cached search (`/content/search`), push deep-link prefetch (`ContentPrefetchService`), sequential next-media prefetch on Wi-Fi when offline enabled, TTL/`cachedAt` tracking in catalog cache. `flutter analyze lib test` → **No issues found**. ⚠ Device smoke test pending.
+
+**Content offline-first phases (P0–P2) — SHIPPED** (2026-07-02): implemented full catalog cache + stale-while-revalidate, unified cover images, learning progress, download UX, journey offline, background refresh, profile-scoped media cache, competitions offline-lite. PR #3 on `cursor/content-offline-phases-33a6`.
 
 **Push notifications hardening** (2026-07-02): full audit follow-up across client, Edge Function, web SW, iOS, and global-app UX patterns (rounds 1–4).
 - **Token lifecycle:** unregister on session end; token rotation cleanup; post-login permission.
