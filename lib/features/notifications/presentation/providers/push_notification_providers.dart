@@ -5,8 +5,10 @@ import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/features/admin_settings/presentation/providers/system_settings_providers.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/features/notifications/application/services/push_notification_service.dart';
+import 'package:rafiq_alhajj/features/notifications/application/services/push_open_handler.dart';
 import 'package:rafiq_alhajj/features/notifications/application/services/web_push_bridge.dart';
 import 'package:rafiq_alhajj/features/notifications/data/repositories/device_token_repository.dart';
+import 'package:rafiq_alhajj/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -37,6 +39,15 @@ Future<void> pushNotificationInit(Ref ref) async {
 @Riverpod(keepAlive: true)
 void pushNotificationBinding(Ref ref) {
   ref.watch(pushNotificationInitProvider);
+
+  PushOpenHandler.onOpen = (data) async {
+    final notificationId = data['notification_id'] as String?;
+    if (notificationId == null || notificationId.isEmpty) {
+      return;
+    }
+    await ref.read(notificationInboxProvider.notifier).markAsRead(notificationId);
+    ref.invalidate(unreadNotificationCountProvider);
+  };
 
   if (AppPlatform.isWeb) {
     startWebPushClickListener();

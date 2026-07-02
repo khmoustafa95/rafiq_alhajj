@@ -48,4 +48,17 @@ class PushDispatchFailureRepository {
       createdAt: DateTime.parse(row['created_at'] as String),
     );
   }
+
+  Future<void> retryFailure(String failureId) async {
+    final remote = _remote;
+    if (remote == null) {
+      throw const PushDispatchFailureException('Supabase not configured');
+    }
+
+    try {
+      await remote.retryFailure(failureId);
+    } on PostgrestException catch (e) {
+      throw PushDispatchFailureException(e.message);
+    }
+  }
 }

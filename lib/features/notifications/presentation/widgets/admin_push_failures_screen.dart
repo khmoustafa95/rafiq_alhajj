@@ -16,6 +16,7 @@ class AdminPushFailuresScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final failuresAsync = ref.watch(adminPushDispatchFailuresProvider);
+    final retrying = ref.watch(adminPushFailureRetryProvider).isLoading;
 
     final body = failuresAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -30,7 +31,27 @@ class AdminPushFailuresScreen extends ConsumerWidget {
           itemCount: failures.length,
           separatorBuilder: (context, index) => SizedBox(height: sh(8)),
           itemBuilder: (context, index) {
-            return _FailureTile(failure: failures[index]);
+            return _FailureTile(
+              failure: failures[index],
+              retrying: retrying,
+              onRetry: () async {
+                final ok = await ref
+                    .read(adminPushFailureRetryProvider.notifier)
+                    .retry(failures[index].id);
+                if (!context.mounted) {
+                  return;
+                }
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      ok
+                          ? l10n.adminPushFailuresRetryQueued
+                          : l10n.adminPushFailuresRetryError,
+                    ),
+                  ),
+                );
+              },
+            );
           },
         );
       },
@@ -69,9 +90,15 @@ class AdminPushFailuresScreen extends ConsumerWidget {
 }
 
 class _FailureTile extends StatelessWidget {
-  const _FailureTile({required this.failure});
+  const _FailureTile({
+    required this.failure,
+    required this.retrying,
+    required this.onRetry,
+  });
 
   final PushDispatchFailure failure;
+  final bool retrying;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +131,21 @@ class _FailureTile extends StatelessWidget {
             Text(
               '${l10n.adminPushFailuresToken}: ${failure.deviceTokenPreview}',
               style: Theme.of(context).textTheme.bodySmall,
+            ),
+            SizedBox(height: sh(8)),
+            Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: TextButton.icon(
+                onPressed: retrying ? null : onRetry,
+                icon: retrying
+                    ? SizedBox(
+                        width: sw(16),
+                        height: sw(16),
+                        child: const CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.replay_rounded),
+                label: Text(l10n.adminPushFailuresRetry),
+              ),
             ),
           ],
         ),

@@ -24,6 +24,10 @@ class NotificationPreferencesRemoteDataSource {
     required bool pushContent,
     required bool pushCompetitions,
     required bool pushUrgent,
+    required bool quietHoursEnabled,
+    required String quietHoursStart,
+    required String quietHoursEnd,
+    int? timezoneOffsetMinutes,
   }) async {
     await _client.from(_table).upsert(
       {
@@ -33,6 +37,10 @@ class NotificationPreferencesRemoteDataSource {
         'push_content': pushContent,
         'push_competitions': pushCompetitions,
         'push_urgent': pushUrgent,
+        'quiet_hours_enabled': quietHoursEnabled,
+        'quiet_hours_start': quietHoursStart,
+        'quiet_hours_end': quietHoursEnd,
+        'timezone_offset_minutes': timezoneOffsetMinutes,
         'updated_at': DateTime.now().toUtc().toIso8601String(),
       },
       onConflict: 'profile_id',

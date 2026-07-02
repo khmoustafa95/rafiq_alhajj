@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/routing/root_navigator_key.dart';
+import 'package:rafiq_alhajj/features/notifications/application/services/push_open_handler.dart';
 import 'package:rafiq_alhajj/features/notifications/application/utils/notification_navigation.dart';
 import 'package:rafiq_alhajj/features/notifications/application/utils/pending_push_navigation.dart';
 
@@ -45,6 +46,8 @@ void flushPendingPushNavigation({int maxAttempts = 1}) {
 }
 
 void _navigateWithContext(BuildContext context, Map<String, dynamic> data) {
+  unawaited(PushOpenHandler.handleOpen(data));
+
   final route = data['route'] as String?;
   final id = data['id'] as String?;
 

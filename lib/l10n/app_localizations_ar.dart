@@ -2259,6 +2259,22 @@ class AppLocalizationsAr extends AppLocalizations {
       'النجدة وتحديثات الحالة الميدانية وتنبيهات النظام.';
 
   @override
+  String get notificationSettingsQuietHoursTitle => 'ساعات الهدوء';
+
+  @override
+  String get notificationSettingsQuietHoursHint =>
+      'كتم التنبيهات غير العاجلة ليلاً. التنبيهات العاجلة (النجدة وتحديثات الحالة) تبقى فعّالة.';
+
+  @override
+  String get notificationSettingsQuietHoursEnabled => 'جدولة ساعات الهدوء';
+
+  @override
+  String get notificationSettingsQuietHoursStart => 'البداية';
+
+  @override
+  String get notificationSettingsQuietHoursEnd => 'النهاية';
+
+  @override
   String get adminPushFailuresTitle => 'سجل تسليم الإشعارات';
 
   @override
@@ -2280,6 +2296,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminPushFailuresToken => 'رمز الجهاز';
+
+  @override
+  String get adminPushFailuresRetry => 'إعادة الإرسال';
+
+  @override
+  String get adminPushFailuresRetryQueued => 'تمت إعادة جدولة الإرسال.';
+
+  @override
+  String get adminPushFailuresRetryError => 'تعذرت إعادة جدولة الإرسال.';
 
   @override
   String get adminSettingsManagementSection => 'اختصارات الإدارة';

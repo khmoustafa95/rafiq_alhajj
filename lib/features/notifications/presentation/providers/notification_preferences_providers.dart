@@ -60,3 +60,20 @@ class NotificationPreferencesSave extends _$NotificationPreferencesSave {
 Future<List<PushDispatchFailure>> adminPushDispatchFailures(Ref ref) async {
   return ref.read(pushDispatchFailureRepositoryProvider).fetchRecent();
 }
+
+@riverpod
+class AdminPushFailureRetry extends _$AdminPushFailureRetry {
+  @override
+  FutureOr<void> build() {}
+
+  Future<bool> retry(String failureId) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await ref.read(pushDispatchFailureRepositoryProvider).retryFailure(
+            failureId,
+          );
+      ref.invalidate(adminPushDispatchFailuresProvider);
+    });
+    return !state.hasError;
+  }
+}

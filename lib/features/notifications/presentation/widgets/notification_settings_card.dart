@@ -178,7 +178,80 @@ class _PreferencesBodyState extends State<_PreferencesBody> {
           title: Text(l10n.notificationSettingsCategoryUrgent),
           subtitle: Text(l10n.notificationSettingsCategoryUrgentHint),
         ),
+        Divider(height: 24.h),
+        Text(
+          l10n.notificationSettingsQuietHoursTitle,
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+        ),
+        SizedBox(height: 4.h),
+        Text(
+          l10n.notificationSettingsQuietHoursHint,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+              ),
+        ),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          value: prefs.quietHoursEnabled,
+          onChanged: widget.saving
+              ? null
+              : (value) =>
+                  widget.onChanged(prefs.copyWith(quietHoursEnabled: value)),
+          title: Text(l10n.notificationSettingsQuietHoursEnabled),
+        ),
+        if (prefs.quietHoursEnabled) ...[
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(l10n.notificationSettingsQuietHoursStart),
+            trailing: Text(_formatTimeOfDay(prefs.quietHoursStart)),
+            onTap: widget.saving
+                ? null
+                : () => _pickTime(
+                      context,
+                      initial: prefs.quietHoursStart,
+                      onPicked: (time) => widget.onChanged(
+                        prefs.copyWith(quietHoursStart: time),
+                      ),
+                    ),
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(l10n.notificationSettingsQuietHoursEnd),
+            trailing: Text(_formatTimeOfDay(prefs.quietHoursEnd)),
+            onTap: widget.saving
+                ? null
+                : () => _pickTime(
+                      context,
+                      initial: prefs.quietHoursEnd,
+                      onPicked: (time) =>
+                          widget.onChanged(prefs.copyWith(quietHoursEnd: time)),
+                    ),
+          ),
+        ],
       ],
     );
+  }
+
+  String _formatTimeOfDay(TimeOfDay time) {
+    final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
+    final minute = time.minute.toString().padLeft(2, '0');
+    final period = time.period == DayPeriod.am ? 'AM' : 'PM';
+    return '$hour:$minute $period';
+  }
+
+  Future<void> _pickTime(
+    BuildContext context, {
+    required TimeOfDay initial,
+    required ValueChanged<TimeOfDay> onPicked,
+  }) async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: initial,
+    );
+    if (picked != null) {
+      onPicked(picked);
+    }
   }
 }

@@ -25,4 +25,11 @@ class PushDispatchFailureRemoteDataSource {
     }
     return const [];
   }
+
+  Future<void> retryFailure(String failureId) async {
+    await _client.rpc<void>(
+      'admin_retry_push_failure',
+      params: {'p_failure_id': failureId},
+    );
+  }
 }

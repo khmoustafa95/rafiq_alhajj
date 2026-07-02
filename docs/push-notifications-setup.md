@@ -26,8 +26,12 @@ Arabic summary is in [runbook-ar.md](./runbook-ar.md#push-fcm) (add anchor secti
   `default_notification_color` = `@color/notification_color`).
 - **Foreground (Android):** `PushNotificationService` listens to
   `FirebaseMessaging.onMessage` and renders a heads-up notification via
-  `flutter_local_notifications` (channel created in `LocalNotificationsService`,
-  id must match the manifest default). Tapping routes via `navigateFromPushData`.
+  `flutter_local_notifications`. **Per-category Android channels** are created
+  in `LocalNotificationsService` (`rafiq_announcements`, `rafiq_content`,
+  `rafiq_competitions`, `rafiq_urgent`) so users can mute categories in OS
+  settings. The Edge Function sets matching `android.notification.channel_id`
+  on background FCM payloads. Tapping routes via `navigateFromPushData` and
+  marks the inbox row as read when `notification_id` is present.
 - **Foreground (iOS):** shown by the OS via
   `setForegroundNotificationPresentationOptions(alert/badge/sound)`.
 - **Fallback:** on web / when Firebase isn't configured, the in-app `SnackBar`
@@ -153,7 +157,11 @@ from the broadcast screen (`/admin/notifications/failures`).
 
 Pilgrims manage push categories from **Profile → Notification preferences**
 (`notification_preferences` table). The Edge Function skips FCM delivery when a
-category is opted out. In-app inbox rows are unaffected.
+category is opted out or during **quiet hours** (non-urgent only; SOS / field
+updates still deliver). In-app inbox rows are unaffected.
+
+Admins can **retry** a failed delivery from the Push delivery log UI (calls
+`admin_retry_push_failure` RPC → re-queues the same webhook).
 
 The inbox row still exists — pilgrims see the notification in-app even when FCM delivery fails.
 

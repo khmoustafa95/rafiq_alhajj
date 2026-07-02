@@ -2295,6 +2295,22 @@ class AppLocalizationsEn extends AppLocalizations {
       'SOS, field status updates, and system alerts.';
 
   @override
+  String get notificationSettingsQuietHoursTitle => 'Quiet hours';
+
+  @override
+  String get notificationSettingsQuietHoursHint =>
+      'Mute non-urgent alerts overnight. Urgent alerts (SOS, field updates) still come through.';
+
+  @override
+  String get notificationSettingsQuietHoursEnabled => 'Schedule quiet hours';
+
+  @override
+  String get notificationSettingsQuietHoursStart => 'Start';
+
+  @override
+  String get notificationSettingsQuietHoursEnd => 'End';
+
+  @override
   String get adminPushFailuresTitle => 'Push delivery log';
 
   @override
@@ -2315,6 +2331,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminPushFailuresToken => 'Device token';
+
+  @override
+  String get adminPushFailuresRetry => 'Retry delivery';
+
+  @override
+  String get adminPushFailuresRetryQueued => 'Delivery re-queued.';
+
+  @override
+  String get adminPushFailuresRetryError => 'Could not re-queue delivery.';
 
   @override
   String get adminSettingsManagementSection => 'Management shortcuts';

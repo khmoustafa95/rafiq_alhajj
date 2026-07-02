@@ -4243,6 +4243,36 @@ abstract class AppLocalizations {
   /// **'SOS, field status updates, and system alerts.'**
   String get notificationSettingsCategoryUrgentHint;
 
+  /// No description provided for @notificationSettingsQuietHoursTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiet hours'**
+  String get notificationSettingsQuietHoursTitle;
+
+  /// No description provided for @notificationSettingsQuietHoursHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Mute non-urgent alerts overnight. Urgent alerts (SOS, field updates) still come through.'**
+  String get notificationSettingsQuietHoursHint;
+
+  /// No description provided for @notificationSettingsQuietHoursEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule quiet hours'**
+  String get notificationSettingsQuietHoursEnabled;
+
+  /// No description provided for @notificationSettingsQuietHoursStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get notificationSettingsQuietHoursStart;
+
+  /// No description provided for @notificationSettingsQuietHoursEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'End'**
+  String get notificationSettingsQuietHoursEnd;
+
   /// No description provided for @adminPushFailuresTitle.
   ///
   /// In en, this message translates to:
@@ -4278,6 +4308,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Device token'**
   String get adminPushFailuresToken;
+
+  /// No description provided for @adminPushFailuresRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry delivery'**
+  String get adminPushFailuresRetry;
+
+  /// No description provided for @adminPushFailuresRetryQueued.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery re-queued.'**
+  String get adminPushFailuresRetryQueued;
+
+  /// No description provided for @adminPushFailuresRetryError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not re-queue delivery.'**
+  String get adminPushFailuresRetryError;
 
   /// No description provided for @adminSettingsManagementSection.
   ///

@@ -241,3 +241,48 @@ final class AdminPushDispatchFailuresProvider
 
 String _$adminPushDispatchFailuresHash() =>
     r'f47f1cd5ce2922608c684d48b3bbc3394b6c5ca9';
+
+@ProviderFor(AdminPushFailureRetry)
+final adminPushFailureRetryProvider = AdminPushFailureRetryProvider._();
+
+final class AdminPushFailureRetryProvider
+    extends $AsyncNotifierProvider<AdminPushFailureRetry, void> {
+  AdminPushFailureRetryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'adminPushFailureRetryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$adminPushFailureRetryHash();
+
+  @$internal
+  @override
+  AdminPushFailureRetry create() => AdminPushFailureRetry();
+}
+
+String _$adminPushFailureRetryHash() =>
+    r'3d2ae96b9252a5312b2861ed8f30dd9b3aa5ae73';
+
+abstract class _$AdminPushFailureRetry extends $AsyncNotifier<void> {
+  FutureOr<void> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<void>, void>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<void>, void>,
+              AsyncValue<void>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

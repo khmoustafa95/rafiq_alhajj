@@ -18,6 +18,10 @@ type NotificationPreferencesRow = {
   push_content: boolean;
   push_competitions: boolean;
   push_urgent: boolean;
+  quiet_hours_enabled: boolean;
+  quiet_hours_start: string;
+  quiet_hours_end: string;
+  timezone_offset_minutes: number | null;
 };
 
 type WebhookBody = {
@@ -80,7 +84,64 @@ function defaultPreferences(profileId: string): NotificationPreferencesRow {
     push_content: true,
     push_competitions: true,
     push_urgent: true,
+    quiet_hours_enabled: false,
+    quiet_hours_start: "22:00:00",
+    quiet_hours_end: "07:00:00",
+    timezone_offset_minutes: null,
   };
+}
+
+function isUrgentType(type: string): boolean {
+  return type === "ritual_update" || type === "system";
+}
+
+function parseTimeToMinutes(raw: string): number {
+  const parts = raw.split(":");
+  const hour = Number.parseInt(parts[0] ?? "0", 10);
+  const minute = Number.parseInt(parts[1] ?? "0", 10);
+  return hour * 60 + minute;
+}
+
+function isInQuietHours(prefs: NotificationPreferencesRow): boolean {
+  if (!prefs.quiet_hours_enabled) {
+    return false;
+  }
+
+  const offsetMinutes = prefs.timezone_offset_minutes ?? 0;
+  const utcNow = new Date();
+  const localMs = utcNow.getTime() + offsetMinutes * 60_000;
+  const local = new Date(localMs);
+  const currentMinutes = local.getUTCHours() * 60 + local.getUTCMinutes();
+
+  const start = parseTimeToMinutes(prefs.quiet_hours_start);
+  const end = parseTimeToMinutes(prefs.quiet_hours_end);
+
+  if (start === end) {
+    return false;
+  }
+
+  if (start < end) {
+    return currentMinutes >= start && currentMinutes < end;
+  }
+
+  // Spans midnight (e.g. 22:00 → 07:00).
+  return currentMinutes >= start || currentMinutes < end;
+}
+
+function androidChannelId(type: string): string {
+  switch (type) {
+    case "announcement":
+      return "rafiq_announcements";
+    case "content_published":
+      return "rafiq_content";
+    case "competition":
+      return "rafiq_competitions";
+    case "ritual_update":
+    case "system":
+      return "rafiq_urgent";
+    default:
+      return "rafiq_announcements";
+  }
 }
 
 function isCategoryAllowed(
@@ -344,7 +405,7 @@ Deno.serve(async (req) => {
   const { data: preferenceRows, error: preferenceError } = await supabaseAdmin
     .from("notification_preferences")
     .select(
-      "profile_id, push_enabled, push_announcements, push_content, push_competitions, push_urgent",
+      "profile_id, push_enabled, push_announcements, push_content, push_competitions, push_urgent, quiet_hours_enabled, quiet_hours_start, quiet_hours_end, timezone_offset_minutes",
     )
     .in("profile_id", recipientIds);
 
@@ -367,6 +428,10 @@ Deno.serve(async (req) => {
       push_content: row.push_content as boolean,
       push_competitions: row.push_competitions as boolean,
       push_urgent: row.push_urgent as boolean,
+      quiet_hours_enabled: row.quiet_hours_enabled as boolean,
+      quiet_hours_start: (row.quiet_hours_start as string) ?? "22:00:00",
+      quiet_hours_end: (row.quiet_hours_end as string) ?? "07:00:00",
+      timezone_offset_minutes: row.timezone_offset_minutes as number | null,
     });
   }
 
@@ -375,7 +440,14 @@ Deno.serve(async (req) => {
     if (!prefs) {
       return true;
     }
-    return isCategoryAllowed(prefs, record.type ?? "system");
+    if (!isCategoryAllowed(prefs, record.type ?? "system")) {
+      return false;
+    }
+    const type = record.type ?? "system";
+    if (!isUrgentType(type) && isInQuietHours(prefs)) {
+      return false;
+    }
+    return true;
   });
 
   if (deliverableRecords.length === 0) {
@@ -448,15 +520,19 @@ Deno.serve(async (req) => {
     const id = typeof payload.id === "string" ? payload.id : "";
     const title = record.title_en || record.title_ar;
     const bodyText = pickBody(record);
+    const type = record.type ?? "system";
     const data = {
       route,
       id,
+      type,
       notification_id: record.id,
       title_ar: record.title_ar ?? "",
       title_en: record.title_en ?? "",
       body_ar: (record.body_ar ?? "").slice(0, 200),
       body_en: (record.body_en ?? "").slice(0, 200),
     };
+    const channelId = androidChannelId(type);
+    const urgent = isUrgentType(type);
 
     for (const token of tokens) {
       sends.push({
@@ -468,8 +544,22 @@ Deno.serve(async (req) => {
             token,
             notification: { title, body: bodyText },
             data,
-            android: { priority: "HIGH" },
-            apns: { payload: { aps: { sound: "default" } } },
+            android: {
+              priority: urgent ? "HIGH" : "NORMAL",
+              collapse_key: type,
+              notification: { channel_id: channelId },
+            },
+            apns: {
+              headers: urgent
+                ? { "apns-priority": "10" }
+                : { "apns-priority": "5" },
+              payload: {
+                aps: {
+                  sound: "default",
+                  ...(urgent ? { "interruption-level": "time-sensitive" } : {}),
+                },
+              },
+            },
           },
         },
       });

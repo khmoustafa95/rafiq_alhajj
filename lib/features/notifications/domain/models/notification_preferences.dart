@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 /// Per-user push notification category preferences (stored in Supabase).
 class NotificationPreferences {
   const NotificationPreferences({
@@ -6,6 +8,10 @@ class NotificationPreferences {
     required this.pushContent,
     required this.pushCompetitions,
     required this.pushUrgent,
+    required this.quietHoursEnabled,
+    required this.quietHoursStart,
+    required this.quietHoursEnd,
+    this.timezoneOffsetMinutes,
   });
 
   factory NotificationPreferences.defaults() {
@@ -15,6 +21,9 @@ class NotificationPreferences {
       pushContent: true,
       pushCompetitions: true,
       pushUrgent: true,
+      quietHoursEnabled: false,
+      quietHoursStart: TimeOfDay(hour: 22, minute: 0),
+      quietHoursEnd: TimeOfDay(hour: 7, minute: 0),
     );
   }
 
@@ -23,6 +32,10 @@ class NotificationPreferences {
   final bool pushContent;
   final bool pushCompetitions;
   final bool pushUrgent;
+  final bool quietHoursEnabled;
+  final TimeOfDay quietHoursStart;
+  final TimeOfDay quietHoursEnd;
+  final int? timezoneOffsetMinutes;
 
   NotificationPreferences copyWith({
     bool? pushEnabled,
@@ -30,6 +43,10 @@ class NotificationPreferences {
     bool? pushContent,
     bool? pushCompetitions,
     bool? pushUrgent,
+    bool? quietHoursEnabled,
+    TimeOfDay? quietHoursStart,
+    TimeOfDay? quietHoursEnd,
+    int? timezoneOffsetMinutes,
   }) {
     return NotificationPreferences(
       pushEnabled: pushEnabled ?? this.pushEnabled,
@@ -37,6 +54,18 @@ class NotificationPreferences {
       pushContent: pushContent ?? this.pushContent,
       pushCompetitions: pushCompetitions ?? this.pushCompetitions,
       pushUrgent: pushUrgent ?? this.pushUrgent,
+      quietHoursEnabled: quietHoursEnabled ?? this.quietHoursEnabled,
+      quietHoursStart: quietHoursStart ?? this.quietHoursStart,
+      quietHoursEnd: quietHoursEnd ?? this.quietHoursEnd,
+      timezoneOffsetMinutes:
+          timezoneOffsetMinutes ?? this.timezoneOffsetMinutes,
+    );
+  }
+
+  /// Current device offset for quiet-hours evaluation on the server.
+  NotificationPreferences withCurrentTimezoneOffset() {
+    return copyWith(
+      timezoneOffsetMinutes: DateTime.now().timeZoneOffset.inMinutes,
     );
   }
 }
