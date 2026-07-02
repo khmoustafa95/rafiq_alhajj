@@ -6,6 +6,7 @@ import 'package:rafiq_alhajj/features/content/application/services/content_learn
 import 'package:rafiq_alhajj/features/content/data/local/content_media_progress_cache.dart';
 import 'package:rafiq_alhajj/features/content/data/repositories/content_learning_progress_repository.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_media_progress.dart';
+import 'package:rafiq_alhajj/features/content/domain/models/topic_learning_group.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -46,6 +47,33 @@ Future<List<ContentMediaProgress>> myLearningProgress(Ref ref) async {
   final items = await sync.listAll(profileId);
   items.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
   return items;
+}
+
+@riverpod
+Future<List<TopicLearningGroup>> myLearningGrouped(Ref ref) async {
+  final items = await ref.watch(myLearningProgressProvider.future);
+  final grouped = <String, TopicLearningGroup>{};
+
+  for (final progress in items) {
+    final existing = grouped[progress.topicId];
+    if (existing == null) {
+      grouped[progress.topicId] = TopicLearningGroup(
+        topicId: progress.topicId,
+        topicTitle: progress.topicTitle,
+        lessons: [progress],
+      );
+    } else {
+      grouped[progress.topicId] = TopicLearningGroup(
+        topicId: existing.topicId,
+        topicTitle: existing.topicTitle,
+        lessons: [...existing.lessons, progress],
+      );
+    }
+  }
+
+  final groups = grouped.values.toList()
+    ..sort((a, b) => b.lastUpdated.compareTo(a.lastUpdated));
+  return groups;
 }
 
 @riverpod
@@ -97,6 +125,7 @@ class ContentLearningProgressRecorder extends _$ContentLearningProgressRecorder 
 
     ref.invalidate(continueLearningProgressProvider);
     ref.invalidate(myLearningProgressProvider);
+    ref.invalidate(myLearningGroupedProvider);
   }
 }
 

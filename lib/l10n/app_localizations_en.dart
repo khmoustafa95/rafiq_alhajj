@@ -2700,6 +2700,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contentSearchTitle => 'Search saved content';
 
   @override
+  String get contentHubQuickActionsTitle => 'Learning shortcuts';
+
+  @override
   String get contentSearchHint => 'Search topics, news, announcements…';
 
   @override
@@ -2768,7 +2771,38 @@ class AppLocalizationsEn extends AppLocalizations {
       'Answer saved — will sync when you\'re back online';
 
   @override
-  String get contentHubQuickActionsTitle => 'Learning hub';
+  String get contentLessonMarkComplete => 'Mark lesson complete';
+
+  @override
+  String get contentLessonNext => 'Next lesson';
+
+  @override
+  String contentMyLearningSummaryInProgress(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count lessons in progress',
+      one: '1 lesson in progress',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contentMyLearningSummaryCompleted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count lessons completed',
+      one: '1 lesson completed',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get contentMyLearningContinueTopic => 'Continue topic';
+
+  @override
+  String get contentLessonInProgress => 'In progress';
 
   @override
   String contentTopicLessonsProgress(int completed, int total) {

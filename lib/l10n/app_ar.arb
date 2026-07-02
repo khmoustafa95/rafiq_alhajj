@@ -912,6 +912,7 @@
     }
   },
   "contentSearchTitle": "بحث في المحتوى المحفوظ",
+  "contentHubQuickActionsTitle": "اختصارات التعلّم",
   "contentSearchHint": "ابحث في المواضيع والأخبار والإعلانات…",
   "contentSearchPrompt": "ابحث في الكتالوج المحفوظ أثناء عدم الاتصال",
   "contentSearchEmpty": "لا نتائج في المحتوى المحفوظ",
@@ -934,7 +935,22 @@
   "adminContentCoverPreviewLabel": "معاينة الغلاف",
   "adminContentMarkdownPreviewLabel": "معاينة",
   "competitionQuizQueuedOffline": "تم حفظ الإجابة — ستُزامَن عند عودة الاتصال",
-  "contentHubQuickActionsTitle": "مركز التعلم",
+  "contentLessonMarkComplete": "إكمال الدرس",
+  "contentLessonNext": "الدرس التالي",
+  "contentMyLearningSummaryInProgress": "{count, plural, =1{درس واحد قيد المتابعة} other{{count} دروس قيد المتابعة}}",
+  "@contentMyLearningSummaryInProgress": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "contentMyLearningSummaryCompleted": "{count, plural, =1{درس واحد مكتمل} other{{count} دروس مكتملة}}",
+  "@contentMyLearningSummaryCompleted": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "contentMyLearningContinueTopic": "متابعة الموضوع",
+  "contentLessonInProgress": "قيد المتابعة",
   "contentTopicLessonsProgress": "{completed} من {total} دروس",
   "@contentTopicLessonsProgress": {
     "placeholders": {

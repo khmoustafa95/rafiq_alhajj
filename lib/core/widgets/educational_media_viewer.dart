@@ -159,11 +159,19 @@ class _EducationalMediaViewerState extends ConsumerState<EducationalMediaViewer>
     final selected =
         widget.media[_selectedIndex.clamp(0, widget.media.length - 1)];
     final progressAsync = ref.watch(myLearningProgressProvider);
-    final completedIds = progressAsync.asData?.value
-            .where((p) => p.completed)
-            .map((p) => p.mediaId)
-            .toSet() ??
-        const <String>{};
+    final progressItems = progressAsync.asData?.value ?? const [];
+    final completedIds = progressItems
+        .where((p) => p.completed)
+        .map((p) => p.mediaId)
+        .toSet();
+    final inProgressIds = progressItems
+        .where((p) => !p.completed)
+        .map((p) => p.mediaId)
+        .toSet();
+    final selectedCompleted = completedIds.contains(selected.id);
+    final hasNextLesson = _selectedIndex + 1 < widget.media.length;
+    final tracksProgress =
+        widget.progressTopicId != null && widget.progressTopicTitle != null;
 
     return DecoratedBox(
       decoration: AppDecorations.card(radius: AppDecorations.radiusLg),
@@ -197,6 +205,7 @@ class _EducationalMediaViewerState extends ConsumerState<EducationalMediaViewer>
                           _mediaTypeLabel(l10n, widget.media[i].mediaType),
                       selected: _selectedIndex == i,
                       completed: completedIds.contains(widget.media[i].id),
+                      inProgress: inProgressIds.contains(widget.media[i].id),
                       onTap: () {
                         _recordProgress(completed: false);
                         setState(() {
@@ -219,6 +228,40 @@ class _EducationalMediaViewerState extends ConsumerState<EducationalMediaViewer>
                   : null,
               onPositionChanged: _onPositionChanged,
             ),
+            if (tracksProgress) ...[
+              SizedBox(height: 12.h),
+              Row(
+                children: [
+                  if (!selectedCompleted)
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          _recordProgress(completed: true);
+                          setState(() {});
+                        },
+                        icon: const Icon(Icons.check_circle_outline),
+                        label: Text(l10n.contentLessonMarkComplete),
+                      ),
+                    ),
+                  if (!selectedCompleted && hasNextLesson) SizedBox(width: 8.w),
+                  if (hasNextLesson)
+                    Expanded(
+                      child: FilledButton.icon(
+                        onPressed: () {
+                          _recordProgress(completed: selectedCompleted);
+                          setState(() {
+                            _currentPositionMs = 0;
+                            _selectedIndex++;
+                          });
+                          _prefetchNext(_selectedIndex);
+                        },
+                        icon: const Icon(Icons.skip_next_rounded),
+                        label: Text(l10n.contentLessonNext),
+                      ),
+                    ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
@@ -242,6 +285,7 @@ class _LessonTile extends StatelessWidget {
     required this.label,
     required this.selected,
     required this.completed,
+    required this.inProgress,
     required this.onTap,
   });
 
@@ -250,10 +294,14 @@ class _LessonTile extends StatelessWidget {
   final String label;
   final bool selected;
   final bool completed;
+  final bool inProgress;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final showInProgress = inProgress && !completed;
+
     return Padding(
       padding: EdgeInsets.only(bottom: 6.h),
       child: Material(
@@ -267,22 +315,35 @@ class _LessonTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             side: selected
                 ? const BorderSide(color: AppColors.primary, width: 1.5)
-                : BorderSide.none,
+                : showInProgress
+                    ? BorderSide(
+                        color: AppColors.warning.withValues(alpha: 0.5),
+                      )
+                    : BorderSide.none,
           ),
           leading: CircleAvatar(
             radius: 14.r,
-            backgroundColor:
-                completed ? AppColors.success : AppColors.primary,
+            backgroundColor: completed
+                ? AppColors.success
+                : showInProgress
+                    ? AppColors.warning
+                    : AppColors.primary,
             child: completed
                 ? Icon(Icons.check, size: 16.sp, color: AppColors.onPrimary)
-                : Text(
-                    '$index',
-                    style: TextStyle(
-                      color: AppColors.onPrimary,
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                : showInProgress
+                    ? Icon(
+                        Icons.play_arrow_rounded,
+                        size: 16.sp,
+                        color: AppColors.onPrimary,
+                      )
+                    : Text(
+                        '$index',
+                        style: TextStyle(
+                          color: AppColors.onPrimary,
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
           ),
           title: Text(
             label,
@@ -292,6 +353,15 @@ class _LessonTile extends StatelessWidget {
                   fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                 ),
           ),
+          subtitle: showInProgress
+              ? Text(
+                  l10n.contentLessonInProgress,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: AppColors.warning,
+                        fontWeight: FontWeight.w600,
+                      ),
+                )
+              : null,
           trailing: Icon(
             _iconForType(media.mediaType),
             size: 20.sp,

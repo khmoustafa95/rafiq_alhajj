@@ -1201,6 +1201,7 @@
     }
   },
   "contentSearchTitle": "Search saved content",
+  "contentHubQuickActionsTitle": "Learning shortcuts",
   "contentSearchHint": "Search topics, news, announcements…",
   "contentSearchPrompt": "Search your saved catalog while offline",
   "contentSearchEmpty": "No matches in saved content",
@@ -1223,7 +1224,22 @@
   "adminContentCoverPreviewLabel": "Cover preview",
   "adminContentMarkdownPreviewLabel": "Preview",
   "competitionQuizQueuedOffline": "Answer saved — will sync when you're back online",
-  "contentHubQuickActionsTitle": "Learning hub",
+  "contentLessonMarkComplete": "Mark lesson complete",
+  "contentLessonNext": "Next lesson",
+  "contentMyLearningSummaryInProgress": "{count, plural, =1{1 lesson in progress} other{{count} lessons in progress}}",
+  "@contentMyLearningSummaryInProgress": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "contentMyLearningSummaryCompleted": "{count, plural, =1{1 lesson completed} other{{count} lessons completed}}",
+  "@contentMyLearningSummaryCompleted": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "contentMyLearningContinueTopic": "Continue topic",
+  "contentLessonInProgress": "In progress",
   "contentTopicLessonsProgress": "{completed} of {total} lessons",
   "@contentTopicLessonsProgress": {
     "placeholders": {

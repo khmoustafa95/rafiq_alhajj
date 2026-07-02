@@ -4945,6 +4945,12 @@ abstract class AppLocalizations {
   /// **'Search saved content'**
   String get contentSearchTitle;
 
+  /// No description provided for @contentHubQuickActionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Learning shortcuts'**
+  String get contentHubQuickActionsTitle;
+
   /// No description provided for @contentSearchHint.
   ///
   /// In en, this message translates to:
@@ -5077,11 +5083,41 @@ abstract class AppLocalizations {
   /// **'Answer saved — will sync when you\'re back online'**
   String get competitionQuizQueuedOffline;
 
-  /// No description provided for @contentHubQuickActionsTitle.
+  /// No description provided for @contentLessonMarkComplete.
   ///
   /// In en, this message translates to:
-  /// **'Learning hub'**
-  String get contentHubQuickActionsTitle;
+  /// **'Mark lesson complete'**
+  String get contentLessonMarkComplete;
+
+  /// No description provided for @contentLessonNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next lesson'**
+  String get contentLessonNext;
+
+  /// No description provided for @contentMyLearningSummaryInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 lesson in progress} other{{count} lessons in progress}}'**
+  String contentMyLearningSummaryInProgress(int count);
+
+  /// No description provided for @contentMyLearningSummaryCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 lesson completed} other{{count} lessons completed}}'**
+  String contentMyLearningSummaryCompleted(int count);
+
+  /// No description provided for @contentMyLearningContinueTopic.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue topic'**
+  String get contentMyLearningContinueTopic;
+
+  /// No description provided for @contentLessonInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get contentLessonInProgress;
 
   /// No description provided for @contentTopicLessonsProgress.
   ///

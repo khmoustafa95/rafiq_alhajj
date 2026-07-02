@@ -2663,6 +2663,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get contentSearchTitle => 'بحث في المحتوى المحفوظ';
 
   @override
+  String get contentHubQuickActionsTitle => 'اختصارات التعلّم';
+
+  @override
   String get contentSearchHint => 'ابحث في المواضيع والأخبار والإعلانات…';
 
   @override
@@ -2732,7 +2735,38 @@ class AppLocalizationsAr extends AppLocalizations {
       'تم حفظ الإجابة — ستُزامَن عند عودة الاتصال';
 
   @override
-  String get contentHubQuickActionsTitle => 'مركز التعلم';
+  String get contentLessonMarkComplete => 'إكمال الدرس';
+
+  @override
+  String get contentLessonNext => 'الدرس التالي';
+
+  @override
+  String contentMyLearningSummaryInProgress(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count دروس قيد المتابعة',
+      one: 'درس واحد قيد المتابعة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String contentMyLearningSummaryCompleted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count دروس مكتملة',
+      one: 'درس واحد مكتمل',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get contentMyLearningContinueTopic => 'متابعة الموضوع';
+
+  @override
+  String get contentLessonInProgress => 'قيد المتابعة';
 
   @override
   String contentTopicLessonsProgress(int completed, int total) {
