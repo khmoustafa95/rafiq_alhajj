@@ -3,15 +3,15 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
-**Push notifications hardening** (2026-07-02): implemented audit follow-ups across client, Edge Function, web SW, and iOS.
-- **Token lifecycle:** `pushNotificationBinding` now calls `unregisterCurrentUser()` when `authProfileId` transitions to `null` (session expiry, not only explicit sign-out). `onTokenRefresh` deletes the previous DB token before upserting the new one. OS permission request deferred from cold-start `initialize()` to post-login `bindUser()`.
-- **Navigation:** `PendingPushNavigation` + `flushPendingPushNavigation()` queue push-tap payloads until `rootNavigatorKey` has context (cold start / `getInitialMessage`). `PushNotificationStarter` retries up to 30 frames.
-- **Locale:** Edge fn `data` now includes `title_ar/en`, `body_ar/en`; `LocalNotificationsService` picks by device locale for foreground Android heads-up; web SW uses `navigator.language` for background tray.
-- **Edge fn security/scale:** `PUSH_WEBHOOK_SECRET` is now **required** (500 if unset). FCM sends limited to 50 concurrent requests. **Retries:** transient errors (`429`/`5xx`/network) retried up to 3× w/ exponential backoff; exhausted failures logged to `push_dispatch_failures`.
-- **Production guard (migration `20260702120000_push_dispatch_retry_and_failures.sql`):** when `app.push_environment = 'production'`, trigger skips dispatch (logs) if URL/secret unset — no dev fallback. Docs include `ALTER DATABASE` commands + failure monitoring SQL.
-- **Web deep links:** `firebase-messaging-sw.js` posts `push_notification_click` to focused client or opens `/?push_route=&push_id=`; new conditional `web_push_bridge.dart` listens + navigates.
-- **iOS:** `RunnerDebug.entitlements` (development) + `RunnerRelease.entitlements` (production) with `aps-environment`; wired in `project.pbxproj`. Docs + `dart_defines.production.example.json` updated (`FIREBASE_APP_ID` added).
-- **Verified:** `flutter analyze lib/features/notifications` → **No issues found**. ⚠ `supabase db reset` not run here (no Docker). Device smoke test pending: session-expiry token removal; cold-start tap routing; web notification click deep link; iOS push on real device; production DB settings on hosted Supabase.
+**Push notifications hardening** (2026-07-02): full audit follow-up across client, Edge Function, web SW, iOS, and global-app UX patterns.
+- **Token lifecycle:** unregister on session end; token rotation cleanup; post-login permission.
+- **Navigation:** pending push queue for cold start; web deep links.
+- **Locale:** bilingual FCM `data` fields; device-locale foreground display.
+- **Edge fn:** required webhook secret; 50-concurrent cap; 3× retry + `push_dispatch_failures` log; respects `system_settings.enable_push_notifications` + per-user `notification_preferences` categories.
+- **Production guard:** migration `20260702120000` — no dev fallback when `app.push_environment=production`.
+- **Global-app UX (round 3):** `notification_preferences` table + **Profile → Notification preferences** (master + category toggles); **permission rationale dialog** before OS prompt + open-settings fallback (`app_settings`); **app icon badge** sync (`app_badge_plus`); `system_settings` now enforced for push binding + in-app toasts; **admin Push delivery log** at `/admin/notifications/failures`; Android notification grouping.
+- **iOS:** RunnerDebug/RunnerRelease entitlements.
+- **Verified:** `flutter analyze` (notifications/profile) → **No issues found**. ⚠ `supabase db reset` + device smoke test pending.
 
 ## Earlier focus — Content management redesign (2026-06-26)
 Split content into three clear surfaces and removed the broken standalone `video` content type (root cause of "uploaded video doesn't show on mobile"). Announcements + News are `content_library` (rich text + an **inline cover image**, no external-launch button); the Educational Library is `content_topics`/`content_topic_media` with rich media (video/audio/image-stories/**PDF**).
