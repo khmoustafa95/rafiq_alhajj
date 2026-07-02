@@ -3,6 +3,8 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
+**Code consistency audit** (2026-07-02): full review of dependencies, architecture layers, Riverpod/forms/l10n patterns, and staff web UX conventions. **Verdict:** no major duplicate libraries; main drift is methodology (missing `application/services` in trips/competitions/hajj_journey, 2 Supabase bypasses outside `data_sources/`, `StaffAdaptivePage` vs manual web/mobile split, `.w/.sp` on some staff screens, partial Freezed coverage). Report delivered to user; no code changes this session.
+
 **Content offline-first phases (P0–P2) — SHIPPED** (2026-07-02): implemented full catalog cache + stale-while-revalidate, unified cover images, learning progress, download UX, journey offline, background refresh, profile-scoped media cache, competitions offline-lite. `flutter analyze lib` → **No issues found**. ⚠ Device smoke test pending (offline feed/articles, continue learning card, download-all, journey media offline, quiz cache fallback).
 
 **Push notifications hardening** (2026-07-02): full audit follow-up across client, Edge Function, web SW, iOS, and global-app UX patterns (rounds 1–4).
