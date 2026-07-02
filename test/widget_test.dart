@@ -11,8 +11,13 @@ import 'package:rafiq_alhajj/features/content/presentation/providers/public_cont
 import 'package:rafiq_alhajj/features/islamic_tools/domain/models/prayer_times_schedule.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/providers/prayer_times_provider.dart';
 
+import 'helpers/test_app_shell.dart';
+
 void main() {
   testWidgets('AppRoot shows guest home with bottom navigation', (tester) async {
+    setLargeTestViewport(tester);
+    addTearDown(() => resetTestViewport(tester));
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
