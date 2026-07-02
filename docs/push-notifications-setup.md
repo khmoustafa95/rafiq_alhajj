@@ -13,6 +13,9 @@ Arabic summary is in [runbook-ar.md](./runbook-ar.md#push-fcm) (add anchor secti
   `ERR_NOT_IMPLEMENTED`.
 - The function also **cleans up dead tokens**: any token FCM reports as `404` /
   `UNREGISTERED` is deleted from `device_tokens` (response includes `cleaned`).
+- Transient FCM errors (`429`, `5xx`, network) are **retried up to 3 times**
+  with exponential backoff. Sends that still fail are logged to
+  `push_dispatch_failures` (admins can query via SQL).
 
 ## Notification display behavior
 
@@ -110,10 +113,41 @@ npm run setup
 
 ## 6. Production webhook (hosted)
 
-The SQL trigger uses `pg_net` with `host.docker.internal` for local dev. On hosted Supabase, either:
+The SQL trigger uses `pg_net` with `host.docker.internal` for local dev. On hosted Supabase, configure **all three** database settings (SQL editor or `psql`):
 
-- Set database settings: `app.supabase_functions_url` and `app.push_webhook_secret`, or
-- Add a **Database Webhook** on `public.notifications` INSERT → `send-push-notification` with header `x-push-secret`.
+```sql
+-- Required on hosted Supabase (replace values for your project):
+alter database postgres set app.push_environment = 'production';
+alter database postgres set app.supabase_functions_url =
+  'https://YOUR_PROJECT_REF.supabase.co/functions/v1/send-push-notification';
+alter database postgres set app.push_webhook_secret = 'your-production-push-secret';
+```
+
+> When `app.push_environment = 'production'`, the trigger **skips** push dispatch
+> (with a Postgres log line) if either URL or secret is missing — it will **not**
+> fall back to the local-dev defaults. The in-app inbox still works via Realtime.
+
+Also set Edge Function secrets in the hosted dashboard:
+
+- `FIREBASE_SERVICE_ACCOUNT_JSON`
+- `PUSH_WEBHOOK_SECRET` (must match `app.push_webhook_secret` above)
+
+Alternative: add a **Database Webhook** on `public.notifications` INSERT →
+`send-push-notification` with header `x-push-secret` (still set the secrets).
+
+### Monitoring failed sends
+
+After the Edge Function exhausts retries, rows land in `push_dispatch_failures`:
+
+```sql
+select created_at, notification_id, recipient_id, attempts, left(error, 120)
+from public.push_dispatch_failures
+order by created_at desc
+limit 20;
+```
+
+Only admins can read this table (RLS). The inbox row still exists — pilgrims see
+the notification in-app even when FCM delivery fails.
 
 ## Troubleshooting
 
@@ -124,4 +158,6 @@ The SQL trigger uses `pg_net` with `host.docker.internal` for local dev. On host
 | Edge returns `PUSH_WEBHOOK_SECRET not configured` | Set `PUSH_WEBHOOK_SECRET` in Supabase secrets / `supabase/.env` |
 | Edge returns `Invalid push secret` | `PUSH_WEBHOOK_SECRET` must match DB trigger `x-push-secret` |
 | Trigger never calls function | `pg_net` extension, Supabase functions URL reachable from DB container |
+| Production pushes silently skipped | Set `app.push_environment`, `app.supabase_functions_url`, `app.push_webhook_secret` on the database |
+| FCM keeps failing for one device | Query `push_dispatch_failures` for the error; check token row in `device_tokens` |
 | Android build | `android/app/google-services.json` exists → Google Services plugin applied |

@@ -25,6 +25,23 @@ type ServiceAccount = {
   token_uri?: string;
 };
 
+type FcmSendResult = "sent" | "stale" | "failed";
+
+type FailureRow = {
+  notification_id: string;
+  recipient_id: string;
+  device_token: string;
+  error: string;
+  attempts: number;
+};
+
+type SendJob = {
+  notificationId: string;
+  recipientId: string;
+  token: string;
+  message: { message: Record<string, unknown> };
+};
+
 function loadServiceAccount(): ServiceAccount | null {
   const raw = Deno.env.get("FIREBASE_SERVICE_ACCOUNT_JSON");
   if (!raw) {
@@ -46,6 +63,8 @@ function pickBody(record: NotificationRecord): string {
 }
 
 const FCM_SEND_CONCURRENCY = 50;
+const MAX_SEND_ATTEMPTS = 3;
+const RETRY_BASE_MS = 500;
 
 async function runWithConcurrency<T>(
   items: T[],
@@ -71,6 +90,66 @@ async function runWithConcurrency<T>(
   );
 
   await Promise.all(workers);
+}
+
+function isStaleTokenError(status: number, text: string): boolean {
+  return status === 404 ||
+    /UNREGISTERED|registration-token-not-registered/i.test(text);
+}
+
+function isRetryableError(status: number): boolean {
+  return status === 429 || (status >= 500 && status <= 599);
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function sendFcmMessage(
+  endpoint: string,
+  accessToken: string,
+  message: unknown,
+): Promise<{ result: FcmSendResult; error?: string; attempts: number }> {
+  let lastError = "send failed";
+
+  for (let attempt = 1; attempt <= MAX_SEND_ATTEMPTS; attempt++) {
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(message),
+      });
+
+      if (response.ok) {
+        return { result: "sent", attempts: attempt };
+      }
+
+      const text = await response.text();
+      lastError = text;
+
+      if (isStaleTokenError(response.status, text)) {
+        return { result: "stale", error: text, attempts: attempt };
+      }
+
+      if (isRetryableError(response.status) && attempt < MAX_SEND_ATTEMPTS) {
+        await sleep(RETRY_BASE_MS * 2 ** (attempt - 1));
+        continue;
+      }
+
+      return { result: "failed", error: text, attempts: attempt };
+    } catch (error) {
+      lastError = error instanceof Error ? error.message : "send failed";
+      if (attempt < MAX_SEND_ATTEMPTS) {
+        await sleep(RETRY_BASE_MS * 2 ** (attempt - 1));
+        continue;
+      }
+    }
+  }
+
+  return { result: "failed", error: lastError, attempts: MAX_SEND_ATTEMPTS };
 }
 
 function base64Url(input: ArrayBuffer | string): string {
@@ -185,8 +264,6 @@ Deno.serve(async (req) => {
     });
   }
 
-  // Accept a batched `records` array (statement-level trigger) or a single
-  // `record` (legacy / DB webhook).
   const records: NotificationRecord[] = Array.isArray(body.records)
     ? body.records
     : body.record
@@ -205,7 +282,6 @@ Deno.serve(async (req) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const supabaseAdmin = createClient(supabaseUrl, serviceKey);
 
-  // One query for every recipient's tokens, grouped by profile id.
   const recipientIds = [...new Set(validRecords.map((r) => r.recipient_id))];
   const { data: tokenRows, error: tokenError } = await supabaseAdmin
     .from("device_tokens")
@@ -254,14 +330,12 @@ Deno.serve(async (req) => {
 
   let sent = 0;
   let failed = 0;
+  let retried = 0;
   const errors: string[] = [];
-  // Tokens FCM reports as no longer valid; removed from device_tokens below so
-  // the table doesn't accumulate dead registrations.
   const staleTokens = new Set<string>();
-
-  // Build one FCM message per (recipient token × notification), then send all.
-  type SendJob = () => Promise<void>;
+  const failureRows: FailureRow[] = [];
   const sends: SendJob[] = [];
+
   for (const record of validRecords) {
     const tokens = tokensByRecipient.get(record.recipient_id) ?? [];
     if (tokens.length === 0) {
@@ -283,49 +357,62 @@ Deno.serve(async (req) => {
     };
 
     for (const token of tokens) {
-      const message = {
+      sends.push({
+        notificationId: record.id,
+        recipientId: record.recipient_id,
+        token,
         message: {
-          token,
-          notification: { title, body: bodyText },
-          data,
-          android: { priority: "HIGH" },
-          apns: { payload: { aps: { sound: "default" } } },
+          message: {
+            token,
+            notification: { title, body: bodyText },
+            data,
+            android: { priority: "HIGH" },
+            apns: { payload: { aps: { sound: "default" } } },
+          },
         },
-      };
-      sends.push(async () => {
-        try {
-          const response = await fetch(endpoint, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(message),
-          });
-          if (response.ok) {
-            sent++;
-            return;
-          }
-          failed++;
-          const text = await response.text();
-          errors.push(text);
-          // 404 / UNREGISTERED means the token is dead (app uninstalled, token
-          // rotated, etc.). Mark it for deletion.
-          if (
-            response.status === 404 ||
-            /UNREGISTERED|registration-token-not-registered/i.test(text)
-          ) {
-            staleTokens.add(token);
-          }
-        } catch (error) {
-          failed++;
-          errors.push(error instanceof Error ? error.message : "send failed");
-        }
       });
     }
   }
 
-  await runWithConcurrency(sends, FCM_SEND_CONCURRENCY, (job) => job());
+  await runWithConcurrency(sends, FCM_SEND_CONCURRENCY, async (job) => {
+    const outcome = await sendFcmMessage(endpoint, accessToken, job.message);
+    if (outcome.attempts > 1) {
+      retried++;
+    }
+
+    switch (outcome.result) {
+      case "sent":
+        sent++;
+        return;
+      case "stale":
+        staleTokens.add(job.token);
+        return;
+      case "failed":
+        failed++;
+        if (outcome.error) {
+          errors.push(outcome.error);
+        }
+        failureRows.push({
+          notification_id: job.notificationId,
+          recipient_id: job.recipientId,
+          device_token: job.token,
+          error: (outcome.error ?? "send failed").slice(0, 2000),
+          attempts: outcome.attempts,
+        });
+    }
+  });
+
+  let logged = 0;
+  if (failureRows.length > 0) {
+    const { error: logError, count } = await supabaseAdmin
+      .from("push_dispatch_failures")
+      .insert(failureRows, { count: "exact" });
+    if (logError) {
+      errors.push(`failure_log: ${logError.message}`);
+    } else {
+      logged = count ?? failureRows.length;
+    }
+  }
 
   let cleaned = 0;
   if (staleTokens.size > 0) {
@@ -341,7 +428,15 @@ Deno.serve(async (req) => {
   }
 
   return new Response(
-    JSON.stringify({ ok: true, sent, failed, cleaned, errors: errors.slice(0, 3) }),
+    JSON.stringify({
+      ok: true,
+      sent,
+      failed,
+      retried,
+      logged,
+      cleaned,
+      errors: errors.slice(0, 3),
+    }),
     { status: 200, headers: { "Content-Type": "application/json" } },
   );
 });
