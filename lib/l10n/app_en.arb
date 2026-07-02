@@ -1184,6 +1184,17 @@
       "percent": {"type": "int"}
     }
   },
+  "contentOfflineBanner": "You're offline — showing saved content where available.",
+  "contentContinueLearning": "Continue learning",
+  "contentTopicRequiresInternet": "Some videos require an internet connection (YouTube/Vimeo).",
+  "contentDownloadAll": "Download all topics",
+  "contentTopicOfflineAvailable": "Offline",
+  "contentTopicDownloadSizeEstimate": "Estimated download: {size} MB",
+  "@contentTopicDownloadSizeEstimate": {
+    "placeholders": {
+      "size": {"type": "String"}
+    }
+  },
   "educationalMediaVideoError": "Couldn't play this video.",
   "hajjJourneyMarkComplete": "Mark complete",
   "hajjJourneyAlreadyCompleted": "Completed — back to path",

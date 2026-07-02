@@ -2656,6 +2656,28 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get contentOfflineBanner =>
+      'You\'re offline — showing saved content where available.';
+
+  @override
+  String get contentContinueLearning => 'Continue learning';
+
+  @override
+  String get contentTopicRequiresInternet =>
+      'Some videos require an internet connection (YouTube/Vimeo).';
+
+  @override
+  String get contentDownloadAll => 'Download all topics';
+
+  @override
+  String get contentTopicOfflineAvailable => 'Offline';
+
+  @override
+  String contentTopicDownloadSizeEstimate(String size) {
+    return 'Estimated download: $size MB';
+  }
+
+  @override
   String get educationalMediaVideoError => 'Couldn\'t play this video.';
 
   @override

@@ -7,8 +7,11 @@ import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/educational_media_viewer.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competition_page_constraint.dart';
+import 'package:rafiq_alhajj/features/content/presentation/providers/content_media_providers.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_topics_providers.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/content_offline_banner.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_topic_offline_actions.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/resolved_cover_image.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 class ContentTopicDetailScreen extends ConsumerWidget {
@@ -23,7 +26,11 @@ class ContentTopicDetailScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: topicAsync.when(
+      body: Column(
+        children: [
+          const ContentOfflineBanner(),
+          Expanded(
+            child: topicAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, _) => Center(
           child: Padding(
@@ -84,10 +91,11 @@ class ContentTopicDetailScreen extends ConsumerWidget {
                         fit: StackFit.expand,
                         children: [
                           if (topic.coverImageUrl != null)
-                            Image.network(
-                              topic.coverImageUrl!,
+                            ResolvedCoverImage(
+                              cacheMediaId: ContentMediaDownloadController
+                                  .coverMediaId(topic.id),
+                              remoteUrl: topic.coverImageUrl!,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, _, _) => _heroFallback(),
                             )
                           else
                             _heroFallback(),
@@ -135,6 +143,8 @@ class ContentTopicDetailScreen extends ConsumerWidget {
                           media: topic.educationalMedia,
                           sectionTitle: l10n.contentTopicMediaTitle,
                           emptyMessage: l10n.contentTopicNoMedia,
+                          progressTopicId: topic.id,
+                          progressTopicTitle: topic.title,
                         ),
                         SizedBox(height: 24.h),
                       ]),
@@ -145,6 +155,9 @@ class ContentTopicDetailScreen extends ConsumerWidget {
             ),
           );
         },
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competition_page_constraint.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/presentation/providers/hajj_journey_providers.dart';
+import 'package:rafiq_alhajj/features/hajj_journey/presentation/widgets/hajj_journey_offline_actions.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/presentation/widgets/hajj_ritual_media_viewer.dart';
 import 'package:rafiq_alhajj/features/pilgrim/presentation/providers/pilgrim_providers.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
@@ -120,6 +122,10 @@ class _HajjRitualDetailScreenState extends ConsumerState<HajjRitualDetailScreen>
                         ),
                       ),
                       SizedBox(height: 20.h),
+                      if (!AppPlatform.isWeb) ...[
+                        HajjJourneyOfflineActions(step: step),
+                        SizedBox(height: 16.h),
+                      ],
                       HajjRitualMediaViewer(media: step.media),
                       SizedBox(height: 24.h),
                       if (isLocked)

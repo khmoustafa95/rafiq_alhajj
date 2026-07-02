@@ -12,6 +12,7 @@ import 'package:rafiq_alhajj/core/domain/models/educational_media.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/video_embed/video_embed_view.dart';
+import 'package:rafiq_alhajj/features/content/presentation/providers/content_learning_progress_providers.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_media_providers.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_media_widgets.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
@@ -26,24 +27,54 @@ bool _isExternalVideo(String url) {
       lower.contains('vimeo.com');
 }
 
-class EducationalMediaViewer extends StatefulWidget {
+class EducationalMediaViewer extends ConsumerStatefulWidget {
   const EducationalMediaViewer({
     required this.media,
     this.sectionTitle,
     this.emptyMessage,
+    this.progressTopicId,
+    this.progressTopicTitle,
     super.key,
   });
 
   final List<EducationalMediaItem> media;
   final String? sectionTitle;
   final String? emptyMessage;
+  final String? progressTopicId;
+  final String? progressTopicTitle;
 
   @override
-  State<EducationalMediaViewer> createState() => _EducationalMediaViewerState();
+  ConsumerState<EducationalMediaViewer> createState() =>
+      _EducationalMediaViewerState();
 }
 
-class _EducationalMediaViewerState extends State<EducationalMediaViewer> {
+class _EducationalMediaViewerState extends ConsumerState<EducationalMediaViewer> {
   int _selectedIndex = 0;
+
+  @override
+  void dispose() {
+    _recordProgress(completed: false);
+    super.dispose();
+  }
+
+  void _recordProgress({required bool completed}) {
+    final topicId = widget.progressTopicId;
+    final topicTitle = widget.progressTopicTitle;
+    if (topicId == null || topicTitle == null || widget.media.isEmpty) {
+      return;
+    }
+    final selected =
+        widget.media[_selectedIndex.clamp(0, widget.media.length - 1)];
+    unawaited(
+      ref.read(contentLearningProgressRecorderProvider.notifier).record(
+            topicId: topicId,
+            mediaId: selected.id,
+            topicTitle: topicTitle,
+            mediaTitle: selected.title,
+            completed: completed,
+          ),
+    );
+  }
 
   List<EducationalMediaItem> get _images => widget.media
       .where((m) => m.mediaType == EducationalMediaType.image)
@@ -111,6 +142,7 @@ class _EducationalMediaViewerState extends State<EducationalMediaViewer> {
                           ),
                           selected: _selectedIndex == i,
                           onSelected: (_) {
+                            _recordProgress(completed: false);
                             setState(() => _selectedIndex = i);
                           },
                         ),

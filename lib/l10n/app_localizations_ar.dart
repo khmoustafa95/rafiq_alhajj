@@ -2619,6 +2619,28 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get contentOfflineBanner =>
+      'أنت غير متصل — يُعرض المحتوى المحفوظ حيثما أمكن.';
+
+  @override
+  String get contentContinueLearning => 'تابع التعلم';
+
+  @override
+  String get contentTopicRequiresInternet =>
+      'بعض الفيديوهات تتطلب اتصالاً بالإنترنت (يوتيوب/فيميو).';
+
+  @override
+  String get contentDownloadAll => 'تحميل كل المواضيع';
+
+  @override
+  String get contentTopicOfflineAvailable => 'دون إنترنت';
+
+  @override
+  String contentTopicDownloadSizeEstimate(String size) {
+    return 'الحجم التقديري للتحميل: $size ميغابايت';
+  }
+
+  @override
   String get educationalMediaVideoError => 'تعذّر تشغيل هذا الفيديو.';
 
   @override

@@ -1,4 +1,6 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/features/content/presentation/providers/content_catalog_providers.dart';
+import 'package:rafiq_alhajj/features/hajj_journey/data/hajj_journey_fallback_data.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/data/repositories/admin_hajj_journey_repository.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/data/repositories/hajj_journey_repository.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/domain/models/hajj_journey_step.dart';
@@ -24,7 +26,20 @@ AdminHajjJourneyRepository adminHajjJourneyRepository(Ref ref) {
 
 @riverpod
 Future<List<HajjJourneyStep>> hajjJourneySteps(Ref ref) async {
-  return ref.read(hajjJourneyRepositoryProvider).fetchActiveSteps();
+  final repo = ref.read(hajjJourneyRepositoryProvider);
+  final cache = await ref.read(contentCatalogCacheProvider.future);
+
+  try {
+    final steps = await repo.fetchActiveSteps();
+    await cache.writeJourneySteps(steps);
+    return steps;
+  } catch (_) {
+    final cached = cache.readJourneySteps();
+    if (cached != null && cached.isNotEmpty) {
+      return cached;
+    }
+    return HajjJourneyFallbackData.steps();
+  }
 }
 
 @riverpod

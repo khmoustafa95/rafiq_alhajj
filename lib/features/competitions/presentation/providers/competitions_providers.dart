@@ -11,6 +11,7 @@ import 'package:rafiq_alhajj/features/competitions/domain/models/competition.dar
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition_editor_input.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition_question.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition_question_editor_input.dart';
+import 'package:rafiq_alhajj/features/content/presentation/providers/content_catalog_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -114,10 +115,39 @@ Future<CompetitionQuizProgress> competitionQuizProgress(
   );
 
   final profileId = ref.watch(authProfileIdProvider);
-  return ref.read(competitionQuestionsRepositoryProvider).fetchQuizProgress(
+
+  return ref.read(contentCatalogCacheProvider.future).then((cache) async {
+    if (profileId == null) {
+      return ref.read(competitionQuestionsRepositoryProvider).fetchQuizProgress(
+            competitionId: competitionId,
+            profileId: profileId,
+          );
+    }
+
+    try {
+      final progress = await ref
+          .read(competitionQuestionsRepositoryProvider)
+          .fetchQuizProgress(
+            competitionId: competitionId,
+            profileId: profileId,
+          );
+      await cache.writeQuizProgress(
         competitionId: competitionId,
         profileId: profileId,
+        progress: progress,
       );
+      return progress;
+    } catch (_) {
+      return cache.readQuizProgress(
+            competitionId: competitionId,
+            profileId: profileId,
+          ) ??
+          const CompetitionQuizProgress(
+            questions: [],
+            answeredQuestionIds: {},
+          );
+    }
+  });
 }
 
 @riverpod

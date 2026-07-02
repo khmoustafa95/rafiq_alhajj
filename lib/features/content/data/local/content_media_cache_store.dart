@@ -91,17 +91,25 @@ class CachedContentMediaEntry {
 }
 
 class ContentMediaCacheStore {
-  ContentMediaCacheStore(this._prefs);
+  ContentMediaCacheStore(this._prefs, {this.profileKey = 'guest'});
 
-  static const _manifestKey = 'content_media_cache_manifest_v2';
-  static const _offlineEnabledKey = 'content_offline_enabled_v1';
-  static const _wifiOnlyKey = 'content_offline_wifi_only_v1';
-  static const _quotaBytesKey = 'content_offline_quota_bytes_v1';
+  static const _manifestPrefix = 'content_media_cache_manifest_v2_';
+  static const _offlineEnabledPrefix = 'content_offline_enabled_v1_';
+  static const _wifiOnlyPrefix = 'content_offline_wifi_only_v1_';
+  static const _quotaBytesPrefix = 'content_offline_quota_bytes_v1_';
+
+  /// Per-profile namespace so downloads survive sign-out / re-login.
+  final String profileKey;
 
   /// Default storage cap for offline media: 1 GiB.
   static const defaultQuotaBytes = 1024 * 1024 * 1024;
 
   final SharedPreferences _prefs;
+
+  String get _manifestKey => '$_manifestPrefix$profileKey';
+  String get _offlineEnabledKey => '$_offlineEnabledPrefix$profileKey';
+  String get _wifiOnlyKey => '$_wifiOnlyPrefix$profileKey';
+  String get _quotaBytesKey => '$_quotaBytesPrefix$profileKey';
 
   bool get offlineEnabled => _prefs.getBool(_offlineEnabledKey) ?? false;
 

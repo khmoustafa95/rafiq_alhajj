@@ -408,7 +408,7 @@ final class CompetitionQuizProgressProvider
 }
 
 String _$competitionQuizProgressHash() =>
-    r'd8c60ebde3d369f175e28dec14f594d06e0c0441';
+    r'a9bf2189c6f92ffcc6c4a9fae813da25e9ec8bf1';
 
 final class CompetitionQuizProgressFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<CompetitionQuizProgress>, String> {

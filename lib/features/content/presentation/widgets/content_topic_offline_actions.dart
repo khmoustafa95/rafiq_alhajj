@@ -20,11 +20,20 @@ class ContentTopicOfflineActions extends ConsumerWidget {
       .map((m) => m.id)
       .toList();
 
+  bool _isExternalVideo(String url) {
+    final lower = url.toLowerCase();
+    return lower.contains('youtube.com') ||
+        lower.contains('youtu.be') ||
+        lower.contains('vimeo.com');
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final cacheableIds = _cacheableIds;
-    if (cacheableIds.isEmpty) {
+    final hasExternal = topic.media.any((m) => _isExternalVideo(m.url));
+
+    if (cacheableIds.isEmpty && !hasExternal) {
       return const SizedBox.shrink();
     }
 
@@ -48,10 +57,13 @@ class ContentTopicOfflineActions extends ConsumerWidget {
         .toList();
     final hasFailed =
         jobs.any((j) => j.status == MediaDownloadStatus.failed);
-    final allCached = cachedForTopic >= cacheableIds.length;
+    final allCached =
+        cacheableIds.isEmpty ? false : cachedForTopic >= cacheableIds.length;
 
     final String subtitle;
-    if (downloading.isNotEmpty) {
+    if (cacheableIds.isEmpty) {
+      subtitle = l10n.contentTopicRequiresInternet;
+    } else if (downloading.isNotEmpty) {
       final avg = downloading.fold<double>(0, (sum, j) => sum + j.progress) /
           downloading.length;
       subtitle = state.waitingForWifi
@@ -90,6 +102,7 @@ class ContentTopicOfflineActions extends ConsumerWidget {
           downloading: downloading.isNotEmpty,
           allCached: allCached,
           hasFailed: hasFailed,
+          downloadEnabled: cacheableIds.isNotEmpty,
           onDownload: () async {
             await controller.enqueueTopic(topic);
             if (context.mounted) {
@@ -112,23 +125,62 @@ class ContentTopicOfflineActions extends ConsumerWidget {
       decoration: AppDecorations.card(color: AppColors.surfaceMuted),
       child: Padding(
         padding: EdgeInsets.all(12.w),
-        // The inner Row uses an Expanded child, which requires a bounded
-        // width. If a transient frame ever supplies unbounded width (e.g. a
-        // mid-swap hot-reload tree), fall back to a capped width so layout
-        // can never hard-crash with "BoxConstraints forces an infinite width".
         child: LayoutBuilder(
           builder: (context, constraints) {
+            final content = Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (cacheableIds.isNotEmpty)
+                  FutureBuilder<int?>(
+                    future: ref
+                        .read(contentMediaDownloadControllerProvider.notifier)
+                        .estimateTopicDownloadBytes(topic),
+                    builder: (context, snapshot) {
+                      final bytes = snapshot.data;
+                      if (bytes == null) {
+                        return const SizedBox.shrink();
+                      }
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: 8.h),
+                        child: Text(
+                          l10n.contentTopicDownloadSizeEstimate(
+                            _formatMb(bytes),
+                          ),
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                        ),
+                      );
+                    },
+                  ),
+                row,
+                if (hasExternal) ...[
+                  SizedBox(height: 8.h),
+                  Text(
+                    l10n.contentTopicRequiresInternet,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                  ),
+                ],
+              ],
+            );
             if (constraints.hasBoundedWidth) {
-              return row;
+              return content;
             }
             return ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 600),
-              child: row,
+              child: content,
             );
           },
         ),
       ),
     );
+  }
+
+  String _formatMb(int bytes) {
+    final mb = bytes / (1024 * 1024);
+    return mb < 0.1 ? '< 0.1' : mb.toStringAsFixed(1);
   }
 }
 
@@ -137,6 +189,7 @@ class _TopicActionButton extends StatelessWidget {
     required this.downloading,
     required this.allCached,
     required this.hasFailed,
+    required this.downloadEnabled,
     required this.onDownload,
     required this.onPause,
     required this.onDelete,
@@ -145,6 +198,7 @@ class _TopicActionButton extends StatelessWidget {
   final bool downloading;
   final bool allCached;
   final bool hasFailed;
+  final bool downloadEnabled;
   final Future<void> Function() onDownload;
   final VoidCallback onPause;
   final VoidCallback onDelete;
@@ -153,6 +207,9 @@ class _TopicActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
+    if (!downloadEnabled) {
+      return const SizedBox.shrink();
+    }
     if (downloading) {
       return TextButton.icon(
         onPressed: onPause,

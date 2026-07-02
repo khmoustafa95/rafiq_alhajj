@@ -8,6 +8,7 @@ import 'package:rafiq_alhajj/core/l10n/locale_controller.dart';
 import 'package:rafiq_alhajj/core/routing/app_router.dart';
 import 'package:rafiq_alhajj/core/theme/app_theme.dart';
 import 'package:rafiq_alhajj/core/widgets/push_notification_starter.dart';
+import 'package:rafiq_alhajj/features/content/presentation/providers/content_catalog_refresh_binding.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_badge_sync.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_toast_host.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
@@ -20,6 +21,7 @@ class AppRoot extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
     final locale = ref.watch(localeControllerProvider);
+    ref.watch(contentCatalogRefreshBindingProvider);
 
     return ScreenUtilInit(
       designSize: const Size(AppConfig.designWidth, AppConfig.designHeight),

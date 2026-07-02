@@ -3,7 +3,7 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
-**Content management audit** (2026-07-02): reviewed pilgrim-facing content surfaces (announcements/news/topics/journey/competitions) with offline/poor-network lens. **Strengths:** Coursera-grade encrypted offline media for educational topics (`ContentMediaCacheService` + download manager). **Gaps:** feed metadata + announcements/news not cached locally; topic detail shell needs network; `contentDetailProvider` has no realtime; Hajj journey media has no offline path; no learning progress/resume; YouTube/Vimeo skipped offline. **Next (if implementing):** P0 `ContentCatalogCache` (last-known-good feed + detail JSON in SharedPreferences/Hive); P0 offline cover images via `ResolvedTopicImage`; P1 extend cache service to Hajj journey media; P2 progress tracking + "Continue learning" home card.
+**Content offline-first phases (P0–P2) — SHIPPED** (2026-07-02): implemented full catalog cache + stale-while-revalidate, unified cover images, learning progress, download UX, journey offline, background refresh, profile-scoped media cache, competitions offline-lite. `flutter analyze lib` → **No issues found**. ⚠ Device smoke test pending (offline feed/articles, continue learning card, download-all, journey media offline, quiz cache fallback).
 
 **Push notifications hardening** (2026-07-02): full audit follow-up across client, Edge Function, web SW, iOS, and global-app UX patterns (rounds 1–4).
 - **Token lifecycle:** unregister on session end; token rotation cleanup; post-login permission.

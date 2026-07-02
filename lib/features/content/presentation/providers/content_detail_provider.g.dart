@@ -64,7 +64,7 @@ final class ContentDetailProvider
   }
 }
 
-String _$contentDetailHash() => r'e072d3ca511fa6537be43242e104012bafd92627';
+String _$contentDetailHash() => r'749d2c7ec15e45561aca0193a8969aae14211450';
 
 final class ContentDetailFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ContentItem?>, String> {

@@ -66,7 +66,7 @@ final class ContentTopicsListProvider
   }
 }
 
-String _$contentTopicsListHash() => r'37e621ac98354e2d11282d7569fb2b440fc6a68e';
+String _$contentTopicsListHash() => r'e2c785582a39f48bfee70d6705d1a0eaae582e6f';
 
 final class ContentTopicsListFamily extends $Family
     with
@@ -143,7 +143,7 @@ final class ContentTopicDetailProvider
 }
 
 String _$contentTopicDetailHash() =>
-    r'99444b0fffc708500372b7c111a6a4e9f9b1259f';
+    r'92f6ceff7b252611719ca3ceae714ca731a7e972';
 
 final class ContentTopicDetailFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ContentTopic?>, String> {

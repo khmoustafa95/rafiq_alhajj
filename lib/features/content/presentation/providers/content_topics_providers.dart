@@ -2,9 +2,9 @@ import 'package:rafiq_alhajj/core/supabase/realtime_invalidation_registry.dart';
 import 'package:rafiq_alhajj/core/supabase/realtime_sync_attach.dart';
 import 'package:rafiq_alhajj/core/supabase/realtime_sync_providers.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
+import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_topic.dart';
-import 'package:rafiq_alhajj/features/content/presentation/providers/content_service_provider.dart';
-import 'package:rafiq_alhajj/features/content/presentation/providers/content_topics_repository_provider.dart';
+import 'package:rafiq_alhajj/features/content/presentation/providers/content_catalog_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'content_topics_providers.g.dart';
@@ -19,8 +19,14 @@ Future<List<ContentTopic>> contentTopicsList(Ref ref, AppAccessMode accessMode) 
     onInvalidate: (ref) => ref.invalidate(contentTopicsListProvider),
   );
 
-  return ref.read(contentServiceProvider).loadTopics(
-        isPilgrim: accessMode == AppAccessMode.pilgrim,
+  final isPilgrim = accessMode == AppAccessMode.pilgrim;
+  final profileId = ref.watch(authProfileIdProvider);
+
+  return ref.read(contentCatalogServiceProvider.future).then(
+        (service) => service.loadTopics(
+          isPilgrim: isPilgrim,
+          profileId: profileId,
+        ),
       );
 }
 
@@ -34,5 +40,12 @@ Future<ContentTopic?> contentTopicDetail(Ref ref, String id) {
     onInvalidate: (ref) => ref.invalidate(contentTopicDetailProvider),
   );
 
-  return ref.read(contentTopicsRepositoryProvider).fetchById(id);
+  final isPilgrim = ref.watch(authAccessModeProvider) == AppAccessMode.pilgrim;
+
+  return ref.read(contentCatalogServiceProvider.future).then(
+        (service) => service.loadTopicDetail(
+          id,
+          isPilgrim: isPilgrim,
+        ),
+      );
 }
