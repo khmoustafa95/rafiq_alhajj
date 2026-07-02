@@ -1,21 +1,17 @@
-/// Input payload for creating or updating a [Trip].
-class TripEditorInput {
-  const TripEditorInput({
-    this.id,
-    required this.type,
-    required this.seasonYear,
-    required this.name,
-    required this.status,
-    this.startDate,
-    this.endDate,
-  });
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  /// Null when creating a new trip.
-  final String? id;
-  final String type;
-  final int seasonYear;
-  final String name;
-  final String status;
-  final DateTime? startDate;
-  final DateTime? endDate;
+part 'trip_editor_input.freezed.dart';
+
+/// Input payload for creating or updating a [Trip].
+@freezed
+abstract class TripEditorInput with _$TripEditorInput {
+  const factory TripEditorInput({
+    String? id,
+    required String type,
+    required int seasonYear,
+    required String name,
+    required String status,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) = _TripEditorInput;
 }

@@ -1,23 +1,22 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_type.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_visibility.dart';
 
-/// Payload for creating or updating [content_library] rows (admin CMS).
-class ContentEditorInput {
-  const ContentEditorInput({
-    this.id,
-    required this.title,
-    this.description,
-    this.mediaUrl,
-    required this.type,
-    required this.visibility,
-  });
+part 'content_editor_input.freezed.dart';
 
-  final String? id;
-  final String title;
-  final String? description;
-  final String? mediaUrl;
-  final ContentType type;
-  final ContentVisibility visibility;
+/// Payload for creating or updating [content_library] rows (admin CMS).
+@freezed
+abstract class ContentEditorInput with _$ContentEditorInput {
+  const factory ContentEditorInput({
+    String? id,
+    required String title,
+    String? description,
+    String? mediaUrl,
+    required ContentType type,
+    required ContentVisibility visibility,
+  }) = _ContentEditorInput;
+
+  const ContentEditorInput._();
 
   Map<String, dynamic> toDatabasePayload() {
     return {

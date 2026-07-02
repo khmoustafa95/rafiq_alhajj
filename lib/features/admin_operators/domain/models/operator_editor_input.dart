@@ -1,24 +1,22 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_group_grant.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_permissions.dart';
 
-class OperatorEditorInput {
-  const OperatorEditorInput({
-    this.id,
-    required this.fullName,
-    required this.email,
-    this.password,
-    this.isActive = true,
-    required this.permissions,
-    this.groupAccess = const [],
-  });
+part 'operator_editor_input.freezed.dart';
 
-  final String? id;
-  final String fullName;
-  final String email;
-  final String? password;
-  final bool isActive;
-  final OperatorPermissions permissions;
-  final List<OperatorGroupGrant> groupAccess;
+@freezed
+abstract class OperatorEditorInput with _$OperatorEditorInput {
+  const factory OperatorEditorInput({
+    String? id,
+    required String fullName,
+    required String email,
+    String? password,
+    @Default(true) bool isActive,
+    required OperatorPermissions permissions,
+    @Default([]) List<OperatorGroupGrant> groupAccess,
+  }) = _OperatorEditorInput;
+
+  const OperatorEditorInput._();
 
   bool get isEditing => id != null;
 }

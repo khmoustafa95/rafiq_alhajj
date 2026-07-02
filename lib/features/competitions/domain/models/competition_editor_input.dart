@@ -1,19 +1,19 @@
-class CompetitionEditorInput {
-  const CompetitionEditorInput({
-    this.id,
-    required this.title,
-    this.description,
-    required this.startsAt,
-    required this.endsAt,
-    required this.isActive,
-  });
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  final String? id;
-  final String title;
-  final String? description;
-  final DateTime startsAt;
-  final DateTime endsAt;
-  final bool isActive;
+part 'competition_editor_input.freezed.dart';
+
+@freezed
+abstract class CompetitionEditorInput with _$CompetitionEditorInput {
+  const factory CompetitionEditorInput({
+    String? id,
+    required String title,
+    String? description,
+    required DateTime startsAt,
+    required DateTime endsAt,
+    required bool isActive,
+  }) = _CompetitionEditorInput;
+
+  const CompetitionEditorInput._();
 
   Map<String, dynamic> toDatabasePayload() {
     return {

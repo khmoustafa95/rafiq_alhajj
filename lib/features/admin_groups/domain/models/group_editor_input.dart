@@ -1,47 +1,37 @@
 import 'dart:typed_data';
 
-class GroupMemberEditorInput {
-  const GroupMemberEditorInput({
-    this.id,
-    required this.name,
-    this.position,
-    this.contact,
-    this.photoUrl,
-    this.photoBytes,
-    this.photoFileName,
-    this.sortOrder = 0,
-  });
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  final String? id;
-  final String name;
-  final String? position;
-  final String? contact;
-  final String? photoUrl;
-  final Uint8List? photoBytes;
-  final String? photoFileName;
-  final int sortOrder;
+part 'group_editor_input.freezed.dart';
+
+@freezed
+abstract class GroupMemberEditorInput with _$GroupMemberEditorInput {
+  const factory GroupMemberEditorInput({
+    String? id,
+    required String name,
+    String? position,
+    String? contact,
+    String? photoUrl,
+    Uint8List? photoBytes,
+    String? photoFileName,
+    @Default(0) int sortOrder,
+  }) = _GroupMemberEditorInput;
 }
 
-class GroupEditorInput {
-  const GroupEditorInput({
-    this.id,
-    required this.name,
-    this.logoUrl,
-    this.logoBytes,
-    this.logoFileName,
-    this.presidentName,
-    this.presidentPhone,
-    this.members = const [],
-  });
+@freezed
+abstract class GroupEditorInput with _$GroupEditorInput {
+  const factory GroupEditorInput({
+    String? id,
+    required String name,
+    String? logoUrl,
+    Uint8List? logoBytes,
+    String? logoFileName,
+    String? presidentName,
+    String? presidentPhone,
+    @Default([]) List<GroupMemberEditorInput> members,
+  }) = _GroupEditorInput;
 
-  final String? id;
-  final String name;
-  final String? logoUrl;
-  final Uint8List? logoBytes;
-  final String? logoFileName;
-  final String? presidentName;
-  final String? presidentPhone;
-  final List<GroupMemberEditorInput> members;
+  const GroupEditorInput._();
 
   bool get isEditing => id != null;
 }

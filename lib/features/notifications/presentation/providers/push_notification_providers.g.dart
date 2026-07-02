@@ -184,4 +184,4 @@ final class PushNotificationBindingProvider
 }
 
 String _$pushNotificationBindingHash() =>
-    r'f4b318135913407801b0e28d4e989d2816578d4d';
+    r'421f9fb1cc05d251bc1bd4007ca6b04a4b99989b';

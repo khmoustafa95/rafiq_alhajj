@@ -1,39 +1,34 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition_question.dart';
 
-class CompetitionQuestionOptionInput {
-  const CompetitionQuestionOptionInput({
-    this.id,
-    required this.label,
-    required this.isCorrect,
-    this.sortOrder = 0,
-  });
+part 'competition_question_editor_input.freezed.dart';
 
-  final String? id;
-  final String label;
-  final bool isCorrect;
-  final int sortOrder;
+@freezed
+abstract class CompetitionQuestionOptionInput
+    with _$CompetitionQuestionOptionInput {
+  const factory CompetitionQuestionOptionInput({
+    String? id,
+    required String label,
+    required bool isCorrect,
+    @Default(0) int sortOrder,
+  }) = _CompetitionQuestionOptionInput;
 }
 
-class CompetitionQuestionEditorInput {
-  const CompetitionQuestionEditorInput({
-    this.id,
-    required this.competitionId,
-    required this.questionType,
-    required this.prompt,
-    this.explanation,
-    required this.points,
-    required this.options,
-    this.sortOrder = 0,
-  });
+@freezed
+abstract class CompetitionQuestionEditorInput
+    with _$CompetitionQuestionEditorInput {
+  const factory CompetitionQuestionEditorInput({
+    String? id,
+    required String competitionId,
+    required CompetitionQuestionType questionType,
+    required String prompt,
+    String? explanation,
+    required int points,
+    required List<CompetitionQuestionOptionInput> options,
+    @Default(0) int sortOrder,
+  }) = _CompetitionQuestionEditorInput;
 
-  final String? id;
-  final String competitionId;
-  final CompetitionQuestionType questionType;
-  final String prompt;
-  final String? explanation;
-  final int points;
-  final List<CompetitionQuestionOptionInput> options;
-  final int sortOrder;
+  const CompetitionQuestionEditorInput._();
 
   static List<CompetitionQuestionOptionInput> defaultTrueFalseOptions({
     bool correctIsTrue = true,

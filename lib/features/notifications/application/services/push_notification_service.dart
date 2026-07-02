@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/firebase/app_firebase.dart';
 import 'package:rafiq_alhajj/core/l10n/app_locale_settings.dart';
@@ -93,6 +94,15 @@ class PushNotificationService {
     final locale = AppLocaleSettings.fromLanguageCode(code) ??
         AppLocaleSettings.defaultLocale;
     return lookupAppLocalizations(locale);
+  }
+
+  /// Re-applies Android notification channel labels when the app locale changes.
+  Future<void> syncNotificationChannels(Locale locale) async {
+    if (!isSupported || AppPlatform.isWeb) {
+      return;
+    }
+    await initialize();
+    await _localNotifications.syncChannels(lookupAppLocalizations(locale));
   }
 
   Future<void> bindUser(String? profileId) async {

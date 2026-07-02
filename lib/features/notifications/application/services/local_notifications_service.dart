@@ -28,8 +28,6 @@ class LocalNotificationsService {
       return;
     }
 
-    final channels = notificationChannelDescriptors(labels);
-
     const androidSettings =
         AndroidInitializationSettings('@drawable/ic_stat_notification');
     const iosSettings = DarwinInitializationSettings(
@@ -46,6 +44,14 @@ class LocalNotificationsService {
       onDidReceiveNotificationResponse: _onResponse,
     );
 
+    await syncChannels(labels);
+    _initialized = true;
+  }
+
+  /// Creates or updates Android notification channels for [labels].
+  /// Safe to call after [initialize] when the app locale changes.
+  Future<void> syncChannels(AppLocalizations labels) async {
+    final channels = notificationChannelDescriptors(labels);
     final androidPlugin = _plugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>();
@@ -62,7 +68,6 @@ class LocalNotificationsService {
     }
 
     _channels = channels;
-    _initialized = true;
   }
 
   /// Shows a heads-up notification from a foreground [message].

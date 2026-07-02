@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/l10n/locale_controller.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/features/admin_settings/presentation/providers/system_settings_providers.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
@@ -72,6 +73,15 @@ void pushNotificationBinding(Ref ref) {
     if (prevEnabled != nextEnabled) {
       unawaited(_syncPushBinding(ref, profileId, profileId));
     }
+  });
+
+  ref.listen(localeControllerProvider, (previous, next) {
+    if (previous?.languageCode == next.languageCode) {
+      return;
+    }
+    unawaited(
+      ref.read(pushNotificationServiceProvider).syncNotificationChannels(next),
+    );
   });
 }
 
