@@ -12,6 +12,7 @@
     "staging:setup-db": "bash ./scripts/setup-staging-supabase.sh",
     "staging:build": "bash ./scripts/build-staging-web.sh",
     "staging:deploy": "bash ./scripts/deploy-staging.sh",
-    "staging:seed-users": "node ./scripts/seed-demo-users.mjs"
+    "staging:seed-users": "node ./scripts/seed-demo-users.mjs",
+    "staging:wizard": "powershell -ExecutionPolicy Bypass -File ./scripts/staging-wizard.ps1"
   }
 }
