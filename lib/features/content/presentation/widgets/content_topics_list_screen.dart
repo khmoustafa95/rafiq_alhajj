@@ -36,6 +36,13 @@ class ContentTopicsListScreen extends ConsumerWidget {
       appBar: RafiqAppBar(
         title: Text(l10n.contentTopicsSection),
         actions: [
+          if (isPilgrim)
+            IconButton(
+              tooltip: l10n.contentMyLearningTitle,
+              onPressed: () =>
+                  unawaited(context.push(AppRoutes.contentMyLearning)),
+              icon: const Icon(Icons.school_outlined),
+            ),
           IconButton(
             tooltip: l10n.contentSearchTitle,
             onPressed: () => unawaited(context.push(AppRoutes.contentSearch)),

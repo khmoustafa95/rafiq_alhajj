@@ -9,6 +9,7 @@ import 'package:rafiq_alhajj/features/content/application/services/content_media
 import 'package:rafiq_alhajj/features/content/domain/models/content_topic.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_media_providers.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/resolved_cover_image.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/topic_learning_progress_badge.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 enum ContentTopicCardLayout { horizontal, featured }
@@ -28,16 +29,21 @@ class ContentTopicCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
 
     return switch (layout) {
       ContentTopicCardLayout.featured => _FeaturedCard(
           topic: topic,
+          title: topic.localizedTitle(locale),
+          description: topic.localizedDescription(locale),
           onTap: onTap,
           l10n: l10n,
           isOffline: _isOfflineReady(ref),
         ),
       ContentTopicCardLayout.horizontal => _HorizontalCard(
           topic: topic,
+          title: topic.localizedTitle(locale),
+          description: topic.localizedDescription(locale),
           onTap: onTap,
           l10n: l10n,
           isOffline: _isOfflineReady(ref),
@@ -63,12 +69,16 @@ class ContentTopicCard extends ConsumerWidget {
 class _HorizontalCard extends StatelessWidget {
   const _HorizontalCard({
     required this.topic,
+    required this.title,
+    required this.description,
     required this.onTap,
     required this.l10n,
     required this.isOffline,
   });
 
   final ContentTopic topic;
+  final String title;
+  final String? description;
   final VoidCallback onTap;
   final AppLocalizations l10n;
   final bool isOffline;
@@ -105,7 +115,7 @@ class _HorizontalCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          topic.title,
+                          title,
                           style: Theme.of(context)
                               .textTheme
                               .titleSmall
@@ -115,11 +125,11 @@ class _HorizontalCard extends StatelessWidget {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        if (topic.description != null) ...[
+                        if (description != null && description!.isNotEmpty) ...[
                           SizedBox(height: 4.h),
                           Expanded(
                             child: Text(
-                              topic.description!,
+                              description!,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodySmall
@@ -130,8 +140,10 @@ class _HorizontalCard extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                        ] else
+                        ]                         else
                           const Spacer(),
+                        TopicLearningProgressBadge(topic: topic),
+                        SizedBox(height: 6.h),
                         _MediaBadges(topic: topic, l10n: l10n),
                       ],
                     ),
@@ -149,12 +161,16 @@ class _HorizontalCard extends StatelessWidget {
 class _FeaturedCard extends StatelessWidget {
   const _FeaturedCard({
     required this.topic,
+    required this.title,
+    required this.description,
     required this.onTap,
     required this.l10n,
     required this.isOffline,
   });
 
   final ContentTopic topic;
+  final String title;
+  final String? description;
   final VoidCallback onTap;
   final AppLocalizations l10n;
   final bool isOffline;
@@ -183,15 +199,15 @@ class _FeaturedCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      topic.title,
+                      title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w700,
                           ),
                     ),
-                    if (topic.description != null) ...[
+                    if (description != null && description!.isNotEmpty) ...[
                       SizedBox(height: 6.h),
                       Text(
-                        topic.description!,
+                        description!,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: AppColors.textSecondary,
                             ),
@@ -200,6 +216,8 @@ class _FeaturedCard extends StatelessWidget {
                       ),
                     ],
                     SizedBox(height: 10.h),
+                    TopicLearningProgressBadge(topic: topic),
+                    SizedBox(height: 8.h),
                     _MediaBadges(topic: topic, l10n: l10n),
                   ],
                 ),

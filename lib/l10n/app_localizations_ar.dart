@@ -2732,6 +2732,17 @@ class AppLocalizationsAr extends AppLocalizations {
       'تم حفظ الإجابة — ستُزامَن عند عودة الاتصال';
 
   @override
+  String get contentHubQuickActionsTitle => 'مركز التعلم';
+
+  @override
+  String contentTopicLessonsProgress(int completed, int total) {
+    return '$completed من $total دروس';
+  }
+
+  @override
+  String get contentContinueLearningResume => 'تابع من حيث توقفت';
+
+  @override
   String get contentContinueLearning => 'تابع التعلم';
 
   @override

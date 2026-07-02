@@ -934,6 +934,15 @@
   "adminContentCoverPreviewLabel": "معاينة الغلاف",
   "adminContentMarkdownPreviewLabel": "معاينة",
   "competitionQuizQueuedOffline": "تم حفظ الإجابة — ستُزامَن عند عودة الاتصال",
+  "contentHubQuickActionsTitle": "مركز التعلم",
+  "contentTopicLessonsProgress": "{completed} من {total} دروس",
+  "@contentTopicLessonsProgress": {
+    "placeholders": {
+      "completed": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "contentContinueLearningResume": "تابع من حيث توقفت",
   "contentContinueLearning": "تابع التعلم",
   "contentTopicRequiresInternet": "بعض الفيديوهات تتطلب اتصالاً بالإنترنت (يوتيوب/فيميو).",
   "contentDownloadAll": "تحميل كل المواضيع",

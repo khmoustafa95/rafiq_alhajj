@@ -5077,6 +5077,24 @@ abstract class AppLocalizations {
   /// **'Answer saved — will sync when you\'re back online'**
   String get competitionQuizQueuedOffline;
 
+  /// No description provided for @contentHubQuickActionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Learning hub'**
+  String get contentHubQuickActionsTitle;
+
+  /// No description provided for @contentTopicLessonsProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{completed} of {total} lessons'**
+  String contentTopicLessonsProgress(int completed, int total);
+
+  /// No description provided for @contentContinueLearningResume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume where you left off'**
+  String get contentContinueLearningResume;
+
   /// No description provided for @contentContinueLearning.
   ///
   /// In en, this message translates to:

@@ -2768,6 +2768,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'Answer saved — will sync when you\'re back online';
 
   @override
+  String get contentHubQuickActionsTitle => 'Learning hub';
+
+  @override
+  String contentTopicLessonsProgress(int completed, int total) {
+    return '$completed of $total lessons';
+  }
+
+  @override
+  String get contentContinueLearningResume => 'Resume where you left off';
+
+  @override
   String get contentContinueLearning => 'Continue learning';
 
   @override

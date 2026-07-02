@@ -1223,6 +1223,15 @@
   "adminContentCoverPreviewLabel": "Cover preview",
   "adminContentMarkdownPreviewLabel": "Preview",
   "competitionQuizQueuedOffline": "Answer saved — will sync when you're back online",
+  "contentHubQuickActionsTitle": "Learning hub",
+  "contentTopicLessonsProgress": "{completed} of {total} lessons",
+  "@contentTopicLessonsProgress": {
+    "placeholders": {
+      "completed": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "contentContinueLearningResume": "Resume where you left off",
   "contentContinueLearning": "Continue learning",
   "contentTopicRequiresInternet": "Some videos require an internet connection (YouTube/Vimeo).",
   "contentDownloadAll": "Download all topics",
