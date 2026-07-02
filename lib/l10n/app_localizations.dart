@@ -4135,6 +4135,150 @@ abstract class AppLocalizations {
   /// **'Firebase is not configured. Push notifications cannot be enabled.'**
   String get adminSettingsPushNotificationsUnavailable;
 
+  /// No description provided for @notificationPermissionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay updated on your Hajj journey'**
+  String get notificationPermissionTitle;
+
+  /// No description provided for @notificationPermissionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable notifications to receive trip updates, new content, competitions, and urgent alerts from your operator.'**
+  String get notificationPermissionBody;
+
+  /// No description provided for @notificationPermissionAllow.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable notifications'**
+  String get notificationPermissionAllow;
+
+  /// No description provided for @notificationPermissionNotNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get notificationPermissionNotNow;
+
+  /// No description provided for @notificationPermissionDeniedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are turned off'**
+  String get notificationPermissionDeniedTitle;
+
+  /// No description provided for @notificationPermissionDeniedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can enable notifications in your device settings to receive trip updates and urgent alerts.'**
+  String get notificationPermissionDeniedBody;
+
+  /// No description provided for @notificationPermissionOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get notificationPermissionOpenSettings;
+
+  /// No description provided for @notificationSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification preferences'**
+  String get notificationSettingsTitle;
+
+  /// No description provided for @notificationSettingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which push alerts you receive on this device.'**
+  String get notificationSettingsSubtitle;
+
+  /// No description provided for @notificationSettingsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load notification preferences.'**
+  String get notificationSettingsLoadError;
+
+  /// No description provided for @notificationSettingsSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save notification preferences.'**
+  String get notificationSettingsSaveError;
+
+  /// No description provided for @notificationSettingsPushMaster.
+  ///
+  /// In en, this message translates to:
+  /// **'Push notifications'**
+  String get notificationSettingsPushMaster;
+
+  /// No description provided for @notificationSettingsPushMasterHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Master switch for alerts on this device.'**
+  String get notificationSettingsPushMasterHint;
+
+  /// No description provided for @notificationSettingsCategoryAnnouncements.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcements'**
+  String get notificationSettingsCategoryAnnouncements;
+
+  /// No description provided for @notificationSettingsCategoryContent.
+  ///
+  /// In en, this message translates to:
+  /// **'New content'**
+  String get notificationSettingsCategoryContent;
+
+  /// No description provided for @notificationSettingsCategoryCompetitions.
+  ///
+  /// In en, this message translates to:
+  /// **'Competitions'**
+  String get notificationSettingsCategoryCompetitions;
+
+  /// No description provided for @notificationSettingsCategoryUrgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Urgent alerts'**
+  String get notificationSettingsCategoryUrgent;
+
+  /// No description provided for @notificationSettingsCategoryUrgentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS, field status updates, and system alerts.'**
+  String get notificationSettingsCategoryUrgentHint;
+
+  /// No description provided for @adminPushFailuresTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Push delivery log'**
+  String get adminPushFailuresTitle;
+
+  /// No description provided for @adminPushFailuresSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'FCM sends that failed after automatic retries.'**
+  String get adminPushFailuresSubtitle;
+
+  /// No description provided for @adminPushFailuresEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No push delivery failures recorded.'**
+  String get adminPushFailuresEmpty;
+
+  /// No description provided for @adminPushFailuresLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load push delivery failures.'**
+  String get adminPushFailuresLoadError;
+
+  /// No description provided for @adminPushFailuresAttempts.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} attempts'**
+  String adminPushFailuresAttempts(int count);
+
+  /// No description provided for @adminPushFailuresToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Device token'**
+  String get adminPushFailuresToken;
+
   /// No description provided for @adminSettingsManagementSection.
   ///
   /// In en, this message translates to:

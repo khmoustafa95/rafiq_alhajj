@@ -53,6 +53,7 @@ abstract final class AppRoutes {
   static const String adminLogin = '/admin/login';
   static const String adminDashboard = '/admin/dashboard';
   static const String adminNotificationSend = '/admin/notifications/send';
+  static const String adminPushFailures = '/admin/notifications/failures';
   static const String adminContent = '/admin/content';
   static const String adminContentTopics = '/admin/content/topics';
   static const String adminContentTopicNew = '/admin/content/topics/new';

@@ -8,6 +8,7 @@ import 'package:rafiq_alhajj/core/l10n/locale_controller.dart';
 import 'package:rafiq_alhajj/core/routing/app_router.dart';
 import 'package:rafiq_alhajj/core/theme/app_theme.dart';
 import 'package:rafiq_alhajj/core/widgets/push_notification_starter.dart';
+import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_badge_sync.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_toast_host.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
@@ -51,7 +52,9 @@ class AppRoot extends ConsumerWidget {
           routerConfig: router,
           builder: (context, routerChild) {
             return PushNotificationStarter(
-              child: NotificationToastHost(child: routerChild),
+              child: NotificationBadgeSync(
+                child: NotificationToastHost(child: routerChild),
+              ),
             );
           },
         );

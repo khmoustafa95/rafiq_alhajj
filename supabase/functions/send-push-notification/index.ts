@@ -3,11 +3,21 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 type NotificationRecord = {
   id: string;
   recipient_id: string;
+  type: string;
   title_ar: string;
   title_en: string;
   body_ar: string | null;
   body_en: string | null;
   payload: Record<string, unknown>;
+};
+
+type NotificationPreferencesRow = {
+  profile_id: string;
+  push_enabled: boolean;
+  push_announcements: boolean;
+  push_content: boolean;
+  push_competitions: boolean;
+  push_urgent: boolean;
 };
 
 type WebhookBody = {
@@ -60,6 +70,40 @@ function loadServiceAccount(): ServiceAccount | null {
 
 function pickBody(record: NotificationRecord): string {
   return (record.body_en ?? record.body_ar ?? "").slice(0, 200);
+}
+
+function defaultPreferences(profileId: string): NotificationPreferencesRow {
+  return {
+    profile_id: profileId,
+    push_enabled: true,
+    push_announcements: true,
+    push_content: true,
+    push_competitions: true,
+    push_urgent: true,
+  };
+}
+
+function isCategoryAllowed(
+  prefs: NotificationPreferencesRow,
+  type: string,
+): boolean {
+  if (!prefs.push_enabled) {
+    return false;
+  }
+
+  switch (type) {
+    case "announcement":
+      return prefs.push_announcements;
+    case "content_published":
+      return prefs.push_content;
+    case "competition":
+      return prefs.push_competitions;
+    case "ritual_update":
+    case "system":
+      return prefs.push_urgent;
+    default:
+      return true;
+  }
 }
 
 const FCM_SEND_CONCURRENCY = 50;
@@ -282,7 +326,65 @@ Deno.serve(async (req) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const supabaseAdmin = createClient(supabaseUrl, serviceKey);
 
+  const { data: globalSettings } = await supabaseAdmin
+    .from("system_settings")
+    .select("enable_push_notifications")
+    .eq("id", "global")
+    .maybeSingle();
+
+  if (globalSettings?.enable_push_notifications === false) {
+    return new Response(
+      JSON.stringify({ ok: true, skipped: "push disabled globally" }),
+      { status: 200, headers: { "Content-Type": "application/json" } },
+    );
+  }
+
   const recipientIds = [...new Set(validRecords.map((r) => r.recipient_id))];
+
+  const { data: preferenceRows, error: preferenceError } = await supabaseAdmin
+    .from("notification_preferences")
+    .select(
+      "profile_id, push_enabled, push_announcements, push_content, push_competitions, push_urgent",
+    )
+    .in("profile_id", recipientIds);
+
+  if (preferenceError) {
+    return new Response(JSON.stringify({ error: preferenceError.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const preferencesByRecipient = new Map<string, NotificationPreferencesRow>();
+  for (const profileId of recipientIds) {
+    preferencesByRecipient.set(profileId, defaultPreferences(profileId));
+  }
+  for (const row of preferenceRows ?? []) {
+    preferencesByRecipient.set(row.profile_id as string, {
+      profile_id: row.profile_id as string,
+      push_enabled: row.push_enabled as boolean,
+      push_announcements: row.push_announcements as boolean,
+      push_content: row.push_content as boolean,
+      push_competitions: row.push_competitions as boolean,
+      push_urgent: row.push_urgent as boolean,
+    });
+  }
+
+  const deliverableRecords = validRecords.filter((record) => {
+    const prefs = preferencesByRecipient.get(record.recipient_id);
+    if (!prefs) {
+      return true;
+    }
+    return isCategoryAllowed(prefs, record.type ?? "system");
+  });
+
+  if (deliverableRecords.length === 0) {
+    return new Response(
+      JSON.stringify({ ok: true, sent: 0, reason: "all_recipients_opted_out" }),
+      { status: 200, headers: { "Content-Type": "application/json" } },
+    );
+  }
+
   const { data: tokenRows, error: tokenError } = await supabaseAdmin
     .from("device_tokens")
     .select("profile_id, token")
@@ -336,7 +438,7 @@ Deno.serve(async (req) => {
   const failureRows: FailureRow[] = [];
   const sends: SendJob[] = [];
 
-  for (const record of validRecords) {
+  for (const record of deliverableRecords) {
     const tokens = tokensByRecipient.get(record.recipient_id) ?? [];
     if (tokens.length === 0) {
       continue;

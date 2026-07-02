@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
+import 'package:rafiq_alhajj/features/admin_settings/presentation/providers/system_settings_providers.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/features/notifications/application/services/push_notification_service.dart';
 import 'package:rafiq_alhajj/features/notifications/application/services/web_push_bridge.dart';
@@ -47,17 +48,45 @@ void pushNotificationBinding(Ref ref) {
       return;
     }
 
-    final service = ref.read(pushNotificationServiceProvider);
+    unawaited(_syncPushBinding(ref, previous, next));
+  }, fireImmediately: true);
 
-    // Session ended (sign-out or token expiry): remove the server-side token
-    // so pushes stop targeting this device for the old profile.
-    if (previous != null && next == null) {
-      unawaited(service.unregisterCurrentUser());
+  ref.listen(systemSettingsProvider, (previous, next) {
+    final profileId = ref.read(authProfileIdProvider);
+    if (profileId == null) {
       return;
     }
-
-    if (next != null) {
-      unawaited(service.bindUser(next));
+    final prevEnabled = previous?.value?.enablePushNotifications ?? true;
+    final nextEnabled = next.value?.enablePushNotifications ?? true;
+    if (prevEnabled != nextEnabled) {
+      unawaited(_syncPushBinding(ref, profileId, profileId));
     }
-  }, fireImmediately: true);
+  });
+}
+
+Future<void> _syncPushBinding(
+  Ref ref,
+  String? previousProfileId,
+  String? nextProfileId,
+) async {
+  final service = ref.read(pushNotificationServiceProvider);
+
+  if (previousProfileId != null &&
+      nextProfileId == null &&
+      previousProfileId != nextProfileId) {
+    await service.unregisterCurrentUser();
+    return;
+  }
+
+  if (nextProfileId == null) {
+    return;
+  }
+
+  final settings = await ref.read(systemSettingsProvider.future);
+  if (!settings.enablePushNotifications) {
+    await service.unregisterCurrentUser();
+    return;
+  }
+
+  await service.bindUser(nextProfileId);
 }

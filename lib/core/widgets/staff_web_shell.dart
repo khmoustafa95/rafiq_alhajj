@@ -199,7 +199,8 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
         icon: Icons.campaign_outlined,
         label: l10n.staffNavNotifications,
         route: AppRoutes.adminNotificationSend,
-        isActive: location == AppRoutes.adminNotificationSend,
+        isActive: location == AppRoutes.adminNotificationSend ||
+            location == AppRoutes.adminPushFailures,
       ),
       _StaffNavItem(
         icon: Icons.contact_phone_outlined,

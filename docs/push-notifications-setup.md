@@ -146,8 +146,16 @@ order by created_at desc
 limit 20;
 ```
 
-Only admins can read this table (RLS). The inbox row still exists — pilgrims see
-the notification in-app even when FCM delivery fails.
+Only admins can read this table (RLS). Admins can also open **Push delivery log**
+from the broadcast screen (`/admin/notifications/failures`).
+
+### Per-user notification preferences
+
+Pilgrims manage push categories from **Profile → Notification preferences**
+(`notification_preferences` table). The Edge Function skips FCM delivery when a
+category is opted out. In-app inbox rows are unaffected.
+
+The inbox row still exists — pilgrims see the notification in-app even when FCM delivery fails.
 
 ## Troubleshooting
 

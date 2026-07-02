@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
+import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/features/notifications/domain/models/notification_audience.dart';
@@ -274,6 +276,13 @@ class _AdminNotificationBroadcastScreenState
       web: StaffWebPage(
         title: l10n.adminNotificationSendTitle,
         subtitle: l10n.adminNotificationSendSubtitle,
+        actions: [
+          IconButton(
+            tooltip: l10n.adminPushFailuresTitle,
+            onPressed: () => context.go(AppRoutes.adminPushFailures),
+            icon: const Icon(Icons.monitor_heart_outlined),
+          ),
+        ],
         body: form,
         bottomBar: StaffFormActionsBar(
           primaryLabel: l10n.adminNotificationSendButton,
@@ -282,7 +291,16 @@ class _AdminNotificationBroadcastScreenState
         ),
       ),
       mobile: Scaffold(
-        appBar: RafiqAppBar(title: Text(l10n.adminNotificationSendTitle)),
+        appBar: RafiqAppBar(
+          title: Text(l10n.adminNotificationSendTitle),
+          actions: [
+            IconButton(
+              tooltip: l10n.adminPushFailuresTitle,
+              onPressed: () => context.go(AppRoutes.adminPushFailures),
+              icon: const Icon(Icons.monitor_heart_outlined),
+            ),
+          ],
+        ),
         body: SingleChildScrollView(
           padding: EdgeInsets.all(16.w),
           child: form,

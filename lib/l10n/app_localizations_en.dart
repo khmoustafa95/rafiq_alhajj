@@ -2233,6 +2233,90 @@ class AppLocalizationsEn extends AppLocalizations {
       'Firebase is not configured. Push notifications cannot be enabled.';
 
   @override
+  String get notificationPermissionTitle => 'Stay updated on your Hajj journey';
+
+  @override
+  String get notificationPermissionBody =>
+      'Enable notifications to receive trip updates, new content, competitions, and urgent alerts from your operator.';
+
+  @override
+  String get notificationPermissionAllow => 'Enable notifications';
+
+  @override
+  String get notificationPermissionNotNow => 'Not now';
+
+  @override
+  String get notificationPermissionDeniedTitle =>
+      'Notifications are turned off';
+
+  @override
+  String get notificationPermissionDeniedBody =>
+      'You can enable notifications in your device settings to receive trip updates and urgent alerts.';
+
+  @override
+  String get notificationPermissionOpenSettings => 'Open settings';
+
+  @override
+  String get notificationSettingsTitle => 'Notification preferences';
+
+  @override
+  String get notificationSettingsSubtitle =>
+      'Choose which push alerts you receive on this device.';
+
+  @override
+  String get notificationSettingsLoadError =>
+      'Could not load notification preferences.';
+
+  @override
+  String get notificationSettingsSaveError =>
+      'Could not save notification preferences.';
+
+  @override
+  String get notificationSettingsPushMaster => 'Push notifications';
+
+  @override
+  String get notificationSettingsPushMasterHint =>
+      'Master switch for alerts on this device.';
+
+  @override
+  String get notificationSettingsCategoryAnnouncements => 'Announcements';
+
+  @override
+  String get notificationSettingsCategoryContent => 'New content';
+
+  @override
+  String get notificationSettingsCategoryCompetitions => 'Competitions';
+
+  @override
+  String get notificationSettingsCategoryUrgent => 'Urgent alerts';
+
+  @override
+  String get notificationSettingsCategoryUrgentHint =>
+      'SOS, field status updates, and system alerts.';
+
+  @override
+  String get adminPushFailuresTitle => 'Push delivery log';
+
+  @override
+  String get adminPushFailuresSubtitle =>
+      'FCM sends that failed after automatic retries.';
+
+  @override
+  String get adminPushFailuresEmpty => 'No push delivery failures recorded.';
+
+  @override
+  String get adminPushFailuresLoadError =>
+      'Could not load push delivery failures.';
+
+  @override
+  String adminPushFailuresAttempts(int count) {
+    return '$count attempts';
+  }
+
+  @override
+  String get adminPushFailuresToken => 'Device token';
+
+  @override
   String get adminSettingsManagementSection => 'Management shortcuts';
 
   @override

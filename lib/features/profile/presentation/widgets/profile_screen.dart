@@ -12,6 +12,7 @@ import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/controllers/sign_out_controller.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_offline_settings_card.dart';
+import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_settings_card.dart';
 import 'package:rafiq_alhajj/features/pilgrim/presentation/providers/pilgrim_providers.dart';
 import 'package:rafiq_alhajj/features/pilgrim/presentation/widgets/pilgrim_profile_sections.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
@@ -131,6 +132,8 @@ class ProfileScreen extends ConsumerWidget {
                       },
                     ),
                     const ContentOfflineSettingsCard(),
+                    SizedBox(height: 16.h),
+                    const NotificationSettingsCard(),
                     SizedBox(height: 16.h),
                     _ProfileTile(
                       icon: Icons.logout_rounded,

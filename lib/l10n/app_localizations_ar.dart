@@ -2200,6 +2200,88 @@ class AppLocalizationsAr extends AppLocalizations {
       'Firebase غير مهيأ. لا يمكن تفعيل الإشعارات الفورية.';
 
   @override
+  String get notificationPermissionTitle => 'ابقَ على اطلاع برحلة حجك';
+
+  @override
+  String get notificationPermissionBody =>
+      'فعّل الإشعارات لتلقي تحديثات الرحلة والمحتوى الجديد والمسابقات والتنبيهات العاجلة من مشغّلك.';
+
+  @override
+  String get notificationPermissionAllow => 'تفعيل الإشعارات';
+
+  @override
+  String get notificationPermissionNotNow => 'ليس الآن';
+
+  @override
+  String get notificationPermissionDeniedTitle => 'الإشعارات معطّلة';
+
+  @override
+  String get notificationPermissionDeniedBody =>
+      'يمكنك تفعيل الإشعارات من إعدادات الجهاز لتلقي تحديثات الرحلة والتنبيهات العاجلة.';
+
+  @override
+  String get notificationPermissionOpenSettings => 'فتح الإعدادات';
+
+  @override
+  String get notificationSettingsTitle => 'تفضيلات الإشعارات';
+
+  @override
+  String get notificationSettingsSubtitle =>
+      'اختر التنبيهات التي تصل إلى هذا الجهاز.';
+
+  @override
+  String get notificationSettingsLoadError => 'تعذر تحميل تفضيلات الإشعارات.';
+
+  @override
+  String get notificationSettingsSaveError => 'تعذر حفظ تفضيلات الإشعارات.';
+
+  @override
+  String get notificationSettingsPushMaster => 'الإشعارات الفورية';
+
+  @override
+  String get notificationSettingsPushMasterHint =>
+      'المفتاح الرئيسي للتنبيهات على هذا الجهاز.';
+
+  @override
+  String get notificationSettingsCategoryAnnouncements => 'الإعلانات';
+
+  @override
+  String get notificationSettingsCategoryContent => 'محتوى جديد';
+
+  @override
+  String get notificationSettingsCategoryCompetitions => 'المسابقات';
+
+  @override
+  String get notificationSettingsCategoryUrgent => 'تنبيهات عاجلة';
+
+  @override
+  String get notificationSettingsCategoryUrgentHint =>
+      'النجدة وتحديثات الحالة الميدانية وتنبيهات النظام.';
+
+  @override
+  String get adminPushFailuresTitle => 'سجل تسليم الإشعارات';
+
+  @override
+  String get adminPushFailuresSubtitle =>
+      'إرسالات FCM التي فشلت بعد إعادة المحاولة التلقائية.';
+
+  @override
+  String get adminPushFailuresEmpty =>
+      'لا توجد إخفاقات مسجّلة في تسليم الإشعارات.';
+
+  @override
+  String get adminPushFailuresLoadError =>
+      'تعذر تحميل إخفاقات تسليم الإشعارات.';
+
+  @override
+  String adminPushFailuresAttempts(int count) {
+    return '$count محاولات';
+  }
+
+  @override
+  String get adminPushFailuresToken => 'رمز الجهاز';
+
+  @override
   String get adminSettingsManagementSection => 'اختصارات الإدارة';
 
   @override

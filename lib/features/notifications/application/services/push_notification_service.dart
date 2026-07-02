@@ -6,6 +6,7 @@ import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/firebase/app_firebase.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/features/notifications/application/services/local_notifications_service.dart';
+import 'package:rafiq_alhajj/features/notifications/application/services/notification_permission_prompt.dart';
 import 'package:rafiq_alhajj/features/notifications/application/utils/push_message_navigation.dart';
 import 'package:rafiq_alhajj/features/notifications/data/repositories/device_token_repository.dart';
 
@@ -169,9 +170,9 @@ class PushNotificationService {
     }
     _permissionRequested = true;
 
-    final settings = await _messaging!.requestPermission();
+    final granted = await NotificationPermissionPrompt.ensureGranted(_messaging!);
     if (kDebugMode) {
-      debugPrint('FCM permission: ${settings.authorizationStatus}');
+      debugPrint('FCM permission granted=$granted');
     }
   }
 

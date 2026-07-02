@@ -13,6 +13,7 @@ class LocalNotificationsService {
 
   static const String _channelId = 'high_importance_channel';
   static const String _channelName = 'إشعارات رفيق الحاج';
+  static const String _groupKey = 'rafiq_alhajj_notifications';
   static const String _channelDescription =
       'الإعلانات والمحتوى الجديد والمسابقات وتحديثات الرحلة';
 
@@ -73,6 +74,7 @@ class LocalNotificationsService {
       importance: Importance.high,
       priority: Priority.high,
       icon: '@drawable/ic_stat_notification',
+      groupKey: _groupKey,
     );
     const iosDetails = DarwinNotificationDetails(
       presentAlert: true,
