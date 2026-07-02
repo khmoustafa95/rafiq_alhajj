@@ -1,0 +1,123 @@
+name: Deploy Staging Web
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "lib/**"
+      - "web/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - "firebase.json"
+      - ".firebaserc"
+      - "scripts/build-staging-web.sh"
+      - "scripts/patch-firebase-sw.mjs"
+      - ".github/workflows/deploy-staging.yml"
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate secrets
+        env:
+          STAGING_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          STAGING_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          set -euo pipefail
+          missing=0
+          for name in STAGING_SUPABASE_URL STAGING_SUPABASE_ANON_KEY FIREBASE_SERVICE_ACCOUNT_JSON; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "::error::Missing GitHub secret: $name"
+              missing=1
+            fi
+          done
+          if [[ "$missing" -ne 0 ]]; then
+            echo "See docs/staging-setup-ar.md for one-time secret setup."
+            exit 1
+          fi
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Create staging dart-defines
+        env:
+          STAGING_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          STAGING_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
+          STAGING_FIREBASE_PROJECT_ID: ${{ secrets.STAGING_FIREBASE_PROJECT_ID }}
+          STAGING_FIREBASE_API_KEY: ${{ secrets.STAGING_FIREBASE_API_KEY }}
+          STAGING_FIREBASE_WEB_APP_ID: ${{ secrets.STAGING_FIREBASE_WEB_APP_ID }}
+          STAGING_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.STAGING_FIREBASE_MESSAGING_SENDER_ID }}
+          STAGING_FIREBASE_AUTH_DOMAIN: ${{ secrets.STAGING_FIREBASE_AUTH_DOMAIN }}
+          STAGING_FIREBASE_STORAGE_BUCKET: ${{ secrets.STAGING_FIREBASE_STORAGE_BUCKET }}
+          STAGING_FIREBASE_VAPID_KEY: ${{ secrets.STAGING_FIREBASE_VAPID_KEY }}
+          STAGING_FIREBASE_MEASUREMENT_ID: ${{ secrets.STAGING_FIREBASE_MEASUREMENT_ID }}
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const defines = {
+            SUPABASE_URL: process.env.STAGING_SUPABASE_URL,
+            SUPABASE_ANON_KEY: process.env.STAGING_SUPABASE_ANON_KEY,
+            CRASH_REPORTING_ENABLED: 'false',
+          };
+
+          const firebasePairs = [
+            ['FIREBASE_PROJECT_ID', 'STAGING_FIREBASE_PROJECT_ID'],
+            ['FIREBASE_API_KEY', 'STAGING_FIREBASE_API_KEY'],
+            ['FIREBASE_WEB_APP_ID', 'STAGING_FIREBASE_WEB_APP_ID'],
+            ['FIREBASE_MESSAGING_SENDER_ID', 'STAGING_FIREBASE_MESSAGING_SENDER_ID'],
+            ['FIREBASE_AUTH_DOMAIN', 'STAGING_FIREBASE_AUTH_DOMAIN'],
+            ['FIREBASE_STORAGE_BUCKET', 'STAGING_FIREBASE_STORAGE_BUCKET'],
+            ['FIREBASE_VAPID_KEY', 'STAGING_FIREBASE_VAPID_KEY'],
+            ['FIREBASE_MEASUREMENT_ID', 'STAGING_FIREBASE_MEASUREMENT_ID'],
+          ];
+
+          for (const [key, envName] of firebasePairs) {
+            const value = process.env[envName];
+            if (value) {
+              defines[key] = value;
+            }
+          }
+
+          fs.writeFileSync(
+            'dart_defines.staging.ci.json',
+            `${JSON.stringify(defines, null, 2)}\n`,
+          );
+          NODE
+
+      - name: Build Flutter Web (staging)
+        run: |
+          chmod +x scripts/build-staging-web.sh
+          ./scripts/build-staging-web.sh dart_defines.staging.ci.json
+
+      - name: Deploy to Firebase Hosting (staging)
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          projectId: rafiq-alhajj
+          target: staging
+          channelId: live
+
+      - name: Print client URL
+        run: |
+          echo "Staging client URL: https://rafiq-alhajj-staging.web.app"
+          echo "Demo admin: admin@demo.local / demo123456"

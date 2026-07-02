@@ -1,0 +1,232 @@
+# نشر بيئة Staging مجانية (رابط ثابت للعميل)
+
+دليل إعداد بيئة تجريبية على السحابة **مجانية** لمشروع رفيق الحج، مع رابط ويب ثابت يمكن مشاركته مع العميل.
+
+| المكوّن | الخدمة | الرابط الثابت |
+|---------|--------|----------------|
+| واجهة الويب (Flutter Web) | Firebase Hosting | `https://rafiq-alhajj-staging.web.app` |
+| قاعدة البيانات + Auth | Supabase (Free) | `https://<project-ref>.supabase.co` |
+
+> **تنبيه:** كلمات مرور الحسابات التجريبية (`demo123456`) للـ Staging فقط — لا تستخدمها في الإنتاج.
+
+---
+
+## نظرة عامة
+
+```mermaid
+flowchart LR
+  Dev[تطوير محلي] --> Push[git push إلى main]
+  Push --> GHA[GitHub Actions]
+  GHA --> Build[flutter build web]
+  Build --> FH[Firebase Hosting]
+  FH --> Client[العميل يفتح الرابط]
+  SB[(Supabase Staging)] --> Client
+```
+
+بعد الإعداد لمرة واحدة، كل دفع (`push`) إلى `main` يعيد بناء ونشر نسخة Staging تلقائياً خلال بضع دقائق.
+
+---
+
+## 1. المتطلبات
+
+| الأداة | الغرض |
+|--------|--------|
+| حساب [Supabase](https://supabase.com) | Backend مجاني |
+| حساب [Firebase](https://console.firebase.google.com) | استضافة الويب (المشروع `rafiq-alhajj` موجود مسبقاً) |
+| حساب GitHub | نشر تلقائي عبر Actions |
+| Flutter SDK 3.11+ | بناء الويب محلياً (اختياري) |
+| Supabase CLI | `npm i -g supabase` أو [تثبيت CLI](https://supabase.com/docs/guides/cli) |
+| Firebase CLI | `npm i -g firebase-tools` |
+
+**التكلفة:** Supabase Free + Firebase Spark = **0$** للتجربة والمراجعة مع العميل.
+
+---
+
+## 2. إنشاء مشروع Supabase Staging
+
+1. افتح [Supabase Dashboard](https://supabase.com/dashboard) → **New project**.
+2. اختر اسماً مثل `rafiq-alhajj-staging` وكلمة مرور قوية لقاعدة البيانات.
+3. انتظر حتى يكتمل الإنشاء، ثم انسخ **Project Reference ID** من:
+   **Project Settings → General → Reference ID**.
+
+### رفع الـ migrations والبيانات التجريبية
+
+من جذر المشروع:
+
+```bash
+export SUPABASE_PROJECT_REF=your-project-ref
+export SUPABASE_SERVICE_ROLE_KEY=your-service-role-key   # من Dashboard → API
+
+supabase login
+npm run staging:setup-db
+```
+
+هذا السكربت يقوم بـ:
+
+- `supabase link` + `supabase db push` (كل migrations)
+- تطبيق `supabase/seed.sql` (محتوى عربي تجريبي)
+- نشر Edge Functions
+- إنشاء حسابات Auth التجريبية (`admin@demo.local`, `operator@demo.local`, …)
+
+### إعداد Auth لرابط Staging
+
+في Supabase Dashboard → **Authentication → URL Configuration**:
+
+| الحقل | القيمة |
+|-------|--------|
+| Site URL | `https://rafiq-alhajj-staging.web.app` |
+| Redirect URLs | `https://rafiq-alhajj-staging.web.app/**` |
+| | `https://rafiq-alhajj-staging.firebaseapp.com/**` |
+
+---
+
+## 3. إعداد Firebase Hosting (موقع Staging)
+
+```bash
+firebase login
+npm run staging:setup-hosting
+```
+
+ينشئ موقع الاستضافة `rafiq-alhajj-staging` ويربطه بهدف النشر `staging`.
+
+**الرابط الثابت للعميل بعد أول نشر:**
+
+- https://rafiq-alhajj-staging.web.app
+- https://rafiq-alhajj-staging.firebaseapp.com
+
+---
+
+## 4. ملف التكوين المحلي (اختياري للنشر اليدوي)
+
+```bash
+cp dart_defines.staging.example.json dart_defines.staging.local.json
+```
+
+عدّل القيم:
+
+```json
+{
+  "SUPABASE_URL": "https://YOUR_PROJECT_REF.supabase.co",
+  "SUPABASE_ANON_KEY": "eyJ...",
+  "CRASH_REPORTING_ENABLED": "false",
+  "FIREBASE_PROJECT_ID": "rafiq-alhajj",
+  "FIREBASE_API_KEY": "...",
+  "FIREBASE_WEB_APP_ID": "1:...:web:...",
+  "FIREBASE_MESSAGING_SENDER_ID": "...",
+  "FIREBASE_AUTH_DOMAIN": "rafiq-alhajj.firebaseapp.com",
+  "FIREBASE_STORAGE_BUCKET": "rafiq-alhajj.firebasestorage.app",
+  "FIREBASE_VAPID_KEY": "...",
+  "FIREBASE_MEASUREMENT_ID": ""
+}
+```
+
+> `dart_defines.staging.local.json` **غير مرفوع على Git** (`.gitignore`).
+
+### نشر يدوي من جهازك
+
+```bash
+npm run staging:deploy
+```
+
+---
+
+## 5. النشر التلقائي عبر GitHub Actions (موصى به)
+
+### أ) إنشاء Service Account لـ Firebase
+
+1. [Google Cloud Console](https://console.cloud.google.com) → مشروع `rafiq-alhajj`.
+2. **IAM & Admin → Service Accounts → Create**.
+3. الاسم: `github-staging-deploy`.
+4. الأدوار: **Firebase Hosting Admin** + **Firebase Viewer**.
+5. **Keys → Add key → JSON** — احفظ الملف بأمان.
+
+### ب) إضافة Secrets في GitHub
+
+**Repository → Settings → Secrets and variables → Actions → New repository secret**
+
+| Secret | مطلوب | المصدر |
+|--------|-------|--------|
+| `STAGING_SUPABASE_URL` | نعم | `https://<ref>.supabase.co` |
+| `STAGING_SUPABASE_ANON_KEY` | نعم | Supabase → API → `anon` / publishable |
+| `FIREBASE_SERVICE_ACCOUNT_JSON` | نعم | محتوى ملف JSON كاملاً |
+| `STAGING_FIREBASE_PROJECT_ID` | لا | `rafiq-alhajj` (لـ Web Push) |
+| `STAGING_FIREBASE_API_KEY` | لا | Firebase Console → Web app |
+| `STAGING_FIREBASE_WEB_APP_ID` | لا | Firebase Console → Web app |
+| `STAGING_FIREBASE_MESSAGING_SENDER_ID` | لا | Firebase Console |
+| `STAGING_FIREBASE_AUTH_DOMAIN` | لا | `rafiq-alhajj.firebaseapp.com` |
+| `STAGING_FIREBASE_STORAGE_BUCKET` | لا | Firebase Console |
+| `STAGING_FIREBASE_VAPID_KEY` | لا | Cloud Messaging → Web Push certificates |
+| `STAGING_FIREBASE_MEASUREMENT_ID` | لا | اختياري |
+
+### ج) تفعيل بيئة `staging` (اختياري لكن منظم)
+
+**Settings → Environments → New environment → `staging`**
+
+يمكنك تقييد النشر بموافقة يدوية إذا أردت.
+
+### د) تشغيل النشر
+
+- **تلقائي:** أي `push` إلى `main` يشغّل workflow `Deploy Staging Web`.
+- **يدوي:** **Actions → Deploy Staging Web → Run workflow**.
+
+---
+
+## 6. حسابات تجريبية للعميل
+
+بعد `staging:setup-db` أو `staging:seed-users`:
+
+| الدور | البريد | كلمة المرور |
+|-------|--------|-------------|
+| مسؤول (لوحة ويب) | `admin@demo.local` | `demo123456` |
+| مشغّل مكتب | `operator@demo.local` | `demo123456` |
+| حاج | `pilgrim@demo.local` | `demo123456` |
+
+**للعميل:** افتح الرابط → تسجيل دخول المسؤول لمراجعة لوحة التحكم، أو الحاج لتجربة واجهة المستخدم.
+
+---
+
+## 7. إعادة زرع المستخدمين على Staging
+
+```bash
+export SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+export SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+npm run staging:seed-users
+```
+
+---
+
+## 8. استكشاف الأخطاء
+
+| المشكلة | الحل |
+|---------|------|
+| صفحة بيضاء بعد النشر | تأكد من `firebase.json` rewrites → `index.html` (موجود في المشروع) |
+| تسجيل الدخول يفشل | أضف رابط Staging في Supabase Auth → Redirect URLs |
+| `Missing GitHub secret` في Actions | أكمل الخطوة 5ب |
+| `Site not found` عند النشر | شغّل `npm run staging:setup-hosting` |
+| لا يوجد بيانات | أعد `npm run staging:setup-db` أو الصق `seed.sql` في SQL Editor |
+| Web Push لا يعمل | املأ مفاتيح Firebase الاختيارية في Secrets / dart-defines |
+
+---
+
+## 9. أوامر سريعة
+
+```bash
+npm run staging:setup-hosting   # مرة واحدة — إنشاء موقع Firebase
+npm run staging:setup-db        # مرة واحدة — Supabase migrations + seed
+npm run staging:build           # بناء web محلياً
+npm run staging:deploy          # بناء + نشر يدوي
+npm run staging:seed-users      # إعادة حسابات demo
+```
+
+---
+
+## 10. الخطوة التالية (إنتاج)
+
+عند الجاهزية للإنتاج:
+
+1. مشروع Supabase منفصل للإنتاج.
+2. موقع Firebase Hosting منفصل (مثلاً `rafiq-alhajj`).
+3. `dart_defines.production.example.json` + workflow منفصل.
+4. تعطيل حسابات `demo@` أو تغيير كلمات المرور.
+
+راجع أيضاً: [دليل التشغيل المحلي](runbook-ar.md).

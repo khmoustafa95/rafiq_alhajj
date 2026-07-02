@@ -7,6 +7,11 @@
     "dev:android": "powershell -ExecutionPolicy Bypass -File ./scripts/dev-android.ps1",
     "setup": "powershell -ExecutionPolicy Bypass -File ./scripts/dev-setup.ps1",
     "setup:users": "powershell -ExecutionPolicy Bypass -File ./scripts/seed-demo-users.ps1",
-    "setup:registry": "node ./scripts/seed-fake-pilgrim-registry.mjs"
+    "setup:registry": "node ./scripts/seed-fake-pilgrim-registry.mjs",
+    "staging:setup-hosting": "bash ./scripts/setup-firebase-hosting.sh",
+    "staging:setup-db": "bash ./scripts/setup-staging-supabase.sh",
+    "staging:build": "bash ./scripts/build-staging-web.sh",
+    "staging:deploy": "bash ./scripts/deploy-staging.sh",
+    "staging:seed-users": "node ./scripts/seed-demo-users.mjs"
   }
 }
