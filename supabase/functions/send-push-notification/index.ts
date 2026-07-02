@@ -45,6 +45,34 @@ function pickBody(record: NotificationRecord): string {
   return (record.body_en ?? record.body_ar ?? "").slice(0, 200);
 }
 
+const FCM_SEND_CONCURRENCY = 50;
+
+async function runWithConcurrency<T>(
+  items: T[],
+  limit: number,
+  worker: (item: T) => Promise<void>,
+): Promise<void> {
+  if (items.length === 0) {
+    return;
+  }
+
+  const queue = [...items];
+  const workers = Array.from(
+    { length: Math.min(limit, queue.length) },
+    async () => {
+      while (queue.length > 0) {
+        const item = queue.shift();
+        if (item === undefined) {
+          return;
+        }
+        await worker(item);
+      }
+    },
+  );
+
+  await Promise.all(workers);
+}
+
 function base64Url(input: ArrayBuffer | string): string {
   const bytes = typeof input === "string"
     ? new TextEncoder().encode(input)
@@ -121,14 +149,22 @@ Deno.serve(async (req) => {
   }
 
   const expectedSecret = Deno.env.get("PUSH_WEBHOOK_SECRET");
-  if (expectedSecret) {
-    const provided = req.headers.get("x-push-secret");
-    if (provided !== expectedSecret) {
-      return new Response(JSON.stringify({ error: "Invalid push secret" }), {
-        status: 401,
+  if (!expectedSecret) {
+    return new Response(
+      JSON.stringify({ error: "PUSH_WEBHOOK_SECRET not configured" }),
+      {
+        status: 500,
         headers: { "Content-Type": "application/json" },
-      });
-    }
+      },
+    );
+  }
+
+  const provided = req.headers.get("x-push-secret");
+  if (provided !== expectedSecret) {
+    return new Response(JSON.stringify({ error: "Invalid push secret" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const serviceAccount = loadServiceAccount();
@@ -224,7 +260,8 @@ Deno.serve(async (req) => {
   const staleTokens = new Set<string>();
 
   // Build one FCM message per (recipient token × notification), then send all.
-  const sends: Promise<void>[] = [];
+  type SendJob = () => Promise<void>;
+  const sends: SendJob[] = [];
   for (const record of validRecords) {
     const tokens = tokensByRecipient.get(record.recipient_id) ?? [];
     if (tokens.length === 0) {
@@ -235,18 +272,27 @@ Deno.serve(async (req) => {
     const id = typeof payload.id === "string" ? payload.id : "";
     const title = record.title_en || record.title_ar;
     const bodyText = pickBody(record);
+    const data = {
+      route,
+      id,
+      notification_id: record.id,
+      title_ar: record.title_ar ?? "",
+      title_en: record.title_en ?? "",
+      body_ar: (record.body_ar ?? "").slice(0, 200),
+      body_en: (record.body_en ?? "").slice(0, 200),
+    };
 
     for (const token of tokens) {
       const message = {
         message: {
           token,
           notification: { title, body: bodyText },
-          data: { route, id, notification_id: record.id },
+          data,
           android: { priority: "HIGH" },
           apns: { payload: { aps: { sound: "default" } } },
         },
       };
-      sends.push((async () => {
+      sends.push(async () => {
         try {
           const response = await fetch(endpoint, {
             method: "POST",
@@ -275,11 +321,11 @@ Deno.serve(async (req) => {
           failed++;
           errors.push(error instanceof Error ? error.message : "send failed");
         }
-      })());
+      });
     }
   }
 
-  await Promise.all(sends);
+  await runWithConcurrency(sends, FCM_SEND_CONCURRENCY, (job) => job());
 
   let cleaned = 0;
   if (staleTokens.size > 0) {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rafiq_alhajj/features/notifications/application/utils/pending_push_navigation.dart';
+import 'package:rafiq_alhajj/features/notifications/application/utils/push_message_navigation.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/providers/push_notification_providers.dart';
 
 /// Starts FCM binding without rebuilding [MaterialApp].
@@ -22,6 +24,9 @@ class PushNotificationStarter extends ConsumerStatefulWidget {
 
 class _PushNotificationStarterState
     extends ConsumerState<PushNotificationStarter> {
+  static const _maxFlushFrames = 30;
+  var _flushFrames = 0;
+
   @override
   void initState() {
     super.initState();
@@ -32,6 +37,25 @@ class _PushNotificationStarterState
       // Instantiating the keepAlive binding provider kicks off FCM init and the
       // auth-scoped token sync; reading it once is enough to keep it alive.
       ref.read(pushNotificationBindingProvider);
+      _schedulePendingNavigationFlush();
+    });
+  }
+
+  void _schedulePendingNavigationFlush() {
+    if (!PendingPushNavigation.hasPending ||
+        _flushFrames >= _maxFlushFrames) {
+      return;
+    }
+
+    _flushFrames++;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      flushPendingPushNavigation();
+      if (PendingPushNavigation.hasPending) {
+        _schedulePendingNavigationFlush();
+      }
     });
   }
 

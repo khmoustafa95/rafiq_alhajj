@@ -59,9 +59,8 @@ class LocalNotificationsService {
 
   /// Shows a heads-up notification from a foreground [message].
   Future<void> showFromRemoteMessage(RemoteMessage message) async {
-    final notification = message.notification;
-    final title = notification?.title ?? message.data['title'] as String?;
-    final body = notification?.body ?? message.data['body'] as String?;
+    final title = _localizedTitle(message);
+    final body = _localizedBody(message);
 
     if ((title == null || title.isEmpty) && (body == null || body.isEmpty)) {
       return;
@@ -109,5 +108,38 @@ class LocalNotificationsService {
         debugPrint('Invalid notification payload: $e');
       }
     }
+  }
+
+  String? _localizedTitle(RemoteMessage message) {
+    final data = message.data;
+    final locale = PlatformDispatcher.instance.locale.languageCode;
+    if (locale == 'ar') {
+      return _nonEmpty(data['title_ar'] as String?) ??
+          message.notification?.title ??
+          _nonEmpty(data['title_en'] as String?);
+    }
+    return _nonEmpty(data['title_en'] as String?) ??
+        message.notification?.title ??
+        _nonEmpty(data['title_ar'] as String?);
+  }
+
+  String? _localizedBody(RemoteMessage message) {
+    final data = message.data;
+    final locale = PlatformDispatcher.instance.locale.languageCode;
+    if (locale == 'ar') {
+      return _nonEmpty(data['body_ar'] as String?) ??
+          message.notification?.body ??
+          _nonEmpty(data['body_en'] as String?);
+    }
+    return _nonEmpty(data['body_en'] as String?) ??
+        message.notification?.body ??
+        _nonEmpty(data['body_ar'] as String?);
+  }
+
+  String? _nonEmpty(String? value) {
+    if (value == null || value.isEmpty) {
+      return null;
+    }
+    return value;
   }
 }

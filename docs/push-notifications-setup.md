@@ -44,7 +44,12 @@ Arabic summary is in [runbook-ar.md](./runbook-ar.md#push-fcm) (add anchor secti
    - In `android/app/build.gradle.kts` add `id("com.google.gms.google-services")`
      to the `plugins { }` block (already applied in this repo).
 6. Download `GoogleService-Info.plist` → `ios/Runner/GoogleService-Info.plist` (gitignored).
-7. Enable **Cloud Messaging**; create a **Service account** key (JSON) for the Edge Function.
+7. Enable **Cloud Messaging**; upload an **APNs key** in Firebase Console.
+8. iOS push entitlements are in `ios/Runner/RunnerDebug.entitlements` (development,
+   used for Debug/Profile) and `ios/Runner/RunnerRelease.entitlements` (production,
+   used for Release/App Store). Enable the **Push Notifications** capability in
+   Xcode if codesign complains.
+9. Create a **Service account** key (JSON) for the Edge Function.
 
 ## 2. Dart defines (mobile)
 
@@ -116,5 +121,7 @@ The SQL trigger uses `pg_net` with `host.docker.internal` for local dev. On host
 |-------|--------|
 | No token in DB | `AppConfig.hasFirebase`, signed-in user, Android 13+ notification permission |
 | Edge returns `FCM not configured` | `FIREBASE_SERVICE_ACCOUNT_JSON` secret |
+| Edge returns `PUSH_WEBHOOK_SECRET not configured` | Set `PUSH_WEBHOOK_SECRET` in Supabase secrets / `supabase/.env` |
+| Edge returns `Invalid push secret` | `PUSH_WEBHOOK_SECRET` must match DB trigger `x-push-secret` |
 | Trigger never calls function | `pg_net` extension, Supabase functions URL reachable from DB container |
 | Android build | `android/app/google-services.json` exists → Google Services plugin applied |
