@@ -53,7 +53,8 @@ class ContentListScreen extends ConsumerWidget {
       body: feedAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, _) => Center(child: Text(l10n.contentLoadError)),
-        data: (feed) {
+        data: (snapshot) {
+          final feed = snapshot.data;
           final items = switch (category) {
             ContentListCategory.news => feed.news,
             ContentListCategory.announcements => feed.announcements,

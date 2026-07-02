@@ -896,6 +896,26 @@
     }
   },
   "contentOfflineBanner": "أنت غير متصل — يُعرض المحتوى المحفوظ حيثما أمكن.",
+  "contentCatalogCached": "يُعرض الكتالوج المحفوظ — اسحب للتحديث",
+  "contentCatalogRefreshing": "جاري تحديث المحتوى…",
+  "contentWifiOnboardingTitle": "وفّر البيانات أثناء التحميل",
+  "contentWifiOnboardingBody": "يمكن تحميل المواضيع التعليمية تلقائياً للاستخدام دون إنترنت. ننصح بالتحميل عبر Wi-Fi فقط لحماية بيانات الجوال.",
+  "contentWifiOnboardingConfirm": "Wi-Fi فقط",
+  "contentWifiOnboardingLater": "ليس الآن",
+  "contentDownloadsTitle": "تنزيلاتي",
+  "contentDownloadsEmpty": "لا يوجد محتوى محمّل بعد. فعّل التحميل دون إنترنت من الملف الشخصي.",
+  "contentDownloadsTopicSummary": "{count, plural, =1{ملف واحد} other{{count} ملفات}} · {size}",
+  "@contentDownloadsTopicSummary": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "size": {"type": "String"}
+    }
+  },
+  "contentSearchTitle": "بحث في المحتوى المحفوظ",
+  "contentSearchHint": "ابحث في المواضيع والأخبار والإعلانات…",
+  "contentSearchPrompt": "ابحث في الكتالوج المحفوظ أثناء عدم الاتصال",
+  "contentSearchEmpty": "لا نتائج في المحتوى المحفوظ",
+  "competitionQuizQueuedOffline": "تم حفظ الإجابة — ستُزامَن عند عودة الاتصال",
   "contentContinueLearning": "تابع التعلم",
   "contentTopicRequiresInternet": "بعض الفيديوهات تتطلب اتصالاً بالإنترنت (يوتيوب/فيميو).",
   "contentDownloadAll": "تحميل كل المواضيع",

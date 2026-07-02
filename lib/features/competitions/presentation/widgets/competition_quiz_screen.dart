@@ -7,6 +7,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
+import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:rafiq_alhajj/features/competitions/data/local/pending_quiz_attempts_cache.dart';
 import 'package:rafiq_alhajj/features/competitions/data/repositories/competitions_repository.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition_question.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/providers/competitions_providers.dart';
@@ -140,12 +142,31 @@ class _CompetitionQuizScreenState extends ConsumerState<CompetitionQuizScreen> {
       ref.invalidate(competitionQuizProgressProvider(widget.competitionId));
       ref.invalidate(competitionDetailProvider(widget.competitionId));
     } on CompetitionsException {
+      final profileId = ref.read(authProfileIdProvider);
+      if (profileId != null) {
+        await PendingQuizAttemptsCache.enqueue(
+          profileId,
+          PendingQuizAttempt(
+            competitionId: widget.competitionId,
+            questionId: question.id,
+            optionId: _selectedOptionId,
+            orderedOptionIds: question.questionType.isOrdering
+                ? List<String>.from(_orderingOptionIds)
+                : null,
+            createdAt: DateTime.now(),
+          ),
+        );
+      }
       if (!mounted) {
         return;
       }
       setState(() => _isSubmitting = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).competitionQuizSubmitError)),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context).competitionQuizQueuedOffline,
+          ),
+        ),
       );
     }
   }

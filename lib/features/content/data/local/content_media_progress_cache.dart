@@ -41,6 +41,19 @@ abstract final class ContentMediaProgressCache {
     }
   }
 
+  static Future<ContentMediaProgress?> readForMedia(
+    String profileKey,
+    String mediaId,
+  ) async {
+    final all = await readAll(profileKey);
+    for (final progress in all) {
+      if (progress.mediaId == mediaId && !progress.completed) {
+        return progress;
+      }
+    }
+    return null;
+  }
+
   static Future<void> save(
     String profileKey,
     ContentMediaProgress progress,

@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
@@ -59,7 +63,7 @@ class ContentOfflineSettingsCard extends ConsumerWidget {
               onChanged: busy
                   ? null
                   : (enabled) async {
-                      final topics = topicsAsync.value ?? const [];
+                      final topics = topicsAsync.value?.data ?? const [];
                       await controller.setOfflineEnabled(
                         enabled,
                         topics: topics,
@@ -81,6 +85,15 @@ class ContentOfflineSettingsCard extends ConsumerWidget {
             ),
             if (cachedCount > 0) ...[
               SizedBox(height: 8.h),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: TextButton.icon(
+                  onPressed: () =>
+                      unawaited(context.push(AppRoutes.contentDownloads)),
+                  icon: const Icon(Icons.folder_outlined),
+                  label: Text(l10n.contentDownloadsTitle),
+                ),
+              ),
               _StorageUsageBar(
                 usageBytes: downloadState.usageBytes,
                 quotaBytes: downloadState.quotaBytes,

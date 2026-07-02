@@ -2623,6 +2623,60 @@ class AppLocalizationsAr extends AppLocalizations {
       'أنت غير متصل — يُعرض المحتوى المحفوظ حيثما أمكن.';
 
   @override
+  String get contentCatalogCached => 'يُعرض الكتالوج المحفوظ — اسحب للتحديث';
+
+  @override
+  String get contentCatalogRefreshing => 'جاري تحديث المحتوى…';
+
+  @override
+  String get contentWifiOnboardingTitle => 'وفّر البيانات أثناء التحميل';
+
+  @override
+  String get contentWifiOnboardingBody =>
+      'يمكن تحميل المواضيع التعليمية تلقائياً للاستخدام دون إنترنت. ننصح بالتحميل عبر Wi-Fi فقط لحماية بيانات الجوال.';
+
+  @override
+  String get contentWifiOnboardingConfirm => 'Wi-Fi فقط';
+
+  @override
+  String get contentWifiOnboardingLater => 'ليس الآن';
+
+  @override
+  String get contentDownloadsTitle => 'تنزيلاتي';
+
+  @override
+  String get contentDownloadsEmpty =>
+      'لا يوجد محتوى محمّل بعد. فعّل التحميل دون إنترنت من الملف الشخصي.';
+
+  @override
+  String contentDownloadsTopicSummary(int count, String size) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ملفات',
+      one: 'ملف واحد',
+    );
+    return '$_temp0 · $size';
+  }
+
+  @override
+  String get contentSearchTitle => 'بحث في المحتوى المحفوظ';
+
+  @override
+  String get contentSearchHint => 'ابحث في المواضيع والأخبار والإعلانات…';
+
+  @override
+  String get contentSearchPrompt =>
+      'ابحث في الكتالوج المحفوظ أثناء عدم الاتصال';
+
+  @override
+  String get contentSearchEmpty => 'لا نتائج في المحتوى المحفوظ';
+
+  @override
+  String get competitionQuizQueuedOffline =>
+      'تم حفظ الإجابة — ستُزامَن عند عودة الاتصال';
+
+  @override
   String get contentContinueLearning => 'تابع التعلم';
 
   @override

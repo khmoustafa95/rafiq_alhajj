@@ -9,19 +9,15 @@ part of 'content_topics_providers.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(contentTopicsList)
+@ProviderFor(ContentTopicsList)
 final contentTopicsListProvider = ContentTopicsListFamily._();
 
 final class ContentTopicsListProvider
     extends
-        $FunctionalProvider<
-          AsyncValue<List<ContentTopic>>,
-          List<ContentTopic>,
-          FutureOr<List<ContentTopic>>
-        >
-    with
-        $FutureModifier<List<ContentTopic>>,
-        $FutureProvider<List<ContentTopic>> {
+        $AsyncNotifierProvider<
+          ContentTopicsList,
+          CatalogSnapshot<List<ContentTopic>>
+        > {
   ContentTopicsListProvider._({
     required ContentTopicsListFamily super.from,
     required AppAccessMode super.argument,
@@ -45,15 +41,7 @@ final class ContentTopicsListProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<ContentTopic>> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<List<ContentTopic>> create(Ref ref) {
-    final argument = this.argument as AppAccessMode;
-    return contentTopicsList(ref, argument);
-  }
+  ContentTopicsList create() => ContentTopicsList();
 
   @override
   bool operator ==(Object other) {
@@ -66,11 +54,17 @@ final class ContentTopicsListProvider
   }
 }
 
-String _$contentTopicsListHash() => r'e2c785582a39f48bfee70d6705d1a0eaae582e6f';
+String _$contentTopicsListHash() => r'7679de54eab8c36aac32c1d689b4e7938171d67b';
 
 final class ContentTopicsListFamily extends $Family
     with
-        $FunctionalFamilyOverride<FutureOr<List<ContentTopic>>, AppAccessMode> {
+        $ClassFamilyOverride<
+          ContentTopicsList,
+          AsyncValue<CatalogSnapshot<List<ContentTopic>>>,
+          CatalogSnapshot<List<ContentTopic>>,
+          FutureOr<CatalogSnapshot<List<ContentTopic>>>,
+          AppAccessMode
+        > {
   ContentTopicsListFamily._()
     : super(
         retry: null,
@@ -85,6 +79,36 @@ final class ContentTopicsListFamily extends $Family
 
   @override
   String toString() => r'contentTopicsListProvider';
+}
+
+abstract class _$ContentTopicsList
+    extends $AsyncNotifier<CatalogSnapshot<List<ContentTopic>>> {
+  late final _$args = ref.$arg as AppAccessMode;
+  AppAccessMode get accessMode => _$args;
+
+  FutureOr<CatalogSnapshot<List<ContentTopic>>> build(AppAccessMode accessMode);
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<CatalogSnapshot<List<ContentTopic>>>,
+              CatalogSnapshot<List<ContentTopic>>
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<CatalogSnapshot<List<ContentTopic>>>,
+                CatalogSnapshot<List<ContentTopic>>
+              >,
+              AsyncValue<CatalogSnapshot<List<ContentTopic>>>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, () => build(_$args));
+  }
 }
 
 @ProviderFor(contentTopicDetail)

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:rafiq_alhajj/features/competitions/application/services/pending_quiz_sync_service.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/providers/competitions_providers.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_topics_providers.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/public_content_feed_provider.dart';
@@ -23,6 +24,7 @@ void contentCatalogRefreshBinding(Ref ref) {
       ref.invalidate(contentTopicsListProvider(accessMode));
       ref.invalidate(hajjJourneyStepsProvider);
       ref.invalidate(activeCompetitionsProvider);
+      unawaited(PendingQuizSyncService.flush(ref));
     }
     wasOffline = !online;
   });

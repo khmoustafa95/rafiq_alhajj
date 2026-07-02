@@ -27,7 +27,9 @@ import 'package:rafiq_alhajj/features/content/domain/models/content_topic.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/public_content_feed_provider.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_media_widgets.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_section.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/content_stale_indicator.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_topics_section.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/content_wifi_onboarding_dialog.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/continue_learning_card.dart';
 
 import 'package:rafiq_alhajj/features/home/presentation/widgets/journey_cta_card.dart';
@@ -122,46 +124,42 @@ class HomeScreen extends ConsumerWidget {
 
 
 
-class _HomeBody extends ConsumerWidget {
-
+class _HomeBody extends ConsumerStatefulWidget {
   const _HomeBody({
-
     required this.isPilgrim,
-
     required this.pilgrimName,
-
     required this.onContentTap,
-
     required this.onTopicTap,
-
   });
 
-
-
   final bool isPilgrim;
-
   final String? pilgrimName;
-
   final void Function(ContentItem item) onContentTap;
-
   final void Function(ContentTopic topic) onTopicTap;
 
+  @override
+  ConsumerState<_HomeBody> createState() => _HomeBodyState();
+}
 
+class _HomeBodyState extends ConsumerState<_HomeBody> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isPilgrim) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        unawaited(ContentWifiOnboardingDialog.showIfNeeded(context, ref));
+      });
+    }
+  }
 
   @override
-
-  Widget build(BuildContext context, WidgetRef ref) {
-
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-
     final accessMode =
-
-        isPilgrim ? AppAccessMode.pilgrim : AppAccessMode.guest;
-
+        widget.isPilgrim ? AppAccessMode.pilgrim : AppAccessMode.guest;
     final feedAsync = ref.watch(homeContentFeedProvider(accessMode));
-
-    final feed = feedAsync.value;
-
+    final feedSnapshot = feedAsync.value;
+    final feed = feedSnapshot?.data;
     final isFeedLoading = feedAsync.isLoading && feed == null;
 
     return Scaffold(
@@ -212,11 +210,9 @@ class _HomeBody extends ConsumerWidget {
 
                           children: [
 
-                            if (isPilgrim && pilgrimName != null) ...[
-
+                            if (widget.isPilgrim && widget.pilgrimName != null) ...[
                               Text(
-
-                                l10n.homePilgrimGreeting(pilgrimName!),
+                                l10n.homePilgrimGreeting(widget.pilgrimName!),
 
                                 style:
 
@@ -236,12 +232,12 @@ class _HomeBody extends ConsumerWidget {
 
                             SizedBox(height: 16.h),
 
-                            if (isPilgrim) ...[
+                            if (widget.isPilgrim) ...[
                               const _SosHomeCard(),
                               SizedBox(height: 16.h),
                             ],
 
-                            JourneyCtaCard(isPilgrim: isPilgrim),
+                            JourneyCtaCard(isPilgrim: widget.isPilgrim),
 
                             if (!AppConfig.hasSupabase) ...[
 
@@ -305,17 +301,19 @@ class _HomeBody extends ConsumerWidget {
 
                     ),
 
-                    if (isPilgrim)
+                    if (widget.isPilgrim)
                       const SliverToBoxAdapter(
                         child: ContinueLearningCard(),
                       ),
-
+                    SliverToBoxAdapter(
+                      child: ContentStaleIndicator(snapshot: feedSnapshot),
+                    ),
                     SliverToBoxAdapter(
                       child: ContentSection(
                         title: l10n.contentAnnouncementsSection,
                         items: feed?.announcements ?? const [],
                         emptyMessage: l10n.contentAnnouncementsEmpty,
-                        onItemTap: onContentTap,
+                        onItemTap: widget.onContentTap,
                         maxItems: HomeFeedPreviewLimits.announcements,
                         seeAllLabel: l10n.homeSeeAll,
                         onSeeAll: feed == null
@@ -333,7 +331,7 @@ class _HomeBody extends ConsumerWidget {
                         title: l10n.contentNewsSectionTitle,
                         items: feed?.news ?? const [],
                         emptyMessage: l10n.contentNewsEmpty,
-                        onItemTap: onContentTap,
+                        onItemTap: widget.onContentTap,
                         maxItems: HomeFeedPreviewLimits.news,
                         seeAllLabel: l10n.homeSeeAll,
                         onSeeAll: feed == null
@@ -351,7 +349,7 @@ class _HomeBody extends ConsumerWidget {
                               title: l10n.contentLibrarySection,
                               topics: feed?.topics ?? const [],
                               emptyMessage: l10n.contentTopicsEmpty,
-                              onTopicTap: onTopicTap,
+                              onTopicTap: widget.onTopicTap,
                               maxItems: HomeFeedPreviewLimits.topics,
                               seeAllLabel: l10n.homeSeeAll,
                               onSeeAll: feed == null

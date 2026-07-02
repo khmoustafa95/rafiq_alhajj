@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition_question.dart';
 import 'package:rafiq_alhajj/features/content/data/local/content_catalog_codec.dart';
+import 'package:rafiq_alhajj/features/content/domain/models/catalog_snapshot.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_item.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_topic.dart';
+import 'package:rafiq_alhajj/features/content/domain/models/content_type.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_visibility.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/public_content_feed.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/domain/models/hajj_journey_step.dart';
@@ -29,18 +31,128 @@ class ContentCatalogCache {
     return isPilgrim ? 'pilgrim' : 'guest';
   }
 
-  PublicContentFeed? readFeed(String scope) {
+  /// Feed plus cache timestamp for stale-while-revalidate.
+  ({PublicContentFeed feed, DateTime cachedAt})? readFeedEntry(String scope) {
     final raw = _prefs.getString('$_feedPrefix$scope');
     if (raw == null) {
       return null;
     }
     try {
-      return ContentCatalogCodec.feedFromJson(
-        jsonDecode(raw) as Map<String, dynamic>,
-      );
+      final json = jsonDecode(raw) as Map<String, dynamic>;
+      final feed = ContentCatalogCodec.feedFromJson(json);
+      if (feed == null) {
+        return null;
+      }
+      final cachedAt = _parseCachedAt(json['cachedAt'] as String?);
+      return (feed: feed, cachedAt: cachedAt);
     } catch (_) {
       return null;
     }
+  }
+
+  PublicContentFeed? readFeed(String scope) => readFeedEntry(scope)?.feed;
+
+  bool isFeedExpired(String scope) {
+    final entry = readFeedEntry(scope);
+    if (entry == null) {
+      return true;
+    }
+    return DateTime.now().difference(entry.cachedAt) >
+        ContentCatalogTtl.defaultDuration;
+  }
+
+  Future<void> invalidateFeed(String scope) async {
+    await _prefs.remove('$_feedPrefix$scope');
+    await _prefs.remove('$_topicsListPrefix$scope');
+  }
+
+  List<CatalogSearchHit> searchLocal(
+    String query, {
+    required bool isPilgrim,
+  }) {
+    final normalized = query.trim().toLowerCase();
+    if (normalized.isEmpty) {
+      return const [];
+    }
+
+    final hits = <CatalogSearchHit>[];
+    final seen = <String>{};
+
+    void addHit(CatalogSearchHit hit) {
+      if (seen.add(hit.id)) {
+        hits.add(hit);
+      }
+    }
+
+    for (final key in _prefs.getKeys()) {
+      if (key.startsWith(_itemPrefix)) {
+        final raw = _prefs.getString(key);
+        if (raw == null) {
+          continue;
+        }
+        try {
+          final item = ContentCatalogCodec.itemFromJson(
+            jsonDecode(raw) as Map<String, dynamic>,
+          );
+          if (item == null || !canReadItem(item, isPilgrim: isPilgrim)) {
+            continue;
+          }
+          if (_matches(normalized, item.title, item.description)) {
+            addHit(
+              CatalogSearchHit(
+                id: item.id,
+                title: item.title,
+                subtitle: item.description,
+                kind: item.type == ContentType.news ? 'news' : 'announcement',
+              ),
+            );
+          }
+        } catch (_) {
+          // skip corrupt entry
+        }
+      } else if (key.startsWith(_topicPrefix)) {
+        final raw = _prefs.getString(key);
+        if (raw == null) {
+          continue;
+        }
+        try {
+          final topic = ContentCatalogCodec.topicFromJson(
+            jsonDecode(raw) as Map<String, dynamic>,
+          );
+          if (topic == null || !canReadTopic(topic, isPilgrim: isPilgrim)) {
+            continue;
+          }
+          if (_matches(normalized, topic.title, topic.description)) {
+            addHit(
+              CatalogSearchHit(
+                id: topic.id,
+                title: topic.title,
+                subtitle: topic.description,
+                kind: 'topic',
+              ),
+            );
+          }
+        } catch (_) {
+          // skip corrupt entry
+        }
+      }
+    }
+
+    return hits;
+  }
+
+  static bool _matches(String query, String title, String? subtitle) {
+    if (title.toLowerCase().contains(query)) {
+      return true;
+    }
+    return subtitle?.toLowerCase().contains(query) ?? false;
+  }
+
+  static DateTime _parseCachedAt(String? raw) {
+    if (raw == null) {
+      return DateTime.fromMillisecondsSinceEpoch(0);
+    }
+    return DateTime.tryParse(raw) ?? DateTime.fromMillisecondsSinceEpoch(0);
   }
 
   Future<void> writeFeed(String scope, PublicContentFeed feed) async {

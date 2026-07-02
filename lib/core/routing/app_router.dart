@@ -28,7 +28,9 @@ import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competit
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competitions_list_screen.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_type.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_detail_screen.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/content_downloads_screen.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_list_screen.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/content_search_screen.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_topic_detail_screen.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_topics_list_screen.dart';
 import 'package:rafiq_alhajj/features/field_operator/presentation/widgets/field_operator_dashboard_screen.dart';
@@ -267,6 +269,16 @@ List<RouteBase> _mobilePilgrimRoutes() => [
           final id = state.pathParameters['id']!;
           return ContentDetailScreen(contentId: id);
         },
+      ),
+      GoRoute(
+        path: AppRoutes.contentDownloads,
+        name: 'contentDownloads',
+        builder: (context, state) => const ContentDownloadsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.contentSearch,
+        name: 'contentSearch',
+        builder: (context, state) => const ContentSearchScreen(),
       ),
       GoRoute(
         path: AppRoutes.pilgrimDashboard,
@@ -759,6 +771,16 @@ List<RouteBase> _webRoutes() => [
           final id = state.pathParameters['id']!;
           return ContentDetailScreen(contentId: id);
         },
+      ),
+      GoRoute(
+        path: AppRoutes.contentDownloads,
+        name: 'contentDownloads',
+        builder: (context, state) => const ContentDownloadsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.contentSearch,
+        name: 'contentSearch',
+        builder: (context, state) => const ContentSearchScreen(),
       ),
       GoRoute(
         path: AppRoutes.pilgrimDashboard,

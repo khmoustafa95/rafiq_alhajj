@@ -13,11 +13,15 @@ class NativeAudioPlayer extends StatefulWidget {
   const NativeAudioPlayer({
     required this.url,
     this.title,
+    this.initialPositionMs = 0,
+    this.onPositionChanged,
     super.key,
   });
 
   final String url;
   final String? title;
+  final int initialPositionMs;
+  final ValueChanged<int>? onPositionChanged;
 
   @override
   State<NativeAudioPlayer> createState() => _NativeAudioPlayerState();
@@ -28,6 +32,7 @@ class _NativeAudioPlayerState extends State<NativeAudioPlayer> {
   bool _isPlaying = false;
   Duration _position = Duration.zero;
   Duration _duration = Duration.zero;
+  bool _didSeekInitial = false;
 
   bool get _useNative =>
       !AppPlatform.isWeb && (Platform.isAndroid || Platform.isIOS);
@@ -44,12 +49,14 @@ class _NativeAudioPlayerState extends State<NativeAudioPlayer> {
         return;
       }
       setState(() => _duration = value);
+      unawaited(_seekInitialIfNeeded());
     });
     _player.onPositionChanged.listen((value) {
       if (!mounted) {
         return;
       }
       setState(() => _position = value);
+      widget.onPositionChanged?.call(value.inMilliseconds);
     });
     _player.onPlayerComplete.listen((_) {
       if (!mounted) {
@@ -62,10 +69,23 @@ class _NativeAudioPlayerState extends State<NativeAudioPlayer> {
     });
   }
 
+  Future<void> _seekInitialIfNeeded() async {
+    if (_didSeekInitial || widget.initialPositionMs <= 0) {
+      return;
+    }
+    _didSeekInitial = true;
+    final position = Duration(milliseconds: widget.initialPositionMs);
+    await _player.seek(position);
+    if (mounted) {
+      setState(() => _position = position);
+    }
+  }
+
   @override
   void didUpdateWidget(covariant NativeAudioPlayer oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (_useNative && oldWidget.url != widget.url) {
+      _didSeekInitial = false;
       unawaited(_player.stop());
       setState(() {
         _isPlaying = false;
@@ -77,6 +97,7 @@ class _NativeAudioPlayerState extends State<NativeAudioPlayer> {
 
   @override
   void dispose() {
+    widget.onPositionChanged?.call(_position.inMilliseconds);
     unawaited(_player.dispose());
     super.dispose();
   }

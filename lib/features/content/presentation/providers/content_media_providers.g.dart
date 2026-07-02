@@ -220,7 +220,7 @@ final class ContentMediaDownloadControllerProvider
 }
 
 String _$contentMediaDownloadControllerHash() =>
-    r'60a76e1fad9ae626aeb4bc8b168f2ff72767c1c1';
+    r'e2c6841d483150c2f163d8757a0bceb74e3d08a9';
 
 abstract class _$ContentMediaDownloadController
     extends $AsyncNotifier<ContentDownloadState> {

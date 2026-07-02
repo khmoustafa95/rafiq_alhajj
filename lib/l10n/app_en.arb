@@ -1185,6 +1185,26 @@
     }
   },
   "contentOfflineBanner": "You're offline — showing saved content where available.",
+  "contentCatalogCached": "Showing saved catalog — pull to refresh",
+  "contentCatalogRefreshing": "Updating content…",
+  "contentWifiOnboardingTitle": "Save data while downloading",
+  "contentWifiOnboardingBody": "Educational topics can download automatically for offline use. We recommend Wi-Fi only to protect your mobile data.",
+  "contentWifiOnboardingConfirm": "Use Wi-Fi only",
+  "contentWifiOnboardingLater": "Not now",
+  "contentDownloadsTitle": "My downloads",
+  "contentDownloadsEmpty": "No downloaded content yet. Enable offline downloads in your profile.",
+  "contentDownloadsTopicSummary": "{count, plural, =1{1 file} other{{count} files}} · {size}",
+  "@contentDownloadsTopicSummary": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "size": {"type": "String"}
+    }
+  },
+  "contentSearchTitle": "Search saved content",
+  "contentSearchHint": "Search topics, news, announcements…",
+  "contentSearchPrompt": "Search your saved catalog while offline",
+  "contentSearchEmpty": "No matches in saved content",
+  "competitionQuizQueuedOffline": "Answer saved — will sync when you're back online",
   "contentContinueLearning": "Continue learning",
   "contentTopicRequiresInternet": "Some videos require an internet connection (YouTube/Vimeo).",
   "contentDownloadAll": "Download all topics",
