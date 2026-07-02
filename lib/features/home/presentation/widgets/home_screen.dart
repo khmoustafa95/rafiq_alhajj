@@ -25,6 +25,8 @@ import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_p
 import 'package:rafiq_alhajj/features/content/domain/models/content_item.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_topic.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/public_content_feed_provider.dart';
+import 'package:rafiq_alhajj/features/content/presentation/providers/content_learning_progress_providers.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/content_hub_quick_actions.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_media_widgets.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_section.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_stale_indicator.dart';
@@ -162,6 +164,10 @@ class _HomeBodyState extends ConsumerState<_HomeBody> {
     final feed = feedSnapshot?.data;
     final isFeedLoading = feedAsync.isLoading && feed == null;
 
+    if (widget.isPilgrim) {
+      ref.watch(contentLearningProgressBootstrapProvider);
+    }
+
     return Scaffold(
 
       backgroundColor: AppColors.background,
@@ -229,6 +235,11 @@ class _HomeBodyState extends ConsumerState<_HomeBody> {
                             SizedBox(height: 16.h),
 
                             const QuickActionTiles(),
+
+                            if (widget.isPilgrim) ...[
+                              SizedBox(height: 16.h),
+                              const ContentHubQuickActions(),
+                            ],
 
                             SizedBox(height: 16.h),
 

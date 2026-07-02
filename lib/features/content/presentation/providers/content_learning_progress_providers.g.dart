@@ -197,6 +197,47 @@ final class MyLearningProgressProvider
 String _$myLearningProgressHash() =>
     r'37dafa2bb8972caa9fb17a2be3ca77a3b82d865d';
 
+@ProviderFor(myLearningGrouped)
+final myLearningGroupedProvider = MyLearningGroupedProvider._();
+
+final class MyLearningGroupedProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<TopicLearningGroup>>,
+          List<TopicLearningGroup>,
+          FutureOr<List<TopicLearningGroup>>
+        >
+    with
+        $FutureModifier<List<TopicLearningGroup>>,
+        $FutureProvider<List<TopicLearningGroup>> {
+  MyLearningGroupedProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'myLearningGroupedProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$myLearningGroupedHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<TopicLearningGroup>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<TopicLearningGroup>> create(Ref ref) {
+    return myLearningGrouped(ref);
+  }
+}
+
+String _$myLearningGroupedHash() => r'ebda94ecb625c60de284afb54e097f8fb70603e1';
+
 @ProviderFor(mediaResumePositionMs)
 final mediaResumePositionMsProvider = MediaResumePositionMsFamily._();
 
@@ -293,7 +334,7 @@ final class ContentLearningProgressRecorderProvider
 }
 
 String _$contentLearningProgressRecorderHash() =>
-    r'5c0c2154596f6a3e953f554267be93288bbc9de1';
+    r'6e65328e6b313bf329146f6a4f0e1564cba76ab9';
 
 abstract class _$ContentLearningProgressRecorder extends $AsyncNotifier<void> {
   FutureOr<void> build();

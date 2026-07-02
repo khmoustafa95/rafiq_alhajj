@@ -4945,6 +4945,12 @@ abstract class AppLocalizations {
   /// **'Search saved content'**
   String get contentSearchTitle;
 
+  /// No description provided for @contentHubQuickActionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Learning shortcuts'**
+  String get contentHubQuickActionsTitle;
+
   /// No description provided for @contentSearchHint.
   ///
   /// In en, this message translates to:
@@ -5076,6 +5082,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Answer saved — will sync when you\'re back online'**
   String get competitionQuizQueuedOffline;
+
+  /// No description provided for @contentLessonMarkComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark lesson complete'**
+  String get contentLessonMarkComplete;
+
+  /// No description provided for @contentLessonNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next lesson'**
+  String get contentLessonNext;
+
+  /// No description provided for @contentMyLearningSummaryInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 lesson in progress} other{{count} lessons in progress}}'**
+  String contentMyLearningSummaryInProgress(int count);
+
+  /// No description provided for @contentMyLearningSummaryCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 lesson completed} other{{count} lessons completed}}'**
+  String contentMyLearningSummaryCompleted(int count);
+
+  /// No description provided for @contentMyLearningContinueTopic.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue topic'**
+  String get contentMyLearningContinueTopic;
+
+  /// No description provided for @contentLessonInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get contentLessonInProgress;
+
+  /// No description provided for @contentTopicLessonsProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{completed} of {total} lessons'**
+  String contentTopicLessonsProgress(int completed, int total);
+
+  /// No description provided for @contentContinueLearningResume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume where you left off'**
+  String get contentContinueLearningResume;
 
   /// No description provided for @contentContinueLearning.
   ///

@@ -27,6 +27,7 @@ class ContinueLearningCard extends ConsumerWidget {
         }
 
         final subtitle = progress.mediaTitle ?? progress.topicTitle;
+        final hasResumePosition = progress.positionMs > 0;
 
         return Padding(
           padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 12.h),
@@ -84,6 +85,18 @@ class ContinueLearningCard extends ConsumerWidget {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
+                          if (hasResumePosition) ...[
+                            SizedBox(height: 6.h),
+                            Text(
+                              l10n.contentContinueLearningResume,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelSmall
+                                  ?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
+                            ),
+                          ],
                         ],
                       ),
                     ),

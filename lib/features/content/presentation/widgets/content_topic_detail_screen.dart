@@ -12,6 +12,7 @@ import 'package:rafiq_alhajj/features/content/presentation/providers/content_top
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_offline_banner.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_topic_offline_actions.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/resolved_cover_image.dart';
+import 'package:rafiq_alhajj/features/content/presentation/widgets/topic_learning_progress_badge.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 class ContentTopicDetailScreen extends ConsumerWidget {
@@ -146,6 +147,8 @@ class ContentTopicDetailScreen extends ConsumerWidget {
                           ),
                           SizedBox(height: 16.h),
                         ],
+                        TopicLearningProgressBadge(topic: topic),
+                        SizedBox(height: 16.h),
                         if (!AppPlatform.isWeb) ...[
                           ContentTopicOfflineActions(topic: topic),
                           SizedBox(height: 16.h),
