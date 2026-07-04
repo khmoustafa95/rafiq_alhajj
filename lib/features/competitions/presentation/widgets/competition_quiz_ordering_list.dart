@@ -54,6 +54,8 @@ class CompetitionQuizOrderingList extends StatelessWidget {
         final optionId = orderedOptionIds[index];
         final option = optionsById[optionId];
         if (option == null) {
+
+          
           return SizedBox(key: ValueKey(optionId));
         }
 

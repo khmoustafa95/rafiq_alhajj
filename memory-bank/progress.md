@@ -3,6 +3,9 @@
 > **Update this file after every completed task.**
 
 ## Changelog
+- **2026-07-04 — Windows staging npm scripts use PowerShell:** Added `setup-firebase-hosting.ps1`, `build-staging-web.ps1`, `deploy-staging.ps1`, `setup-staging-supabase.ps1`; `package.json` `staging:*` routes to PS1 (fixes WSL `node: not found` + Flutter CRLF via bash).
+- **2026-07-04 — Fix staging bash scripts CRLF on Windows:** `scripts/*.sh` converted to LF; `.gitattributes` enforces `*.sh eol=lf`. `bash -n` passes on setup-firebase-hosting, build-staging-web, setup-staging-supabase, deploy-staging.
+- **2026-07-04 — Fix `staging-wizard.ps1` PowerShell parse error on Windows:** Replaced UTF-8 em-dashes with ASCII hyphens; demo login `Write-Host` uses single quotes (email `@`). Syntax check passes.
 - **2026-07-02 — Staging environment (client preview URL):** Firebase Hosting config (`firebase.json`, `.firebaserc` → site `rafiq-alhajj-staging`), scripts `build-staging-web.sh` / `deploy-staging.sh` / `setup-staging-supabase.sh` / `setup-firebase-hosting.sh` / `patch-firebase-sw.mjs`, GitHub Actions `.github/workflows/deploy-staging.yml`, expanded `dart_defines.staging.example.json`, `seed-demo-users.mjs` remote URL support, `docs/staging-setup-ar.md`, npm `staging:*` scripts. Target URL: `https://rafiq-alhajj-staging.web.app`. ⚠ Requires one-time Supabase cloud + GitHub secrets setup.
 - **2026-07-02 — Code unification (phases 1–3) MERGED to `main`:** PR #7 merged (`cursor/code-unification-8b95` → `main`).
 - **2026-07-02 — Code unification (phase 3):** Freezed for `NotificationPreferences` (incl. `TimeOfDay`) + all editor inputs (trip/competition/question/content/group/operator). `LocalNotificationsService.syncChannels` + `PushNotificationService.syncNotificationChannels`; `pushNotificationBinding` listens to `localeControllerProvider` to refresh Android channel labels on language change. `build_runner` + `flutter analyze lib` → **No issues found**.

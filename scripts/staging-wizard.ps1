@@ -5,7 +5,7 @@ $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot\..
 
 Write-Host ""
-Write-Host "=== Rafiq Al-Hajj — Staging setup wizard ===" -ForegroundColor Cyan
+Write-Host "=== Rafiq Al-Hajj - Staging setup wizard ===" -ForegroundColor Cyan
 Write-Host "Stable client URL after deploy: https://rafiq-alhajj-staging.web.app"
 Write-Host ""
 
@@ -20,7 +20,7 @@ Require-Command node
 Require-Command flutter
 
 # --- Step 1: Supabase cloud project ---
-Write-Host "STEP 1/5 — Supabase cloud project" -ForegroundColor Yellow
+Write-Host "STEP 1/5 - Supabase cloud project" -ForegroundColor Yellow
 Write-Host @"
 1. Open https://supabase.com/dashboard
 2. New project → name: rafiq-alhajj-staging
@@ -30,7 +30,7 @@ Write-Host @"
 6. Project Settings → API → copy:
    - Project URL
    - anon / publishable key
-   - service_role key (secret — never commit)
+   - service_role key (secret - never commit)
 "@
 
 $projectRef = Read-Host "Paste Supabase Reference ID"
@@ -47,7 +47,7 @@ if (-not $supabaseUrl.StartsWith("https://")) {
 
 # --- Step 2: Write dart defines ---
 Write-Host ""
-Write-Host "STEP 2/5 — Writing dart_defines.staging.local.json" -ForegroundColor Yellow
+Write-Host "STEP 2/5 - Writing dart_defines.staging.local.json" -ForegroundColor Yellow
 
 $defines = [ordered]@{
     SUPABASE_URL              = $supabaseUrl
@@ -64,12 +64,13 @@ $defines = [ordered]@{
 }
 
 $definesPath = Join-Path $PWD "dart_defines.staging.local.json"
-$defines | ConvertTo-Json | Set-Content -Path $definesPath -Encoding UTF8
+$utf8NoBom = New-Object System.Text.UTF8Encoding $false
+[IO.File]::WriteAllText($definesPath, ($defines | ConvertTo-Json), $utf8NoBom)
 Write-Host "Wrote $definesPath" -ForegroundColor Green
 
 # --- Step 3: Link + push DB ---
 Write-Host ""
-Write-Host "STEP 3/5 — Supabase login + migrations" -ForegroundColor Yellow
+Write-Host "STEP 3/5 - Supabase login + migrations" -ForegroundColor Yellow
 Write-Host "A browser window will open for supabase login if needed."
 supabase login
 supabase link --project-ref $projectRef
@@ -86,14 +87,14 @@ try {
 
 # --- Step 4: Demo users ---
 Write-Host ""
-Write-Host "STEP 4/5 — Seeding demo Auth users" -ForegroundColor Yellow
+Write-Host "STEP 4/5 - Seeding demo Auth users" -ForegroundColor Yellow
 $env:SUPABASE_URL = $supabaseUrl
 $env:SUPABASE_SERVICE_ROLE_KEY = $serviceRolePlain
 node ./scripts/seed-demo-users.mjs
 
 # --- Step 5: Auth redirect URLs reminder ---
 Write-Host ""
-Write-Host "STEP 5/5 — Supabase Auth URLs (manual in Dashboard)" -ForegroundColor Yellow
+Write-Host "STEP 5/5 - Supabase Auth URLs (manual in Dashboard)" -ForegroundColor Yellow
 Write-Host @"
 In Supabase Dashboard → Authentication → URL Configuration:
 
@@ -108,7 +109,7 @@ In Supabase Dashboard → Authentication → URL Configuration:
 Write-Host ""
 Write-Host "=== Supabase staging is ready ===" -ForegroundColor Green
 Write-Host ""
-Write-Host "Next — Firebase Hosting (run in a new terminal):" -ForegroundColor Cyan
+Write-Host "Next - Firebase Hosting (run in a new terminal):" -ForegroundColor Cyan
 Write-Host "  npm install -g firebase-tools"
 Write-Host "  firebase login"
 Write-Host "  npm run staging:setup-hosting"
@@ -117,4 +118,4 @@ Write-Host ""
 Write-Host "Or add GitHub Secrets for auto-deploy (see docs/staging-setup-ar.md section 5)."
 Write-Host ""
 Write-Host "Demo login for client:" -ForegroundColor Yellow
-Write-Host "  admin@demo.local / demo123456"
+Write-Host '  admin@demo.local / demo123456'

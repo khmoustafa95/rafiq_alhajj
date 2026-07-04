@@ -5,8 +5,11 @@
   "targets": {
     "rafiq-alhajj": {
       "hosting": {
-        "staging": ["rafiq-alhajj-staging"]
+        "staging": [
+          "rafiq-alhajj-staging"
+        ]
       }
     }
-  }
+  },
+  "etags": {}
 }

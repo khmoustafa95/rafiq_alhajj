@@ -3,6 +3,10 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
+**Staging deploy scripts (2026-07-04):** Windows `npm run staging:*` now uses PowerShell (`.ps1`) instead of `bash` — WSL bash lacked `node` in PATH and Flutter SDK had CRLF issues via `/mnt/c/`. Bash `.sh` scripts kept for Linux CI.
+
+**Staging deploy wizard fix (2026-07-04):** `scripts/staging-wizard.ps1` failed to parse on Windows PowerShell (UTF-8 em-dashes + `@` in double-quoted email). Replaced `—` with ASCII `-` and used single quotes for demo login line. User can retry `npm run staging:wizard`.
+
 **Staging environment (client preview)** (2026-07-02): added free staging stack — Firebase Hosting site `rafiq-alhajj-staging` (`firebase.json`, `.firebaserc`), build/deploy scripts (`build-staging-web.sh`, `deploy-staging.sh`, `setup-staging-supabase.sh`, `setup-firebase-hosting.sh`, `patch-firebase-sw.mjs`), GitHub Actions `deploy-staging.yml` (auto-deploy on `main` push), `dart_defines.staging.example.json` expanded, `seed-demo-users.mjs` accepts remote `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`. Docs: `docs/staging-setup-ar.md`. Stable client URL after setup: `https://rafiq-alhajj-staging.web.app`. ⚠ One-time manual: create Supabase cloud project, Firebase hosting site, GitHub secrets — see doc.
 
 **Code unification (phases 1–3) — MERGED to `main`** (2026-07-02): PR #7 merged. Full audit unification shipped: data sources, shared Dio, application services (trips/hajj/competitions), Freezed CMS models + editor inputs + NotificationPreferences, StaffAdaptivePage rollout, staff_web_layout sizing, localized Android notification channels with locale-change sync.

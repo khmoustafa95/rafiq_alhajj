@@ -8,10 +8,10 @@
     "setup": "powershell -ExecutionPolicy Bypass -File ./scripts/dev-setup.ps1",
     "setup:users": "powershell -ExecutionPolicy Bypass -File ./scripts/seed-demo-users.ps1",
     "setup:registry": "node ./scripts/seed-fake-pilgrim-registry.mjs",
-    "staging:setup-hosting": "bash ./scripts/setup-firebase-hosting.sh",
-    "staging:setup-db": "bash ./scripts/setup-staging-supabase.sh",
-    "staging:build": "bash ./scripts/build-staging-web.sh",
-    "staging:deploy": "bash ./scripts/deploy-staging.sh",
+    "staging:setup-hosting": "powershell -ExecutionPolicy Bypass -File ./scripts/setup-firebase-hosting.ps1",
+    "staging:setup-db": "powershell -ExecutionPolicy Bypass -File ./scripts/setup-staging-supabase.ps1",
+    "staging:build": "powershell -ExecutionPolicy Bypass -File ./scripts/build-staging-web.ps1",
+    "staging:deploy": "powershell -ExecutionPolicy Bypass -File ./scripts/deploy-staging.ps1",
     "staging:seed-users": "node ./scripts/seed-demo-users.mjs",
     "staging:wizard": "powershell -ExecutionPolicy Bypass -File ./scripts/staging-wizard.ps1"
   }

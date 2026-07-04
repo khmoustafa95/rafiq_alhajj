@@ -18,7 +18,9 @@ if (!definesPath) {
   process.exit(1);
 }
 
-const defines = JSON.parse(readFileSync(definesPath, "utf8"));
+const defines = JSON.parse(
+  readFileSync(definesPath, "utf8").replace(/^\uFEFF/, ""),
+);
 
 const apiKey = defines.FIREBASE_API_KEY ?? "";
 const authDomain = defines.FIREBASE_AUTH_DOMAIN ?? "";
