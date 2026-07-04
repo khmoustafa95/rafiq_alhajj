@@ -1,0 +1,12 @@
+{
+  "projects": {
+    "default": "rafiq-alhajj"
+  },
+  "targets": {
+    "rafiq-alhajj": {
+      "hosting": {
+        "staging": ["rafiq-alhajj-staging"]
+      }
+    }
+  }
+}

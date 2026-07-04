@@ -56,6 +56,7 @@ npm run dev:android    # Android emulator/device
 
 ## Local run documentation
 - **Arabic runbook:** `docs/runbook-ar.md` — Supabase setup, `dart_defines.*.json`, demo accounts (`demo123456`), Chrome vs mobile flows.
+- **Staging (client preview):** `docs/staging-setup-ar.md` — free Supabase + Firebase Hosting, stable URL `https://rafiq-alhajj-staging.web.app`, GitHub Actions auto-deploy.
 - **Templates:** `dart_defines.local.example.json`, `dart_defines.android.local.example.json`, `dart_defines.staging.example.json`, `dart_defines.production.example.json`.
 - **Crash reporting:** `CRASH_REPORTING_ENABLED=true` in release dart-defines; wire Sentry/Crashlytics in `ConfiguredCrashReporter`.
 - **Push (FCM):** `docs/push-notifications-setup.md`; `FIREBASE_*` dart-defines; Edge secrets `FIREBASE_SERVICE_ACCOUNT_JSON`, `PUSH_WEBHOOK_SECRET`.

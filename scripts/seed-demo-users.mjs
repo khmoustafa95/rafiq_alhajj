@@ -6,9 +6,15 @@ import { execSync } from "node:child_process";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, "..");
 const usersFile = join(__dirname, "seed-demo-users.json");
-const baseUrl = "http://127.0.0.1:54321";
+const baseUrl = (
+  process.env.SUPABASE_URL ?? "http://127.0.0.1:54321"
+).replace(/\/$/, "");
 
 function getServiceRoleKey() {
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return process.env.SUPABASE_SERVICE_ROLE_KEY.trim();
+  }
+
   const envCandidates = [
     join(rootDir, ".env.local"),
     join(rootDir, "supabase", ".env"),

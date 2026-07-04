@@ -337,7 +337,8 @@ flutter run -d chrome --dart-define-from-file=dart_defines.local.json
 | `supabase/seed.sql` | بيانات تجريبية + تعليقات حسابات Auth |
 | `lib/core/routing/app_routes.dart` | ثوابت المسارات |
 | `memory-bank/activeContext.md` | سياق التطوير الحالي |
+| `docs/staging-setup-ar.md` | نشر Staging مجاني + رابط ثابت للعميل |
 
 ---
 
-*آخر تحديث: 2026-06-03 — يشمل إشعارات Push (FCM).*
+*آخر تحديث: 2026-07-02 — يشمل Staging على Firebase Hosting.*
