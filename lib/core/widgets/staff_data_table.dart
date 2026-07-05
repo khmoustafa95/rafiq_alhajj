@@ -279,7 +279,7 @@ class _StaffDataTableState<T> extends ConsumerState<StaffDataTable<T>> {
         SizedBox(height: sh(12)),
         Expanded(
           child: DecoratedBox(
-            decoration: AppDecorations.card(),
+            decoration: AppDecorations.themedCard(context),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
               child: widget.isLoading && widget.rows.isEmpty
@@ -318,6 +318,7 @@ class _StaffDataTableState<T> extends ConsumerState<StaffDataTable<T>> {
   Widget _buildTable(bool compact) {
     return LayoutBuilder(
       builder: (context, constraints) {
+        final dividerColor = Theme.of(context).colorScheme.outlineVariant;
         final selectionW =
             _isSelectable ? staffTableSelectionColumnWidth : 0.0;
         final actionsW =
@@ -347,13 +348,13 @@ class _StaffDataTableState<T> extends ConsumerState<StaffDataTable<T>> {
                 fixedWidths: fixedWidths,
                 compact: compact,
               ),
-              const Divider(height: 1, color: AppColors.border),
+              Divider(height: 1, color: dividerColor),
               Expanded(
                 child: ListView.separated(
                   itemCount: widget.rows.length,
-                  separatorBuilder: (_, _) => const Divider(
+                  separatorBuilder: (_, _) => Divider(
                     height: 1,
-                    color: AppColors.border,
+                    color: dividerColor,
                   ),
                   itemBuilder: (context, index) {
                     final item = widget.rows[index];
@@ -518,13 +519,14 @@ class _ToolbarLayout extends StatelessWidget {
         final stackSearch = maxWidth < 1100;
         final compact = maxWidth < 720;
 
+        final scheme = Theme.of(context).colorScheme;
         final searchField = TextField(
           controller: searchController,
           decoration: InputDecoration(
             hintText: searchHint,
             prefixIcon: const Icon(Icons.search, size: 20),
             filled: true,
-            fillColor: AppColors.surface,
+            fillColor: scheme.surfaceContainerHigh,
             isDense: true,
             contentPadding: EdgeInsets.symmetric(
               horizontal: sw(12),
@@ -634,6 +636,7 @@ class _FilterDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final dropdown = DropdownButtonFormField<String>(
       key: ValueKey('${filter.id}-$current'),
       isExpanded: true,
@@ -641,7 +644,7 @@ class _FilterDropdown extends StatelessWidget {
       decoration: InputDecoration(
         labelText: filter.label,
         filled: true,
-        fillColor: AppColors.surface,
+        fillColor: scheme.surfaceContainerHigh,
         isDense: true,
         contentPadding: EdgeInsets.symmetric(
           horizontal: sw(12),
@@ -713,13 +716,14 @@ class _HeaderRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final style = Theme.of(context).textTheme.labelMedium?.copyWith(
-          color: AppColors.textSecondary,
+          color: scheme.onSurfaceVariant,
           fontWeight: FontWeight.w600,
         );
 
     return ColoredBox(
-      color: AppColors.surfaceMuted,
+      color: scheme.surfaceContainerHighest,
       child: Padding(
         padding: EdgeInsets.symmetric(
           horizontal: sw(16),
@@ -752,7 +756,7 @@ class _HeaderRow extends StatelessWidget {
                               style: style?.copyWith(
                                 color: isActive
                                     ? AppColors.primary
-                                    : AppColors.textSecondary,
+                                    : scheme.onSurfaceVariant,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -768,7 +772,7 @@ class _HeaderRow extends StatelessWidget {
                             size: ss(16),
                             color: isActive
                                 ? AppColors.primary
-                                : AppColors.textSecondary,
+                                : scheme.onSurfaceVariant,
                           ),
                         ],
                       ),
@@ -817,10 +821,11 @@ class _DataRow<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Material(
       color: selected
           ? AppColors.primary.withValues(alpha: 0.06)
-          : AppColors.surface,
+          : scheme.surfaceContainerHigh,
       child: InkWell(
         onTap: onTap,
         hoverColor: AppColors.primary.withValues(alpha: 0.04),
@@ -972,7 +977,7 @@ class _PaginationBar extends StatelessWidget {
     final summary = Text(
       l10n.staffTableShowing(from, to, totalCount),
       style: theme.textTheme.bodySmall?.copyWith(
-        color: AppColors.textSecondary,
+        color: theme.colorScheme.onSurfaceVariant,
       ),
     );
 
@@ -1096,8 +1101,8 @@ class StaffToolbarButton extends StatelessWidget {
       icon: Icon(icon, size: ss(20)),
       style: IconButton.styleFrom(
         minimumSize: Size(sw(44), sh(44)),
-        side: const BorderSide(color: AppColors.border),
-        foregroundColor: AppColors.textPrimary,
+        side: BorderSide(color: Theme.of(context).colorScheme.outline),
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
       ),
     );
   }
@@ -1121,12 +1126,13 @@ class StaffCellText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
     final text = (value ?? '').trim();
     if (text.isEmpty) {
       return Text(
         placeholder,
         style: theme.textTheme.bodyMedium?.copyWith(
-          color: AppColors.textSecondary,
+          color: scheme.onSurfaceVariant,
         ),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
@@ -1186,18 +1192,19 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Center(
       child: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: sw(24), vertical: sh(16)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: ss(40), color: AppColors.textSecondary),
+            Icon(icon, size: ss(40), color: scheme.onSurfaceVariant),
             SizedBox(height: sh(12)),
             Text(
               message,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
+                    color: scheme.onSurfaceVariant,
                   ),
               textAlign: TextAlign.center,
             ),

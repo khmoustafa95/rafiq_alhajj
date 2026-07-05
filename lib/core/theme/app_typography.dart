@@ -4,9 +4,11 @@ import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 abstract final class AppTypography {
   static TextTheme textTheme(Brightness brightness) {
     final base = ThemeData(brightness: brightness).textTheme;
-    final color = brightness == Brightness.light
-        ? AppColors.textPrimary
-        : const Color(0xFFF9FAFB);
+    final isLight = brightness == Brightness.light;
+    final color =
+        isLight ? AppColors.textPrimary : AppColors.textPrimaryDark;
+    final secondary =
+        isLight ? AppColors.textSecondary : AppColors.textSecondaryDark;
 
     return base.copyWith(
       displaySmall: base.displaySmall?.copyWith(
@@ -48,12 +50,12 @@ abstract final class AppTypography {
       ),
       bodyMedium: base.bodyMedium?.copyWith(
         fontSize: 14,
-        color: AppColors.textSecondary,
+        color: secondary,
         height: 1.5,
       ),
       bodySmall: base.bodySmall?.copyWith(
         fontSize: 12,
-        color: AppColors.textSecondary,
+        color: secondary,
         height: 1.4,
       ),
       labelLarge: base.labelLarge?.copyWith(
@@ -64,12 +66,12 @@ abstract final class AppTypography {
       labelMedium: base.labelMedium?.copyWith(
         fontWeight: FontWeight.w500,
         fontSize: 12,
-        color: AppColors.textSecondary,
+        color: secondary,
       ),
       labelSmall: base.labelSmall?.copyWith(
         fontWeight: FontWeight.w500,
         fontSize: 11,
-        color: AppColors.textSecondary,
+        color: secondary,
       ),
     );
   }

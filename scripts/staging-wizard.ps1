@@ -79,10 +79,10 @@ supabase db push
 Write-Host "Applying seed.sql..."
 $seedApplied = $false
 try {
-    supabase db execute --linked -f supabase/seed.sql
+    supabase db query --linked -f supabase/seed.sql
     $seedApplied = $true
 } catch {
-    Write-Warning "supabase db execute failed. Paste supabase/seed.sql in SQL Editor manually."
+    Write-Warning "supabase db query failed. Paste supabase/seed.sql in SQL Editor manually."
 }
 
 # --- Step 4: Demo users ---

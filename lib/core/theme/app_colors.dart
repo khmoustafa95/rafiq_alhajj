@@ -43,4 +43,16 @@ abstract final class AppColors {
   static const Color chipInactiveText = Color(0xFF374151);
 
   static const Color shadow = Color(0x1A000000);
+
+  // Dark-mode surfaces & text (paired with [AppTheme] ColorScheme).
+  static const Color backgroundDark = Color(0xFF111827);
+  static const Color surfaceDark = Color(0xFF1F2937);
+  static const Color surfaceMutedDark = Color(0xFF374151);
+  static const Color textPrimaryDark = Color(0xFFF9FAFB);
+  static const Color textSecondaryDark = Color(0xFF9CA3AF);
+  static const Color borderDark = Color(0xFF374151);
+  static const Color dividerDark = Color(0xFF374151);
+  static const Color chipInactiveDark = Color(0xFF374151);
+  static const Color chipInactiveTextDark = Color(0xFFD1D5DB);
+  static const Color notificationUnreadDark = Color(0xFF064E3B);
 }

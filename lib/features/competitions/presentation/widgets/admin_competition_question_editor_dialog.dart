@@ -107,9 +107,6 @@ class _AdminCompetitionQuestionEditorDialogState
   }
 
   void _reorderOption(int oldIndex, int newIndex) {
-    if (newIndex > oldIndex) {
-      newIndex -= 1;
-    }
     setState(() {
       final field = _optionFields.removeAt(oldIndex);
       _optionFields.insert(newIndex, field);
@@ -344,7 +341,7 @@ class _AdminCompetitionQuestionEditorDialogState
                   ReorderableListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    onReorder: isSaving ? (_, _) {} : _reorderOption,
+                    onReorderItem: isSaving ? (_, _) {} : _reorderOption,
                     buildDefaultDragHandles: !isSaving,
                     itemCount: _optionFields.length,
                     itemBuilder: (context, index) {

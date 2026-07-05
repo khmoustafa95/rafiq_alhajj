@@ -29,4 +29,20 @@ abstract final class AppDecorations {
       boxShadow: cardShadow,
     );
   }
+
+  /// Theme-aware card decoration — prefers [ColorScheme] over static tokens.
+  static BoxDecoration themedCard(
+    BuildContext context, {
+    Color? color,
+    Border? border,
+    double radius = radiusMd,
+  }) {
+    final scheme = Theme.of(context).colorScheme;
+    return BoxDecoration(
+      color: color ?? scheme.surfaceContainerHigh,
+      borderRadius: BorderRadius.circular(radius),
+      border: border ?? Border.all(color: scheme.outline),
+      boxShadow: cardShadow,
+    );
+  }
 }

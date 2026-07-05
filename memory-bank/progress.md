@@ -3,6 +3,7 @@
 > **Update this file after every completed task.**
 
 ## Changelog
+- **2026-07-05 — Dark theme contrast fix (staff web + core theme):** OS dark mode caused light text on hardcoded white staff surfaces (invisible group names, faint page titles/pagination). Added dark tokens to `AppColors`; `AppTheme`/`AppTypography` now brightness-aware; `AppDecorations.themedCard()`; `staff_web_shell`, `staff_web_layout`, `staff_data_table` use `colorScheme.*`. `flutter analyze` (changed files) → **No issues found**. ⚠ Rebuild staging web to verify.
 - **2026-07-04 — Windows staging npm scripts use PowerShell:** Added `setup-firebase-hosting.ps1`, `build-staging-web.ps1`, `deploy-staging.ps1`, `setup-staging-supabase.ps1`; `package.json` `staging:*` routes to PS1 (fixes WSL `node: not found` + Flutter CRLF via bash).
 - **2026-07-04 — Fix staging bash scripts CRLF on Windows:** `scripts/*.sh` converted to LF; `.gitattributes` enforces `*.sh eol=lf`. `bash -n` passes on setup-firebase-hosting, build-staging-web, setup-staging-supabase, deploy-staging.
 - **2026-07-04 — Fix `staging-wizard.ps1` PowerShell parse error on Windows:** Replaced UTF-8 em-dashes with ASCII hyphens; demo login `Write-Host` uses single quotes (email `@`). Syntax check passes.

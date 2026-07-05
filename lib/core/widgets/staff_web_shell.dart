@@ -51,6 +51,7 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
     );
     final isCompact =
         MediaQuery.sizeOf(context).width < StaffWebShell.compactBreakpoint;
+    final scheme = Theme.of(context).colorScheme;
     // Collapsing only applies to the wide (persistent) sidebar; the compact
     // drawer always shows full-width labels.
     final collapsed =
@@ -86,13 +87,13 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
     if (isCompact) {
       return Scaffold(
         key: _scaffoldKey,
-        backgroundColor: AppColors.background,
+        backgroundColor: scheme.surface,
         drawer: Drawer(
           width: StaffWebShell.sidebarWidth,
           child: sidebar,
         ),
         appBar: AppBar(
-          backgroundColor: AppColors.surface,
+          backgroundColor: scheme.surfaceContainerHigh,
           surfaceTintColor: Colors.transparent,
           elevation: 0,
           scrolledUnderElevation: 0,
@@ -107,14 +108,14 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
           ],
         ),
         body: Material(
-          color: AppColors.background,
+          color: scheme.surface,
           child: pageBody,
         ),
       );
     }
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: scheme.surface,
       body: Row(
         children: [
           AnimatedContainer(
@@ -142,7 +143,7 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
           ),
           Expanded(
             child: Material(
-              color: AppColors.background,
+              color: scheme.surface,
               child: pageBody,
             ),
           ),
@@ -306,8 +307,9 @@ class _StaffSidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return ColoredBox(
-      color: AppColors.surface,
+      color: scheme.surfaceContainerHigh,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -496,8 +498,9 @@ class _SidebarTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final iconColor =
-        item.isActive ? AppColors.onPrimary : AppColors.textSecondary;
+        item.isActive ? AppColors.onPrimary : scheme.onSurfaceVariant;
     final icon = Icon(item.icon, size: 20, color: iconColor);
 
     final content = collapsed
@@ -519,7 +522,7 @@ class _SidebarTile extends StatelessWidget {
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                           color: item.isActive
                               ? AppColors.onPrimary
-                              : AppColors.textPrimary,
+                              : scheme.onSurface,
                         ),
                   ),
                 ),
@@ -573,11 +576,13 @@ class StaffWebHeader extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
+    final scheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: EdgeInsets.fromLTRB(sw(24), sh(20), sw(24), sh(16)),
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        border: Border(bottom: BorderSide(color: AppColors.border)),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerHigh,
+        border: Border(bottom: BorderSide(color: scheme.outline)),
       ),
       child: Theme(
         data: Theme.of(context).copyWith(
@@ -603,7 +608,7 @@ class StaffWebHeader extends StatelessWidget {
                     Text(
                       subtitle!,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textSecondary,
+                            color: scheme.onSurfaceVariant,
                             height: 1.4,
                           ),
                     ),
@@ -656,7 +661,7 @@ class StaffStatCard extends StatelessWidget {
             );
 
     return DecoratedBox(
-      decoration: AppDecorations.card(),
+      decoration: AppDecorations.themedCard(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
@@ -682,7 +687,7 @@ class StaffStatCard extends StatelessWidget {
                       Text(
                         locale.languageCode == 'ar' ? label : label.toUpperCase(),
                         style: labelStyle?.copyWith(
-                          color: AppColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           fontWeight: FontWeight.w600,
                         ),
                         maxLines: 2,

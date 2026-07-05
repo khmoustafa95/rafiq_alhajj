@@ -48,7 +48,7 @@ class CompetitionQuizOrderingList extends StatelessWidget {
   Widget build(BuildContext context) {
     return ReorderableListView.builder(
       buildDefaultDragHandles: false,
-      onReorder: isFeedback ? (_, _) {} : onReorder,
+      onReorderItem: isFeedback ? (_, _) {} : onReorder,
       itemCount: orderedOptionIds.length,
       itemBuilder: (context, index) {
         final optionId = orderedOptionIds[index];

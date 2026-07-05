@@ -105,19 +105,37 @@ async function updateUser(userId, user, headers) {
   }
 }
 
-async function updateProfileName(userId, email, fullName, headers) {
-  const response = await fetch(`${baseUrl}/rest/v1/profiles?id=eq.${userId}`, {
-    method: "PATCH",
+async function upsertProfile(userId, user, headers) {
+  const fullName = user.metadata?.full_name ?? user.email;
+  const role = user.metadata?.role ?? "pilgrim";
+  const body = {
+    id: userId,
+    full_name: fullName,
+    role,
+    email: user.email,
+  };
+
+  if (role === "operator") {
+    body.operator_permissions = user.metadata?.operator_permissions ?? {
+      can_register_pilgrims: true,
+      can_manage_pilgrim_registry: true,
+      can_use_field_tools: true,
+      can_upload_documents: true,
+    };
+  }
+
+  const response = await fetch(`${baseUrl}/rest/v1/profiles`, {
+    method: "POST",
     headers: {
       ...headers,
-      Prefer: "return=minimal",
+      Prefer: "resolution=merge-duplicates,return=minimal",
     },
-    body: JSON.stringify({ full_name: fullName }),
+    body: JSON.stringify(body),
   });
 
   if (!response.ok) {
-    const body = await response.text();
-    throw new Error(`Profile update failed for ${email}: ${body}`);
+    const text = await response.text();
+    throw new Error(`Profile upsert failed for ${user.email}: ${text}`);
   }
 }
 
@@ -147,7 +165,7 @@ for (const user of users) {
   try {
     if (existing) {
       await updateUser(existing.id, user, headers);
-      await updateProfileName(existing.id, user.email, fullName, headers);
+      await upsertProfile(existing.id, user, headers);
       console.log(`Updated ${user.email} (${fullName})`);
       continue;
     }
@@ -159,7 +177,7 @@ for (const user of users) {
     if (!created?.id) {
       throw new Error(`Created user not found: ${user.email}`);
     }
-    await updateProfileName(created.id, user.email, fullName, headers);
+    await upsertProfile(created.id, user, headers);
     console.log(`Created ${user.email} (${fullName})`);
   } catch (error) {
     const message = String(error?.message ?? error);
@@ -170,7 +188,7 @@ for (const user of users) {
       );
       if (fallback?.id) {
         try {
-          await updateProfileName(fallback.id, user.email, fullName, headers);
+          await upsertProfile(fallback.id, user, headers);
         } catch (profileError) {
           console.warn(`Failed profile fix for ${user.email}: ${profileError}`);
         }

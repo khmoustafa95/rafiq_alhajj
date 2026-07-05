@@ -27,15 +27,23 @@ abstract final class AppTheme {
       onTertiaryContainer: AppColors.tertiary,
       error: AppColors.error,
       onError: AppColors.onPrimary,
-      surface: isLight ? AppColors.background : const Color(0xFF111827),
-      onSurface: isLight ? AppColors.textPrimary : const Color(0xFFF9FAFB),
-      onSurfaceVariant: AppColors.textSecondary,
-      outline: AppColors.border,
-      outlineVariant: AppColors.divider,
+      surface: isLight ? AppColors.background : AppColors.backgroundDark,
+      onSurface: isLight ? AppColors.textPrimary : AppColors.textPrimaryDark,
+      onSurfaceVariant:
+          isLight ? AppColors.textSecondary : AppColors.textSecondaryDark,
+      outline: isLight ? AppColors.border : AppColors.borderDark,
+      outlineVariant: isLight ? AppColors.divider : AppColors.dividerDark,
       shadow: AppColors.shadow,
+      surfaceContainerLowest:
+          isLight ? AppColors.surface : AppColors.surfaceDark,
+      surfaceContainerLow:
+          isLight ? AppColors.surface : AppColors.surfaceDark,
+      surfaceContainer:
+          isLight ? AppColors.surface : AppColors.surfaceDark,
+      surfaceContainerHigh:
+          isLight ? AppColors.surface : AppColors.surfaceDark,
       surfaceContainerHighest:
-          isLight ? AppColors.surfaceMuted : const Color(0xFF1F2937),
-      surfaceContainerHigh: isLight ? AppColors.surface : const Color(0xFF1F2937),
+          isLight ? AppColors.surfaceMuted : AppColors.surfaceMutedDark,
     );
 
     return ThemeData(
@@ -46,8 +54,8 @@ abstract final class AppTheme {
       textTheme: AppTypography.textTheme(brightness),
       appBarTheme: AppBarTheme(
         centerTitle: false,
-        backgroundColor: AppColors.surface,
-        foregroundColor: AppColors.textPrimary,
+        backgroundColor: colorScheme.surfaceContainerHigh,
+        foregroundColor: colorScheme.onSurface,
         elevation: 0,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
@@ -55,11 +63,11 @@ abstract final class AppTheme {
       ),
       cardTheme: CardThemeData(
         elevation: 0,
-        color: AppColors.surface,
+        color: colorScheme.surfaceContainerHigh,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: AppDecorations.cardRadius,
-          side: const BorderSide(color: AppColors.border),
+          side: BorderSide(color: colorScheme.outline),
         ),
         margin: EdgeInsets.zero,
       ),
@@ -104,27 +112,31 @@ abstract final class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: colorScheme.outline),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: colorScheme.outline),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
           borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
         ),
         filled: true,
-        fillColor: AppColors.surface,
+        fillColor: colorScheme.surfaceContainerHigh,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: AppColors.chipInactive,
+        backgroundColor:
+            isLight ? AppColors.chipInactive : AppColors.chipInactiveDark,
         selectedColor: AppColors.primary,
-        labelStyle: const TextStyle(
+        labelStyle: TextStyle(
           fontWeight: FontWeight.w500,
           fontSize: 13,
+          color: isLight
+              ? AppColors.chipInactiveText
+              : AppColors.chipInactiveTextDark,
         ),
         secondaryLabelStyle: const TextStyle(color: AppColors.onPrimary),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -133,8 +145,8 @@ abstract final class AppTheme {
         ),
         side: BorderSide.none,
       ),
-      dividerTheme: const DividerThemeData(
-        color: AppColors.divider,
+      dividerTheme: DividerThemeData(
+        color: colorScheme.outlineVariant,
         thickness: 1,
         space: 1,
       ),
@@ -144,7 +156,7 @@ abstract final class AppTheme {
         elevation: 4,
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: AppColors.surface,
+        backgroundColor: colorScheme.surfaceContainerHigh,
         indicatorColor: AppColors.primary,
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
@@ -154,21 +166,27 @@ abstract final class AppTheme {
               color: AppColors.primary,
             );
           }
-          return const TextStyle(
+          return TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w500,
-            color: AppColors.textSecondary,
+            color: colorScheme.onSurfaceVariant,
           );
         }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return const IconThemeData(color: AppColors.onPrimary, size: 22);
           }
-          return const IconThemeData(color: AppColors.textSecondary, size: 22);
+          return IconThemeData(
+            color: colorScheme.onSurfaceVariant,
+            size: 22,
+          );
         }),
         height: 72,
         elevation: 8,
         shadowColor: AppColors.shadow,
+      ),
+      dropdownMenuTheme: DropdownMenuThemeData(
+        textStyle: TextStyle(color: colorScheme.onSurface),
       ),
     );
   }

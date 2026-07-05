@@ -3,6 +3,8 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
+**Dark theme contrast fix (2026-07-05):** OS dark mode activated Flutter's dark `ThemeData` while staff web widgets hardcoded light surfaces (`AppColors.surface`/`background`) — titles and `StaffCellText(strong:)` used light text on white rows (invisible group names, faint headers/pagination). Fixed: dark tokens in `AppColors`, full `ColorScheme` + component themes in `AppTheme`, brightness-aware `AppTypography` secondary colors, `AppDecorations.themedCard()`, staff shell/layout/data-table migrated to `colorScheme.*`. `flutter analyze` (changed files) → **No issues found**. ⚠ Rebuild/redeploy staging web to verify.
+
 **Staging deploy scripts (2026-07-04):** Windows `npm run staging:*` now uses PowerShell (`.ps1`) instead of `bash` — WSL bash lacked `node` in PATH and Flutter SDK had CRLF issues via `/mnt/c/`. Bash `.sh` scripts kept for Linux CI.
 
 **Staging deploy wizard fix (2026-07-04):** `scripts/staging-wizard.ps1` failed to parse on Windows PowerShell (UTF-8 em-dashes + `@` in double-quoted email). Replaced `—` with ASCII `-` and used single quotes for demo login line. User can retry `npm run staging:wizard`.

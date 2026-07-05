@@ -32,8 +32,8 @@ echo "==> Pushing database migrations"
 supabase db push
 
 echo "==> Applying seed data (Arabic demo content)"
-if supabase db execute --linked -f supabase/seed.sql 2>/dev/null; then
-  echo "Seed applied via supabase db execute."
+if supabase db query --linked -f supabase/seed.sql 2>/dev/null; then
+  echo "Seed applied via supabase db query."
 else
   echo "Trying psql via linked connection string..."
   DB_URL="$(supabase db url --linked 2>/dev/null || true)"

@@ -25,10 +25,10 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Write-Host "==> Applying seed data (Arabic demo content)"
 $seedApplied = $false
 try {
-    supabase db execute --linked -f supabase/seed.sql
+    supabase db query --linked -f supabase/seed.sql
     if ($LASTEXITCODE -eq 0) {
         $seedApplied = $true
-        Write-Host "Seed applied via supabase db execute."
+        Write-Host "Seed applied via supabase db query."
     }
 }
 catch {

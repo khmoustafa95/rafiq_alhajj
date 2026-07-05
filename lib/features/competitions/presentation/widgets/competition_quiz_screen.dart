@@ -79,9 +79,6 @@ class _CompetitionQuizScreenState extends ConsumerState<CompetitionQuizScreen> {
   }
 
   void _reorderOrdering(int oldIndex, int newIndex) {
-    if (newIndex > oldIndex) {
-      newIndex -= 1;
-    }
     setState(() {
       final id = _orderingOptionIds.removeAt(oldIndex);
       _orderingOptionIds.insert(newIndex, id);

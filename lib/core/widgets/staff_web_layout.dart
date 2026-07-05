@@ -35,9 +35,11 @@ class StaffWebPage extends StatelessWidget {
       return body;
     }
 
+    final scheme = Theme.of(context).colorScheme;
+
     return SizedBox.expand(
       child: ColoredBox(
-        color: AppColors.background,
+        color: scheme.surface,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -120,7 +122,7 @@ class StaffFormSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: AppDecorations.card(radius: AppDecorations.radiusLg),
+      decoration: AppDecorations.themedCard(context, radius: AppDecorations.radiusLg),
       padding: EdgeInsets.all(sw(20)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -154,7 +156,9 @@ class StaffFormSection extends StatelessWidget {
                       Text(
                         subtitle!,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.textSecondary,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                               height: 1.4,
                             ),
                       ),
@@ -319,11 +323,12 @@ class StaffFormActionsBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        border: Border(top: BorderSide(color: AppColors.border)),
-        boxShadow: [
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerHigh,
+        border: Border(top: BorderSide(color: scheme.outline)),
+        boxShadow: const [
           BoxShadow(
             color: AppColors.shadow,
             blurRadius: 8,
@@ -418,6 +423,7 @@ class StaffDateFormField extends StatelessWidget {
     final display = value == null
         ? l10nUnset
         : MaterialLocalizations.of(context).formatMediumDate(value!);
+    final scheme = Theme.of(context).colorScheme;
 
     return InputDecorator(
       decoration: InputDecoration(
@@ -432,7 +438,7 @@ class StaffDateFormField extends StatelessWidget {
         child: Text(
           display,
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: value == null ? AppColors.textSecondary : null,
+                color: value == null ? scheme.onSurfaceVariant : null,
               ),
         ),
       ),
@@ -457,18 +463,19 @@ class StaffEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Center(
       child: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: sw(24), vertical: sh(16)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: ss(40), color: AppColors.textSecondary),
+            Icon(icon, size: ss(40), color: scheme.onSurfaceVariant),
             SizedBox(height: sh(12)),
             Text(
               message,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
+                    color: scheme.onSurfaceVariant,
                   ),
               textAlign: TextAlign.center,
             ),
