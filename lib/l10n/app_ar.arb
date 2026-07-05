@@ -284,12 +284,49 @@
   "operatorGoAdminLogin": "دخول المسؤول — التقارير",
   "adminLoginTitle": "دخول المسؤول",
   "adminLoginSubtitle": "تقارير وإحصائيات التكتل",
-  "adminDashboardTitle": "لوحة التقارير",
-  "adminDashboardSubtitle": "مؤشرات لحظية من Supabase — الحجاج والمجموعات والحالة الميدانية.",
+  "adminDashboardTitle": "لوحة التشغيل",
+  "adminDashboardSubtitle": "مؤشرات لحظية للسلامة واللوجستيات والمشاركة للرحلة النشطة.",
   "adminDashboardLoadError": "تعذر تحميل مؤشرات اللوحة.",
-  "adminStatPilgrims": "الحجاج",
+  "adminDashboardOperationsSection": "التشغيل الميداني",
+  "adminDashboardReadinessSection": "جاهزية البيانات",
+  "adminDashboardEngagementSection": "المشاركة والتواصل",
+  "adminDashboardTripScopeLabel": "نطاق الرحلة",
+  "adminDashboardAllTripsScope": "كل الرحلات",
+  "adminDashboardUrgentSos": "{count, plural, =1{تنبيه استغاثة نشط واحد} other{{count} تنبيهات استغاثة نشطة}}",
+  "@adminDashboardUrgentSos": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "adminDashboardUrgentPushFailures": "{count, plural, =1{فشل واحد في تسليم إشعار} other{{count} إخفاقات في تسليم الإشعارات}}",
+  "@adminDashboardUrgentPushFailures": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "adminDashboardViewDetails": "عرض التفاصيل",
+  "adminStatPilgrims": "الحجاج المسجلون",
   "adminStatOperators": "التقنيون الميدانيون",
-  "adminStatRitualProgress": "إنجاز المناسك",
+  "adminStatGroups": "المجموعات",
+  "adminStatArrivedHotel": "وصلوا الفندق",
+  "adminStatPendingField": "بانتظار التحديث",
+  "adminStatInTransit": "في الطريق",
+  "adminStatActiveSos": "استغاثة نشطة",
+  "adminStatUnassigned": "غير مُعيّنين لمجموعة",
+  "adminStatSpecialNeeds": "احتياج كرسي متحرك",
+  "adminStatMissingTravelPermit": "بدون تصريح سفر",
+  "adminStatMissingMedicalTest": "بدون فحص طبي",
+  "adminStatWithoutAppLogin": "بدون حساب تطبيق",
+  "adminStatPushReach": "وصول الإشعارات",
+  "adminStatPushReachBadge": "{percent}% من الحجاج المسجّلين",
+  "@adminStatPushReachBadge": {
+    "placeholders": {
+      "percent": { "type": "int" }
+    }
+  },
+  "adminStatActiveCompetitions": "مسابقات نشطة",
+  "adminStatCompetitionParticipants": "مشاركون في الاختبارات",
+  "adminStatPublishedContent": "عناصر محتوى منشورة",
   "adminChartPilgrimsByGroup": "توزيع الحجاج على المجموعات",
   "adminChartFieldStatus": "توزيع الحالة الميدانية",
   "adminChartOperatorUploads": "المستندات المرفوعة لكل تقني",

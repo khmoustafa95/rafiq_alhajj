@@ -6,7 +6,7 @@ class AdminAnalyticsService {
 
   final AdminAnalyticsRepository _repository;
 
-  Future<AdminDashboardStats> loadDashboard() {
-    return _repository.fetchDashboardStats();
+  Future<AdminDashboardStats> loadDashboard({String? tripId}) {
+    return _repository.fetchDashboardStats(tripId: tripId);
   }
 }

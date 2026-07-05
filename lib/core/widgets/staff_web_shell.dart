@@ -642,6 +642,7 @@ class StaffStatCard extends StatelessWidget {
     required this.icon,
     required this.accentColor,
     this.badge,
+    this.onTap,
     super.key,
   });
 
@@ -650,6 +651,7 @@ class StaffStatCard extends StatelessWidget {
   final IconData icon;
   final Color accentColor;
   final String? badge;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -660,7 +662,7 @@ class StaffStatCard extends StatelessWidget {
               letterSpacing: 0.5,
             );
 
-    return DecoratedBox(
+    final card = DecoratedBox(
       decoration: AppDecorations.themedCard(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -732,6 +734,19 @@ class StaffStatCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+
+    if (onTap == null) {
+      return card;
+    }
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
+        child: card,
       ),
     );
   }

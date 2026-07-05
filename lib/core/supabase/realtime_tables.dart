@@ -14,10 +14,16 @@ abstract final class RealtimeTables {
     'profiles',
     'pilgrims',
     'trip_enrollments',
-    'ritual_logs',
     'pilgrim_documents',
     'groups',
     'group_administration_members',
+    'sos_alerts',
+    'push_dispatch_failures',
+    'competitions',
+    'competition_entries',
+    'content_library',
+    'content_topics',
+    'device_tokens',
   ];
 
   static const competitions = ['competitions', 'competition_entries'];

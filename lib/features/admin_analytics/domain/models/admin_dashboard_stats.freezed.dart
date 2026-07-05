@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AdminDashboardStats {
 
- int get pilgrimCount; int get operatorCount; double get ritualCompletionPercent; List<ChartSlice> get pilgrimsByGroup; List<ChartSlice> get fieldStatusBreakdown; List<ChartSlice> get operatorDocumentUploads;
+ String? get scopedTripId; String? get scopedTripLabel; int get pilgrimCount; int get operatorCount; int get groupCount; int get arrivedHotelCount; int get pendingFieldCount; int get inTransitCount; int get activeSosCount; int get unassignedPilgrimCount; int get specialNeedsCount; int get missingTravelPermitCount; int get missingMedicalTestCount; int get pilgrimsWithoutLoginCount; int get pilgrimPushTokenCount; int get pushFailureCount; int get activeCompetitionCount; int get competitionParticipantCount; int get publishedContentCount; List<ChartSlice> get pilgrimsByGroup; List<ChartSlice> get fieldStatusBreakdown; List<ChartSlice> get operatorDocumentUploads;
 /// Create a copy of AdminDashboardStats
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $AdminDashboardStatsCopyWith<AdminDashboardStats> get copyWith => _$AdminDashboa
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AdminDashboardStats&&(identical(other.pilgrimCount, pilgrimCount) || other.pilgrimCount == pilgrimCount)&&(identical(other.operatorCount, operatorCount) || other.operatorCount == operatorCount)&&(identical(other.ritualCompletionPercent, ritualCompletionPercent) || other.ritualCompletionPercent == ritualCompletionPercent)&&const DeepCollectionEquality().equals(other.pilgrimsByGroup, pilgrimsByGroup)&&const DeepCollectionEquality().equals(other.fieldStatusBreakdown, fieldStatusBreakdown)&&const DeepCollectionEquality().equals(other.operatorDocumentUploads, operatorDocumentUploads));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AdminDashboardStats&&(identical(other.scopedTripId, scopedTripId) || other.scopedTripId == scopedTripId)&&(identical(other.scopedTripLabel, scopedTripLabel) || other.scopedTripLabel == scopedTripLabel)&&(identical(other.pilgrimCount, pilgrimCount) || other.pilgrimCount == pilgrimCount)&&(identical(other.operatorCount, operatorCount) || other.operatorCount == operatorCount)&&(identical(other.groupCount, groupCount) || other.groupCount == groupCount)&&(identical(other.arrivedHotelCount, arrivedHotelCount) || other.arrivedHotelCount == arrivedHotelCount)&&(identical(other.pendingFieldCount, pendingFieldCount) || other.pendingFieldCount == pendingFieldCount)&&(identical(other.inTransitCount, inTransitCount) || other.inTransitCount == inTransitCount)&&(identical(other.activeSosCount, activeSosCount) || other.activeSosCount == activeSosCount)&&(identical(other.unassignedPilgrimCount, unassignedPilgrimCount) || other.unassignedPilgrimCount == unassignedPilgrimCount)&&(identical(other.specialNeedsCount, specialNeedsCount) || other.specialNeedsCount == specialNeedsCount)&&(identical(other.missingTravelPermitCount, missingTravelPermitCount) || other.missingTravelPermitCount == missingTravelPermitCount)&&(identical(other.missingMedicalTestCount, missingMedicalTestCount) || other.missingMedicalTestCount == missingMedicalTestCount)&&(identical(other.pilgrimsWithoutLoginCount, pilgrimsWithoutLoginCount) || other.pilgrimsWithoutLoginCount == pilgrimsWithoutLoginCount)&&(identical(other.pilgrimPushTokenCount, pilgrimPushTokenCount) || other.pilgrimPushTokenCount == pilgrimPushTokenCount)&&(identical(other.pushFailureCount, pushFailureCount) || other.pushFailureCount == pushFailureCount)&&(identical(other.activeCompetitionCount, activeCompetitionCount) || other.activeCompetitionCount == activeCompetitionCount)&&(identical(other.competitionParticipantCount, competitionParticipantCount) || other.competitionParticipantCount == competitionParticipantCount)&&(identical(other.publishedContentCount, publishedContentCount) || other.publishedContentCount == publishedContentCount)&&const DeepCollectionEquality().equals(other.pilgrimsByGroup, pilgrimsByGroup)&&const DeepCollectionEquality().equals(other.fieldStatusBreakdown, fieldStatusBreakdown)&&const DeepCollectionEquality().equals(other.operatorDocumentUploads, operatorDocumentUploads));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,pilgrimCount,operatorCount,ritualCompletionPercent,const DeepCollectionEquality().hash(pilgrimsByGroup),const DeepCollectionEquality().hash(fieldStatusBreakdown),const DeepCollectionEquality().hash(operatorDocumentUploads));
+int get hashCode => Object.hashAll([runtimeType,scopedTripId,scopedTripLabel,pilgrimCount,operatorCount,groupCount,arrivedHotelCount,pendingFieldCount,inTransitCount,activeSosCount,unassignedPilgrimCount,specialNeedsCount,missingTravelPermitCount,missingMedicalTestCount,pilgrimsWithoutLoginCount,pilgrimPushTokenCount,pushFailureCount,activeCompetitionCount,competitionParticipantCount,publishedContentCount,const DeepCollectionEquality().hash(pilgrimsByGroup),const DeepCollectionEquality().hash(fieldStatusBreakdown),const DeepCollectionEquality().hash(operatorDocumentUploads)]);
 
 @override
 String toString() {
-  return 'AdminDashboardStats(pilgrimCount: $pilgrimCount, operatorCount: $operatorCount, ritualCompletionPercent: $ritualCompletionPercent, pilgrimsByGroup: $pilgrimsByGroup, fieldStatusBreakdown: $fieldStatusBreakdown, operatorDocumentUploads: $operatorDocumentUploads)';
+  return 'AdminDashboardStats(scopedTripId: $scopedTripId, scopedTripLabel: $scopedTripLabel, pilgrimCount: $pilgrimCount, operatorCount: $operatorCount, groupCount: $groupCount, arrivedHotelCount: $arrivedHotelCount, pendingFieldCount: $pendingFieldCount, inTransitCount: $inTransitCount, activeSosCount: $activeSosCount, unassignedPilgrimCount: $unassignedPilgrimCount, specialNeedsCount: $specialNeedsCount, missingTravelPermitCount: $missingTravelPermitCount, missingMedicalTestCount: $missingMedicalTestCount, pilgrimsWithoutLoginCount: $pilgrimsWithoutLoginCount, pilgrimPushTokenCount: $pilgrimPushTokenCount, pushFailureCount: $pushFailureCount, activeCompetitionCount: $activeCompetitionCount, competitionParticipantCount: $competitionParticipantCount, publishedContentCount: $publishedContentCount, pilgrimsByGroup: $pilgrimsByGroup, fieldStatusBreakdown: $fieldStatusBreakdown, operatorDocumentUploads: $operatorDocumentUploads)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $AdminDashboardStatsCopyWith<$Res>  {
   factory $AdminDashboardStatsCopyWith(AdminDashboardStats value, $Res Function(AdminDashboardStats) _then) = _$AdminDashboardStatsCopyWithImpl;
 @useResult
 $Res call({
- int pilgrimCount, int operatorCount, double ritualCompletionPercent, List<ChartSlice> pilgrimsByGroup, List<ChartSlice> fieldStatusBreakdown, List<ChartSlice> operatorDocumentUploads
+ String? scopedTripId, String? scopedTripLabel, int pilgrimCount, int operatorCount, int groupCount, int arrivedHotelCount, int pendingFieldCount, int inTransitCount, int activeSosCount, int unassignedPilgrimCount, int specialNeedsCount, int missingTravelPermitCount, int missingMedicalTestCount, int pilgrimsWithoutLoginCount, int pilgrimPushTokenCount, int pushFailureCount, int activeCompetitionCount, int competitionParticipantCount, int publishedContentCount, List<ChartSlice> pilgrimsByGroup, List<ChartSlice> fieldStatusBreakdown, List<ChartSlice> operatorDocumentUploads
 });
 
 
@@ -62,12 +62,28 @@ class _$AdminDashboardStatsCopyWithImpl<$Res>
 
 /// Create a copy of AdminDashboardStats
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? pilgrimCount = null,Object? operatorCount = null,Object? ritualCompletionPercent = null,Object? pilgrimsByGroup = null,Object? fieldStatusBreakdown = null,Object? operatorDocumentUploads = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? scopedTripId = freezed,Object? scopedTripLabel = freezed,Object? pilgrimCount = null,Object? operatorCount = null,Object? groupCount = null,Object? arrivedHotelCount = null,Object? pendingFieldCount = null,Object? inTransitCount = null,Object? activeSosCount = null,Object? unassignedPilgrimCount = null,Object? specialNeedsCount = null,Object? missingTravelPermitCount = null,Object? missingMedicalTestCount = null,Object? pilgrimsWithoutLoginCount = null,Object? pilgrimPushTokenCount = null,Object? pushFailureCount = null,Object? activeCompetitionCount = null,Object? competitionParticipantCount = null,Object? publishedContentCount = null,Object? pilgrimsByGroup = null,Object? fieldStatusBreakdown = null,Object? operatorDocumentUploads = null,}) {
   return _then(_self.copyWith(
-pilgrimCount: null == pilgrimCount ? _self.pilgrimCount : pilgrimCount // ignore: cast_nullable_to_non_nullable
+scopedTripId: freezed == scopedTripId ? _self.scopedTripId : scopedTripId // ignore: cast_nullable_to_non_nullable
+as String?,scopedTripLabel: freezed == scopedTripLabel ? _self.scopedTripLabel : scopedTripLabel // ignore: cast_nullable_to_non_nullable
+as String?,pilgrimCount: null == pilgrimCount ? _self.pilgrimCount : pilgrimCount // ignore: cast_nullable_to_non_nullable
 as int,operatorCount: null == operatorCount ? _self.operatorCount : operatorCount // ignore: cast_nullable_to_non_nullable
-as int,ritualCompletionPercent: null == ritualCompletionPercent ? _self.ritualCompletionPercent : ritualCompletionPercent // ignore: cast_nullable_to_non_nullable
-as double,pilgrimsByGroup: null == pilgrimsByGroup ? _self.pilgrimsByGroup : pilgrimsByGroup // ignore: cast_nullable_to_non_nullable
+as int,groupCount: null == groupCount ? _self.groupCount : groupCount // ignore: cast_nullable_to_non_nullable
+as int,arrivedHotelCount: null == arrivedHotelCount ? _self.arrivedHotelCount : arrivedHotelCount // ignore: cast_nullable_to_non_nullable
+as int,pendingFieldCount: null == pendingFieldCount ? _self.pendingFieldCount : pendingFieldCount // ignore: cast_nullable_to_non_nullable
+as int,inTransitCount: null == inTransitCount ? _self.inTransitCount : inTransitCount // ignore: cast_nullable_to_non_nullable
+as int,activeSosCount: null == activeSosCount ? _self.activeSosCount : activeSosCount // ignore: cast_nullable_to_non_nullable
+as int,unassignedPilgrimCount: null == unassignedPilgrimCount ? _self.unassignedPilgrimCount : unassignedPilgrimCount // ignore: cast_nullable_to_non_nullable
+as int,specialNeedsCount: null == specialNeedsCount ? _self.specialNeedsCount : specialNeedsCount // ignore: cast_nullable_to_non_nullable
+as int,missingTravelPermitCount: null == missingTravelPermitCount ? _self.missingTravelPermitCount : missingTravelPermitCount // ignore: cast_nullable_to_non_nullable
+as int,missingMedicalTestCount: null == missingMedicalTestCount ? _self.missingMedicalTestCount : missingMedicalTestCount // ignore: cast_nullable_to_non_nullable
+as int,pilgrimsWithoutLoginCount: null == pilgrimsWithoutLoginCount ? _self.pilgrimsWithoutLoginCount : pilgrimsWithoutLoginCount // ignore: cast_nullable_to_non_nullable
+as int,pilgrimPushTokenCount: null == pilgrimPushTokenCount ? _self.pilgrimPushTokenCount : pilgrimPushTokenCount // ignore: cast_nullable_to_non_nullable
+as int,pushFailureCount: null == pushFailureCount ? _self.pushFailureCount : pushFailureCount // ignore: cast_nullable_to_non_nullable
+as int,activeCompetitionCount: null == activeCompetitionCount ? _self.activeCompetitionCount : activeCompetitionCount // ignore: cast_nullable_to_non_nullable
+as int,competitionParticipantCount: null == competitionParticipantCount ? _self.competitionParticipantCount : competitionParticipantCount // ignore: cast_nullable_to_non_nullable
+as int,publishedContentCount: null == publishedContentCount ? _self.publishedContentCount : publishedContentCount // ignore: cast_nullable_to_non_nullable
+as int,pilgrimsByGroup: null == pilgrimsByGroup ? _self.pilgrimsByGroup : pilgrimsByGroup // ignore: cast_nullable_to_non_nullable
 as List<ChartSlice>,fieldStatusBreakdown: null == fieldStatusBreakdown ? _self.fieldStatusBreakdown : fieldStatusBreakdown // ignore: cast_nullable_to_non_nullable
 as List<ChartSlice>,operatorDocumentUploads: null == operatorDocumentUploads ? _self.operatorDocumentUploads : operatorDocumentUploads // ignore: cast_nullable_to_non_nullable
 as List<ChartSlice>,
@@ -155,10 +171,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int pilgrimCount,  int operatorCount,  double ritualCompletionPercent,  List<ChartSlice> pilgrimsByGroup,  List<ChartSlice> fieldStatusBreakdown,  List<ChartSlice> operatorDocumentUploads)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? scopedTripId,  String? scopedTripLabel,  int pilgrimCount,  int operatorCount,  int groupCount,  int arrivedHotelCount,  int pendingFieldCount,  int inTransitCount,  int activeSosCount,  int unassignedPilgrimCount,  int specialNeedsCount,  int missingTravelPermitCount,  int missingMedicalTestCount,  int pilgrimsWithoutLoginCount,  int pilgrimPushTokenCount,  int pushFailureCount,  int activeCompetitionCount,  int competitionParticipantCount,  int publishedContentCount,  List<ChartSlice> pilgrimsByGroup,  List<ChartSlice> fieldStatusBreakdown,  List<ChartSlice> operatorDocumentUploads)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AdminDashboardStats() when $default != null:
-return $default(_that.pilgrimCount,_that.operatorCount,_that.ritualCompletionPercent,_that.pilgrimsByGroup,_that.fieldStatusBreakdown,_that.operatorDocumentUploads);case _:
+return $default(_that.scopedTripId,_that.scopedTripLabel,_that.pilgrimCount,_that.operatorCount,_that.groupCount,_that.arrivedHotelCount,_that.pendingFieldCount,_that.inTransitCount,_that.activeSosCount,_that.unassignedPilgrimCount,_that.specialNeedsCount,_that.missingTravelPermitCount,_that.missingMedicalTestCount,_that.pilgrimsWithoutLoginCount,_that.pilgrimPushTokenCount,_that.pushFailureCount,_that.activeCompetitionCount,_that.competitionParticipantCount,_that.publishedContentCount,_that.pilgrimsByGroup,_that.fieldStatusBreakdown,_that.operatorDocumentUploads);case _:
   return orElse();
 
 }
@@ -176,10 +192,10 @@ return $default(_that.pilgrimCount,_that.operatorCount,_that.ritualCompletionPer
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int pilgrimCount,  int operatorCount,  double ritualCompletionPercent,  List<ChartSlice> pilgrimsByGroup,  List<ChartSlice> fieldStatusBreakdown,  List<ChartSlice> operatorDocumentUploads)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? scopedTripId,  String? scopedTripLabel,  int pilgrimCount,  int operatorCount,  int groupCount,  int arrivedHotelCount,  int pendingFieldCount,  int inTransitCount,  int activeSosCount,  int unassignedPilgrimCount,  int specialNeedsCount,  int missingTravelPermitCount,  int missingMedicalTestCount,  int pilgrimsWithoutLoginCount,  int pilgrimPushTokenCount,  int pushFailureCount,  int activeCompetitionCount,  int competitionParticipantCount,  int publishedContentCount,  List<ChartSlice> pilgrimsByGroup,  List<ChartSlice> fieldStatusBreakdown,  List<ChartSlice> operatorDocumentUploads)  $default,) {final _that = this;
 switch (_that) {
 case _AdminDashboardStats():
-return $default(_that.pilgrimCount,_that.operatorCount,_that.ritualCompletionPercent,_that.pilgrimsByGroup,_that.fieldStatusBreakdown,_that.operatorDocumentUploads);case _:
+return $default(_that.scopedTripId,_that.scopedTripLabel,_that.pilgrimCount,_that.operatorCount,_that.groupCount,_that.arrivedHotelCount,_that.pendingFieldCount,_that.inTransitCount,_that.activeSosCount,_that.unassignedPilgrimCount,_that.specialNeedsCount,_that.missingTravelPermitCount,_that.missingMedicalTestCount,_that.pilgrimsWithoutLoginCount,_that.pilgrimPushTokenCount,_that.pushFailureCount,_that.activeCompetitionCount,_that.competitionParticipantCount,_that.publishedContentCount,_that.pilgrimsByGroup,_that.fieldStatusBreakdown,_that.operatorDocumentUploads);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +212,10 @@ return $default(_that.pilgrimCount,_that.operatorCount,_that.ritualCompletionPer
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int pilgrimCount,  int operatorCount,  double ritualCompletionPercent,  List<ChartSlice> pilgrimsByGroup,  List<ChartSlice> fieldStatusBreakdown,  List<ChartSlice> operatorDocumentUploads)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? scopedTripId,  String? scopedTripLabel,  int pilgrimCount,  int operatorCount,  int groupCount,  int arrivedHotelCount,  int pendingFieldCount,  int inTransitCount,  int activeSosCount,  int unassignedPilgrimCount,  int specialNeedsCount,  int missingTravelPermitCount,  int missingMedicalTestCount,  int pilgrimsWithoutLoginCount,  int pilgrimPushTokenCount,  int pushFailureCount,  int activeCompetitionCount,  int competitionParticipantCount,  int publishedContentCount,  List<ChartSlice> pilgrimsByGroup,  List<ChartSlice> fieldStatusBreakdown,  List<ChartSlice> operatorDocumentUploads)?  $default,) {final _that = this;
 switch (_that) {
 case _AdminDashboardStats() when $default != null:
-return $default(_that.pilgrimCount,_that.operatorCount,_that.ritualCompletionPercent,_that.pilgrimsByGroup,_that.fieldStatusBreakdown,_that.operatorDocumentUploads);case _:
+return $default(_that.scopedTripId,_that.scopedTripLabel,_that.pilgrimCount,_that.operatorCount,_that.groupCount,_that.arrivedHotelCount,_that.pendingFieldCount,_that.inTransitCount,_that.activeSosCount,_that.unassignedPilgrimCount,_that.specialNeedsCount,_that.missingTravelPermitCount,_that.missingMedicalTestCount,_that.pilgrimsWithoutLoginCount,_that.pilgrimPushTokenCount,_that.pushFailureCount,_that.activeCompetitionCount,_that.competitionParticipantCount,_that.publishedContentCount,_that.pilgrimsByGroup,_that.fieldStatusBreakdown,_that.operatorDocumentUploads);case _:
   return null;
 
 }
@@ -210,13 +226,29 @@ return $default(_that.pilgrimCount,_that.operatorCount,_that.ritualCompletionPer
 /// @nodoc
 
 
-class _AdminDashboardStats implements AdminDashboardStats {
-  const _AdminDashboardStats({required this.pilgrimCount, required this.operatorCount, required this.ritualCompletionPercent, required final  List<ChartSlice> pilgrimsByGroup, required final  List<ChartSlice> fieldStatusBreakdown, required final  List<ChartSlice> operatorDocumentUploads}): _pilgrimsByGroup = pilgrimsByGroup,_fieldStatusBreakdown = fieldStatusBreakdown,_operatorDocumentUploads = operatorDocumentUploads;
+class _AdminDashboardStats extends AdminDashboardStats {
+  const _AdminDashboardStats({required this.scopedTripId, required this.scopedTripLabel, required this.pilgrimCount, required this.operatorCount, required this.groupCount, required this.arrivedHotelCount, required this.pendingFieldCount, required this.inTransitCount, required this.activeSosCount, required this.unassignedPilgrimCount, required this.specialNeedsCount, required this.missingTravelPermitCount, required this.missingMedicalTestCount, required this.pilgrimsWithoutLoginCount, required this.pilgrimPushTokenCount, required this.pushFailureCount, required this.activeCompetitionCount, required this.competitionParticipantCount, required this.publishedContentCount, required final  List<ChartSlice> pilgrimsByGroup, required final  List<ChartSlice> fieldStatusBreakdown, required final  List<ChartSlice> operatorDocumentUploads}): _pilgrimsByGroup = pilgrimsByGroup,_fieldStatusBreakdown = fieldStatusBreakdown,_operatorDocumentUploads = operatorDocumentUploads,super._();
   
 
+@override final  String? scopedTripId;
+@override final  String? scopedTripLabel;
 @override final  int pilgrimCount;
 @override final  int operatorCount;
-@override final  double ritualCompletionPercent;
+@override final  int groupCount;
+@override final  int arrivedHotelCount;
+@override final  int pendingFieldCount;
+@override final  int inTransitCount;
+@override final  int activeSosCount;
+@override final  int unassignedPilgrimCount;
+@override final  int specialNeedsCount;
+@override final  int missingTravelPermitCount;
+@override final  int missingMedicalTestCount;
+@override final  int pilgrimsWithoutLoginCount;
+@override final  int pilgrimPushTokenCount;
+@override final  int pushFailureCount;
+@override final  int activeCompetitionCount;
+@override final  int competitionParticipantCount;
+@override final  int publishedContentCount;
  final  List<ChartSlice> _pilgrimsByGroup;
 @override List<ChartSlice> get pilgrimsByGroup {
   if (_pilgrimsByGroup is EqualUnmodifiableListView) return _pilgrimsByGroup;
@@ -249,16 +281,16 @@ _$AdminDashboardStatsCopyWith<_AdminDashboardStats> get copyWith => __$AdminDash
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AdminDashboardStats&&(identical(other.pilgrimCount, pilgrimCount) || other.pilgrimCount == pilgrimCount)&&(identical(other.operatorCount, operatorCount) || other.operatorCount == operatorCount)&&(identical(other.ritualCompletionPercent, ritualCompletionPercent) || other.ritualCompletionPercent == ritualCompletionPercent)&&const DeepCollectionEquality().equals(other._pilgrimsByGroup, _pilgrimsByGroup)&&const DeepCollectionEquality().equals(other._fieldStatusBreakdown, _fieldStatusBreakdown)&&const DeepCollectionEquality().equals(other._operatorDocumentUploads, _operatorDocumentUploads));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AdminDashboardStats&&(identical(other.scopedTripId, scopedTripId) || other.scopedTripId == scopedTripId)&&(identical(other.scopedTripLabel, scopedTripLabel) || other.scopedTripLabel == scopedTripLabel)&&(identical(other.pilgrimCount, pilgrimCount) || other.pilgrimCount == pilgrimCount)&&(identical(other.operatorCount, operatorCount) || other.operatorCount == operatorCount)&&(identical(other.groupCount, groupCount) || other.groupCount == groupCount)&&(identical(other.arrivedHotelCount, arrivedHotelCount) || other.arrivedHotelCount == arrivedHotelCount)&&(identical(other.pendingFieldCount, pendingFieldCount) || other.pendingFieldCount == pendingFieldCount)&&(identical(other.inTransitCount, inTransitCount) || other.inTransitCount == inTransitCount)&&(identical(other.activeSosCount, activeSosCount) || other.activeSosCount == activeSosCount)&&(identical(other.unassignedPilgrimCount, unassignedPilgrimCount) || other.unassignedPilgrimCount == unassignedPilgrimCount)&&(identical(other.specialNeedsCount, specialNeedsCount) || other.specialNeedsCount == specialNeedsCount)&&(identical(other.missingTravelPermitCount, missingTravelPermitCount) || other.missingTravelPermitCount == missingTravelPermitCount)&&(identical(other.missingMedicalTestCount, missingMedicalTestCount) || other.missingMedicalTestCount == missingMedicalTestCount)&&(identical(other.pilgrimsWithoutLoginCount, pilgrimsWithoutLoginCount) || other.pilgrimsWithoutLoginCount == pilgrimsWithoutLoginCount)&&(identical(other.pilgrimPushTokenCount, pilgrimPushTokenCount) || other.pilgrimPushTokenCount == pilgrimPushTokenCount)&&(identical(other.pushFailureCount, pushFailureCount) || other.pushFailureCount == pushFailureCount)&&(identical(other.activeCompetitionCount, activeCompetitionCount) || other.activeCompetitionCount == activeCompetitionCount)&&(identical(other.competitionParticipantCount, competitionParticipantCount) || other.competitionParticipantCount == competitionParticipantCount)&&(identical(other.publishedContentCount, publishedContentCount) || other.publishedContentCount == publishedContentCount)&&const DeepCollectionEquality().equals(other._pilgrimsByGroup, _pilgrimsByGroup)&&const DeepCollectionEquality().equals(other._fieldStatusBreakdown, _fieldStatusBreakdown)&&const DeepCollectionEquality().equals(other._operatorDocumentUploads, _operatorDocumentUploads));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,pilgrimCount,operatorCount,ritualCompletionPercent,const DeepCollectionEquality().hash(_pilgrimsByGroup),const DeepCollectionEquality().hash(_fieldStatusBreakdown),const DeepCollectionEquality().hash(_operatorDocumentUploads));
+int get hashCode => Object.hashAll([runtimeType,scopedTripId,scopedTripLabel,pilgrimCount,operatorCount,groupCount,arrivedHotelCount,pendingFieldCount,inTransitCount,activeSosCount,unassignedPilgrimCount,specialNeedsCount,missingTravelPermitCount,missingMedicalTestCount,pilgrimsWithoutLoginCount,pilgrimPushTokenCount,pushFailureCount,activeCompetitionCount,competitionParticipantCount,publishedContentCount,const DeepCollectionEquality().hash(_pilgrimsByGroup),const DeepCollectionEquality().hash(_fieldStatusBreakdown),const DeepCollectionEquality().hash(_operatorDocumentUploads)]);
 
 @override
 String toString() {
-  return 'AdminDashboardStats(pilgrimCount: $pilgrimCount, operatorCount: $operatorCount, ritualCompletionPercent: $ritualCompletionPercent, pilgrimsByGroup: $pilgrimsByGroup, fieldStatusBreakdown: $fieldStatusBreakdown, operatorDocumentUploads: $operatorDocumentUploads)';
+  return 'AdminDashboardStats(scopedTripId: $scopedTripId, scopedTripLabel: $scopedTripLabel, pilgrimCount: $pilgrimCount, operatorCount: $operatorCount, groupCount: $groupCount, arrivedHotelCount: $arrivedHotelCount, pendingFieldCount: $pendingFieldCount, inTransitCount: $inTransitCount, activeSosCount: $activeSosCount, unassignedPilgrimCount: $unassignedPilgrimCount, specialNeedsCount: $specialNeedsCount, missingTravelPermitCount: $missingTravelPermitCount, missingMedicalTestCount: $missingMedicalTestCount, pilgrimsWithoutLoginCount: $pilgrimsWithoutLoginCount, pilgrimPushTokenCount: $pilgrimPushTokenCount, pushFailureCount: $pushFailureCount, activeCompetitionCount: $activeCompetitionCount, competitionParticipantCount: $competitionParticipantCount, publishedContentCount: $publishedContentCount, pilgrimsByGroup: $pilgrimsByGroup, fieldStatusBreakdown: $fieldStatusBreakdown, operatorDocumentUploads: $operatorDocumentUploads)';
 }
 
 
@@ -269,7 +301,7 @@ abstract mixin class _$AdminDashboardStatsCopyWith<$Res> implements $AdminDashbo
   factory _$AdminDashboardStatsCopyWith(_AdminDashboardStats value, $Res Function(_AdminDashboardStats) _then) = __$AdminDashboardStatsCopyWithImpl;
 @override @useResult
 $Res call({
- int pilgrimCount, int operatorCount, double ritualCompletionPercent, List<ChartSlice> pilgrimsByGroup, List<ChartSlice> fieldStatusBreakdown, List<ChartSlice> operatorDocumentUploads
+ String? scopedTripId, String? scopedTripLabel, int pilgrimCount, int operatorCount, int groupCount, int arrivedHotelCount, int pendingFieldCount, int inTransitCount, int activeSosCount, int unassignedPilgrimCount, int specialNeedsCount, int missingTravelPermitCount, int missingMedicalTestCount, int pilgrimsWithoutLoginCount, int pilgrimPushTokenCount, int pushFailureCount, int activeCompetitionCount, int competitionParticipantCount, int publishedContentCount, List<ChartSlice> pilgrimsByGroup, List<ChartSlice> fieldStatusBreakdown, List<ChartSlice> operatorDocumentUploads
 });
 
 
@@ -286,12 +318,28 @@ class __$AdminDashboardStatsCopyWithImpl<$Res>
 
 /// Create a copy of AdminDashboardStats
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? pilgrimCount = null,Object? operatorCount = null,Object? ritualCompletionPercent = null,Object? pilgrimsByGroup = null,Object? fieldStatusBreakdown = null,Object? operatorDocumentUploads = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? scopedTripId = freezed,Object? scopedTripLabel = freezed,Object? pilgrimCount = null,Object? operatorCount = null,Object? groupCount = null,Object? arrivedHotelCount = null,Object? pendingFieldCount = null,Object? inTransitCount = null,Object? activeSosCount = null,Object? unassignedPilgrimCount = null,Object? specialNeedsCount = null,Object? missingTravelPermitCount = null,Object? missingMedicalTestCount = null,Object? pilgrimsWithoutLoginCount = null,Object? pilgrimPushTokenCount = null,Object? pushFailureCount = null,Object? activeCompetitionCount = null,Object? competitionParticipantCount = null,Object? publishedContentCount = null,Object? pilgrimsByGroup = null,Object? fieldStatusBreakdown = null,Object? operatorDocumentUploads = null,}) {
   return _then(_AdminDashboardStats(
-pilgrimCount: null == pilgrimCount ? _self.pilgrimCount : pilgrimCount // ignore: cast_nullable_to_non_nullable
+scopedTripId: freezed == scopedTripId ? _self.scopedTripId : scopedTripId // ignore: cast_nullable_to_non_nullable
+as String?,scopedTripLabel: freezed == scopedTripLabel ? _self.scopedTripLabel : scopedTripLabel // ignore: cast_nullable_to_non_nullable
+as String?,pilgrimCount: null == pilgrimCount ? _self.pilgrimCount : pilgrimCount // ignore: cast_nullable_to_non_nullable
 as int,operatorCount: null == operatorCount ? _self.operatorCount : operatorCount // ignore: cast_nullable_to_non_nullable
-as int,ritualCompletionPercent: null == ritualCompletionPercent ? _self.ritualCompletionPercent : ritualCompletionPercent // ignore: cast_nullable_to_non_nullable
-as double,pilgrimsByGroup: null == pilgrimsByGroup ? _self._pilgrimsByGroup : pilgrimsByGroup // ignore: cast_nullable_to_non_nullable
+as int,groupCount: null == groupCount ? _self.groupCount : groupCount // ignore: cast_nullable_to_non_nullable
+as int,arrivedHotelCount: null == arrivedHotelCount ? _self.arrivedHotelCount : arrivedHotelCount // ignore: cast_nullable_to_non_nullable
+as int,pendingFieldCount: null == pendingFieldCount ? _self.pendingFieldCount : pendingFieldCount // ignore: cast_nullable_to_non_nullable
+as int,inTransitCount: null == inTransitCount ? _self.inTransitCount : inTransitCount // ignore: cast_nullable_to_non_nullable
+as int,activeSosCount: null == activeSosCount ? _self.activeSosCount : activeSosCount // ignore: cast_nullable_to_non_nullable
+as int,unassignedPilgrimCount: null == unassignedPilgrimCount ? _self.unassignedPilgrimCount : unassignedPilgrimCount // ignore: cast_nullable_to_non_nullable
+as int,specialNeedsCount: null == specialNeedsCount ? _self.specialNeedsCount : specialNeedsCount // ignore: cast_nullable_to_non_nullable
+as int,missingTravelPermitCount: null == missingTravelPermitCount ? _self.missingTravelPermitCount : missingTravelPermitCount // ignore: cast_nullable_to_non_nullable
+as int,missingMedicalTestCount: null == missingMedicalTestCount ? _self.missingMedicalTestCount : missingMedicalTestCount // ignore: cast_nullable_to_non_nullable
+as int,pilgrimsWithoutLoginCount: null == pilgrimsWithoutLoginCount ? _self.pilgrimsWithoutLoginCount : pilgrimsWithoutLoginCount // ignore: cast_nullable_to_non_nullable
+as int,pilgrimPushTokenCount: null == pilgrimPushTokenCount ? _self.pilgrimPushTokenCount : pilgrimPushTokenCount // ignore: cast_nullable_to_non_nullable
+as int,pushFailureCount: null == pushFailureCount ? _self.pushFailureCount : pushFailureCount // ignore: cast_nullable_to_non_nullable
+as int,activeCompetitionCount: null == activeCompetitionCount ? _self.activeCompetitionCount : activeCompetitionCount // ignore: cast_nullable_to_non_nullable
+as int,competitionParticipantCount: null == competitionParticipantCount ? _self.competitionParticipantCount : competitionParticipantCount // ignore: cast_nullable_to_non_nullable
+as int,publishedContentCount: null == publishedContentCount ? _self.publishedContentCount : publishedContentCount // ignore: cast_nullable_to_non_nullable
+as int,pilgrimsByGroup: null == pilgrimsByGroup ? _self._pilgrimsByGroup : pilgrimsByGroup // ignore: cast_nullable_to_non_nullable
 as List<ChartSlice>,fieldStatusBreakdown: null == fieldStatusBreakdown ? _self._fieldStatusBreakdown : fieldStatusBreakdown // ignore: cast_nullable_to_non_nullable
 as List<ChartSlice>,operatorDocumentUploads: null == operatorDocumentUploads ? _self._operatorDocumentUploads : operatorDocumentUploads // ignore: cast_nullable_to_non_nullable
 as List<ChartSlice>,

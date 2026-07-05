@@ -908,23 +908,107 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminLoginSubtitle => 'Consortium analytics and reporting';
 
   @override
-  String get adminDashboardTitle => 'Analytics dashboard';
+  String get adminDashboardTitle => 'Operations dashboard';
 
   @override
   String get adminDashboardSubtitle =>
-      'Live metrics from Supabase — pilgrims, groups, and field status.';
+      'Live safety, logistics, and engagement metrics for your active trip.';
 
   @override
   String get adminDashboardLoadError => 'Could not load dashboard metrics.';
 
   @override
-  String get adminStatPilgrims => 'Pilgrims';
+  String get adminDashboardOperationsSection => 'Field operations';
+
+  @override
+  String get adminDashboardReadinessSection => 'Data readiness';
+
+  @override
+  String get adminDashboardEngagementSection => 'Engagement & outreach';
+
+  @override
+  String get adminDashboardTripScopeLabel => 'Trip scope';
+
+  @override
+  String get adminDashboardAllTripsScope => 'All trips';
+
+  @override
+  String adminDashboardUrgentSos(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count active SOS alerts',
+      one: '1 active SOS alert',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminDashboardUrgentPushFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count push delivery failures',
+      one: '1 push delivery failure',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminDashboardViewDetails => 'View details';
+
+  @override
+  String get adminStatPilgrims => 'Enrolled pilgrims';
 
   @override
   String get adminStatOperators => 'Field operators';
 
   @override
-  String get adminStatRitualProgress => 'Ritual completion';
+  String get adminStatGroups => 'Groups';
+
+  @override
+  String get adminStatArrivedHotel => 'Arrived at hotel';
+
+  @override
+  String get adminStatPendingField => 'Awaiting update';
+
+  @override
+  String get adminStatInTransit => 'In transit';
+
+  @override
+  String get adminStatActiveSos => 'Active SOS';
+
+  @override
+  String get adminStatUnassigned => 'Unassigned to group';
+
+  @override
+  String get adminStatSpecialNeeds => 'Wheelchair needs';
+
+  @override
+  String get adminStatMissingTravelPermit => 'Missing travel permit';
+
+  @override
+  String get adminStatMissingMedicalTest => 'Missing medical test';
+
+  @override
+  String get adminStatWithoutAppLogin => 'No app account';
+
+  @override
+  String get adminStatPushReach => 'Push reach';
+
+  @override
+  String adminStatPushReachBadge(int percent) {
+    return '$percent% of logged-in pilgrims';
+  }
+
+  @override
+  String get adminStatActiveCompetitions => 'Active competitions';
+
+  @override
+  String get adminStatCompetitionParticipants => 'Quiz participants';
+
+  @override
+  String get adminStatPublishedContent => 'Published content items';
 
   @override
   String get adminChartPilgrimsByGroup => 'Pilgrims by group';

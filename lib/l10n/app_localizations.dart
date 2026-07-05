@@ -1720,13 +1720,13 @@ abstract class AppLocalizations {
   /// No description provided for @adminDashboardTitle.
   ///
   /// In en, this message translates to:
-  /// **'Analytics dashboard'**
+  /// **'Operations dashboard'**
   String get adminDashboardTitle;
 
   /// No description provided for @adminDashboardSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Live metrics from Supabase — pilgrims, groups, and field status.'**
+  /// **'Live safety, logistics, and engagement metrics for your active trip.'**
   String get adminDashboardSubtitle;
 
   /// No description provided for @adminDashboardLoadError.
@@ -1735,10 +1735,58 @@ abstract class AppLocalizations {
   /// **'Could not load dashboard metrics.'**
   String get adminDashboardLoadError;
 
+  /// No description provided for @adminDashboardOperationsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Field operations'**
+  String get adminDashboardOperationsSection;
+
+  /// No description provided for @adminDashboardReadinessSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Data readiness'**
+  String get adminDashboardReadinessSection;
+
+  /// No description provided for @adminDashboardEngagementSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Engagement & outreach'**
+  String get adminDashboardEngagementSection;
+
+  /// No description provided for @adminDashboardTripScopeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip scope'**
+  String get adminDashboardTripScopeLabel;
+
+  /// No description provided for @adminDashboardAllTripsScope.
+  ///
+  /// In en, this message translates to:
+  /// **'All trips'**
+  String get adminDashboardAllTripsScope;
+
+  /// No description provided for @adminDashboardUrgentSos.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 active SOS alert} other{{count} active SOS alerts}}'**
+  String adminDashboardUrgentSos(int count);
+
+  /// No description provided for @adminDashboardUrgentPushFailures.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 push delivery failure} other{{count} push delivery failures}}'**
+  String adminDashboardUrgentPushFailures(int count);
+
+  /// No description provided for @adminDashboardViewDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View details'**
+  String get adminDashboardViewDetails;
+
   /// No description provided for @adminStatPilgrims.
   ///
   /// In en, this message translates to:
-  /// **'Pilgrims'**
+  /// **'Enrolled pilgrims'**
   String get adminStatPilgrims;
 
   /// No description provided for @adminStatOperators.
@@ -1747,11 +1795,95 @@ abstract class AppLocalizations {
   /// **'Field operators'**
   String get adminStatOperators;
 
-  /// No description provided for @adminStatRitualProgress.
+  /// No description provided for @adminStatGroups.
   ///
   /// In en, this message translates to:
-  /// **'Ritual completion'**
-  String get adminStatRitualProgress;
+  /// **'Groups'**
+  String get adminStatGroups;
+
+  /// No description provided for @adminStatArrivedHotel.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrived at hotel'**
+  String get adminStatArrivedHotel;
+
+  /// No description provided for @adminStatPendingField.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting update'**
+  String get adminStatPendingField;
+
+  /// No description provided for @adminStatInTransit.
+  ///
+  /// In en, this message translates to:
+  /// **'In transit'**
+  String get adminStatInTransit;
+
+  /// No description provided for @adminStatActiveSos.
+  ///
+  /// In en, this message translates to:
+  /// **'Active SOS'**
+  String get adminStatActiveSos;
+
+  /// No description provided for @adminStatUnassigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Unassigned to group'**
+  String get adminStatUnassigned;
+
+  /// No description provided for @adminStatSpecialNeeds.
+  ///
+  /// In en, this message translates to:
+  /// **'Wheelchair needs'**
+  String get adminStatSpecialNeeds;
+
+  /// No description provided for @adminStatMissingTravelPermit.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing travel permit'**
+  String get adminStatMissingTravelPermit;
+
+  /// No description provided for @adminStatMissingMedicalTest.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing medical test'**
+  String get adminStatMissingMedicalTest;
+
+  /// No description provided for @adminStatWithoutAppLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'No app account'**
+  String get adminStatWithoutAppLogin;
+
+  /// No description provided for @adminStatPushReach.
+  ///
+  /// In en, this message translates to:
+  /// **'Push reach'**
+  String get adminStatPushReach;
+
+  /// No description provided for @adminStatPushReachBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% of logged-in pilgrims'**
+  String adminStatPushReachBadge(int percent);
+
+  /// No description provided for @adminStatActiveCompetitions.
+  ///
+  /// In en, this message translates to:
+  /// **'Active competitions'**
+  String get adminStatActiveCompetitions;
+
+  /// No description provided for @adminStatCompetitionParticipants.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiz participants'**
+  String get adminStatCompetitionParticipants;
+
+  /// No description provided for @adminStatPublishedContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Published content items'**
+  String get adminStatPublishedContent;
 
   /// No description provided for @adminChartPilgrimsByGroup.
   ///

@@ -894,23 +894,107 @@ class AppLocalizationsAr extends AppLocalizations {
   String get adminLoginSubtitle => 'تقارير وإحصائيات التكتل';
 
   @override
-  String get adminDashboardTitle => 'لوحة التقارير';
+  String get adminDashboardTitle => 'لوحة التشغيل';
 
   @override
   String get adminDashboardSubtitle =>
-      'مؤشرات لحظية من Supabase — الحجاج والمجموعات والحالة الميدانية.';
+      'مؤشرات لحظية للسلامة واللوجستيات والمشاركة للرحلة النشطة.';
 
   @override
   String get adminDashboardLoadError => 'تعذر تحميل مؤشرات اللوحة.';
 
   @override
-  String get adminStatPilgrims => 'الحجاج';
+  String get adminDashboardOperationsSection => 'التشغيل الميداني';
+
+  @override
+  String get adminDashboardReadinessSection => 'جاهزية البيانات';
+
+  @override
+  String get adminDashboardEngagementSection => 'المشاركة والتواصل';
+
+  @override
+  String get adminDashboardTripScopeLabel => 'نطاق الرحلة';
+
+  @override
+  String get adminDashboardAllTripsScope => 'كل الرحلات';
+
+  @override
+  String adminDashboardUrgentSos(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count تنبيهات استغاثة نشطة',
+      one: 'تنبيه استغاثة نشط واحد',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminDashboardUrgentPushFailures(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count إخفاقات في تسليم الإشعارات',
+      one: 'فشل واحد في تسليم إشعار',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get adminDashboardViewDetails => 'عرض التفاصيل';
+
+  @override
+  String get adminStatPilgrims => 'الحجاج المسجلون';
 
   @override
   String get adminStatOperators => 'التقنيون الميدانيون';
 
   @override
-  String get adminStatRitualProgress => 'إنجاز المناسك';
+  String get adminStatGroups => 'المجموعات';
+
+  @override
+  String get adminStatArrivedHotel => 'وصلوا الفندق';
+
+  @override
+  String get adminStatPendingField => 'بانتظار التحديث';
+
+  @override
+  String get adminStatInTransit => 'في الطريق';
+
+  @override
+  String get adminStatActiveSos => 'استغاثة نشطة';
+
+  @override
+  String get adminStatUnassigned => 'غير مُعيّنين لمجموعة';
+
+  @override
+  String get adminStatSpecialNeeds => 'احتياج كرسي متحرك';
+
+  @override
+  String get adminStatMissingTravelPermit => 'بدون تصريح سفر';
+
+  @override
+  String get adminStatMissingMedicalTest => 'بدون فحص طبي';
+
+  @override
+  String get adminStatWithoutAppLogin => 'بدون حساب تطبيق';
+
+  @override
+  String get adminStatPushReach => 'وصول الإشعارات';
+
+  @override
+  String adminStatPushReachBadge(int percent) {
+    return '$percent% من الحجاج المسجّلين';
+  }
+
+  @override
+  String get adminStatActiveCompetitions => 'مسابقات نشطة';
+
+  @override
+  String get adminStatCompetitionParticipants => 'مشاركون في الاختبارات';
+
+  @override
+  String get adminStatPublishedContent => 'عناصر محتوى منشورة';
 
   @override
   String get adminChartPilgrimsByGroup => 'توزيع الحجاج على المجموعات';

@@ -497,12 +497,49 @@
   "operatorGoAdminLogin": "Admin analytics sign in",
   "adminLoginTitle": "Admin sign in",
   "adminLoginSubtitle": "Consortium analytics and reporting",
-  "adminDashboardTitle": "Analytics dashboard",
-  "adminDashboardSubtitle": "Live metrics from Supabase — pilgrims, groups, and field status.",
+  "adminDashboardTitle": "Operations dashboard",
+  "adminDashboardSubtitle": "Live safety, logistics, and engagement metrics for your active trip.",
   "adminDashboardLoadError": "Could not load dashboard metrics.",
-  "adminStatPilgrims": "Pilgrims",
+  "adminDashboardOperationsSection": "Field operations",
+  "adminDashboardReadinessSection": "Data readiness",
+  "adminDashboardEngagementSection": "Engagement & outreach",
+  "adminDashboardTripScopeLabel": "Trip scope",
+  "adminDashboardAllTripsScope": "All trips",
+  "adminDashboardUrgentSos": "{count, plural, =1{1 active SOS alert} other{{count} active SOS alerts}}",
+  "@adminDashboardUrgentSos": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "adminDashboardUrgentPushFailures": "{count, plural, =1{1 push delivery failure} other{{count} push delivery failures}}",
+  "@adminDashboardUrgentPushFailures": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "adminDashboardViewDetails": "View details",
+  "adminStatPilgrims": "Enrolled pilgrims",
   "adminStatOperators": "Field operators",
-  "adminStatRitualProgress": "Ritual completion",
+  "adminStatGroups": "Groups",
+  "adminStatArrivedHotel": "Arrived at hotel",
+  "adminStatPendingField": "Awaiting update",
+  "adminStatInTransit": "In transit",
+  "adminStatActiveSos": "Active SOS",
+  "adminStatUnassigned": "Unassigned to group",
+  "adminStatSpecialNeeds": "Wheelchair needs",
+  "adminStatMissingTravelPermit": "Missing travel permit",
+  "adminStatMissingMedicalTest": "Missing medical test",
+  "adminStatWithoutAppLogin": "No app account",
+  "adminStatPushReach": "Push reach",
+  "adminStatPushReachBadge": "{percent}% of logged-in pilgrims",
+  "@adminStatPushReachBadge": {
+    "placeholders": {
+      "percent": { "type": "int" }
+    }
+  },
+  "adminStatActiveCompetitions": "Active competitions",
+  "adminStatCompetitionParticipants": "Quiz participants",
+  "adminStatPublishedContent": "Published content items",
   "adminChartPilgrimsByGroup": "Pilgrims by group",
   "adminChartFieldStatus": "Field status distribution",
   "adminChartOperatorUploads": "Documents uploaded by operator",
