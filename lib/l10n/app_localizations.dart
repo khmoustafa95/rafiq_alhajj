@@ -2131,6 +2131,24 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get dialogCancel;
 
+  /// No description provided for @appExitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit app?'**
+  String get appExitTitle;
+
+  /// No description provided for @appExitMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to exit the app?'**
+  String get appExitMessage;
+
+  /// No description provided for @appExitConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit'**
+  String get appExitConfirm;
+
   /// No description provided for @operatorPilgrimListTitle.
   ///
   /// In en, this message translates to:
@@ -2946,6 +2964,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'EN'**
   String get languageEnglishShort;
+
+  /// Title on the theme picker bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Choose theme'**
+  String get themeSwitcherTitle;
+
+  /// Subtitle on the theme picker bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Your choice is saved for next time'**
+  String get themeSwitcherSubtitle;
+
+  /// No description provided for @themeModeSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System default'**
+  String get themeModeSystem;
+
+  /// No description provided for @themeModeSystemSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Follows your device settings'**
+  String get themeModeSystemSubtitle;
+
+  /// No description provided for @themeModeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get themeModeLight;
+
+  /// No description provided for @themeModeLightSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Always use the light theme'**
+  String get themeModeLightSubtitle;
+
+  /// No description provided for @themeModeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get themeModeDark;
+
+  /// No description provided for @themeModeDarkSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Always use the dark theme'**
+  String get themeModeDarkSubtitle;
+
+  /// No description provided for @themeModeSystemShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto'**
+  String get themeModeSystemShort;
+
+  /// No description provided for @themeModeLightShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get themeModeLightShort;
+
+  /// No description provided for @themeModeDarkShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get themeModeDarkShort;
 
   /// No description provided for @toolsQuranSurahSubtitle.
   ///

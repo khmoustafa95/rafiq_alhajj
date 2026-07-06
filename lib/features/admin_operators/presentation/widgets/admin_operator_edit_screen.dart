@@ -131,6 +131,10 @@ class _AdminOperatorEditScreenState extends ConsumerState<AdminOperatorEditScree
         ),
         actions: [
           TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.dialogCancel),
+          ),
+          TextButton(
             onPressed: () {
               unawaited(Clipboard.setData(ClipboardData(text: password)));
               Navigator.pop(ctx);

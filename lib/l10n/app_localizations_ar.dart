@@ -1123,6 +1123,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dialogCancel => 'إلغاء';
 
   @override
+  String get appExitTitle => 'الخروج من التطبيق؟';
+
+  @override
+  String get appExitMessage => 'هل أنت متأكد أنك تريد الخروج من التطبيق؟';
+
+  @override
+  String get appExitConfirm => 'خروج';
+
+  @override
   String get operatorPilgrimListTitle => 'الحجاج المسجّلون';
 
   @override
@@ -1565,6 +1574,39 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get languageEnglishShort => 'EN';
+
+  @override
+  String get themeSwitcherTitle => 'اختر المظهر';
+
+  @override
+  String get themeSwitcherSubtitle => 'سيتم حفظ اختيارك للمرة القادمة';
+
+  @override
+  String get themeModeSystem => 'تلقائي (النظام)';
+
+  @override
+  String get themeModeSystemSubtitle => 'يتبع إعدادات الجهاز';
+
+  @override
+  String get themeModeLight => 'فاتح';
+
+  @override
+  String get themeModeLightSubtitle => 'مظهر فاتح دائماً';
+
+  @override
+  String get themeModeDark => 'داكن';
+
+  @override
+  String get themeModeDarkSubtitle => 'مظهر داكن دائماً';
+
+  @override
+  String get themeModeSystemShort => 'تلقائي';
+
+  @override
+  String get themeModeLightShort => 'فاتح';
+
+  @override
+  String get themeModeDarkShort => 'داكن';
 
   @override
   String toolsQuranSurahSubtitle(String name, int count, String ayahsLabel) {

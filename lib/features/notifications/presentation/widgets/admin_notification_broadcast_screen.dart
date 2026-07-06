@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/routing/staff_navigation.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/features/notifications/domain/models/notification_audience.dart';
@@ -62,6 +63,15 @@ class _AdminNotificationBroadcastScreenState
     return null;
   }
 
+  String? _optionalText(String value) {
+    final trimmed = value.trim();
+    return trimmed.isEmpty ? null : trimmed;
+  }
+
+  void _cancel() {
+    staffNavigateBack(context, fallbackRoute: AppRoutes.adminDashboard);
+  }
+
   Future<void> _submit() async {
     if (!_form.valid) {
       _form.markAllAsTouched();
@@ -109,11 +119,6 @@ class _AdminNotificationBroadcastScreenState
     _form.control('titleEn').reset(value: '');
     _form.control('bodyAr').reset(value: '');
     _form.control('bodyEn').reset(value: '');
-  }
-
-  String? _optionalText(String value) {
-    final trimmed = value.trim();
-    return trimmed.isEmpty ? null : trimmed;
   }
 
   Widget _buildForm(AppLocalizations l10n, bool isSending) {
@@ -287,6 +292,8 @@ class _AdminNotificationBroadcastScreenState
         bottomBar: StaffFormActionsBar(
           primaryLabel: l10n.adminNotificationSendButton,
           onPrimary: _submit,
+          secondaryLabel: l10n.dialogCancel,
+          onSecondary: isSending ? null : _cancel,
           isLoading: isSending,
         ),
       ),
@@ -304,6 +311,13 @@ class _AdminNotificationBroadcastScreenState
         body: SingleChildScrollView(
           padding: EdgeInsets.all(16.w),
           child: form,
+        ),
+        bottomNavigationBar: StaffFormMobileActionsBar(
+          primaryLabel: l10n.adminNotificationSendButton,
+          onPrimary: _submit,
+          secondaryLabel: l10n.dialogCancel,
+          onSecondary: isSending ? null : _cancel,
+          isLoading: isSending,
         ),
       ),
     );

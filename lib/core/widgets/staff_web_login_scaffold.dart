@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/language_switcher.dart';
+import 'package:rafiq_alhajj/core/widgets/theme_switcher.dart';
 
 /// Responsive split-layout shell for staff (operator / admin) web sign-in.
 class StaffWebLoginScaffold extends StatelessWidget {
@@ -79,7 +80,13 @@ class StaffWebLoginScaffold extends StatelessWidget {
             const Positioned(
               top: 8,
               left: 8,
-              child: LanguageSwitcherAppBarAction(compact: true),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ThemeSwitcherAppBarAction(compact: true),
+                  LanguageSwitcherAppBarAction(compact: true),
+                ],
+              ),
             ),
           ],
         ),

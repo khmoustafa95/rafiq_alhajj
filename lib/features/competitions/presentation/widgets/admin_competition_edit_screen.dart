@@ -261,7 +261,14 @@ class _AdminCompetitionEditScreenState
         ),
       ),
       mobile: Scaffold(
-        appBar: RafiqAppBar(title: Text(_pageTitle(l10n))),
+        appBar: RafiqAppBar(
+          title: Text(_pageTitle(l10n)),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: isSaving ? null : _cancel,
+          ),
+          automaticallyImplyLeading: false,
+        ),
         body: SingleChildScrollView(
           padding: EdgeInsets.all(16.w),
           child: form,
