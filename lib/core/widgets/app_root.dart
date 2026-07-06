@@ -11,7 +11,9 @@ import 'package:rafiq_alhajj/core/theme/theme_mode_controller.dart';
 import 'package:rafiq_alhajj/core/widgets/app_exit_guard.dart';
 import 'package:rafiq_alhajj/core/widgets/push_notification_starter.dart';
 import 'package:rafiq_alhajj/features/app_version/presentation/widgets/app_version_gate.dart';
+import 'package:rafiq_alhajj/features/content/presentation/providers/content_catalog_prefetch_binding.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_catalog_refresh_binding.dart';
+import 'package:rafiq_alhajj/features/content/presentation/providers/content_download_recovery_binding.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_badge_sync.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_toast_host.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
@@ -26,6 +28,8 @@ class AppRoot extends ConsumerWidget {
     final locale = ref.watch(localeControllerProvider);
     final themeMode = ref.watch(themeModeControllerProvider);
     ref.watch(contentCatalogRefreshBindingProvider);
+    ref.watch(contentCatalogPrefetchBindingProvider);
+    ref.watch(contentDownloadRecoveryBindingProvider);
 
     return ScreenUtilInit(
       designSize: const Size(AppConfig.designWidth, AppConfig.designHeight),
