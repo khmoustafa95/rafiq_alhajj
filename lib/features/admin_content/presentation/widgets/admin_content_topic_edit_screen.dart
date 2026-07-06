@@ -6,15 +6,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/core/domain/models/educational_media.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/routing/staff_navigation.dart';
-import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/utils/file_pick_upload.dart';
 import 'package:rafiq_alhajj/core/utils/upload_validation.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/core/widgets/upload_progress_banner.dart';
+import 'package:rafiq_alhajj/features/admin_content/presentation/forms/topic_media_form.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/providers/admin_content_providers.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/providers/admin_content_topics_providers.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/utils/content_meta_l10n.dart';
+import 'package:rafiq_alhajj/features/admin_content/presentation/widgets/admin_topic_media_draft_card.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_topic.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_visibility.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_media_providers.dart';
@@ -32,33 +33,11 @@ class AdminContentTopicEditScreen extends ConsumerStatefulWidget {
       _AdminContentTopicEditScreenState();
 }
 
-class _MediaDraft {
-  _MediaDraft({
-    required this.mediaType,
-    required this.urlController,
-    required this.titleController,
-  });
-
-  EducationalMediaType mediaType;
-  final TextEditingController urlController;
-  final TextEditingController titleController;
-
-  ContentTopicMediaInput toInput(int sortOrder) => ContentTopicMediaInput(
-        mediaType: mediaType,
-        url: urlController.text.trim(),
-        title: titleController.text.trim().isEmpty
-            ? null
-            : titleController.text.trim(),
-        sortOrder: sortOrder,
-      );
-}
-
 class _AdminContentTopicEditScreenState
     extends ConsumerState<AdminContentTopicEditScreen> {
   late final FormGroup _form;
   bool _isActive = true;
   bool _notifyPilgrims = false;
-  final List<_MediaDraft> _media = [];
   bool _initialized = false;
   bool _isUploading = false;
   bool _isCompressing = false;
@@ -79,16 +58,13 @@ class _AdminContentTopicEditScreenState
       'visibility': FormControl<ContentVisibility>(
         value: ContentVisibility.public,
       ),
+      'media': FormArray<dynamic>([]),
     });
   }
 
   @override
   void dispose() {
     _form.dispose();
-    for (final item in _media) {
-      item.urlController.dispose();
-      item.titleController.dispose();
-    }
     super.dispose();
   }
 
@@ -107,32 +83,12 @@ class _AdminContentTopicEditScreenState
     }
     for (final m in topic.media) {
       _initialMediaUrls.add(m.url);
-      _media.add(
-        _MediaDraft(
-          mediaType: m.mediaType,
-          urlController: TextEditingController(text: m.url),
-          titleController: TextEditingController(text: m.title ?? ''),
-        ),
-      );
     }
+    TopicMediaForm.bindTopicMedia(_form, topic);
     _initialized = true;
   }
 
-  List<EducationalMediaItem> get _previewMedia {
-    return [
-      for (var i = 0; i < _media.length; i++)
-        if (_media[i].urlController.text.trim().isNotEmpty)
-          EducationalMediaItem(
-            id: 'preview-$i',
-            mediaType: _media[i].mediaType,
-            title: _media[i].titleController.text.trim().isEmpty
-                ? null
-                : _media[i].titleController.text.trim(),
-            url: _media[i].urlController.text.trim(),
-            sortOrder: i + 1,
-          ),
-    ];
-  }
+  FormArray<dynamic> get _mediaArray => TopicMediaForm.mediaArray(_form);
 
   UploadConstraints _constraintsFor(EducationalMediaType type) {
     return switch (type) {
@@ -162,9 +118,12 @@ class _AdminContentTopicEditScreenState
   }
 
   Future<void> _uploadMediaFile(int index) async {
-    final type = _media[index].mediaType;
+    final group = _mediaArray.controls[index] as FormGroup;
+    final type =
+        group.control(TopicMediaForm.mediaTypeControl).value as EducationalMediaType;
     await _pickAndUpload(
-      onUploaded: (url) => _media[index].urlController.text = url,
+      onUploaded: (url) =>
+          group.control(TopicMediaForm.urlControl).updateValue(url),
       folder: 'media',
       constraints: _constraintsFor(type),
       kind: _kindFor(type),
@@ -260,21 +219,13 @@ class _AdminContentTopicEditScreenState
 
   void _addMedia() {
     setState(() {
-      _media.add(
-        _MediaDraft(
-          mediaType: EducationalMediaType.video,
-          urlController: TextEditingController(),
-          titleController: TextEditingController(),
-        ),
-      );
+      _mediaArray.add(TopicMediaForm.newMediaGroup());
     });
   }
 
   void _removeMedia(int index) {
     setState(() {
-      final item = _media.removeAt(index);
-      item.urlController.dispose();
-      item.titleController.dispose();
+      _mediaArray.removeAt(index);
     });
   }
 
@@ -303,11 +254,7 @@ class _AdminContentTopicEditScreenState
       isActive: _isActive,
     );
 
-    final media = [
-      for (var i = 0; i < _media.length; i++)
-        if (_media[i].urlController.text.trim().isNotEmpty)
-          _media[i].toInput(i + 1),
-    ];
+    final media = TopicMediaForm.toInputs(_mediaArray);
 
     final savedId = await ref.read(adminContentTopicSaveProvider.notifier).save(
           id: widget.topicId,
@@ -333,7 +280,6 @@ class _AdminContentTopicEditScreenState
           );
     }
 
-    // Best-effort: drop storage objects that are no longer referenced.
     await _cleanupOrphanedMedia(coverUrl, media);
 
     if (!mounted) {
@@ -435,6 +381,8 @@ class _AdminContentTopicEditScreenState
   }
 
   Widget _buildForm(AppLocalizations l10n, bool isBusy) {
+    final previewMedia = TopicMediaForm.previewItems(_mediaArray);
+
     return ReactiveForm(
       formGroup: _form,
       child: ListView(
@@ -534,26 +482,24 @@ class _AdminContentTopicEditScreenState
             child: Text(
               l10n.adminContentVideoExternalHint,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
             ),
           ),
-          for (var i = 0; i < _media.length; i++) ...[
-            _MediaDraftCard(
-              draft: _media[i],
+          for (var i = 0; i < _mediaArray.controls.length; i++) ...[
+            AdminTopicMediaDraftCard(
+              mediaGroup: _mediaArray.controls[i] as FormGroup,
               isBusy: isBusy,
-              onTypeChanged: (v) => setState(() => _media[i].mediaType = v),
-              onUpload: () => _uploadMediaFile(i),
+              onUpload: () => unawaited(_uploadMediaFile(i)),
               onRemove: () => _removeMedia(i),
-              onChanged: () => setState(() {}),
               mediaTypeLabel: (type) => _mediaTypeLabel(l10n, type),
               l10n: l10n,
             ),
             SizedBox(height: 8.h),
           ],
-          if (_previewMedia.isNotEmpty) ...[
+          if (previewMedia.isNotEmpty) ...[
             SizedBox(height: 8.h),
-            AdminContentMediaPreview(media: _previewMedia),
+            AdminContentMediaPreview(media: previewMedia),
           ],
         ],
       ),
@@ -567,98 +513,5 @@ class _AdminContentTopicEditScreenState
       EducationalMediaType.image => l10n.hajjJourneyMediaImage,
       EducationalMediaType.pdf => l10n.contentMediaPdf,
     };
-  }
-}
-
-class _MediaDraftCard extends StatelessWidget {
-  const _MediaDraftCard({
-    required this.draft,
-    required this.isBusy,
-    required this.onTypeChanged,
-    required this.onUpload,
-    required this.onRemove,
-    required this.onChanged,
-    required this.mediaTypeLabel,
-    required this.l10n,
-  });
-
-  final _MediaDraft draft;
-  final bool isBusy;
-  final ValueChanged<EducationalMediaType> onTypeChanged;
-  final VoidCallback onUpload;
-  final VoidCallback onRemove;
-  final VoidCallback onChanged;
-  final String Function(EducationalMediaType) mediaTypeLabel;
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: EdgeInsets.all(12.w),
-        child: Column(
-          children: [
-            DropdownButtonFormField<EducationalMediaType>(
-              initialValue: draft.mediaType,
-              decoration: InputDecoration(
-                labelText: l10n.adminHajjJourneyMediaType,
-              ),
-              items: EducationalMediaType.values
-                  .map(
-                    (type) => DropdownMenuItem(
-                      value: type,
-                      child: Text(mediaTypeLabel(type)),
-                    ),
-                  )
-                  .toList(),
-              onChanged: (v) {
-                if (v != null) {
-                  onTypeChanged(v);
-                }
-              },
-            ),
-            SizedBox(height: 8.h),
-            TextField(
-              controller: draft.titleController,
-              decoration: InputDecoration(
-                labelText: l10n.adminHajjJourneyMediaTitle,
-              ),
-              onChanged: (_) => onChanged(),
-            ),
-            SizedBox(height: 8.h),
-            TextField(
-              controller: draft.urlController,
-              decoration: InputDecoration(
-                labelText: l10n.adminHajjJourneyMediaUrl,
-              ),
-              onChanged: (_) => onChanged(),
-            ),
-            SizedBox(height: 8.h),
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: OutlinedButton.icon(
-                onPressed: isBusy ? null : onUpload,
-                icon: const Icon(Icons.upload_file_outlined),
-                label: Text(l10n.adminContentTopicUploadMedia),
-              ),
-            ),
-            Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child: TextButton.icon(
-                onPressed: onRemove,
-                icon: const Icon(
-                  Icons.delete_outline,
-                  color: AppColors.error,
-                ),
-                label: Text(
-                  l10n.adminHajjJourneyRemoveMedia,
-                  style: const TextStyle(color: AppColors.error),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

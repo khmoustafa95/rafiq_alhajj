@@ -1,20 +1,20 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:rafiq_alhajj/core/domain/models/educational_media.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_visibility.dart';
 
-class ContentTopicMedia {
-  const ContentTopicMedia({
-    required this.id,
-    required this.mediaType,
-    required this.url,
-    this.title,
-    this.sortOrder = 0,
-  });
+part 'content_topic.freezed.dart';
 
-  final String id;
-  final EducationalMediaType mediaType;
-  final String? title;
-  final String url;
-  final int sortOrder;
+@freezed
+abstract class ContentTopicMedia with _$ContentTopicMedia {
+  const factory ContentTopicMedia({
+    required String id,
+    required EducationalMediaType mediaType,
+    required String url,
+    String? title,
+    @Default(0) int sortOrder,
+  }) = _ContentTopicMedia;
+
+  const ContentTopicMedia._();
 
   EducationalMediaItem toEducationalMedia() => EducationalMediaItem(
         id: id,
@@ -25,28 +25,21 @@ class ContentTopicMedia {
       );
 }
 
-class ContentTopic {
-  const ContentTopic({
-    required this.id,
-    required this.title,
-    this.description,
-    this.coverImageUrl,
-    required this.visibility,
-    this.sortOrder = 0,
-    this.isActive = true,
-    this.media = const [],
-    required this.createdAt,
-  });
+@freezed
+abstract class ContentTopic with _$ContentTopic {
+  const factory ContentTopic({
+    required String id,
+    required String title,
+    String? description,
+    String? coverImageUrl,
+    required ContentVisibility visibility,
+    @Default(0) int sortOrder,
+    @Default(true) bool isActive,
+    @Default([]) List<ContentTopicMedia> media,
+    required DateTime createdAt,
+  }) = _ContentTopic;
 
-  final String id;
-  final String title;
-  final String? description;
-  final String? coverImageUrl;
-  final ContentVisibility visibility;
-  final int sortOrder;
-  final bool isActive;
-  final List<ContentTopicMedia> media;
-  final DateTime createdAt;
+  const ContentTopic._();
 
   int get videoCount =>
       media.where((m) => m.mediaType == EducationalMediaType.video).length;
@@ -61,36 +54,28 @@ class ContentTopic {
       media.map((m) => m.toEducationalMedia()).toList();
 }
 
-class ContentTopicEditorInput {
-  const ContentTopicEditorInput({
-    required this.title,
-    this.description,
-    this.coverImageUrl,
-    required this.visibility,
-    this.sortOrder = 0,
-    this.isActive = true,
-  });
-
-  final String title;
-  final String? description;
-  final String? coverImageUrl;
-  final ContentVisibility visibility;
-  final int sortOrder;
-  final bool isActive;
+@freezed
+abstract class ContentTopicEditorInput with _$ContentTopicEditorInput {
+  const factory ContentTopicEditorInput({
+    required String title,
+    String? description,
+    String? coverImageUrl,
+    required ContentVisibility visibility,
+    @Default(0) int sortOrder,
+    @Default(true) bool isActive,
+  }) = _ContentTopicEditorInput;
 }
 
-class ContentTopicMediaInput {
-  const ContentTopicMediaInput({
-    required this.mediaType,
-    required this.url,
-    this.title,
-    this.sortOrder = 0,
-  });
+@freezed
+abstract class ContentTopicMediaInput with _$ContentTopicMediaInput {
+  const factory ContentTopicMediaInput({
+    required EducationalMediaType mediaType,
+    required String url,
+    String? title,
+    @Default(0) int sortOrder,
+  }) = _ContentTopicMediaInput;
 
-  final EducationalMediaType mediaType;
-  final String? title;
-  final String url;
-  final int sortOrder;
+  const ContentTopicMediaInput._();
 
   String get mediaTypeKey => switch (mediaType) {
         EducationalMediaType.video => 'video',
