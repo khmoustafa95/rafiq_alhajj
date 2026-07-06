@@ -5,12 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/routing/staff_navigation.dart';
-import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/domain/models/hajj_journey_media.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/domain/models/hajj_journey_step.dart';
+import 'package:rafiq_alhajj/features/hajj_journey/presentation/forms/journey_media_form.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/presentation/providers/hajj_journey_providers.dart';
+import 'package:rafiq_alhajj/features/hajj_journey/presentation/widgets/admin_journey_media_draft_card.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -24,32 +25,10 @@ class AdminHajjJourneyEditScreen extends ConsumerStatefulWidget {
       _AdminHajjJourneyEditScreenState();
 }
 
-class _MediaDraft {
-  _MediaDraft({
-    required this.mediaType,
-    required this.urlController,
-    required this.titleController,
-  });
-
-  HajjMediaType mediaType;
-  final TextEditingController urlController;
-  final TextEditingController titleController;
-
-  HajjJourneyMediaInput toInput(int sortOrder) => HajjJourneyMediaInput(
-        mediaType: mediaType,
-        url: urlController.text.trim(),
-        title: titleController.text.trim().isEmpty
-            ? null
-            : titleController.text.trim(),
-        sortOrder: sortOrder,
-      );
-}
-
 class _AdminHajjJourneyEditScreenState
     extends ConsumerState<AdminHajjJourneyEditScreen> {
   late final FormGroup _form;
   bool _isActive = true;
-  final List<_MediaDraft> _media = [];
   bool _initialized = false;
 
   @override
@@ -61,18 +40,17 @@ class _AdminHajjJourneyEditScreenState
       'descriptionAr': FormControl<String>(value: ''),
       'descriptionEn': FormControl<String>(value: ''),
       'sortOrder': FormControl<String>(value: '1'),
+      'media': FormArray<dynamic>([]),
     });
   }
 
   @override
   void dispose() {
     _form.dispose();
-    for (final item in _media) {
-      item.urlController.dispose();
-      item.titleController.dispose();
-    }
     super.dispose();
   }
+
+  FormArray<dynamic> get _mediaArray => JourneyMediaForm.mediaArray(_form);
 
   void _populate(HajjJourneyStep step) {
     if (_initialized) {
@@ -84,35 +62,19 @@ class _AdminHajjJourneyEditScreenState
     _form.control('descriptionEn').updateValue(step.descriptionEn);
     _form.control('sortOrder').updateValue('${step.sortOrder}');
     _isActive = step.isActive;
-    for (final m in step.media) {
-      _media.add(
-        _MediaDraft(
-          mediaType: m.mediaType,
-          urlController: TextEditingController(text: m.url),
-          titleController: TextEditingController(text: m.title ?? ''),
-        ),
-      );
-    }
+    JourneyMediaForm.bindStepMedia(_form, step);
     _initialized = true;
   }
 
   void _addMedia() {
     setState(() {
-      _media.add(
-        _MediaDraft(
-          mediaType: HajjMediaType.image,
-          urlController: TextEditingController(),
-          titleController: TextEditingController(),
-        ),
-      );
+      _mediaArray.add(JourneyMediaForm.newMediaGroup());
     });
   }
 
   void _removeMedia(int index) {
     setState(() {
-      final item = _media.removeAt(index);
-      item.urlController.dispose();
-      item.titleController.dispose();
+      _mediaArray.removeAt(index);
     });
   }
 
@@ -142,11 +104,7 @@ class _AdminHajjJourneyEditScreenState
       return;
     }
 
-    final media = [
-      for (var i = 0; i < _media.length; i++)
-        if (_media[i].urlController.text.trim().isNotEmpty)
-          _media[i].toInput(i + 1),
-    ];
+    final media = JourneyMediaForm.toInputs(_mediaArray);
 
     await ref.read(adminHajjJourneySaveProvider.notifier).save(
           ritualKey: widget.ritualKey,
@@ -238,62 +196,12 @@ class _AdminHajjJourneyEditScreenState
               ),
             ],
           ),
-          for (var i = 0; i < _media.length; i++) ...[
-            Card(
-              child: Padding(
-                padding: EdgeInsets.all(12.w),
-                child: Column(
-                  children: [
-                    DropdownButtonFormField<HajjMediaType>(
-                      initialValue: _media[i].mediaType,
-                      decoration: InputDecoration(
-                        labelText: l10n.adminHajjJourneyMediaType,
-                      ),
-                      items: HajjMediaType.values
-                          .map(
-                            (type) => DropdownMenuItem(
-                              value: type,
-                              child: Text(_mediaTypeLabel(l10n, type)),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: (v) {
-                        if (v != null) {
-                          setState(() => _media[i].mediaType = v);
-                        }
-                      },
-                    ),
-                    SizedBox(height: 8.h),
-                    TextField(
-                      controller: _media[i].titleController,
-                      decoration: InputDecoration(
-                        labelText: l10n.adminHajjJourneyMediaTitle,
-                      ),
-                    ),
-                    SizedBox(height: 8.h),
-                    TextField(
-                      controller: _media[i].urlController,
-                      decoration: InputDecoration(
-                        labelText: l10n.adminHajjJourneyMediaUrl,
-                      ),
-                    ),
-                    Align(
-                      alignment: AlignmentDirectional.centerEnd,
-                      child: TextButton.icon(
-                        onPressed: () => _removeMedia(i),
-                        icon: const Icon(
-                          Icons.delete_outline,
-                          color: AppColors.error,
-                        ),
-                        label: Text(
-                          l10n.adminHajjJourneyRemoveMedia,
-                          style: const TextStyle(color: AppColors.error),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+          for (var i = 0; i < _mediaArray.controls.length; i++) ...[
+            AdminJourneyMediaDraftCard(
+              mediaGroup: _mediaArray.controls[i] as FormGroup,
+              onRemove: () => _removeMedia(i),
+              mediaTypeLabel: (type) => _mediaTypeLabel(l10n, type),
+              l10n: l10n,
             ),
             SizedBox(height: 8.h),
           ],
