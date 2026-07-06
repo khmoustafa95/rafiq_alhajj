@@ -24,7 +24,7 @@ class HajjJourneyPathScreen extends ConsumerWidget {
     final journeyAsync = ref.watch(hajjJourneyStateProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: journeyAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) {

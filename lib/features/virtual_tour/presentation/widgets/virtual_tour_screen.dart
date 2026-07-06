@@ -16,7 +16,7 @@ class VirtualTourScreen extends StatelessWidget {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: RafiqAppBar(
           title: Text(l10n.toolsVirtualTourTitle),
           bottom: TabBar(

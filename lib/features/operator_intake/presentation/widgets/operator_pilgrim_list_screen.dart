@@ -6,14 +6,11 @@ import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
-import 'package:rafiq_alhajj/core/theme/app_colors.dart';
-import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_async_table_body.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_data_table.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_table_column_visibility.dart';
-import 'package:rafiq_alhajj/core/widgets/staff_table_definition_cache.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
@@ -24,6 +21,9 @@ import 'package:rafiq_alhajj/features/operator_intake/domain/models/operator_pil
 import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/operator_registry_providers.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/pilgrim_export_providers.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/pilgrim_table_column_visibility_provider.dart';
+import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_pilgrim_list_toolbar.dart';
+import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_pilgrim_mobile_card.dart';
+import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_pilgrim_table_definitions.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/pilgrim_bulk_edit_dialog.dart';
 import 'package:rafiq_alhajj/features/trips/presentation/widgets/trip_selector.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
@@ -41,11 +41,6 @@ class _OperatorPilgrimListScreenState
     extends ConsumerState<OperatorPilgrimListScreen> {
   StaffTableQuery _query = const StaffTableQuery(
     sortColumnId: 'full_name',
-  );
-
-  late final StaffTableDefinitionCache<OperatorPilgrimSummary> _columnCache =
-      StaffTableDefinitionCache<OperatorPilgrimSummary>(
-    buildColumns: _buildColumns,
   );
 
   Object? _cachedFilterKey;
@@ -130,71 +125,14 @@ class _OperatorPilgrimListScreenState
 
   List<StaffTableColumn<OperatorPilgrimSummary>> _visibleColumns(
     BuildContext context,
+    AppLocalizations l10n,
     Set<String> hiddenColumnIds,
   ) {
-    return filterVisibleStaffColumns<OperatorPilgrimSummary>(
-      allColumns: _columnCache.columns(context),
-      hiddenColumnIds: hiddenColumnIds,
-      essentialColumnIds: PilgrimTableColumns.essential,
+    return OperatorPilgrimTableDefinitions.visibleColumns(
+      context,
+      l10n,
+      hiddenColumnIds,
     );
-  }
-
-  List<StaffTableColumnOption> _columnPickerOptions(AppLocalizations l10n) {
-    return [
-      StaffTableColumnOption(
-        id: 'full_name',
-        label: l10n.operatorFullName,
-        essential: true,
-      ),
-      StaffTableColumnOption(
-        id: 'gender',
-        label: l10n.staffTableFilterGender,
-      ),
-      StaffTableColumnOption(
-        id: 'group',
-        label: l10n.staffTableFilterGroup,
-      ),
-      StaffTableColumnOption(
-        id: 'passport',
-        label: l10n.operatorPassport,
-      ),
-      StaffTableColumnOption(
-        id: 'travel_permit',
-        label: l10n.operatorTravelPermit,
-      ),
-      StaffTableColumnOption(
-        id: 'medical_test',
-        label: l10n.pilgrimMedicalStatus,
-      ),
-      StaffTableColumnOption(
-        id: 'travel_date',
-        label: l10n.pilgrimTravelDate,
-      ),
-      StaffTableColumnOption(
-        id: 'hotel',
-        label: l10n.pilgrimHotel,
-      ),
-      StaffTableColumnOption(
-        id: 'cluster',
-        label: l10n.pilgrimLabelCluster,
-      ),
-      StaffTableColumnOption(
-        id: 'sticker',
-        label: l10n.pilgrimLabelSticker,
-      ),
-      StaffTableColumnOption(
-        id: 'makkah_hotel',
-        label: l10n.pilgrimLabelMakkahHotel,
-      ),
-      StaffTableColumnOption(
-        id: 'phone',
-        label: l10n.pilgrimLabelPhone,
-      ),
-      StaffTableColumnOption(
-        id: 'whatsapp',
-        label: l10n.pilgrimLabelWhatsapp,
-      ),
-    ];
   }
 
   Future<void> _openColumnPicker(
@@ -203,7 +141,7 @@ class _OperatorPilgrimListScreenState
   ) async {
     await showStaffTableColumnPicker(
       context: context,
-      options: _columnPickerOptions(l10n),
+      options: OperatorPilgrimTableDefinitions.columnPickerOptions(l10n),
       hiddenColumnIds: hiddenColumnIds,
       onChanged: (hidden) {
         unawaited(
@@ -223,71 +161,22 @@ class _OperatorPilgrimListScreenState
     bool isAdmin,
     Set<String> hiddenColumnIds,
   ) {
-    return [
-      const TripSelector(),
-      StaffToolbarButton(
-        icon: Icons.view_column_outlined,
-        label: l10n.staffTableColumnsCustomize,
-        onPressed: () => unawaited(_openColumnPicker(l10n, hiddenColumnIds)),
-      ),
-      StaffToolbarButton(
-        icon: Icons.description_outlined,
-        label: l10n.exportTemplateButton,
-        onPressed: () => unawaited(_downloadTemplate(l10n)),
-      ),
-      StaffToolbarButton(
-        icon: Icons.file_download_outlined,
-        label: l10n.exportButton,
-        onPressed: () => unawaited(_exportPilgrims(l10n)),
-      ),
-      StaffToolbarButton(
-        icon: Icons.upload_file_outlined,
-        label: l10n.importTitle,
-        onPressed: _openImport,
-      ),
-      StaffToolbarButton(
-        icon: Icons.person_add_outlined,
-        label: isAdmin ? l10n.adminPilgrimAdd : l10n.operatorIntakeTitle,
-        onPressed: _openIntake,
-        primary: true,
-      ),
-    ];
+    return OperatorPilgrimListToolbar.buildActions(
+      l10n: l10n,
+      isAdmin: isAdmin,
+      onCustomizeColumns: () => unawaited(_openColumnPicker(l10n, hiddenColumnIds)),
+      onDownloadTemplate: () => unawaited(_downloadTemplate(l10n)),
+      onExport: () => unawaited(_exportPilgrims(l10n)),
+      onImport: _openImport,
+      onAddPilgrim: _openIntake,
+    );
   }
 
   List<StaffTableFilter> _buildFilters(
     AppLocalizations l10n,
     List<PilgrimGroupOption> groups,
   ) {
-    return [
-      StaffTableFilter(
-        id: 'gender',
-        label: l10n.staffTableFilterGender,
-        allLabel: l10n.staffTableFilterAll,
-        options: [
-          StaffTableFilterOption(
-            value: 'male',
-            label: l10n.pilgrimGenderMale,
-          ),
-          StaffTableFilterOption(
-            value: 'female',
-            label: l10n.pilgrimGenderFemale,
-          ),
-        ],
-      ),
-      StaffTableFilter(
-        id: 'group_id',
-        label: l10n.staffTableFilterGroup,
-        allLabel: l10n.staffTableFilterAll,
-        options: groups
-            .map(
-              (group) => StaffTableFilterOption(
-                value: group.id,
-                label: group.name,
-              ),
-            )
-            .toList(),
-      ),
-    ];
+    return OperatorPilgrimTableDefinitions.buildFilters(l10n, groups);
   }
 
   List<StaffTableBulkAction<OperatorPilgrimSummary>> _bulkActions(
@@ -485,11 +374,7 @@ class _OperatorPilgrimListScreenState
   }
 
   String _genderLabel(AppLocalizations l10n, String? gender) {
-    return switch (gender) {
-      'male' => l10n.pilgrimGenderMale,
-      'female' => l10n.pilgrimGenderFemale,
-      _ => '—',
-    };
+    return OperatorPilgrimTableDefinitions.genderLabel(l10n, gender);
   }
 
   @override
@@ -501,7 +386,7 @@ class _OperatorPilgrimListScreenState
     final pageAsync = ref.watch(operatorPilgrimRegistryPageProvider(_query));
     final groupsAsync = ref.watch(pilgrimGroupFilterOptionsProvider);
     final hiddenColumnIds = ref.watch(pilgrimTableColumnVisibilityProvider);
-    final visibleColumns = _visibleColumns(context, hiddenColumnIds);
+    final visibleColumns = _visibleColumns(context, l10n, hiddenColumnIds);
 
     Widget listBody;
     if (groupsAsync.hasError && !groupsAsync.hasValue) {
@@ -643,140 +528,13 @@ class _OperatorPilgrimListScreenState
       separatorBuilder: (_, _) => SizedBox(height: sh(10)),
       itemBuilder: (context, index) {
         final item = items[index];
-        return _PilgrimCard(
+        return OperatorPilgrimMobileCard(
           item: item,
-          l10n: l10n,
           subtitle: _subtitle(l10n, item),
           onTap: () => _openPilgrim(item),
         );
       },
     );
-  }
-
-  List<StaffTableColumn<OperatorPilgrimSummary>> _buildColumns(
-    AppLocalizations l10n,
-  ) {
-    return [
-      StaffTableColumn(
-        id: 'full_name',
-        label: l10n.operatorFullName,
-        flex: 3,
-        minWidth: 240,
-        sortable: true,
-        cellBuilder: (context, item) => Row(
-          children: [
-            CircleAvatar(
-              radius: sr(16),
-              backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-              child: Text(
-                item.fullName.isNotEmpty ? item.fullName[0].toUpperCase() : '?',
-                style: const TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
-                ),
-              ),
-            ),
-            SizedBox(width: sw(10)),
-            Expanded(
-              child: StaffCellText(item.fullName, strong: true),
-            ),
-          ],
-        ),
-      ),
-      StaffTableColumn(
-        id: 'gender',
-        label: l10n.staffTableFilterGender,
-        minWidth: 110,
-        sortable: true,
-        cellBuilder: (context, item) =>
-            StaffCellText(_genderLabel(l10n, item.gender)),
-      ),
-      StaffTableColumn(
-        id: 'group',
-        label: l10n.staffTableFilterGroup,
-        flex: 2,
-        sortable: true,
-        cellBuilder: (context, item) => StaffCellText(item.groupName),
-      ),
-      StaffTableColumn(
-        id: 'passport',
-        label: l10n.operatorPassport,
-        flex: 2,
-        sortable: true,
-        cellBuilder: (context, item) => StaffCellText(item.passportNumber),
-      ),
-      StaffTableColumn(
-        id: 'travel_permit',
-        label: l10n.operatorTravelPermit,
-        flex: 2,
-        sortable: true,
-        cellBuilder: (context, item) => StaffCellText(item.travelPermitNumber),
-      ),
-      StaffTableColumn(
-        id: 'medical_test',
-        label: l10n.pilgrimMedicalStatus,
-        flex: 2,
-        sortable: true,
-        cellBuilder: (context, item) => StaffCellText(item.medicalTestStatus),
-      ),
-      StaffTableColumn(
-        id: 'travel_date',
-        label: l10n.pilgrimTravelDate,
-        flex: 2,
-        sortable: true,
-        cellBuilder: (context, item) => StaffCellText(
-          item.travelDate == null
-              ? l10n.operatorPilgrimTravelDateUnset
-              : MaterialLocalizations.of(context)
-                  .formatMediumDate(item.travelDate!),
-        ),
-      ),
-      StaffTableColumn(
-        id: 'hotel',
-        label: l10n.pilgrimHotel,
-        flex: 2,
-        minWidth: 190,
-        sortable: true,
-        cellBuilder: (context, item) => StaffCellText(item.hotelName),
-      ),
-      StaffTableColumn(
-        id: 'cluster',
-        label: l10n.pilgrimLabelCluster,
-        flex: 2,
-        sortable: true,
-        cellBuilder: (context, item) => StaffCellText(item.cluster),
-      ),
-      StaffTableColumn(
-        id: 'sticker',
-        label: l10n.pilgrimLabelSticker,
-        flex: 2,
-        sortable: true,
-        cellBuilder: (context, item) => StaffCellText(item.stickerNumber),
-      ),
-      StaffTableColumn(
-        id: 'makkah_hotel',
-        label: l10n.pilgrimLabelMakkahHotel,
-        flex: 2,
-        minWidth: 190,
-        sortable: true,
-        cellBuilder: (context, item) => StaffCellText(item.makkahHotel),
-      ),
-      StaffTableColumn(
-        id: 'phone',
-        label: l10n.pilgrimLabelPhone,
-        flex: 2,
-        sortable: true,
-        cellBuilder: (context, item) => StaffCellText(item.phoneNumber),
-      ),
-      StaffTableColumn(
-        id: 'whatsapp',
-        label: l10n.pilgrimLabelWhatsapp,
-        flex: 2,
-        sortable: true,
-        cellBuilder: (context, item) => StaffCellText(item.whatsappNumber),
-      ),
-    ];
   }
 
   String _subtitle(AppLocalizations l10n, OperatorPilgrimSummary item) {
@@ -797,62 +555,5 @@ class _OperatorPilgrimListScreenState
       );
     }
     return parts.isEmpty ? l10n.operatorPilgrimNoLogisticsYet : parts.join(' · ');
-  }
-}
-
-class _PilgrimCard extends StatelessWidget {
-  const _PilgrimCard({
-    required this.item,
-    required this.l10n,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  final OperatorPilgrimSummary item;
-  final AppLocalizations l10n;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
-        child: DecoratedBox(
-          decoration: AppDecorations.card(),
-          child: ListTile(
-            contentPadding: EdgeInsets.symmetric(
-              horizontal: sw(16),
-              vertical: sh(8),
-            ),
-            leading: CircleAvatar(
-              backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-              child: Text(
-                item.fullName.isNotEmpty ? item.fullName[0].toUpperCase() : '?',
-                style: const TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            title: Text(
-              item.fullName,
-              style: Theme.of(context).textTheme.titleSmall,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            subtitle: Text(
-              subtitle,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            trailing: const Icon(Icons.chevron_right),
-          ),
-        ),
-      ),
-    );
   }
 }

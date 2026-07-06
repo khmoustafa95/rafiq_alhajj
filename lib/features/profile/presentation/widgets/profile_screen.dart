@@ -31,7 +31,7 @@ class ProfileScreen extends ConsumerWidget {
         : const AsyncValue.data(null);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

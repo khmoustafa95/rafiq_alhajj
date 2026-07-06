@@ -32,7 +32,7 @@ class CompetitionDetailScreen extends ConsumerWidget {
     final profileId = ref.watch(authProfileIdProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: detailAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, _) => Center(child: Text(l10n.competitionsLoadError)),

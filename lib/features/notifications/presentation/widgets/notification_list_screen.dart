@@ -85,7 +85,7 @@ class _NotificationListScreenState
         ref.watch(authAccessModeProvider) == AppAccessMode.guest;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         top: !AppPlatform.isWeb,
         child: Column(

@@ -1,5 +1,6 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/data/data_sources/admin_analytics_remote_data_source.dart';
+import 'package:rafiq_alhajj/features/admin_analytics/data/mappers/admin_dashboard_stats_mapper.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/domain/models/admin_dashboard_stats.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/domain/models/chart_slice.dart';
 import 'package:rafiq_alhajj/features/field_operator/domain/models/field_pilgrim_status.dart';
@@ -27,6 +28,28 @@ class AdminAnalyticsRepository {
   bool get isAvailable => AppConfig.hasSupabase && _remote != null;
 
   Future<AdminDashboardStats> fetchDashboardStats({String? tripId}) async {
+    if (!isAvailable) {
+      throw const AdminAnalyticsException('Supabase is not configured');
+    }
+    final remote = _remote!;
+
+    try {
+      final json = await remote
+          .fetchDashboardStatsRpc(tripId: tripId)
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () => throw const AdminAnalyticsException(
+              'Dashboard metrics request timed out',
+            ),
+          );
+      return AdminDashboardStatsMapper.fromRpcJson(json);
+    } on PostgrestException catch (e) {
+      throw AdminAnalyticsException(e.message);
+    }
+  }
+
+  /// Legacy multi-query aggregation — kept for reference/tests; prefer RPC above.
+  Future<AdminDashboardStats> fetchDashboardStatsLegacy({String? tripId}) async {
     if (!isAvailable) {
       throw const AdminAnalyticsException('Supabase is not configured');
     }

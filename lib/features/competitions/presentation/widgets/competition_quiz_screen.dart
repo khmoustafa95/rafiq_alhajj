@@ -208,7 +208,7 @@ class _CompetitionQuizScreenState extends ConsumerState<CompetitionQuizScreen> {
         ref.watch(competitionQuizProgressProvider(widget.competitionId));
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         child: progressAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),

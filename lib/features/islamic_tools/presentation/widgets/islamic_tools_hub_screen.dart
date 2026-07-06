@@ -78,7 +78,7 @@ class IslamicToolsHubScreen extends StatelessWidget {
 
     if (inShell) {
       return Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         body: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

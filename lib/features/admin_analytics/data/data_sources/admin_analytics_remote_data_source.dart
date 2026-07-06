@@ -108,4 +108,13 @@ class AdminAnalyticsRemoteDataSource {
         .map((row) => Map<String, dynamic>.from(row as Map))
         .toList(growable: false);
   }
+
+  /// Single round-trip dashboard payload from [fetch_admin_dashboard_stats].
+  Future<Map<String, dynamic>> fetchDashboardStatsRpc({String? tripId}) async {
+    final result = await _client.rpc<Map<String, dynamic>>(
+      'fetch_admin_dashboard_stats',
+      params: {'p_trip_id': tripId},
+    );
+    return Map<String, dynamic>.from(result);
+  }
 }

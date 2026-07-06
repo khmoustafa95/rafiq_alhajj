@@ -166,7 +166,7 @@ class _HomeBody extends ConsumerWidget {
 
     return Scaffold(
 
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
 
       body: SafeArea(
 
