@@ -3,7 +3,7 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
-**Optimization execution (2026-07-06):** Batches 1–4 shipped on `cursor/optimization-execute-0985` (PR #11). **Batch 4:** Freezed `ContentTopic`/`ContentTopicMedia`/editor inputs; admin topic editor media rows → reactive `FormArray` (removed `TextEditingController`); extracted `TopicMediaForm` + `AdminTopicMediaDraftCard`; edit screen ~665→~430 lines; 3 unit tests. **Remaining:** Phase 1 device smoke; admin_dashboard_screen split; hajj journey editor FormArray; apply dashboard RPC on staging.
+**Optimization execution (2026-07-06):** Batches 1–5 shipped on `cursor/optimization-execute-0985` (PR #11). **Batch 5:** `admin_dashboard_screen` god-file split (594→~18 lines + 6 widget files); Hajj journey editor media → reactive `FormArray` + `JourneyMediaForm` + `AdminJourneyMediaDraftCard`; 2 unit tests (21 total). **Remaining:** Phase 1 device smoke; catalog prefetch on Wi-Fi; apply dashboard RPC on staging.
 
 **Optimization roadmap (2026-07-06):** One self-contained JSON per platform × environment under `config/dart-defines/{platform}.{env}.json` (secrets, gitignored) + `*.example.json` (templates). Platforms: `web`, `android`, `android-device`, `ios`. Environments: `local`, `staging`, `production`. Central resolver `scripts/resolve-dart-defines.mjs`; bootstrap `npm run config:bootstrap` migrates legacy root files. VS Code launch.json updated (8 configs). Dev npm: `dev:web`, `dev:android`, `dev:android:device`, `dev:web:staging`, `dev:android:staging`. `AppConfig.appEnv` / `isStagingEnv` added. Docs: `config/dart-defines/README.md`, runbook + staging-setup updated. ⚠ Fill `android.staging.json` → `FIREBASE_APP_ID` from `google-services.json` before APK build.
 
