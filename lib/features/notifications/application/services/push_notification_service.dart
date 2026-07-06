@@ -79,10 +79,7 @@ class PushNotificationService {
 
     _foregroundSub = FirebaseMessaging.onMessage.listen(_handleForeground);
     FirebaseMessaging.onMessageOpenedApp.listen(_handleRemoteMessage);
-    final initial = await _messaging!.getInitialMessage();
-    if (initial != null) {
-      _handleRemoteMessage(initial);
-    }
+    unawaited(_handleInitialMessageWhenReady());
 
     _tokenRefreshSub = _messaging!.onTokenRefresh.listen((token) {
       unawaited(_onTokenRefreshed(token));
@@ -185,6 +182,18 @@ class PushNotificationService {
   void _clearRegistration() {
     _currentProfileId = null;
     _lastRegisteredToken = null;
+  }
+
+  Future<void> _handleInitialMessageWhenReady() async {
+    await _waitForUiReady();
+    final messaging = _messaging;
+    if (messaging == null) {
+      return;
+    }
+    final initial = await messaging.getInitialMessage();
+    if (initial != null) {
+      _handleRemoteMessage(initial);
+    }
   }
 
   Future<void> _requestPermissionIfNeeded() async {

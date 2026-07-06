@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition_question.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competition_lesson_node.dart';
@@ -43,14 +42,14 @@ class CompetitionLearningPath extends StatelessWidget {
 
     if (questions.isEmpty) {
       return DecoratedBox(
-        decoration: AppDecorations.card(color: AppColors.surfaceMuted),
+        decoration: AppDecorations.themedCard(context),
         child: Padding(
           padding: EdgeInsets.all(20.w),
           child: Row(
             children: [
               Icon(
                 Icons.quiz_outlined,
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 size: 28.sp,
               ),
               SizedBox(width: 12.w),
@@ -58,7 +57,7 @@ class CompetitionLearningPath extends StatelessWidget {
                 child: Text(
                   l10n.competitionQuizNoQuestions,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                 ),
               ),
@@ -69,8 +68,8 @@ class CompetitionLearningPath extends StatelessWidget {
     }
 
     return DecoratedBox(
-      decoration: AppDecorations.card(
-        color: AppColors.surface,
+      decoration: AppDecorations.themedCard(
+        context,
         radius: AppDecorations.radiusLg,
       ),
       child: Padding(
@@ -88,7 +87,7 @@ class CompetitionLearningPath extends StatelessWidget {
             Text(
               l10n.competitionPathSubtitle,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
             ),
             SizedBox(height: 20.h),

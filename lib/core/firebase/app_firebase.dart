@@ -8,6 +8,8 @@ import 'package:rafiq_alhajj/core/config/app_config.dart';
 /// build needs a dedicated web app id plus `authDomain`/`storageBucket`
 /// ([AppConfig.hasFirebaseWeb]) for FCM Web Push.
 abstract final class AppFirebase {
+  static Future<void>? _initialization;
+
   static const FirebaseOptions _mobileOptions = FirebaseOptions(
     apiKey: AppConfig.firebaseApiKey,
     appId: AppConfig.firebaseAppId,
@@ -26,7 +28,10 @@ abstract final class AppFirebase {
     measurementId: AppConfig.firebaseMeasurementId,
   );
 
-  static Future<void> initialize() async {
+  static Future<void> initialize() =>
+      _initialization ??= _initialize();
+
+  static Future<void> _initialize() async {
     final configured = kIsWeb ? AppConfig.hasFirebaseWeb : AppConfig.hasFirebase;
     if (!configured) {
       if (kDebugMode) {

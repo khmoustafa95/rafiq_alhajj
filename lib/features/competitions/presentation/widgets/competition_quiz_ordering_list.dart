@@ -30,8 +30,9 @@ class CompetitionQuizOrderingList extends StatelessWidget {
   }
 
   Color? _tileColor(BuildContext context, String optionId, int index) {
+    final scheme = Theme.of(context).colorScheme;
     if (!isFeedback || feedbackCorrectIds == null) {
-      return AppColors.surface;
+      return scheme.surface;
     }
 
     final correctIndex = feedbackCorrectIds!.indexOf(optionId);
@@ -39,9 +40,9 @@ class CompetitionQuizOrderingList extends StatelessWidget {
       return AppColors.success.withValues(alpha: 0.12);
     }
     if (correctIndex >= 0) {
-      return Theme.of(context).colorScheme.error.withValues(alpha: 0.08);
+      return scheme.error.withValues(alpha: 0.08);
     }
-    return AppColors.surface;
+    return scheme.surface;
   }
 
   @override

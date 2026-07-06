@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competition_lesson_node.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competition_path_connector.dart';
@@ -40,13 +39,13 @@ class HajjJourneyLearningPath extends StatelessWidget {
 
     if (steps.isEmpty) {
       return DecoratedBox(
-        decoration: AppDecorations.card(color: AppColors.surfaceMuted),
+        decoration: AppDecorations.themedCard(context),
         child: Padding(
           padding: EdgeInsets.all(20.w),
           child: Text(
             l10n.hajjJourneyEmpty,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
           ),
         ),
@@ -54,8 +53,8 @@ class HajjJourneyLearningPath extends StatelessWidget {
     }
 
     return DecoratedBox(
-      decoration: AppDecorations.card(
-        color: AppColors.surface,
+      decoration: AppDecorations.themedCard(
+        context,
         radius: AppDecorations.radiusLg,
       ),
       child: Padding(
@@ -73,7 +72,7 @@ class HajjJourneyLearningPath extends StatelessWidget {
             Text(
               l10n.hajjJourneyPathSubtitle,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
             ),
             SizedBox(height: 20.h),
@@ -129,8 +128,12 @@ class HajjJourneyLearningPath extends StatelessWidget {
                               Theme.of(context).textTheme.labelSmall?.copyWith(
                                     color: _statusFor(i) ==
                                             CompetitionLessonNodeStatus.locked
-                                        ? AppColors.textSecondary
-                                        : AppColors.textPrimary,
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant
+                                        : Theme.of(context)
+                                            .colorScheme
+                                            .onSurface,
                                     fontWeight: _statusFor(i) ==
                                             CompetitionLessonNodeStatus.current
                                         ? FontWeight.w700
