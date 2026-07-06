@@ -14,6 +14,7 @@ import 'package:rafiq_alhajj/features/sos/domain/models/sos_alert.dart';
 import 'package:rafiq_alhajj/features/sos/domain/models/sos_ping.dart';
 import 'package:rafiq_alhajj/features/sos/presentation/controllers/sos_controller.dart';
 import 'package:rafiq_alhajj/features/sos/presentation/providers/sos_providers.dart';
+import 'package:rafiq_alhajj/features/sos/presentation/utils/sos_time_format.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -504,7 +505,8 @@ class _AlertCard extends StatelessWidget {
                     child: Text(
                       lastUpdate != null
                           ? l10n.sosLastUpdate(
-                              TimeOfDay.fromDateTime(lastUpdate).format(context))
+                              formatSosLocationFreshness(lastUpdate, l10n),
+                            )
                           : l10n.sosNoLocationYet,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

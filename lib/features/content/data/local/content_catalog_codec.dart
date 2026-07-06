@@ -1,4 +1,5 @@
 import 'package:rafiq_alhajj/core/domain/models/educational_media.dart';
+import 'package:rafiq_alhajj/features/competitions/domain/models/competition.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition_question.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_item.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_topic.dart';
@@ -207,6 +208,37 @@ abstract final class ContentCatalogCodec {
     } catch (_) {
       return null;
     }
+  }
+
+  static Map<String, dynamic> competitionToJson(Competition competition) => {
+        'id': competition.id,
+        'title': competition.title,
+        'description': competition.description,
+        'startsAt': competition.startsAt.toIso8601String(),
+        'endsAt': competition.endsAt.toIso8601String(),
+        'isActive': competition.isActive,
+      };
+
+  static Competition? competitionFromJson(Map<String, dynamic> json) {
+    try {
+      return Competition(
+        id: json['id'] as String,
+        title: json['title'] as String,
+        description: json['description'] as String?,
+        startsAt: DateTime.parse(json['startsAt'] as String),
+        endsAt: DateTime.parse(json['endsAt'] as String),
+        isActive: json['isActive'] as bool? ?? false,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static List<Competition> competitionsFromJsonList(List<dynamic> raw) {
+    return raw
+        .map((e) => competitionFromJson(Map<String, dynamic>.from(e as Map)))
+        .whereType<Competition>()
+        .toList();
   }
 
   static Map<String, dynamic> questionToJson(CompetitionQuestion question) =>

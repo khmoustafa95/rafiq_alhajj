@@ -4,6 +4,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/widgets.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:rafiq_alhajj/features/competitions/presentation/providers/competitions_providers.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_catalog_providers.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/presentation/providers/hajj_journey_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -37,6 +38,19 @@ Future<void> _prefetchCatalog(Ref ref, AppAccessMode accessMode) async {
 
     final cache = await ref.read(contentCatalogCacheProvider.future);
     await ref.read(hajjJourneyServiceProvider).loadActiveSteps(cache: cache);
+
+    if (isPilgrim && profileId != null) {
+      final competitions = await ref
+          .read(competitionsServiceProvider)
+          .loadActiveCompetitions(cache: cache);
+      for (final competition in competitions) {
+        await ref.read(competitionsServiceProvider).fetchQuizProgress(
+              cache: cache,
+              competitionId: competition.id,
+              profileId: profileId,
+            );
+      }
+    }
   } catch (_) {
     // Prefetch is best-effort.
   }

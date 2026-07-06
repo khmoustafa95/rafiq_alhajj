@@ -22,6 +22,7 @@ part 'competitions_providers.g.dart';
 @Riverpod(keepAlive: true)
 CompetitionsService competitionsService(Ref ref) {
   return CompetitionsService(
+    ref.watch(competitionsRepositoryProvider),
     ref.watch(competitionQuestionsRepositoryProvider),
   );
 }
@@ -66,7 +67,11 @@ Future<List<Competition>> activeCompetitions(Ref ref) {
     onInvalidate: (ref) => ref.invalidate(activeCompetitionsProvider),
   );
 
-  return ref.read(competitionsRepositoryProvider).fetchActive();
+  return ref.read(contentCatalogCacheProvider.future).then(
+        (cache) => ref.read(competitionsServiceProvider).loadActiveCompetitions(
+              cache: cache,
+            ),
+      );
 }
 
 @riverpod

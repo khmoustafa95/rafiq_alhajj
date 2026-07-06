@@ -8,6 +8,7 @@ import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/providers/location_providers.dart';
+import 'package:rafiq_alhajj/features/sos/application/services/sos_location_tracker.dart';
 import 'package:rafiq_alhajj/features/sos/domain/models/sos_alert.dart';
 import 'package:rafiq_alhajj/features/sos/presentation/controllers/sos_controller.dart';
 import 'package:rafiq_alhajj/features/sos/presentation/providers/sos_providers.dart';
@@ -24,6 +25,9 @@ class _SosScreenState extends ConsumerState<SosScreen>
     with WidgetsBindingObserver {
   StreamSubscription<Position>? _positionSub;
   String? _trackingAlertId;
+  DateTime? _lastPingAt;
+  Position? _lastPingPosition;
+  int _activeDistanceFilter = SosLocationTracker.movingDistanceFilter;
 
   @override
   void initState() {
@@ -61,11 +65,36 @@ class _SosScreenState extends ConsumerState<SosScreen>
     }
     _stopTracking();
     _trackingAlertId = alertId;
+    _lastPingAt = null;
+    _lastPingPosition = null;
+    _activeDistanceFilter = SosLocationTracker.movingDistanceFilter;
+    _subscribePosition(alertId);
+  }
+
+  void _subscribePosition(String alertId) {
     _positionSub = ref
         .read(locationRepositoryProvider)
-        .watchPosition()
+        .watchPosition(distanceFilter: _activeDistanceFilter)
         .listen(
       (position) {
+        final nextFilter = SosLocationTracker.distanceFilterFor(position);
+        if (nextFilter != _activeDistanceFilter) {
+          _activeDistanceFilter = nextFilter;
+          unawaited(_positionSub?.cancel());
+          _subscribePosition(alertId);
+          return;
+        }
+
+        if (!SosLocationTracker.shouldPushPing(
+          position: position,
+          lastPingAt: _lastPingAt,
+          lastPingPosition: _lastPingPosition,
+        )) {
+          return;
+        }
+
+        _lastPingAt = DateTime.now();
+        _lastPingPosition = position;
         unawaited(
           ref
               .read(sosServiceProvider)
@@ -86,6 +115,8 @@ class _SosScreenState extends ConsumerState<SosScreen>
     unawaited(_positionSub?.cancel());
     _positionSub = null;
     _trackingAlertId = null;
+    _lastPingAt = null;
+    _lastPingPosition = null;
   }
 
   Future<void> _raise() async {
