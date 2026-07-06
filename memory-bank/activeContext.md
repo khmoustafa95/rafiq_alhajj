@@ -3,7 +3,7 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
-**Optimization execution (2026-07-06):** Batches 1–10 shipped on `cursor/optimization-execute-0985` (PR #11). **Batch 10:** `sos_monitor_screen` split (547→~202 lines) into `SosMonitorMap`, `SosMonitorAlertCard`, `SosPilgrimMarker`, `SosMonitorLiveBadge`, `SosMonitorEmptyState`; Semantics on alert cards, map markers, refresh + action buttons. **Remaining:** Phase 1 device smoke; apply dashboard RPC on staging.
+**Optimization execution (2026-07-06):** Batches 1–11 shipped on `cursor/optimization-execute-0985` (PR #11). **Batch 11:** `staff_data_table` split (1217→~337 lines) into models, toolbar, pagination, header/data rows, selection bar, empty state, `StaffCellText`, `StaffToolbarButton`; Semantics on toolbar/search/pagination/row actions. **Remaining:** Phase 1 device smoke; apply dashboard RPC on staging.
 
 **Optimization roadmap (2026-07-06):** One self-contained JSON per platform × environment under `config/dart-defines/{platform}.{env}.json` (secrets, gitignored) + `*.example.json` (templates). Platforms: `web`, `android`, `android-device`, `ios`. Environments: `local`, `staging`, `production`. Central resolver `scripts/resolve-dart-defines.mjs`; bootstrap `npm run config:bootstrap` migrates legacy root files. VS Code launch.json updated (8 configs). Dev npm: `dev:web`, `dev:android`, `dev:android:device`, `dev:web:staging`, `dev:android:staging`. `AppConfig.appEnv` / `isStagingEnv` added. Docs: `config/dart-defines/README.md`, runbook + staging-setup updated. ⚠ Fill `android.staging.json` → `FIREBASE_APP_ID` from `google-services.json` before APK build.
 
