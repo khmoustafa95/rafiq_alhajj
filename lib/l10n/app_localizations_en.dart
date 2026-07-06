@@ -1598,6 +1598,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageEnglishShort => 'EN';
 
   @override
+  String get themeSwitcherTitle => 'Choose theme';
+
+  @override
+  String get themeSwitcherSubtitle => 'Your choice is saved for next time';
+
+  @override
+  String get themeModeSystem => 'System default';
+
+  @override
+  String get themeModeSystemSubtitle => 'Follows your device settings';
+
+  @override
+  String get themeModeLight => 'Light';
+
+  @override
+  String get themeModeLightSubtitle => 'Always use the light theme';
+
+  @override
+  String get themeModeDark => 'Dark';
+
+  @override
+  String get themeModeDarkSubtitle => 'Always use the dark theme';
+
+  @override
+  String get themeModeSystemShort => 'Auto';
+
+  @override
+  String get themeModeLightShort => 'Light';
+
+  @override
+  String get themeModeDarkShort => 'Dark';
+
+  @override
   String toolsQuranSurahSubtitle(String name, int count, String ayahsLabel) {
     return '$name · $count $ayahsLabel';
   }

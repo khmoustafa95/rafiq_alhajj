@@ -7,6 +7,7 @@ import 'package:rafiq_alhajj/core/l10n/app_locale_settings.dart';
 import 'package:rafiq_alhajj/core/l10n/locale_controller.dart';
 import 'package:rafiq_alhajj/core/routing/app_router.dart';
 import 'package:rafiq_alhajj/core/theme/app_theme.dart';
+import 'package:rafiq_alhajj/core/theme/theme_mode_controller.dart';
 import 'package:rafiq_alhajj/core/widgets/app_exit_guard.dart';
 import 'package:rafiq_alhajj/core/widgets/push_notification_starter.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_catalog_refresh_binding.dart';
@@ -22,6 +23,7 @@ class AppRoot extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
     final locale = ref.watch(localeControllerProvider);
+    final themeMode = ref.watch(themeModeControllerProvider);
     ref.watch(contentCatalogRefreshBindingProvider);
 
     return ScreenUtilInit(
@@ -34,6 +36,7 @@ class AppRoot extends ConsumerWidget {
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
+          themeMode: themeMode,
           locale: locale,
           localeResolutionCallback: (deviceLocale, supportedLocales) {
             if (deviceLocale == null) return AppLocaleSettings.defaultLocale;

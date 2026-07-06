@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rafiq_alhajj/core/widgets/language_switcher.dart';
+import 'package:rafiq_alhajj/core/widgets/theme_switcher.dart';
 
 /// App bar with the language switcher appended to [actions].
 class RafiqAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -46,6 +47,7 @@ class RafiqAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: elevation,
       actions: [
         ...?actions,
+        const ThemeSwitcherAppBarAction(compact: true),
         const LanguageSwitcherAppBarAction(compact: true),
       ],
     );

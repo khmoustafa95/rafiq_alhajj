@@ -11,6 +11,7 @@ import 'package:rafiq_alhajj/core/widgets/staff_button_styles.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_connectivity_banner.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_sidebar_provider.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
+import 'package:rafiq_alhajj/core/widgets/theme_switcher.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/controllers/sign_out_controller.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
@@ -110,6 +111,7 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
           ),
           actions: const [
             NotificationBellButton(),
+            ThemeSwitcherAppBarAction(compact: true),
             LanguageSwitcherAppBarAction(compact: true),
             SizedBox(width: 8),
           ],
@@ -634,6 +636,7 @@ class StaffWebHeader extends StatelessWidget {
               children: [
                 const NotificationBellButton(),
                 SizedBox(width: sw(8)),
+                const ThemeSwitcherAppBarAction(compact: true),
                 const LanguageSwitcherAppBarAction(compact: true),
                 ...actions.expand(
                   (action) => [SizedBox(width: sw(8)), action],

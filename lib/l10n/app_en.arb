@@ -774,6 +774,23 @@
   "languageEnglishSubtitle": "الإنجليزية",
   "languageArabicShort": "عربي",
   "languageEnglishShort": "EN",
+  "themeSwitcherTitle": "Choose theme",
+  "@themeSwitcherTitle": {
+    "description": "Title on the theme picker bottom sheet"
+  },
+  "themeSwitcherSubtitle": "Your choice is saved for next time",
+  "@themeSwitcherSubtitle": {
+    "description": "Subtitle on the theme picker bottom sheet"
+  },
+  "themeModeSystem": "System default",
+  "themeModeSystemSubtitle": "Follows your device settings",
+  "themeModeLight": "Light",
+  "themeModeLightSubtitle": "Always use the light theme",
+  "themeModeDark": "Dark",
+  "themeModeDarkSubtitle": "Always use the dark theme",
+  "themeModeSystemShort": "Auto",
+  "themeModeLightShort": "Light",
+  "themeModeDarkShort": "Dark",
   "toolsQuranSurahSubtitle": "{name} · {count} {ayahsLabel}",
   "@toolsQuranSurahSubtitle": {
     "placeholders": {
