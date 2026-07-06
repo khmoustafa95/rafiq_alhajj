@@ -3,6 +3,33 @@ import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/features/notifications/application/utils/push_navigation_resolver.dart';
 
 void main() {
+  group('tryResolvePushNavigationTarget', () {
+    test('returns null for missing route', () {
+      expect(tryResolvePushNavigationTarget(const {}), isNull);
+    });
+
+    test('returns null for content route without id', () {
+      expect(
+        tryResolvePushNavigationTarget(const {'route': 'content'}),
+        isNull,
+      );
+    });
+
+    test('returns null for unknown routes', () {
+      expect(
+        tryResolvePushNavigationTarget(const {'route': 'unknown'}),
+        isNull,
+      );
+    });
+
+    test('maps home route to go target', () {
+      final target = tryResolvePushNavigationTarget(const {'route': 'home'});
+
+      expect(target?.kind, PushNavigationKind.go);
+      expect(target?.path, AppRoutes.home);
+    });
+  });
+
   group('resolvePushNavigationTarget', () {
     test('maps content route with id to detail push', () {
       final target = resolvePushNavigationTarget({

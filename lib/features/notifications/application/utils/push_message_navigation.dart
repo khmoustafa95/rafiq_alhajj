@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
-import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/root_navigator_key.dart';
 import 'package:rafiq_alhajj/features/notifications/application/services/push_open_handler.dart';
-import 'package:rafiq_alhajj/features/notifications/application/utils/notification_navigation.dart';
 import 'package:rafiq_alhajj/features/notifications/application/utils/pending_push_navigation.dart';
 import 'package:rafiq_alhajj/features/notifications/application/utils/push_navigation_resolver.dart';
 
@@ -49,18 +47,5 @@ void flushPendingPushNavigation({int maxAttempts = 1}) {
 
 void _navigateWithContext(BuildContext context, Map<String, dynamic> data) {
   unawaited(PushOpenHandler.handleOpen(data));
-
-  final target = resolvePushNavigationTarget(data);
-  switch (target.kind) {
-    case PushNavigationKind.push:
-      if (target.path != null) {
-        unawaited(context.push(target.path!));
-      }
-    case PushNavigationKind.go:
-      if (target.path != null) {
-        context.go(target.path!);
-      }
-    case PushNavigationKind.sos:
-      context.go(resolveSosRoute(context));
-  }
+  executePushNavigationTarget(context, resolvePushNavigationTarget(data));
 }
