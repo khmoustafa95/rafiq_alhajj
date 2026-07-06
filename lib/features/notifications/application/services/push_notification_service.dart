@@ -282,9 +282,10 @@ class PushNotificationService {
   }
 
   void _handleRemoteMessage(RemoteMessage message) {
-    final dedupeKey = message.messageId ??
-        message.data['notification_id'] as String? ??
-        message.data['id'] as String?;
+    final dedupeKey = pushOpenDedupeKey(
+      messageId: message.messageId,
+      data: message.data,
+    );
     if (dedupeKey != null) {
       if (_handledOpenedMessageIds.contains(dedupeKey)) {
         return;
