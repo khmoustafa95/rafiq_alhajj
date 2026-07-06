@@ -115,7 +115,7 @@ class _FieldOperatorPilgrimScreenState
     }
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: RafiqAppBar(
         title: Text(l10n.fieldOperatorPilgrimTitle),
         leading: IconButton(

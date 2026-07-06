@@ -13,7 +13,7 @@
     "config:resolve": "node ./scripts/resolve-dart-defines.mjs",
     "setup": "powershell -ExecutionPolicy Bypass -File ./scripts/dev-setup.ps1",
     "setup:users": "powershell -ExecutionPolicy Bypass -File ./scripts/seed-demo-users.ps1",
-    "setup:registry": "node ./scripts/seed-fake-pilgrim-registry.mjs",
+    "qa:staging": "node ./scripts/qa-staging.mjs",
     "staging:setup-hosting": "powershell -ExecutionPolicy Bypass -File ./scripts/setup-firebase-hosting.ps1",
     "staging:setup-db": "powershell -ExecutionPolicy Bypass -File ./scripts/setup-staging-supabase.ps1",
     "staging:build": "powershell -ExecutionPolicy Bypass -File ./scripts/build-staging-web.ps1",

@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
-import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/field_operator/domain/models/field_pilgrim_status.dart';
 import 'package:rafiq_alhajj/features/field_operator/domain/models/pilgrim_search_item.dart';
@@ -54,9 +53,10 @@ class _FieldOperatorPilgrimsScreenState
     final pilgrimsAsync = ref.watch(fieldOperatorSearchProvider);
     final statusFilter =
         ref.read(fieldOperatorSearchProvider.notifier).statusFilter;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: colorScheme.surface,
       appBar: RafiqAppBar(
         title: Text(l10n.fieldOperatorPilgrimsTitle),
         actions: [
@@ -85,10 +85,10 @@ class _FieldOperatorPilgrimsScreenState
                 hintText: l10n.fieldOperatorSearchHintExtended,
                 prefixIcon: const Icon(Icons.search),
                 filled: true,
-                fillColor: AppColors.surface,
+                fillColor: colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14.r),
-                  borderSide: const BorderSide(color: AppColors.border),
+                  borderSide: BorderSide(color: colorScheme.outlineVariant),
                 ),
               ),
               onChanged: _onSearchChanged,
@@ -183,6 +183,8 @@ class _FilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Padding(
       padding: EdgeInsetsDirectional.only(end: 8.w),
       child: FilterChip(
@@ -190,10 +192,10 @@ class _FilterChip extends StatelessWidget {
         selected: selected,
         onSelected: (_) => onSelected(),
         showCheckmark: false,
-        selectedColor: AppColors.primary.withValues(alpha: 0.12),
-        checkmarkColor: AppColors.primary,
+        selectedColor: colorScheme.primaryContainer,
+        checkmarkColor: colorScheme.primary,
         labelStyle: TextStyle(
-          color: selected ? AppColors.primary : AppColors.chipInactiveText,
+          color: selected ? colorScheme.onPrimaryContainer : colorScheme.onSurfaceVariant,
           fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
         ),
       ),

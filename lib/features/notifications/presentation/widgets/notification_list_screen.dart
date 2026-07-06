@@ -520,12 +520,16 @@ class _NotificationTile extends StatelessWidget {
     final isRead = notification.isRead;
     final radius = BorderRadius.circular(sr(AppDecorations.radiusLg));
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: radius,
-        child: Ink(
+    return Semantics(
+      label: title,
+      hint: isRead ? null : l10n.notificationsNewBadge,
+      button: true,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: radius,
+          child: Ink(
           decoration: BoxDecoration(
             color: isRead ? AppColors.surface : AppColors.notificationUnread,
             borderRadius: radius,
@@ -621,6 +625,7 @@ class _NotificationTile extends StatelessWidget {
           ),
         ),
       ),
+    ),
     );
   }
 }

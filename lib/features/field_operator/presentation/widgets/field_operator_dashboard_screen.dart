@@ -40,9 +40,10 @@ class FieldOperatorDashboardScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final statsAsync = ref.watch(fieldOperatorStatsProvider);
     final operatorName = ref.watch(authProfileFullNameProvider);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: colorScheme.surface,
       appBar: RafiqAppBar(
         title: Text(l10n.fieldOperatorDashboardTitle),
         actions: [
@@ -88,7 +89,7 @@ class FieldOperatorDashboardScreen extends ConsumerWidget {
               Text(
                 l10n.fieldOperatorStatsHint,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.textSecondary,
+                      color: colorScheme.onSurfaceVariant,
                     ),
               ),
               SizedBox(height: 14.h),
@@ -258,6 +259,8 @@ class _ProgressSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     if (stats.total == 0) {
       return const SizedBox.shrink();
     }
@@ -283,7 +286,7 @@ class _ProgressSummary extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: completedRatio,
                 minHeight: 10.h,
-                backgroundColor: AppColors.chipInactive,
+                backgroundColor: colorScheme.surfaceContainerHighest,
                 color: AppColors.success,
               ),
             ),
@@ -295,7 +298,7 @@ class _ProgressSummary extends StatelessWidget {
                 stats.total,
               ),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
+                    color: colorScheme.onSurfaceVariant,
                   ),
             ),
           ],

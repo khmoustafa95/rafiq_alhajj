@@ -157,7 +157,7 @@ class _SosScreenState extends ConsumerState<SosScreen>
     final isBusy = ref.watch(sosRaiseProvider.select((s) => s.isLoading));
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: RafiqAppBar(title: Text(l10n.sosTitle)),
       body: alertAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -206,24 +206,28 @@ class _SosScreenState extends ConsumerState<SosScreen>
                 ),
           ),
           SizedBox(height: 32.h),
-          FilledButton.icon(
-            onPressed: isBusy ? null : _raise,
-            style: FilledButton.styleFrom(
-              backgroundColor: AppColors.error,
-              foregroundColor: AppColors.onPrimary,
-              padding: EdgeInsets.symmetric(vertical: 18.h),
+          Semantics(
+            button: true,
+            label: l10n.sosRaiseButton,
+            child: FilledButton.icon(
+              onPressed: isBusy ? null : _raise,
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.error,
+                foregroundColor: AppColors.onPrimary,
+                padding: EdgeInsets.symmetric(vertical: 18.h),
+              ),
+              icon: isBusy
+                  ? SizedBox(
+                      width: 20.w,
+                      height: 20.w,
+                      child: const CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.onPrimary,
+                      ),
+                    )
+                  : const Icon(Icons.campaign_rounded),
+              label: Text(l10n.sosRaiseButton),
             ),
-            icon: isBusy
-                ? SizedBox(
-                    width: 20.w,
-                    height: 20.w,
-                    child: const CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.onPrimary,
-                    ),
-                  )
-                : const Icon(Icons.campaign_rounded),
-            label: Text(l10n.sosRaiseButton),
           ),
         ],
       ),

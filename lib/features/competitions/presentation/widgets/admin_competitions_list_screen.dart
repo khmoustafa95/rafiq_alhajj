@@ -7,7 +7,6 @@ import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
-import 'package:rafiq_alhajj/core/utils/staff_table_processor.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_async_table_body.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_data_table.dart';
@@ -99,24 +98,6 @@ class _AdminCompetitionsListScreenState
     );
   }
 
-  PaginatedResult<Competition> _pageFrom(List<Competition> items) {
-    return StaffTableProcessor.paginate(
-      source: items,
-      query: _query,
-      searchValue: (item) =>
-          '${item.title} ${item.description ?? ''}'.trim(),
-      filterValues: {
-        'status': (item) => item.isActive ? 'active' : 'inactive',
-      },
-      sortValues: {
-        'title': (item) => item.title.toLowerCase(),
-        'starts_at': (item) => item.startsAt,
-        'ends_at': (item) => item.endsAt,
-        'status': (item) => item.isActive ? 0 : 1,
-      },
-    );
-  }
-
   List<Widget> _toolbarActions(AppLocalizations l10n) {
     return [
       StaffToolbarButton(
@@ -135,16 +116,10 @@ class _AdminCompetitionsListScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final listAsync = ref.watch(adminCompetitionListProvider);
+    final pageAsync = ref.watch(adminCompetitionListPageProvider(_query));
     final toolbarActions = _toolbarActions(l10n);
     final columns = _tableDefs.columns(context);
     final filters = _tableDefs.filters(context);
-
-    final pageAsync = listAsync.when<AsyncValue<PaginatedResult<Competition>>>(
-      data: (items) => AsyncData(_pageFrom(items)),
-      loading: () => const AsyncLoading(),
-      error: (error, stackTrace) => AsyncError(error, stackTrace),
-    );
 
     final body = AppPlatform.isWeb
         ? StaffAsyncTableBody<Competition>(
@@ -157,7 +132,7 @@ class _AdminCompetitionsListScreenState
             filters: filters,
             toolbarActions: toolbarActions,
             onRetry: () {
-              unawaited(ref.read(adminCompetitionListProvider.notifier).refresh());
+              ref.invalidate(adminCompetitionListPageProvider(_query));
             },
             onRowTap: (competition) => _openEdit(competition.id),
             trailingBuilder: (context, competition) => StaffTableRowActions(
@@ -175,20 +150,17 @@ class _AdminCompetitionsListScreenState
             emptyMessage: l10n.adminCompetitionsEmpty,
             emptyIcon: Icons.emoji_events_outlined,
           )
-        : listAsync.when(
+        : pageAsync.when(
             skipLoadingOnReload: true,
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (error, _) => StaffErrorView.fromError(
               l10n,
               error: error,
               onRetry: () {
-                unawaited(
-                  ref.read(adminCompetitionListProvider.notifier).refresh(),
-                );
+                ref.invalidate(adminCompetitionListPageProvider(_query));
               },
             ),
-            data: (items) {
-              final page = _pageFrom(items);
+            data: (page) {
               if (page.items.isEmpty) {
                 return StaffEmptyState(
                   message: l10n.adminCompetitionsEmpty,
