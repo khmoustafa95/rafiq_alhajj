@@ -100,7 +100,7 @@ class _NotificationListScreenState
               ),
               onRefresh: () => unawaited(_refresh()),
             ),
-            const Divider(height: 1, color: AppColors.border),
+            Divider(height: 1, color: Theme.of(context).dividerColor),
             Expanded(
               child: inboxAsync.when(
                 loading: () =>
@@ -151,12 +151,13 @@ class _NotificationsHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     final subtitle = unreadCount > 0
         ? l10n.notificationsUnreadCount(unreadCount)
         : l10n.notificationsAllReadSubtitle;
 
     return Container(
-      color: AppColors.surface,
+      color: colorScheme.surface,
       padding: EdgeInsets.fromLTRB(sw(16), sh(14), sw(12), sh(14)),
       child: Center(
         child: ConstrainedBox(
@@ -383,6 +384,7 @@ class _FilterSegments extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     final labels = [
       l10n.notificationsFilterAll,
       l10n.notificationsFilterGeneral,
@@ -392,7 +394,7 @@ class _FilterSegments extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(sw(4)),
       decoration: BoxDecoration(
-        color: AppColors.surfaceMuted,
+        color: colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(sr(AppDecorations.radiusMd)),
       ),
       child: Row(
@@ -461,6 +463,8 @@ class _GroupHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: sw(4)),
       child: Row(
@@ -468,7 +472,7 @@ class _GroupHeader extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              color: AppColors.textSecondary,
+              color: colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w700,
               fontSize: ss(13),
               letterSpacing: 0.2,
@@ -478,13 +482,13 @@ class _GroupHeader extends StatelessWidget {
           Container(
             padding: EdgeInsets.symmetric(horizontal: sw(7), vertical: sh(1)),
             decoration: BoxDecoration(
-              color: AppColors.surfaceMuted,
+              color: colorScheme.surfaceContainerHigh,
               borderRadius: BorderRadius.circular(sr(20)),
             ),
             child: Text(
               '$count',
               style: TextStyle(
-                color: AppColors.textSecondary,
+                color: colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w700,
                 fontSize: ss(11),
               ),
@@ -514,11 +518,15 @@ class _NotificationTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
     final accent = _accentForType(notification.type);
     final title = notification.titleForLocale(locale);
     final body = notification.bodyForLocale(locale);
     final isRead = notification.isRead;
     final radius = BorderRadius.circular(sr(AppDecorations.radiusLg));
+    final unreadTint =
+        isDark ? AppColors.notificationUnreadDark : AppColors.notificationUnread;
 
     return Semantics(
       label: title,
@@ -531,11 +539,11 @@ class _NotificationTile extends StatelessWidget {
           borderRadius: radius,
           child: Ink(
           decoration: BoxDecoration(
-            color: isRead ? AppColors.surface : AppColors.notificationUnread,
+            color: isRead ? colorScheme.surface : unreadTint,
             borderRadius: radius,
             border: Border.all(
               color: isRead
-                  ? AppColors.border
+                  ? colorScheme.outline
                   : AppColors.primary.withValues(alpha: 0.35),
             ),
           ),
@@ -569,7 +577,7 @@ class _NotificationTile extends StatelessWidget {
                             child: Text(
                               title,
                               style: TextStyle(
-                                color: AppColors.textPrimary,
+                                color: colorScheme.onSurface,
                                 fontWeight:
                                     isRead ? FontWeight.w500 : FontWeight.w700,
                                 fontSize: ss(15),
@@ -583,7 +591,7 @@ class _NotificationTile extends StatelessWidget {
                           Text(
                             _shortTime(notification.createdAt, l10n, locale),
                             style: TextStyle(
-                              color: AppColors.textSecondary,
+                              color: colorScheme.onSurfaceVariant,
                               fontSize: ss(11),
                               fontWeight: FontWeight.w500,
                             ),
@@ -607,7 +615,7 @@ class _NotificationTile extends StatelessWidget {
                         Text(
                           body,
                           style: TextStyle(
-                            color: AppColors.textSecondary,
+                            color: colorScheme.onSurfaceVariant,
                             fontSize: ss(13),
                             height: 1.4,
                           ),
@@ -668,6 +676,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     return Center(
       child: Padding(
         padding: EdgeInsets.all(sw(32)),
@@ -692,7 +701,7 @@ class _EmptyState extends StatelessWidget {
               l10n.notificationsEmpty,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: AppColors.textPrimary,
+                color: colorScheme.onSurface,
                 fontWeight: FontWeight.w700,
                 fontSize: ss(16),
               ),
@@ -702,7 +711,7 @@ class _EmptyState extends StatelessWidget {
               l10n.notificationsAllCaughtUp,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: AppColors.textSecondary,
+                color: colorScheme.onSurfaceVariant,
                 fontSize: ss(13),
               ),
             ),
@@ -721,6 +730,7 @@ class _ErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     return Center(
       child: Padding(
         padding: EdgeInsets.all(sw(32)),
@@ -737,7 +747,7 @@ class _ErrorState extends StatelessWidget {
               l10n.notificationsLoadError,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: AppColors.textPrimary,
+                color: colorScheme.onSurface,
                 fontSize: ss(14),
               ),
             ),

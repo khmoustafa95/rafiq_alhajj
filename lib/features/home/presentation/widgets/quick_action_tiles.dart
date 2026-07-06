@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
-import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/section_header.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/domain/data/islamic_tools_catalog.dart';
@@ -38,10 +37,11 @@ class QuickActionTiles extends StatelessWidget {
             separatorBuilder: (_, _) => SizedBox(width: 10.w),
             itemBuilder: (context, index) {
               final item = items[index];
+              final colorScheme = Theme.of(context).colorScheme;
               return SizedBox(
                 width: _tileWidth.w,
                 child: Material(
-                  color: AppColors.surfaceMuted,
+                  color: colorScheme.surfaceContainerHigh,
                   borderRadius:
                       BorderRadius.circular(AppDecorations.radiusMd),
                   child: InkWell(
@@ -68,10 +68,7 @@ class QuickActionTiles extends StatelessWidget {
                           SizedBox(height: 8.h),
                           Text(
                             item.title,
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelMedium
-                                ?.copyWith(color: AppColors.textPrimary),
+                            style: Theme.of(context).textTheme.labelMedium,
                             textAlign: TextAlign.center,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,

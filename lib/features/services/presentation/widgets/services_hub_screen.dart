@@ -157,14 +157,19 @@ class _ServiceTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Material(
-      color: AppColors.surface,
+      color: colorScheme.surface,
       borderRadius: BorderRadius.circular(AppDecorations.radiusLg),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppDecorations.radiusLg),
         child: Container(
-          decoration: AppDecorations.card(radius: AppDecorations.radiusLg),
+          decoration: AppDecorations.themedCard(
+            context,
+            radius: AppDecorations.radiusLg,
+          ),
           padding: EdgeInsets.all(16.w),
           child: Row(
             children: [

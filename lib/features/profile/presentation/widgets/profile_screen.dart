@@ -180,17 +180,19 @@ class _ProfileTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Padding(
       padding: EdgeInsets.only(bottom: 10.h),
       child: Material(
-        color: AppColors.surface,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
           child: Container(
             decoration: BoxDecoration(
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: colorScheme.outline),
               borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
             ),
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
