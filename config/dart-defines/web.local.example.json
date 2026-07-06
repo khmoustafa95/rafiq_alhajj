@@ -1,6 +1,9 @@
 {
+  "APP_ENV": "local",
+  "APP_PLATFORM": "web",
   "SUPABASE_URL": "http://127.0.0.1:54321",
   "SUPABASE_ANON_KEY": "your-local-anon-key-from-supabase-status",
+  "CRASH_REPORTING_ENABLED": "false",
   "FIREBASE_PROJECT_ID": "",
   "FIREBASE_API_KEY": "",
   "FIREBASE_APP_ID": "",

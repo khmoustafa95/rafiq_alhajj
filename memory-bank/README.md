@@ -5,7 +5,7 @@ Persistent project context for AI-assisted development across sessions.
 ## Files
 
 | File | Purpose | Update frequency |
-|------|---------|------------------|
+| --- | --- | --- |
 | [projectbrief.md](./projectbrief.md) | Goals, scope, constraints | When product scope changes |
 | [productContext.md](./productContext.md) | UX, users, product rationale | When product/UX decisions change |
 | [systemPatterns.md](./systemPatterns.md) | Architecture, conventions, patterns | When structure or patterns change |

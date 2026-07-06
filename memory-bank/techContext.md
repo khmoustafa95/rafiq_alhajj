@@ -3,7 +3,7 @@
 ## Stack
 
 | Area | Package / tool | Version (resolved) |
-|------|----------------|-------------------|
+| --- | --- | --- |
 | Framework | Flutter SDK | Dart ^3.11.4 |
 | State | `flutter_riverpod` | ^3.3.1 |
 | State codegen | `riverpod_annotation` / `riverpod_generator` | ^4.0.2 / ^4.0.3 |

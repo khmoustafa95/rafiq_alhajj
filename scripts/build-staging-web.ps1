@@ -15,19 +15,8 @@ if ($definesJson) {
     $DefinesFile = $tempDefinesFile
 }
 elseif (-not $DefinesFile) {
-    if (Test-Path "dart_defines.staging.json") {
-        $DefinesFile = "dart_defines.staging.json"
-    }
-    elseif (Test-Path "dart_defines.staging.local.json") {
-        $DefinesFile = "dart_defines.staging.local.json"
-    }
-    else {
-        Write-Error @"
-Missing staging dart-defines.
-Create dart_defines.staging.local.json from dart_defines.staging.example.json
-or set STAGING_DART_DEFINES_JSON.
-"@
-    }
+    $DefinesFile = node ./scripts/resolve-dart-defines.mjs web staging
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 
 if (-not (Test-Path $DefinesFile)) {
@@ -35,7 +24,7 @@ if (-not (Test-Path $DefinesFile)) {
 }
 
 try {
-    Write-Host "==> Building Flutter Web (staging) with $DefinesFile"
+    Write-Host "==> Building Flutter Web (web.staging) with $DefinesFile"
     flutter pub get
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 

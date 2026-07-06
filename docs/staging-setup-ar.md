@@ -3,7 +3,7 @@
 دليل إعداد بيئة تجريبية على السحابة **مجانية** لمشروع رفيق الحج، مع رابط ويب ثابت يمكن مشاركته مع العميل.
 
 | المكوّن | الخدمة | الرابط الثابت |
-|---------|--------|----------------|
+| --- | --- | --- |
 | واجهة الويب (Flutter Web) | Firebase Hosting | `https://rafiq-alhajj-staging.web.app` |
 | قاعدة البيانات + Auth | Supabase (Free) | `https://<project-ref>.supabase.co` |
 
@@ -30,7 +30,7 @@ flowchart LR
 ## 1. المتطلبات
 
 | الأداة | الغرض |
-|--------|--------|
+| --- | --- |
 | حساب [Supabase](https://supabase.com) | Backend مجاني |
 | حساب [Firebase](https://console.firebase.google.com) | استضافة الويب (المشروع `rafiq-alhajj` موجود مسبقاً) |
 | حساب GitHub | نشر تلقائي عبر Actions |
@@ -73,7 +73,7 @@ npm run staging:setup-db
 في Supabase Dashboard → **Authentication → URL Configuration**:
 
 | الحقل | القيمة |
-|-------|--------|
+| --- | --- |
 | Site URL | `https://rafiq-alhajj-staging.web.app` |
 | Redirect URLs | `https://rafiq-alhajj-staging.web.app/**` |
 | | `https://rafiq-alhajj-staging.firebaseapp.com/**` |
@@ -96,16 +96,32 @@ npm run staging:setup-hosting
 
 ---
 
-## 4. ملف التكوين المحلي (اختياري للنشر اليدوي)
+## 4. ملفات التكوين (منصة × بيئة)
 
-```bash
-cp dart_defines.staging.example.json dart_defines.staging.local.json
+```powershell
+npm run config:bootstrap
 ```
 
-عدّل القيم:
+ينشئ ملفات الأسرار من القوالب في `config/dart-defines/`:
+
+| السيناريو | الملف |
+| --- | --- |
+| ويب · محلي | `config/dart-defines/web.local.json` |
+| ويب · staging | `config/dart-defines/web.staging.json` |
+| Android محاكي · محلي | `config/dart-defines/android.local.json` |
+| Android جهاز حقيقي · محلي | `config/dart-defines/android-device.local.json` |
+| Android · staging | `config/dart-defines/android.staging.json` |
+
+القوالب المرفوعة على Git: `config/dart-defines/*.example.json`
+
+> الملفات بدون `.example` **غير مرفوعة على Git**. راجع `config/dart-defines/README.md`.
+
+مثال محتوى `web.staging.json`:
 
 ```json
 {
+  "APP_ENV": "staging",
+  "APP_PLATFORM": "web",
   "SUPABASE_URL": "https://YOUR_PROJECT_REF.supabase.co",
   "SUPABASE_ANON_KEY": "eyJ...",
   "CRASH_REPORTING_ENABLED": "false",
@@ -119,8 +135,6 @@ cp dart_defines.staging.example.json dart_defines.staging.local.json
   "FIREBASE_MEASUREMENT_ID": ""
 }
 ```
-
-> `dart_defines.staging.local.json` **غير مرفوع على Git** (`.gitignore`).
 
 ### نشر يدوي من جهازك
 
@@ -145,7 +159,7 @@ npm run staging:deploy
 **Repository → Settings → Secrets and variables → Actions → New repository secret**
 
 | Secret | مطلوب | المصدر |
-|--------|-------|--------|
+| --- | --- | --- |
 | `STAGING_SUPABASE_URL` | نعم | `https://<ref>.supabase.co` |
 | `STAGING_SUPABASE_ANON_KEY` | نعم | Supabase → API → `anon` / publishable |
 | `FIREBASE_SERVICE_ACCOUNT_JSON` | نعم | محتوى ملف JSON كاملاً |
@@ -157,6 +171,11 @@ npm run staging:deploy
 | `STAGING_FIREBASE_STORAGE_BUCKET` | لا | Firebase Console |
 | `STAGING_FIREBASE_VAPID_KEY` | لا | Cloud Messaging → Web Push certificates |
 | `STAGING_FIREBASE_MEASUREMENT_ID` | لا | اختياري |
+| `STAGING_GOOGLE_SERVICES_JSON` | لا* | محتوى `android/app/google-services.json` كاملاً (لـ CI توزيع APK) |
+| `STAGING_FIREBASE_APP_ID` | لا* | `1:...:android:...` من Firebase Android app |
+| `STAGING_SUPABASE_SERVICE_ROLE_KEY` | لا | لمزامنة `latest_version` بعد توزيع APK في CI |
+
+\* مطلوب فقط إذا استخدمت workflow **Distribute Staging Android** من GitHub Actions.
 
 ### ج) تفعيل بيئة `staging` (اختياري لكن منظم)
 
@@ -176,7 +195,7 @@ npm run staging:deploy
 بعد `staging:setup-db` أو `staging:seed-users`:
 
 | الدور | البريد | كلمة المرور |
-|-------|--------|-------------|
+| --- | --- | --- |
 | مسؤول (لوحة ويب) | `admin@demo.local` | `demo123456` |
 | مشغّل مكتب | `operator@demo.local` | `demo123456` |
 | حاج | `pilgrim@demo.local` | `demo123456` |
@@ -198,7 +217,7 @@ npm run staging:seed-users
 ## 8. استكشاف الأخطاء
 
 | المشكلة | الحل |
-|---------|------|
+| --- | --- |
 | صفحة بيضاء بعد النشر | تأكد من `firebase.json` rewrites → `index.html` (موجود في المشروع) |
 | تسجيل الدخول يفشل | أضف رابط Staging في Supabase Auth → Redirect URLs |
 | `Missing GitHub secret` في Actions | أكمل الخطوة 5ب |
@@ -216,11 +235,90 @@ npm run staging:setup-db        # مرة واحدة — Supabase migrations + se
 npm run staging:build           # بناء web محلياً
 npm run staging:deploy          # بناء + نشر يدوي
 npm run staging:seed-users      # إعادة حسابات demo
+npm run staging:setup-app-distribution  # مرة واحدة — إعداد App Distribution
+npm run staging:build-apk       # بناء APK تجريبي (Android)
+npm run staging:distribute-android      # بناء + رفع APK للمختبرين
 ```
 
 ---
 
-## 10. الخطوة التالية (إنتاج)
+## 10. مشاركة تطبيق Android مع العميل (Firebase App Distribution)
+
+بيئة Staging على الويب تغطي **لوحة المسؤول والمشغّل**. لتجربة واجهة **الحاج** أو **المشغّل الميداني** على الهاتف، انشر APK عبر Firebase App Distribution.
+
+### 10.1 المتطلبات (مرة واحدة)
+
+| الملف / الأداة | الغرض |
+| --- | --- |
+| `android/app/google-services.json` | من Firebase Console → تطبيق Android (`com.example.rafiq_alhajj`) — **غير مرفوع على Git** |
+| `dart_defines.android.staging.local.json` | مفاتيح Staging + Firebase Android — انسخ من `config/dart-defines/android.staging.example.json` إلى `config/dart-defines/android.staging.json` |
+| Firebase CLI | `npm install -g firebase-tools` ثم `firebase login` |
+| حساب Firebase App Distribution | Console → Release & Monitor → App Distribution |
+
+**ملف واحد لكل سيناريو** — لا دمج بين web و android. راجع `config/dart-defines/README.md`.
+
+```powershell
+npm run config:bootstrap
+```
+
+### 10.2 الإعداد السريع
+
+```powershell
+npm run config:bootstrap
+npm run staging:setup-app-distribution
+```
+
+ينشئ مجموعة مختبرين (افتراضي: `client-preview`) ويرشدك لإضافة بريد العميل.
+
+تأكد أيضاً من تطبيق migration إدارة الإصدارات:
+
+```powershell
+npm run staging:setup-db
+```
+
+### 10.3 بناء وتوزيع APK
+
+```powershell
+# بناء فقط
+npm run staging:build-apk
+
+# بناء + رفع للمختبرين + مزامنة latest_version في Supabase
+npm run staging:distribute-android
+```
+
+**من GitHub Actions (اختياري):** Actions → **Distribute Staging Android** → Run workflow (يتطلب Secrets إضافية في القسم 5ب).
+
+**متغيرات اختيارية:**
+
+| المتغير | الافتراضي | الغرض |
+| --- | --- | --- |
+| `FIREBASE_APP_DISTRIBUTION_GROUPS` | `client-preview` | مجموعة المختبرين |
+| `FIREBASE_APP_DISTRIBUTION_NOTES` | نسخة من `pubspec.yaml` | ملاحظات الإصدار |
+| `ANDROID_DISTRIBUTION_INSTALL_URL` | — | رابط تثبيت Firebase (يُحفظ في `store_url` لزر التحديث داخل التطبيق) |
+
+بعد أول توزيع: **الإعدادات → إصدارات التطبيق → Android** — راجع `latest_version` وضع رابط التثبيت في `store_url` إن لم يُملأ تلقائياً.
+
+### 10.4 تجربة العميل على الهاتف
+
+1. يستلم العميل بريداً من Firebase App Distribution.
+2. يثبّت تطبيق **Firebase App Tester** (أو يفتح الرابط مباشرة).
+3. يسجّل الدخول كحاج: `pilgrim@demo.local` / `demo123456`.
+
+> **ملاحظة:** إصدار الويب Staging يبقى على `https://rafiq-alhajj-staging.web.app` للمسؤول؛ APK منفصل للجوال فقط.
+
+### 10.5 استكشاف أخطاء App Distribution
+
+| المشكلة | الحل |
+| --- | --- |
+| `Missing google-services.json` | حمّله من Firebase Console إلى `android/app/` |
+| `FIREBASE_APP_ID` خاطئ | استخدم `1:...:android:...` وليس `:web:` |
+| فشل الرفع | `firebase login` + تأكد أن الحساب له صلاحية App Distribution |
+| التحديث الإجباري لا يظهر | ارفع `min_version` من لوحة المسؤول بعد التأكد من `store_url` |
+| فشل مزامنة الإصدار | عيّن `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` (نفس `staging:setup-db`) |
+
+---
+
+## 11. الخطوة التالية (إنتاج)
 
 عند الجاهزية للإنتاج:
 

@@ -812,6 +812,54 @@
   "@adminSettingsLastUpdated": {
     "placeholders": {"date": {"type": "String"}}
   },
+  "appVersionForceTitle": "يلزم تحديث التطبيق",
+  "appVersionForceBody": "إصدارك الحالي ({current}) لم يعد مدعوماً. ثبّت الإصدار {latest} أو أحدث للمتابعة.",
+  "@appVersionForceBody": {
+    "placeholders": {
+      "current": {"type": "String"},
+      "latest": {"type": "String"}
+    }
+  },
+  "appVersionOptionalTitle": "يتوفر تحديث جديد",
+  "appVersionOptionalBody": "يتوفر إصدار أحدث ({current} ← {latest}). حدّث الآن للحصول على آخر التحسينات.",
+  "@appVersionOptionalBody": {
+    "placeholders": {
+      "current": {"type": "String"},
+      "latest": {"type": "String"}
+    }
+  },
+  "appVersionReleaseNotes": "ما الجديد",
+  "appVersionUpdateNow": "حدّث الآن",
+  "appVersionLater": "لاحقاً",
+  "appVersionStoreUrlMissing": "رابط التحميل غير مُعدّ بعد. تواصل مع الدعم أو حاول لاحقاً.",
+  "appVersionPlatformAndroid": "أندرويد",
+  "appVersionPlatformIos": "iOS",
+  "appVersionPlatformWeb": "ويب",
+  "appVersionAdminTitle": "إدارة الإصدارات",
+  "appVersionAdminSubtitle": "تحكّم بالحد الأدنى المدعوم وآخر إصدار لكل منصة.",
+  "appVersionAdminHint": "من يستخدم إصداراً أقل من الحد الأدنى يُجبَر على التحديث. من يستخدم إصداراً أقل من الأحدث يرى تنبيهاً اختيارياً.",
+  "appVersionAdminCurrentBuild": "هذا الجهاز: {platform} · v{version}",
+  "@appVersionAdminCurrentBuild": {
+    "placeholders": {
+      "platform": {"type": "String"},
+      "version": {"type": "String"}
+    }
+  },
+  "appVersionAdminPlatformHint": "صيغة semver: رئيسي.فرعي.تصحيح (مثال 1.2.0)",
+  "appVersionAdminMinVersion": "أدنى إصدار مدعوم",
+  "appVersionAdminMinVersionHint": "تحديث إجباري إذا كان الإصدار المثبّت أقل.",
+  "appVersionAdminLatestVersion": "آخر إصدار",
+  "appVersionAdminLatestVersionHint": "تنبيه تحديث اختياري إذا كان الإصدار المثبّت أقل.",
+  "appVersionAdminStoreUrl": "رابط المتجر / التحميل",
+  "appVersionAdminStoreUrlHint": "Play Store أو App Store أو Firebase App Distribution أو رابط الويب.",
+  "appVersionAdminReleaseNotesAr": "ملاحظات الإصدار (عربي)",
+  "appVersionAdminReleaseNotesEn": "ملاحظات الإصدار (إنجليزي)",
+  "appVersionAdminSavePlatform": "حفظ سياسة المنصة",
+  "appVersionAdminSaveSuccess": "تم حفظ سياسة الإصدار",
+  "appVersionAdminSaveError": "تعذر حفظ سياسة الإصدار",
+  "appVersionAdminFieldRequired": "هذا الحقل مطلوب",
+  "appVersionAdminInvalidSemver": "استخدم صيغة 1.0.0",
+  "appVersionMinGreaterThanLatest": "الحد الأدنى لا يمكن أن يكون أعلى من آخر إصدار.",
   "profilePilgrimSubtitle": "بيانات التسجيل التي أدخلها المشغّل عنك.",
   "servicesHeroBadge": "خدمات الحاج",
   "servicesHeroTitle": "مسار الخدمات",

@@ -2492,6 +2492,110 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get appVersionForceTitle => 'يلزم تحديث التطبيق';
+
+  @override
+  String appVersionForceBody(String current, String latest) {
+    return 'إصدارك الحالي ($current) لم يعد مدعوماً. ثبّت الإصدار $latest أو أحدث للمتابعة.';
+  }
+
+  @override
+  String get appVersionOptionalTitle => 'يتوفر تحديث جديد';
+
+  @override
+  String appVersionOptionalBody(String current, String latest) {
+    return 'يتوفر إصدار أحدث ($current ← $latest). حدّث الآن للحصول على آخر التحسينات.';
+  }
+
+  @override
+  String get appVersionReleaseNotes => 'ما الجديد';
+
+  @override
+  String get appVersionUpdateNow => 'حدّث الآن';
+
+  @override
+  String get appVersionLater => 'لاحقاً';
+
+  @override
+  String get appVersionStoreUrlMissing =>
+      'رابط التحميل غير مُعدّ بعد. تواصل مع الدعم أو حاول لاحقاً.';
+
+  @override
+  String get appVersionPlatformAndroid => 'أندرويد';
+
+  @override
+  String get appVersionPlatformIos => 'iOS';
+
+  @override
+  String get appVersionPlatformWeb => 'ويب';
+
+  @override
+  String get appVersionAdminTitle => 'إدارة الإصدارات';
+
+  @override
+  String get appVersionAdminSubtitle =>
+      'تحكّم بالحد الأدنى المدعوم وآخر إصدار لكل منصة.';
+
+  @override
+  String get appVersionAdminHint =>
+      'من يستخدم إصداراً أقل من الحد الأدنى يُجبَر على التحديث. من يستخدم إصداراً أقل من الأحدث يرى تنبيهاً اختيارياً.';
+
+  @override
+  String appVersionAdminCurrentBuild(String platform, String version) {
+    return 'هذا الجهاز: $platform · v$version';
+  }
+
+  @override
+  String get appVersionAdminPlatformHint =>
+      'صيغة semver: رئيسي.فرعي.تصحيح (مثال 1.2.0)';
+
+  @override
+  String get appVersionAdminMinVersion => 'أدنى إصدار مدعوم';
+
+  @override
+  String get appVersionAdminMinVersionHint =>
+      'تحديث إجباري إذا كان الإصدار المثبّت أقل.';
+
+  @override
+  String get appVersionAdminLatestVersion => 'آخر إصدار';
+
+  @override
+  String get appVersionAdminLatestVersionHint =>
+      'تنبيه تحديث اختياري إذا كان الإصدار المثبّت أقل.';
+
+  @override
+  String get appVersionAdminStoreUrl => 'رابط المتجر / التحميل';
+
+  @override
+  String get appVersionAdminStoreUrlHint =>
+      'Play Store أو App Store أو Firebase App Distribution أو رابط الويب.';
+
+  @override
+  String get appVersionAdminReleaseNotesAr => 'ملاحظات الإصدار (عربي)';
+
+  @override
+  String get appVersionAdminReleaseNotesEn => 'ملاحظات الإصدار (إنجليزي)';
+
+  @override
+  String get appVersionAdminSavePlatform => 'حفظ سياسة المنصة';
+
+  @override
+  String get appVersionAdminSaveSuccess => 'تم حفظ سياسة الإصدار';
+
+  @override
+  String get appVersionAdminSaveError => 'تعذر حفظ سياسة الإصدار';
+
+  @override
+  String get appVersionAdminFieldRequired => 'هذا الحقل مطلوب';
+
+  @override
+  String get appVersionAdminInvalidSemver => 'استخدم صيغة 1.0.0';
+
+  @override
+  String get appVersionMinGreaterThanLatest =>
+      'الحد الأدنى لا يمكن أن يكون أعلى من آخر إصدار.';
+
+  @override
   String get profilePilgrimSubtitle =>
       'بيانات التسجيل التي أدخلها المشغّل عنك.';
 

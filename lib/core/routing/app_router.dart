@@ -18,6 +18,7 @@ import 'package:rafiq_alhajj/features/admin_groups/presentation/widgets/admin_gr
 import 'package:rafiq_alhajj/features/admin_operators/presentation/widgets/admin_operator_edit_screen.dart';
 import 'package:rafiq_alhajj/features/admin_operators/presentation/widgets/admin_operators_list_screen.dart';
 import 'package:rafiq_alhajj/features/admin_settings/presentation/widgets/admin_settings_screen.dart';
+import 'package:rafiq_alhajj/features/app_version/presentation/widgets/admin_app_version_screen.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/widgets/login_screen.dart';
@@ -465,6 +466,11 @@ List<RouteBase> _mobilePilgrimRoutes() => [
         builder: (context, state) => const AdminSettingsScreen(),
       ),
       GoRoute(
+        path: AppRoutes.adminAppVersions,
+        name: 'adminAppVersions',
+        builder: (context, state) => const AdminAppVersionScreen(),
+      ),
+      GoRoute(
         path: AppRoutes.supportContacts,
         name: 'supportContacts',
         builder: (context, state) => const SupportContactsScreen(),
@@ -671,6 +677,11 @@ ShellRoute _staffWebShellRoute() {
         path: AppRoutes.adminSettings,
         name: 'adminSettings',
         builder: (context, state) => const AdminSettingsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminAppVersions,
+        name: 'adminAppVersions',
+        builder: (context, state) => const AdminAppVersionScreen(),
       ),
       GoRoute(
         path: AppRoutes.adminSupportContacts,

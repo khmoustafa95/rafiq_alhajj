@@ -23,7 +23,7 @@ A calm, premium Hajj companion that feels trustworthy and spiritually grounded �
 
 ### 1.2 Design principles (ranked)
 | Priority | Principle | Notes |
-|----------|-----------|-------|
+| --- | --- | --- |
 | 1 | Calm, card-based UI | White cards on `#F9FAFB`, 1px border + soft shadow, 12–20px radius |
 | 2 | Arabic-first / RTL | Default locale Arabic; layout auto-mirrors; directional widgets only |
 | 3 | Accessible touch targets | Buttons ≥ 48dp; bottom-bar icons in comfortable tap areas |
@@ -41,7 +41,7 @@ A calm, premium Hajj companion that feels trustworthy and spiritually grounded �
 
 ### 2.1 Brand personality
 | Attribute | Applied |
-|-----------|---------|
+| --- | --- |
 | Tone | Deep forest green + gold, indigo for journey/learning — Hajj Companion |
 | Density | Comfortable — `16.w`–`20.w` horizontal padding on mobile |
 | Decoration | Bordered white cards, 12–20px radius, soft shadow (blur 12, y+4) |
@@ -49,7 +49,7 @@ A calm, premium Hajj companion that feels trustworthy and spiritually grounded �
 
 ### 2.2 Logo & app icon
 | Asset | Status | Notes |
-|-------|--------|-------|
+| --- | --- | --- |
 | App icon | **Pending** | Still default Flutter icon |
 | Splash screen | **Pending** | Not implemented |
 | Wordmark | **Applied** | `HomeAppHeader` shows title + avatar circle |
@@ -60,7 +60,7 @@ A calm, premium Hajj companion that feels trustworthy and spiritually grounded �
 **Source of truth:** `lib/core/theme/app_colors.dart` (`abstract final class AppColors`)
 
 | Token | Hex | Usage |
-|-------|-----|-------|
+| --- | --- | --- |
 | `primary` | `#065F46` | Buttons, active nav, accent bars, gradients |
 | `primaryDark` | `#064E3B` | Prayer hero gradient end, outlined button text |
 | `onPrimary` | `#FFFFFF` | Text/icons on primary |
@@ -88,7 +88,7 @@ A calm, premium Hajj companion that feels trustworthy and spiritually grounded �
 
 **Semantic accents** (notification & content cards):
 | Meaning | Color | Token |
-|---------|-------|-------|
+| --- | --- | --- |
 | Urgent / announcement | `#EF4444` | `accentRed` |
 | Info / content | `#14B8A6` | `accentTeal` |
 | Transport / system | `#8B5CF6` | `accentPurple` |
@@ -102,7 +102,7 @@ A calm, premium Hajj companion that feels trustworthy and spiritually grounded �
 > **Note:** `google_fonts` (Inter via CDN) was **removed** to fix offline/Zone startup crashes. Do not reintroduce a network font. If a brand font is desired, bundle it as an asset.
 
 | Role | TextTheme slot | Size | Weight |
-|------|----------------|------|--------|
+| --- | --- | --- | --- |
 | Display | `displaySmall` | default | w700, line-height 1.2 |
 | Headline H1 | `headlineMedium` | 24 | w700, lh 1.25 |
 | Headline H2 | `headlineSmall` | 20 | w700, lh 1.3 |
@@ -121,7 +121,7 @@ A calm, premium Hajj companion that feels trustworthy and spiritually grounded �
 **ScreenUtil design size:** 375×812 (`AppConfig`). **Source:** `lib/core/theme/app_decorations.dart`
 
 | Token | Value | Where |
-|-------|-------|-------|
+| --- | --- | --- |
 | `radiusSm` | `8` | Small chips, compact controls |
 | `radiusMd` | `12` | Cards, buttons, inputs (default) |
 | `radiusLg` | `16` | Prayer hero, service tiles, featured cards |
@@ -133,7 +133,7 @@ A calm, premium Hajj companion that feels trustworthy and spiritually grounded �
 
 ### 2.6 Icons
 | Context | Treatment |
-|---------|-----------|
+| --- | --- |
 | Icon set | Material **rounded / outlined** variants (`*_rounded`, `*_outlined`) |
 | Bottom bar | 26sp; active = primary, inactive = `textSecondary` |
 | Home FAB | `home_rounded`, 30–34sp, center-docked in the bar notch |
@@ -153,7 +153,7 @@ A calm, premium Hajj companion that feels trustworthy and spiritually grounded �
 
 ### 3.2 Headers
 | Component | File | Used when |
-|-----------|------|-----------|
+| --- | --- | --- |
 | `HomeAppHeader` | `home_app_header.dart` | Mobile shell screens (home, guidance, services, notifications, profile) — title + avatar + optional actions, 1px divider below |
 | `RafiqAppBar` | `rafiq_app_bar.dart` | Login, detail/inner screens, staff mobile, web tools |
 | `StaffWebHeader` | `staff_web_shell.dart` | Admin/operator web content top bar |
@@ -162,7 +162,7 @@ Header background `#FFFFFF`, start-aligned title, language switcher chip in `Raf
 
 ### 3.3 Buttons
 | Variant | Style |
-|---------|-------|
+| --- | --- |
 | Primary (Filled) | `primary` bg, white text, 12px radius, 48dp min height |
 | Secondary (Outlined) | Gold border + gold text |
 | Text | Primary green text, w600 |
@@ -171,7 +171,7 @@ Header background `#FFFFFF`, start-aligned title, language switcher chip in `Raf
 
 ### 3.4 Cards
 | Variant | File | Style |
-|---------|------|-------|
+| --- | --- | --- |
 | Base card | `AppDecorations.card()` | White, 1px border, soft shadow |
 | Prayer hero | `prayer_times_hero_card.dart` | Green gradient, gold active prayer slot |
 | Services hero | `services_hub_screen.dart` | **Green→indigo** gradient panel, gold badge, mosque watermark |
@@ -186,7 +186,7 @@ Header background `#FFFFFF`, start-aligned title, language switcher chip in `Raf
 
 ### 3.5 Inputs & forms
 | Element | Status |
-|---------|--------|
+| --- | --- |
 | Text fields | Themed via `inputDecorationTheme` (12px radius, filled white) |
 | Staff web forms | `StaffWebPage` + form-section pattern, responsive grid, sticky action bar |
 | Login / intake mobile forms | 🔄 inherit theme; layout not fully redesigned |
@@ -196,7 +196,7 @@ Header background `#FFFFFF`, start-aligned title, language switcher chip in `Raf
 **Mobile shell — `PilgrimShellScreen`** (`pilgrim_shell_screen.dart`): `StatefulShellRoute.indexedStack` with an **`AnimatedBottomNavigationBar` + center-docked Home FAB** (notched bar). 5 branches; Home is the center FAB.
 
 | Position | Tab (EN / AR) | Route | Icon |
-|----------|---------------|-------|------|
+| --- | --- | --- | --- |
 | Bar slot 1 | Guidance / الإرشادات | `/tools` (+ children) | `menu_book_rounded` |
 | Bar slot 2 | Services / الخدمات | `/services` (hub) | `mosque_rounded` |
 | **Center FAB** | Home / الرئيسية | `/` | `home_rounded` |
@@ -209,7 +209,7 @@ Header background `#FFFFFF`, start-aligned title, language switcher chip in `Raf
 
 *Admin sidebar:*
 | Label (EN / AR) | Route | Icon |
-|-----------------|-------|------|
+| --- | --- | --- |
 | Home / الرئيسية | `/admin/dashboard` | `home_rounded` |
 | Pilgrims / الحجاج | `/operator/pilgrims` | `people_outline_rounded` |
 | Operators / المشغّلون | `/admin/operators` | `badge_outlined` |
@@ -224,7 +224,7 @@ Header background `#FFFFFF`, start-aligned title, language switcher chip in `Raf
 
 ### 3.7 Feedback & states
 | State | Treatment |
-|-------|-----------|
+| --- | --- |
 | Loading | `CircularProgressIndicator` (primary); list skeletons where built (e.g. `ContentTopicsSectionSkeleton`) |
 | Empty | Centered text (no illustration yet — backlog) |
 | Error | Centered text + retry button |
@@ -233,7 +233,7 @@ Header background `#FFFFFF`, start-aligned title, language switcher chip in `Raf
 
 ### 3.8 Shared / reusable components
 | Component | File | Used in |
-|-----------|------|---------|
+| --- | --- | --- |
 | `AppColors` / `AppTypography` / `AppDecorations` | `core/theme/*` | Global tokens |
 | `HomeAppHeader` | `home_app_header.dart` | Mobile shell screens |
 | `PilgrimShellScreen` | `pilgrim_shell_screen.dart` | Mobile bottom-bar shell |
@@ -254,7 +254,7 @@ Header background `#FFFFFF`, start-aligned title, language switcher chip in `Raf
 
 ### 4.1 Breakpoints
 | Breakpoint | Width | Behavior |
-|------------|-------|----------|
+| --- | --- | --- |
 | Phone | < 600 | Single column, bottom-bar shell |
 | Tablet | 600–1024 | ScreenUtil scaling; admin KPI row > 700px |
 | Desktop (web) | > 1024 | 260px sidebar + fluid content; CMS 4-col grid > 900px; staff login split hero/form ≥ 900px |
@@ -266,7 +266,7 @@ Header background `#FFFFFF`, start-aligned title, language switcher chip in `Raf
 
 ### 4.3 Platform
 | Platform | Notes |
-|----------|-------|
+| --- | --- |
 | Android | Bottom-bar shell; native audio (`audioplayers`); prayer hero uses GPS schedule |
 | iOS | Same shell (not separately tested) |
 | Web (pilgrim) | Flat routes, no bottom shell |
@@ -280,7 +280,7 @@ Header background `#FFFFFF`, start-aligned title, language switcher chip in `Raf
 
 ### 5.1 Public / pilgrim (mobile-first)
 | Screen | Route | File | Status | Notes |
-|--------|-------|------|--------|-------|
+| --- | --- | --- | --- | --- |
 | Home | `/` | `home_screen.dart` | ✅ | Prayer hero, quick actions, topics carousel, journey CTA (guests), news cards |
 | Services hub | `/services` | `services_hub_screen.dart` | ✅ | Green→indigo hero + gradient service tiles (My Hajj Journey, Competitions) |
 | Profile | `/profile` | `profile_screen.dart` | ✅ | Guest login CTA / pilgrim menu; single pilgrim-login button |
@@ -296,7 +296,7 @@ Header background `#FFFFFF`, start-aligned title, language switcher chip in `Raf
 
 ### 5.2 Islamic tools (Guidance tab)
 | Screen | Route | Status |
-|--------|-------|--------|
+| --- | --- | --- |
 | Tools hub | `/tools` | ✅ Card list in shell + `HomeAppHeader` |
 | Prayer times | `/tools/prayer-times` | 🔄 |
 | Qibla | `/tools/qibla` | 🔄 |
@@ -306,14 +306,14 @@ Header background `#FFFFFF`, start-aligned title, language switcher chip in `Raf
 
 ### 5.3 Competitions
 | Screen | Route | Status |
-|--------|-------|--------|
+| --- | --- | --- |
 | List | `/competitions` | ✅ Learning-path style |
 | Detail | `/competitions/:id` | ✅ |
 | Quiz | `/competitions/:id/quiz` | ✅ Segmented progress, option cards, feedback banner |
 
 ### 5.4 Operator (web)
 | Screen | Route | Status |
-|--------|-------|--------|
+| --- | --- | --- |
 | Operator login | `/operator/login` | 🔄 Split hero/form scaffold |
 | Intake (register pilgrim) | `/operator/intake` | 🔄 In `StaffWebPage` form sections |
 | Pilgrim list | `/operator/pilgrims` | 🔄 `StaffDataTable`, filters, bulk group assign |
@@ -321,14 +321,14 @@ Header background `#FFFFFF`, start-aligned title, language switcher chip in `Raf
 
 ### 5.5 Field operator (mobile)
 | Screen | Route | Status |
-|--------|-------|--------|
+| --- | --- | --- |
 | Field login | `/operator/field/login` | 🔄 |
 | Field home | `/operator/field` | 🔄 Stats dashboard + status filters + `TripSelector` |
 | Field pilgrims / pilgrim | `/operator/field/pilgrims`, `/operator/field/:profileId` | 🔄 Full profile + status updates |
 
 ### 5.6 Admin (web)
 | Screen | Route | File | Status | Notes |
-|--------|-------|------|--------|-------|
+| --- | --- | --- | --- | --- |
 | Admin login | `/admin/login` | `admin_login_screen.dart` | 🔄 Split scaffold, outside shell |
 | Dashboard | `/admin/dashboard` | `admin_dashboard_screen.dart` | ✅ KPI cards, charts (`fl_chart`), connection badge |
 | Content CMS | `/admin/content` (+ new/edit) | `admin_content_*` | ✅ Grid cards; edit form 🔄 |
@@ -343,7 +343,7 @@ Header background `#FFFFFF`, start-aligned title, language switcher chip in `Raf
 
 ### 5.7 System screens
 | Screen | File | Status |
-|--------|------|--------|
+| --- | --- | --- |
 | 404 | `route_not_found_screen.dart` | 🔄 |
 | Bootstrap failure | `bootstrap_failure_app.dart` | 🔄 |
 
@@ -351,7 +351,7 @@ Header background `#FFFFFF`, start-aligned title, language switcher chip in `Raf
 
 ## 6. Motion & interaction
 | Interaction | Applied |
-|-------------|---------|
+| --- | --- |
 | Bottom bar | `AnimatedBottomNavigationBar` notch + 280ms splash; center Home FAB scales/recolors when active |
 | Page transitions | go_router defaults |
 | Ritual checkbox | Optimistic update |
@@ -363,7 +363,7 @@ Header background `#FFFFFF`, start-aligned title, language switcher chip in `Raf
 
 ## 7. Tech & packages relevant to design
 | Concern | Package / file |
-|---------|----------------|
+| --- | --- |
 | Responsiveness | `flutter_screenutil` (`.w/.h/.sp/.r`, design 375×812) |
 | Bottom bar | `animated_bottom_navigation_bar` |
 | Charts | `fl_chart` |
@@ -378,7 +378,7 @@ Header background `#FFFFFF`, start-aligned title, language switcher chip in `Raf
 
 ## 8. Acceptance checklist
 | Item | Status |
-|------|--------|
+| --- | --- |
 | Light theme matches §2.3 | ✅ |
 | Dark theme fully audited | ⏳ |
 | Arabic RTL on P0 screens (home, services, notifications, shell) | ✅ |
@@ -411,7 +411,7 @@ Apply Design.md — <screen or backlog item>
 
 ## 10. References
 | Reference | Borrowed |
-|-----------|----------|
+| --- | --- |
 | Hajj Companion home mockup | Prayer hero, quick actions, journey CTA, bottom nav |
 | Design system board | Color palette, typography, button styles |
 | Notifications mockup | Hero card, filter chips, accent cards |

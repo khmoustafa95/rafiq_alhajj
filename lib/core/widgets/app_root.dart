@@ -10,6 +10,7 @@ import 'package:rafiq_alhajj/core/theme/app_theme.dart';
 import 'package:rafiq_alhajj/core/theme/theme_mode_controller.dart';
 import 'package:rafiq_alhajj/core/widgets/app_exit_guard.dart';
 import 'package:rafiq_alhajj/core/widgets/push_notification_starter.dart';
+import 'package:rafiq_alhajj/features/app_version/presentation/widgets/app_version_gate.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_catalog_refresh_binding.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_badge_sync.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_toast_host.dart';
@@ -57,7 +58,7 @@ class AppRoot extends ConsumerWidget {
           supportedLocales: AppLocaleSettings.supportedLocales,
           routerConfig: router,
           builder: (context, routerChild) {
-            return AppExitGuard(
+            return AppVersionGate(
               child: PushNotificationStarter(
                 child: NotificationBadgeSync(
                   child: NotificationToastHost(child: routerChild),

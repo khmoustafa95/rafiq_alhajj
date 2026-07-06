@@ -468,6 +468,12 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                   route: AppRoutes.adminGroups,
                   icon: Icons.groups_outlined,
                 ),
+                const Divider(height: 1),
+                _quickLink(
+                  label: l10n.appVersionAdminTitle,
+                  route: AppRoutes.adminAppVersions,
+                  icon: Icons.system_update_alt_rounded,
+                ),
               ],
             ),
           ),

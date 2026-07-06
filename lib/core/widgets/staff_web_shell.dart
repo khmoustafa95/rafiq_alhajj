@@ -228,7 +228,7 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
         icon: Icons.settings_outlined,
         label: l10n.staffNavSettings,
         route: AppRoutes.adminSettings,
-        isActive: location == AppRoutes.adminSettings,
+        isActive: location.startsWith(AppRoutes.adminSettings),
       ),
     ];
   }
@@ -278,7 +278,7 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
     if (location == AppRoutes.adminNotificationSend) {
       return l10n.adminNotificationSendTitle;
     }
-    if (location == AppRoutes.adminSettings) {
+    if (location.startsWith(AppRoutes.adminSettings)) {
       return l10n.adminSettingsTitle;
     }
     if (location.startsWith(AppRoutes.adminSupportContacts)) {

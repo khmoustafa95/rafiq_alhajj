@@ -1,5 +1,15 @@
 # System Patterns
 
+## Environment configuration (dart-defines, 2026-07-05)
+- **One file per platform × environment** — never split a scenario across multiple JSON files.
+- **Layout:** `config/dart-defines/{platform}.{environment}.json` (secrets, gitignored) + `{platform}.{environment}.example.json` (committed template).
+- **Platforms:** `web`, `android` (emulator `10.0.2.2`), `android-device` (LAN IP), `ios`.
+- **Environments:** `local`, `staging`, `production`.
+- **Resolver:** `node scripts/resolve-dart-defines.mjs <platform> <environment>` — all dev/build/CI scripts call this (legacy root paths are fallbacks only).
+- **Bootstrap:** `npm run config:bootstrap` copies templates and migrates old `dart_defines*.local.json`.
+- **Metadata keys:** every file includes `APP_ENV` and `APP_PLATFORM`; read via `AppConfig.appEnv` / `AppConfig.isStagingEnv`.
+- **Firebase:** web files use `FIREBASE_WEB_APP_ID`; mobile files use `FIREBASE_APP_ID` (`1:…:android:…` or `ios`).
+
 ## Architecture: 4 layers, feature-first
 
 Organize by **feature**, then by layer:

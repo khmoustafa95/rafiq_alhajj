@@ -168,7 +168,7 @@ The inbox row still exists — pilgrims see the notification in-app even when FC
 ## Troubleshooting
 
 | Issue | Check |
-|-------|--------|
+| --- | --- |
 | No token in DB | `AppConfig.hasFirebase`, signed-in user, Android 13+ notification permission |
 | Edge returns `FCM not configured` | `FIREBASE_SERVICE_ACCOUNT_JSON` secret |
 | Edge returns `PUSH_WEBHOOK_SECRET not configured` | Set `PUSH_WEBHOOK_SECRET` in Supabase secrets / `supabase/.env` |

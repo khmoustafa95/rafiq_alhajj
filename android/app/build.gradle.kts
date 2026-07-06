@@ -11,7 +11,7 @@ import java.io.File
 import java.util.Base64
 
 /**
- * Loads `dart_defines.android.local.json` for debug builds when Flutter CLI did not
+ * Loads `config/dart-defines/android.local.json` (or legacy path) for debug builds
  * pass `--dart-define-from-file` (e.g. Android Studio Run without launch config).
  */
 fun encodeDartDefinesFromJson(file: File): String? {
@@ -64,7 +64,7 @@ fun decodeDartDefineKeys(encoded: String): Set<String> {
 }
 
 /**
- * Loads `dart_defines.android.local.json` when Flutter CLI did not pass Supabase keys
+ * Loads local android dart-defines when Flutter CLI did not pass Supabase keys
  * (CLI always includes FLUTTER_* defines, so blank-check alone is not enough).
  */
 fun mergeLocalDartDefines(project: org.gradle.api.Project) {
@@ -75,7 +75,10 @@ fun mergeLocalDartDefines(project: org.gradle.api.Project) {
     }
 
     val definesFile = project.rootProject.projectDir.parentFile
-        .resolve("dart_defines.android.local.json")
+        .resolve("config/dart-defines/android.local.json")
+        .takeIf { it.isFile }
+        ?: project.rootProject.projectDir.parentFile
+            .resolve("dart_defines.android.local.json")
     val fileDefines = encodeDartDefinesFromJson(definesFile) ?: return
 
     val merged = if (cliDartDefines.isBlank()) {
