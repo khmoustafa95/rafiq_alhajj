@@ -9,7 +9,7 @@
 ## 1. المتطلبات
 
 | الأداة | الغرض |
-|--------|--------|
+| --- | --- |
 | [Flutter SDK](https://docs.flutter.dev/get-started/install) (Dart 3.11+) | بناء وتشغيل التطبيق |
 | [Docker Desktop](https://www.docker.com/products/docker-desktop/) | تشغيل Supabase محلياً |
 | [Supabase CLI](https://supabase.com/docs/guides/cli) | قاعدة البيانات، Auth، Edge Functions |
@@ -42,7 +42,7 @@ supabase db reset
 ### عناوين الخدمات المحلية
 
 | الخدمة | العنوان |
-|--------|---------|
+| --- | --- |
 | API (يستخدمه التطبيق) | `http://127.0.0.1:54321` |
 | Supabase Studio | `http://127.0.0.1:54323` |
 | قاعدة البيانات | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
@@ -68,46 +68,53 @@ supabase start
 
 ## 3. ملفات تكوين Flutter (`dart-define`)
 
-الملفات الحقيقية **غير مرفوعة على Git** (انظر `.gitignore`). أنشئها من القوالب:
-
-### أ) سطح المكتب + Chrome + iOS Simulator
+**النمط المعتمد:** ملف مستقل لكل **منصة × بيئة** تحت `config/dart-defines/`.
 
 ```powershell
-Copy-Item dart_defines.local.example.json dart_defines.local.json
+npm run config:bootstrap
 ```
 
-عدّل `dart_defines.local.json`:
+| السيناريو | الملف السري (gitignored) | القالب |
+| --- | --- | --- |
+| Web · محلي | `config/dart-defines/web.local.json` | `web.local.example.json` |
+| Web · staging | `config/dart-defines/web.staging.json` | `web.staging.example.json` |
+| Android محاكي · محلي | `config/dart-defines/android.local.json` | `android.local.example.json` |
+| Android جهاز · محلي | `config/dart-defines/android-device.local.json` | `android-device.local.example.json` |
+| Android · staging | `config/dart-defines/android.staging.json` | `android.staging.example.json` |
+
+### Web / iOS Simulator · Supabase محلي
+
+عدّل `config/dart-defines/web.local.json`:
 
 ```json
 {
+  "APP_ENV": "local",
+  "APP_PLATFORM": "web",
   "SUPABASE_URL": "http://127.0.0.1:54321",
-  "SUPABASE_ANON_KEY": "<الصق anon key من supabase status>"
+  "SUPABASE_ANON_KEY": "<من supabase status>"
 }
 ```
 
-> المفتاح الافتراضي لبيئة Supabase المحلية غالباً:
-> `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0`
->
-> تحقق دائماً عبر `supabase status` بعد `supabase start`.
+### Android Emulator · Supabase محلي
 
-### ب) محاكي Android
-
-المحاكي لا يصل إلى `127.0.0.1` على الجهاز المضيف؛ استخدم `10.0.2.2`:
-
-**ذاكرة المحاكي:** في وضع Debug يستهلك Flutter ~400–500 MB. إذا كان RAM المحاكي 2 GB أو أقل، قد يقتل Android العملية ويظهر في الطرفية `Lost connection to device`. يُفضَّل **4096 MB RAM** على الأقل (Device Manager → Edit AVD → Show Advanced Settings → RAM). أغلق تطبيقات ثقيلة على Windows (Chrome، Docker غير مستخدم) قبل التشغيل. محاكي **16 KB page size** (`gphone16k`) أثقل — استخدم `Pixel`/`gphone64` إن أمكن.
-
-```powershell
-Copy-Item dart_defines.local.example.json dart_defines.android.local.json
-```
+المحاكي لا يصل إلى `127.0.0.1` على الجهاز المضيف؛ استخدم `10.0.2.2` في `config/dart-defines/android.local.json`:
 
 ```json
 {
+  "APP_ENV": "local",
+  "APP_PLATFORM": "android",
   "SUPABASE_URL": "http://10.0.2.2:54321",
   "SUPABASE_ANON_KEY": "<نفس anon key>"
 }
 ```
 
-بدون هذه الملفات يعمل التطبيق كضيف فقط (بدون تسجيل دخول/محتوى من Supabase) وستظهر رسالة أن Supabase غير مُعدّ.
+**ذاكرة المحاكي:** في وضع Debug يستهلك Flutter ~400–500 MB. يُفضَّل **4096 MB RAM** على الأقل (Device Manager → Edit AVD → RAM).
+
+### Android جهاز حقيقي · Supabase محلي
+
+في `config/dart-defines/android-device.local.json` استبدل `192.168.0.100` بـ IP جهازك من `ipconfig` (نفس شبكة Wi‑Fi).
+
+بدون هذه الملفات يعمل التطبيق كضيف فقط. راجع `config/dart-defines/README.md`.
 
 ---
 
@@ -145,7 +152,7 @@ supabase auth users create pilgrim@demo.local --password demo123456 --email-conf
 ```
 
 | البريد | كلمة المرور | الدور في `profiles` | المنصة المناسبة |
-|--------|-------------|---------------------|-----------------|
+| --- | --- | --- | --- |
 | `pilgrim@demo.local` | `demo123456` | `pilgrim` | موبايل (Android/iOS) |
 | `operator@demo.local` | `demo123456` | `operator` | ويب (مكتب) أو موبايل (ميدان) |
 | `admin@demo.local` | `demo123456` | `admin` | ويب (لوحة تحليلات) |
@@ -181,22 +188,30 @@ dart run build_runner build --delete-conflicting-outputs
 
 ### من VS Code / Cursor
 
-اختر إعداداً من `.vscode/launch.json`:
+اختر إعداداً من `.vscode/launch.json` (منصة × بيئة):
 
-| الإعداد | الجهاز | ملف التكوين |
-|---------|--------|-------------|
-| `rafiq_alhajj (local Supabase)` | افتراضي | `dart_defines.local.json` |
-| `rafiq_alhajj (Chrome web + local Supabase)` | Chrome | `dart_defines.local.json` |
-| `rafiq_alhajj (Android emulator + local Supabase)` | محاكي Android | `dart_defines.android.local.json` |
+| الإعداد | السيناريو | ملف التكوين |
+| --- | --- | --- |
+| `Web · Local` | Chrome + Supabase محلي | `config/dart-defines/web.local.json` |
+| `Web · Staging` | Chrome + Supabase سحابي | `config/dart-defines/web.staging.json` |
+| `Android Emulator · Local` | محاكي + Supabase محلي | `config/dart-defines/android.local.json` |
+| `Android Device · Local` | جهاز حقيقي + Supabase محلي | `config/dart-defines/android-device.local.json` |
+| `Android · Staging` | جهاز/محاكي + Staging | `config/dart-defines/android.staging.json` |
+
+أول مرة: `npm run config:bootstrap` ثم عدّل الملفات في `config/dart-defines/`.
 
 ### من الطرفية
 
 ```powershell
-# ويب — مشغل المكتب + مسؤول
-flutter run -d chrome --dart-define-from-file=dart_defines.local.json
+npm run dev:web              # web · local
+npm run dev:android          # android emulator · local
+npm run dev:android:device   # physical device · local
+npm run dev:web:staging      # web · staging
+npm run dev:android:staging  # android · staging
 
-# موبايل — حاج + تقني ميداني (محاكي)
-flutter run --dart-define-from-file=dart_defines.android.local.json
+# أو يدوياً
+flutter run -d chrome --dart-define-from-file=config/dart-defines/web.local.json
+flutter run --dart-define-from-file=config/dart-defines/android.local.json
 
 # تحليل واختبارات
 dart analyze
@@ -210,7 +225,7 @@ flutter test
 ### أ) ويب (Chrome) — يبدأ عند `/operator/login`
 
 | الهدف | الدخول | المسار بعد تسجيل الدخول |
-|-------|--------|-------------------------|
+| --- | --- | --- |
 | تسجيل حاج (US-05) | `operator@demo.local` | `/operator/intake` |
 | قائمة الحجاج (US-09) | `operator@demo.local` | `/operator/pilgrims` (أيقونة المجموعة في شريط التسجيل) |
 | لوحة تحليلات (US-07) | `admin@demo.local` | `/admin/dashboard` |
@@ -224,7 +239,7 @@ flutter test
 ### ب) موبايل — يبدأ عند `/` (الرئيسية)
 
 | الهدف | كيف تصل | الحساب |
-|-------|---------|--------|
+| --- | --- | --- |
 | ضيف + محتوى عام + أدوات إسلامية | فتح التطبيق بدون دخول | — |
 | تسجيل دخول حاج (US-03/04) | **تسجيل الدخول كحاج** → `/login` | `pilgrim@demo.local` |
 | لوحة الحاج (مناسك + لوجستيات) | بعد الدخول → **رحلتي** `/pilgrim` | نفس الحساب |
@@ -234,7 +249,7 @@ flutter test
 ### ج) أدوات إسلامية (US-02) — `/tools`
 
 | الأداة | ملاحظة |
-|--------|--------|
+| --- | --- |
 | مواقيت الصلاة | يطلب إذن الموقع (GPS) |
 | القبلة | بوصلة + موقع |
 | القرآن / الأذكار | تعمل دون اتصال (بيانات مضمّنة) |
@@ -244,7 +259,7 @@ flutter test
 ## 7. جدول المسارات السريع
 
 | المسار | الوصف |
-|--------|--------|
+| --- | --- |
 | `/` | الرئيسية (ضيف/حاج) |
 | `/login` | دخول الحاج |
 | `/pilgrim` | لوحة الحاج |
@@ -283,7 +298,7 @@ flutter test
 ## 9. استكشاف الأخطاء الشائعة
 
 | المشكلة | الحل |
-|---------|------|
+| --- | --- |
 | `supabase status` يفشل / Docker pipe | شغّل **Docker Desktop** ثم `supabase start` |
 | `No such container: supabase_db_rafiq_alhajj` | لم يُشغَّل مشروع هذا المجلد — نفّذ `supabase start` من جذر `rafiq_alhajj` |
 | `port is already allocated` (مثلاً 54322) | مشروع Supabase آخر يعمل (مثل `Khalid_Haj_Mustafa`) — أوقفه: `supabase stop --project-id Khalid_Haj_Mustafa` ثم `supabase start` هنا |
@@ -330,7 +345,7 @@ flutter run -d chrome --dart-define-from-file=dart_defines.local.json
 ## 12. ملفات مرتبطة في المستودع
 
 | الملف | الغرض |
-|-------|--------|
+| --- | --- |
 | `dart_defines.local.example.json` | قالب تكوين Supabase |
 | `docs/push-notifications-setup.md` | إعداد FCM و Edge Function |
 | `.vscode/launch.json` | إعدادات التشغيل في المحرر |

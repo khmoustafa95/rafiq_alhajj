@@ -7,7 +7,7 @@ Hajj pilgrims often need structured guidance, reminders, and reliable informatio
 
 ## Target users (TBD)
 | Persona | Needs | Priority |
-|---------|--------|----------|
+| --- | --- | --- |
 | Pilgrim | Step-by-step ritual guidance, reminders, offline access | TBD |
 | Group leader | Member visibility, messaging, shared itinerary | TBD |
 | Admin / agency | Content management, user support | TBD |

@@ -119,3 +119,14 @@ void realtimeSyncSosAlerts(Ref ref) {
         RealtimeInvalidationRegistry.fire(ref, RealtimeSyncKeys.sosAlerts),
   );
 }
+
+@Riverpod(keepAlive: true)
+void realtimeSyncAppVersion(Ref ref) {
+  watchSupabaseTables(
+    ref,
+    client: _realtimeClient(),
+    tables: const ['app_version_policies'],
+    onEvent: () =>
+        RealtimeInvalidationRegistry.fire(ref, RealtimeSyncKeys.appVersion),
+  );
+}

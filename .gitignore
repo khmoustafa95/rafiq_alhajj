@@ -51,7 +51,11 @@ app.*.map.json
 # Environment / secrets
 .env
 .env.*
+config/dart-defines/*.json
+!config/dart-defines/*.example.json
 dart_defines*.local.json
+dart_defines*.json
+!dart_defines*.example.json
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
 supabase/.env

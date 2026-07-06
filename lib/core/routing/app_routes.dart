@@ -69,6 +69,7 @@ abstract final class AppRoutes {
   static const String adminTrips = '/admin/trips';
   static const String adminTripOffices = '/admin/trips/:id/offices';
   static const String adminSettings = '/admin/settings';
+  static const String adminAppVersions = '/admin/settings/app-versions';
   static const String adminSupportContacts = '/admin/support-contacts';
   static const String adminSupportContactNew = '/admin/support-contacts/new';
   static const String adminSupportContactEdit =

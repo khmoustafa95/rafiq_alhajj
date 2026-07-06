@@ -438,3 +438,45 @@ final class RealtimeSyncSosAlertsProvider
 
 String _$realtimeSyncSosAlertsHash() =>
     r'e392f0549f1fbb09cb65dc4c17ee85a0a6e063cf';
+
+@ProviderFor(realtimeSyncAppVersion)
+final realtimeSyncAppVersionProvider = RealtimeSyncAppVersionProvider._();
+
+final class RealtimeSyncAppVersionProvider
+    extends $FunctionalProvider<void, void, void>
+    with $Provider<void> {
+  RealtimeSyncAppVersionProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'realtimeSyncAppVersionProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$realtimeSyncAppVersionHash();
+
+  @$internal
+  @override
+  $ProviderElement<void> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  void create(Ref ref) {
+    return realtimeSyncAppVersion(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(void value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<void>(value),
+    );
+  }
+}
+
+String _$realtimeSyncAppVersionHash() =>
+    r'4198244acf7dcefd95b66cc3fbd822f6ab877559';

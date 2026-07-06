@@ -4561,6 +4561,186 @@ abstract class AppLocalizations {
   /// **'Last updated {date}'**
   String adminSettingsLastUpdated(String date);
 
+  /// No description provided for @appVersionForceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update required'**
+  String get appVersionForceTitle;
+
+  /// No description provided for @appVersionForceBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your app version ({current}) is no longer supported. Install version {latest} or newer to continue.'**
+  String appVersionForceBody(String current, String latest);
+
+  /// No description provided for @appVersionOptionalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update available'**
+  String get appVersionOptionalTitle;
+
+  /// No description provided for @appVersionOptionalBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A newer version is available ({current} → {latest}). Update now for the latest fixes and features.'**
+  String appVersionOptionalBody(String current, String latest);
+
+  /// No description provided for @appVersionReleaseNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s new'**
+  String get appVersionReleaseNotes;
+
+  /// No description provided for @appVersionUpdateNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Update now'**
+  String get appVersionUpdateNow;
+
+  /// No description provided for @appVersionLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get appVersionLater;
+
+  /// No description provided for @appVersionStoreUrlMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'The download link is not configured yet. Contact support or try again later.'**
+  String get appVersionStoreUrlMissing;
+
+  /// No description provided for @appVersionPlatformAndroid.
+  ///
+  /// In en, this message translates to:
+  /// **'Android'**
+  String get appVersionPlatformAndroid;
+
+  /// No description provided for @appVersionPlatformIos.
+  ///
+  /// In en, this message translates to:
+  /// **'iOS'**
+  String get appVersionPlatformIos;
+
+  /// No description provided for @appVersionPlatformWeb.
+  ///
+  /// In en, this message translates to:
+  /// **'Web'**
+  String get appVersionPlatformWeb;
+
+  /// No description provided for @appVersionAdminTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'App versions'**
+  String get appVersionAdminTitle;
+
+  /// No description provided for @appVersionAdminSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Control minimum supported and latest versions per platform.'**
+  String get appVersionAdminSubtitle;
+
+  /// No description provided for @appVersionAdminHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Users below the minimum version are blocked until they update. Users below the latest version see an optional update prompt.'**
+  String get appVersionAdminHint;
+
+  /// No description provided for @appVersionAdminCurrentBuild.
+  ///
+  /// In en, this message translates to:
+  /// **'This device: {platform} · v{version}'**
+  String appVersionAdminCurrentBuild(String platform, String version);
+
+  /// No description provided for @appVersionAdminPlatformHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Semver format: major.minor.patch (e.g. 1.2.0)'**
+  String get appVersionAdminPlatformHint;
+
+  /// No description provided for @appVersionAdminMinVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum supported version'**
+  String get appVersionAdminMinVersion;
+
+  /// No description provided for @appVersionAdminMinVersionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Force update when the installed version is lower.'**
+  String get appVersionAdminMinVersionHint;
+
+  /// No description provided for @appVersionAdminLatestVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest version'**
+  String get appVersionAdminLatestVersion;
+
+  /// No description provided for @appVersionAdminLatestVersionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional update prompt when the installed version is lower.'**
+  String get appVersionAdminLatestVersionHint;
+
+  /// No description provided for @appVersionAdminStoreUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Download / store URL'**
+  String get appVersionAdminStoreUrl;
+
+  /// No description provided for @appVersionAdminStoreUrlHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Play Store, App Store, Firebase App Distribution, or staging web URL.'**
+  String get appVersionAdminStoreUrlHint;
+
+  /// No description provided for @appVersionAdminReleaseNotesAr.
+  ///
+  /// In en, this message translates to:
+  /// **'Release notes (Arabic)'**
+  String get appVersionAdminReleaseNotesAr;
+
+  /// No description provided for @appVersionAdminReleaseNotesEn.
+  ///
+  /// In en, this message translates to:
+  /// **'Release notes (English)'**
+  String get appVersionAdminReleaseNotesEn;
+
+  /// No description provided for @appVersionAdminSavePlatform.
+  ///
+  /// In en, this message translates to:
+  /// **'Save platform policy'**
+  String get appVersionAdminSavePlatform;
+
+  /// No description provided for @appVersionAdminSaveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Version policy saved'**
+  String get appVersionAdminSaveSuccess;
+
+  /// No description provided for @appVersionAdminSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save version policy'**
+  String get appVersionAdminSaveError;
+
+  /// No description provided for @appVersionAdminFieldRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required'**
+  String get appVersionAdminFieldRequired;
+
+  /// No description provided for @appVersionAdminInvalidSemver.
+  ///
+  /// In en, this message translates to:
+  /// **'Use semver format: 1.0.0'**
+  String get appVersionAdminInvalidSemver;
+
+  /// No description provided for @appVersionMinGreaterThanLatest.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum version cannot be higher than latest version.'**
+  String get appVersionMinGreaterThanLatest;
+
   /// No description provided for @profilePilgrimSubtitle.
   ///
   /// In en, this message translates to:

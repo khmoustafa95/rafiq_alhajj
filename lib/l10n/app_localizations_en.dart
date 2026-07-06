@@ -2485,6 +2485,110 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get appVersionForceTitle => 'Update required';
+
+  @override
+  String appVersionForceBody(String current, String latest) {
+    return 'Your app version ($current) is no longer supported. Install version $latest or newer to continue.';
+  }
+
+  @override
+  String get appVersionOptionalTitle => 'Update available';
+
+  @override
+  String appVersionOptionalBody(String current, String latest) {
+    return 'A newer version is available ($current → $latest). Update now for the latest fixes and features.';
+  }
+
+  @override
+  String get appVersionReleaseNotes => 'What\'s new';
+
+  @override
+  String get appVersionUpdateNow => 'Update now';
+
+  @override
+  String get appVersionLater => 'Later';
+
+  @override
+  String get appVersionStoreUrlMissing =>
+      'The download link is not configured yet. Contact support or try again later.';
+
+  @override
+  String get appVersionPlatformAndroid => 'Android';
+
+  @override
+  String get appVersionPlatformIos => 'iOS';
+
+  @override
+  String get appVersionPlatformWeb => 'Web';
+
+  @override
+  String get appVersionAdminTitle => 'App versions';
+
+  @override
+  String get appVersionAdminSubtitle =>
+      'Control minimum supported and latest versions per platform.';
+
+  @override
+  String get appVersionAdminHint =>
+      'Users below the minimum version are blocked until they update. Users below the latest version see an optional update prompt.';
+
+  @override
+  String appVersionAdminCurrentBuild(String platform, String version) {
+    return 'This device: $platform · v$version';
+  }
+
+  @override
+  String get appVersionAdminPlatformHint =>
+      'Semver format: major.minor.patch (e.g. 1.2.0)';
+
+  @override
+  String get appVersionAdminMinVersion => 'Minimum supported version';
+
+  @override
+  String get appVersionAdminMinVersionHint =>
+      'Force update when the installed version is lower.';
+
+  @override
+  String get appVersionAdminLatestVersion => 'Latest version';
+
+  @override
+  String get appVersionAdminLatestVersionHint =>
+      'Optional update prompt when the installed version is lower.';
+
+  @override
+  String get appVersionAdminStoreUrl => 'Download / store URL';
+
+  @override
+  String get appVersionAdminStoreUrlHint =>
+      'Play Store, App Store, Firebase App Distribution, or staging web URL.';
+
+  @override
+  String get appVersionAdminReleaseNotesAr => 'Release notes (Arabic)';
+
+  @override
+  String get appVersionAdminReleaseNotesEn => 'Release notes (English)';
+
+  @override
+  String get appVersionAdminSavePlatform => 'Save platform policy';
+
+  @override
+  String get appVersionAdminSaveSuccess => 'Version policy saved';
+
+  @override
+  String get appVersionAdminSaveError => 'Could not save version policy';
+
+  @override
+  String get appVersionAdminFieldRequired => 'This field is required';
+
+  @override
+  String get appVersionAdminInvalidSemver => 'Use semver format: 1.0.0';
+
+  @override
+  String get appVersionMinGreaterThanLatest =>
+      'Minimum version cannot be higher than latest version.';
+
+  @override
   String get profilePilgrimSubtitle =>
       'Registration details entered by your operator.';
 

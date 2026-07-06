@@ -7,6 +7,19 @@ abstract final class AppConfig {
   static const String supabaseAnonKey =
       String.fromEnvironment('SUPABASE_ANON_KEY');
 
+  /// `local` | `staging` | `production` — set in each dart-defines file.
+  static const String appEnv = String.fromEnvironment(
+    'APP_ENV',
+    defaultValue: 'local',
+  );
+
+  /// Target platform label from dart-defines (`web`, `android`, …).
+  static const String appPlatform = String.fromEnvironment('APP_PLATFORM');
+
+  static bool get isStagingEnv => appEnv == 'staging';
+  static bool get isProductionEnv => appEnv == 'production';
+  static bool get isLocalEnv => appEnv == 'local';
+
   /// Set to `true` via `--dart-define=CRASH_REPORTING_ENABLED=true` for release builds.
   static const bool crashReportingEnabled = bool.fromEnvironment(
     'CRASH_REPORTING_ENABLED',

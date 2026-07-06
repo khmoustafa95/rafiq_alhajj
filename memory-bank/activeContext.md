@@ -3,6 +3,12 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
+**Dart-defines enterprise layout (2026-07-05):** One self-contained JSON per platform × environment under `config/dart-defines/{platform}.{env}.json` (secrets, gitignored) + `*.example.json` (templates). Platforms: `web`, `android`, `android-device`, `ios`. Environments: `local`, `staging`, `production`. Central resolver `scripts/resolve-dart-defines.mjs`; bootstrap `npm run config:bootstrap` migrates legacy root files. VS Code launch.json updated (8 configs). Dev npm: `dev:web`, `dev:android`, `dev:android:device`, `dev:web:staging`, `dev:android:staging`. `AppConfig.appEnv` / `isStagingEnv` added. Docs: `config/dart-defines/README.md`, runbook + staging-setup updated. ⚠ Fill `android.staging.json` → `FIREBASE_APP_ID` from `google-services.json` before APK build.
+
+**Firebase App Distribution (2026-07-05):** Staging Android APK build + distribute pipeline. Scripts: `build-staging-android.ps1/.sh`, `distribute-staging-android.ps1/.sh`, `setup-firebase-app-distribution.ps1`; helpers `merge-android-staging-defines.mjs`, `read-pubspec-version.mjs`, `read-firebase-android-app-id.mjs`, `update-android-version-policy.mjs`. npm: `staging:setup-app-distribution`, `staging:build-apk`, `staging:distribute-android`. Template `dart_defines.android.staging.example.json`. Docs: `docs/staging-setup-ar.md` §10. CI: `.github/workflows/distribute-staging-android.yml` (manual). **User setup:** `google-services.json`, `dart_defines.android.staging.local.json`, tester group `client-preview`, then `npm run staging:distribute-android`. Optional: set `ANDROID_DISTRIBUTION_INSTALL_URL` for in-app update button `store_url`.
+
+**In-app version management (2026-07-05):** Added `app_version_policies` table (per platform: android/ios/web) with min_version (force update) + latest_version (optional prompt) + store_url + release notes. New `app_version` feature: `AppVersionService`, `AppVersionGate` (blocks on force update, optional dialog w/ dismiss per version), admin screen `/admin/settings/app-versions`. Wired into `AppRoot`. Dependency: `package_info_plus`. Migration `20260705140000_app_version_policies.sql`. `build_runner` + `gen-l10n` + `flutter analyze` → **No issues found**. ⚠ Apply migration on staging (`npm run staging:setup-db` or `supabase db push`); set store URLs before forcing updates.
+
 **Admin dashboard redesign (2026-07-05):** Rebuilt `/admin/dashboard` around safety + logistics + engagement (removed ritual completion KPI). New metrics: SOS active, field-status funnel (arrived/in-transit/pending), unassigned pilgrims, travel-permit/medical gaps, wheelchair needs, push reach %, competitions/content counts. Trip-scoped via `TripSelector` + `activeTripProvider`. Urgent alert banner (SOS + push failures) with deep links. Extended `AdminAnalyticsRemoteDataSource` + `AdminDashboardStats` model; realtime tables expanded. `build_runner` + `gen-l10n` + `flutter analyze` (changed files) → **No issues found**. ⚠ Hot restart + verify on staging web.
 
 **Dark theme contrast fix (2026-07-05):** OS dark mode activated Flutter's dark `ThemeData` while staff web widgets hardcoded light surfaces (`AppColors.surface`/`background`) — titles and `StaffCellText(strong:)` used light text on white rows (invisible group names, faint headers/pagination). Fixed: dark tokens in `AppColors`, full `ColorScheme` + component themes in `AppTheme`, brightness-aware `AppTypography` secondary colors, `AppDecorations.themedCard()`, staff shell/layout/data-table migrated to `colorScheme.*`. `flutter analyze` (changed files) → **No issues found**. ⚠ Rebuild/redeploy staging web to verify.
@@ -250,7 +256,7 @@ After adding foreground heads-up notifications, addressed stale tokens (#3), gue
 
 ## Key paths
 | Concern | Location |
-|---------|----------|
+| --- | --- |
 | Pilgrim-domain foundation | `supabase/migrations/20260521140000_pilgrim_rituals.sql` |
 | RLS helpers | `supabase/migrations/20260521121000_rls_helpers.sql` |
 | Operator group access (model/UI) | `lib/features/admin_operators/**` (`operator_group_grant.dart`, edit screen) |

@@ -1,0 +1,134 @@
+name: Distribute Staging Android
+
+on:
+  workflow_dispatch:
+    inputs:
+      groups:
+        description: Firebase App Distribution tester groups (comma-separated)
+        required: false
+        default: client-preview
+      skip_version_sync:
+        description: Skip syncing latest_version to Supabase
+        type: boolean
+        default: false
+
+concurrency:
+  group: distribute-staging-android
+  cancel-in-progress: false
+
+jobs:
+  distribute:
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate secrets
+        env:
+          STAGING_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          STAGING_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          STAGING_GOOGLE_SERVICES_JSON: ${{ secrets.STAGING_GOOGLE_SERVICES_JSON }}
+          STAGING_FIREBASE_APP_ID: ${{ secrets.STAGING_FIREBASE_APP_ID }}
+        run: |
+          set -euo pipefail
+          missing=0
+          for name in STAGING_SUPABASE_URL STAGING_SUPABASE_ANON_KEY FIREBASE_SERVICE_ACCOUNT_JSON STAGING_GOOGLE_SERVICES_JSON STAGING_FIREBASE_APP_ID; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "::error::Missing GitHub secret: $name"
+              missing=1
+            fi
+          done
+          if [[ "$missing" -ne 0 ]]; then
+            echo "See docs/staging-setup-ar.md section 10 (App Distribution)."
+            exit 1
+          fi
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Write google-services.json
+        env:
+          STAGING_GOOGLE_SERVICES_JSON: ${{ secrets.STAGING_GOOGLE_SERVICES_JSON }}
+        run: |
+          mkdir -p android/app
+          printf '%s' "$STAGING_GOOGLE_SERVICES_JSON" > android/app/google-services.json
+
+      - name: Create Android staging dart-defines
+        env:
+          STAGING_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          STAGING_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
+          STAGING_FIREBASE_PROJECT_ID: ${{ secrets.STAGING_FIREBASE_PROJECT_ID }}
+          STAGING_FIREBASE_API_KEY: ${{ secrets.STAGING_FIREBASE_API_KEY }}
+          STAGING_FIREBASE_APP_ID: ${{ secrets.STAGING_FIREBASE_APP_ID }}
+          STAGING_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.STAGING_FIREBASE_MESSAGING_SENDER_ID }}
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const defines = {
+            SUPABASE_URL: process.env.STAGING_SUPABASE_URL,
+            SUPABASE_ANON_KEY: process.env.STAGING_SUPABASE_ANON_KEY,
+            CRASH_REPORTING_ENABLED: 'false',
+            FIREBASE_PROJECT_ID: process.env.STAGING_FIREBASE_PROJECT_ID || 'rafiq-alhajj',
+            FIREBASE_API_KEY: process.env.STAGING_FIREBASE_API_KEY || '',
+            FIREBASE_APP_ID: process.env.STAGING_FIREBASE_APP_ID,
+            FIREBASE_MESSAGING_SENDER_ID: process.env.STAGING_FIREBASE_MESSAGING_SENDER_ID || '',
+          };
+          fs.writeFileSync(
+            'dart_defines.android.staging.ci.json',
+            `${JSON.stringify(defines, null, 2)}\n`,
+          );
+          NODE
+
+      - name: Build staging APK
+        run: |
+          chmod +x scripts/build-staging-android.sh
+          ./scripts/build-staging-android.sh dart_defines.android.staging.ci.json
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Upload to Firebase App Distribution
+        env:
+          GROUPS: ${{ github.event.inputs.groups || 'client-preview' }}
+          FIREBASE_ANDROID_APP_ID: ${{ secrets.STAGING_FIREBASE_APP_ID }}
+        run: |
+          VERSION="$(node ./scripts/read-pubspec-version.mjs)"
+          firebase appdistribution:distribute build/app/outputs/flutter-apk/app-release.apk \
+            --app "$FIREBASE_ANDROID_APP_ID" \
+            --project rafiq-alhajj \
+            --groups "$GROUPS" \
+            --release-notes "Rafiq Al-Hajj staging build v${VERSION} (CI)"
+
+      - name: Sync android version policy
+        if: ${{ github.event.inputs.skip_version_sync != true }}
+        env:
+          SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [[ -z "${SUPABASE_SERVICE_ROLE_KEY:-}" ]]; then
+            echo "STAGING_SUPABASE_SERVICE_ROLE_KEY not set — skipping version sync."
+            exit 0
+          fi
+          node ./scripts/update-android-version-policy.mjs || true

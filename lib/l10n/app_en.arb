@@ -1087,6 +1087,54 @@
   "@adminSettingsLastUpdated": {
     "placeholders": {"date": {"type": "String"}}
   },
+  "appVersionForceTitle": "Update required",
+  "appVersionForceBody": "Your app version ({current}) is no longer supported. Install version {latest} or newer to continue.",
+  "@appVersionForceBody": {
+    "placeholders": {
+      "current": {"type": "String"},
+      "latest": {"type": "String"}
+    }
+  },
+  "appVersionOptionalTitle": "Update available",
+  "appVersionOptionalBody": "A newer version is available ({current} → {latest}). Update now for the latest fixes and features.",
+  "@appVersionOptionalBody": {
+    "placeholders": {
+      "current": {"type": "String"},
+      "latest": {"type": "String"}
+    }
+  },
+  "appVersionReleaseNotes": "What's new",
+  "appVersionUpdateNow": "Update now",
+  "appVersionLater": "Later",
+  "appVersionStoreUrlMissing": "The download link is not configured yet. Contact support or try again later.",
+  "appVersionPlatformAndroid": "Android",
+  "appVersionPlatformIos": "iOS",
+  "appVersionPlatformWeb": "Web",
+  "appVersionAdminTitle": "App versions",
+  "appVersionAdminSubtitle": "Control minimum supported and latest versions per platform.",
+  "appVersionAdminHint": "Users below the minimum version are blocked until they update. Users below the latest version see an optional update prompt.",
+  "appVersionAdminCurrentBuild": "This device: {platform} · v{version}",
+  "@appVersionAdminCurrentBuild": {
+    "placeholders": {
+      "platform": {"type": "String"},
+      "version": {"type": "String"}
+    }
+  },
+  "appVersionAdminPlatformHint": "Semver format: major.minor.patch (e.g. 1.2.0)",
+  "appVersionAdminMinVersion": "Minimum supported version",
+  "appVersionAdminMinVersionHint": "Force update when the installed version is lower.",
+  "appVersionAdminLatestVersion": "Latest version",
+  "appVersionAdminLatestVersionHint": "Optional update prompt when the installed version is lower.",
+  "appVersionAdminStoreUrl": "Download / store URL",
+  "appVersionAdminStoreUrlHint": "Play Store, App Store, Firebase App Distribution, or staging web URL.",
+  "appVersionAdminReleaseNotesAr": "Release notes (Arabic)",
+  "appVersionAdminReleaseNotesEn": "Release notes (English)",
+  "appVersionAdminSavePlatform": "Save platform policy",
+  "appVersionAdminSaveSuccess": "Version policy saved",
+  "appVersionAdminSaveError": "Could not save version policy",
+  "appVersionAdminFieldRequired": "This field is required",
+  "appVersionAdminInvalidSemver": "Use semver format: 1.0.0",
+  "appVersionMinGreaterThanLatest": "Minimum version cannot be higher than latest version.",
   "profilePilgrimSubtitle": "Registration details entered by your operator.",
   "servicesHeroBadge": "Pilgrim services",
   "servicesHeroTitle": "Services hub",

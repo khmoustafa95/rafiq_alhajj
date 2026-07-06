@@ -47,9 +47,11 @@ if (-not $supabaseUrl.StartsWith("https://")) {
 
 # --- Step 2: Write dart defines ---
 Write-Host ""
-Write-Host "STEP 2/5 - Writing dart_defines.staging.local.json" -ForegroundColor Yellow
+Write-Host "STEP 2/5 - Writing config/dart-defines/web.staging.json" -ForegroundColor Yellow
 
-$defines = [ordered]@{
+$webDefines = [ordered]@{
+    APP_ENV                   = "staging"
+    APP_PLATFORM              = "web"
     SUPABASE_URL              = $supabaseUrl
     SUPABASE_ANON_KEY         = $anonKey
     CRASH_REPORTING_ENABLED   = "false"
@@ -63,10 +65,27 @@ $defines = [ordered]@{
     FIREBASE_MEASUREMENT_ID   = ""
 }
 
-$definesPath = Join-Path $PWD "dart_defines.staging.local.json"
+$configDir = Join-Path $PWD "config\dart-defines"
+New-Item -ItemType Directory -Force -Path $configDir | Out-Null
+
+$webDefinesPath = Join-Path $configDir "web.staging.json"
 $utf8NoBom = New-Object System.Text.UTF8Encoding $false
-[IO.File]::WriteAllText($definesPath, ($defines | ConvertTo-Json), $utf8NoBom)
-Write-Host "Wrote $definesPath" -ForegroundColor Green
+[IO.File]::WriteAllText($webDefinesPath, ($webDefines | ConvertTo-Json), $utf8NoBom)
+Write-Host "Wrote $webDefinesPath" -ForegroundColor Green
+
+Write-Host "Copy android.staging.example.json -> android.staging.json and fill FIREBASE_APP_ID from google-services.json"
+$androidExample = Join-Path $configDir "android.staging.example.json"
+$androidPath = Join-Path $configDir "android.staging.json"
+if ((Test-Path $androidExample) -and -not (Test-Path $androidPath)) {
+    $androidJson = Get-Content $androidExample -Raw | ConvertFrom-Json
+    $androidJson.SUPABASE_URL = $supabaseUrl
+    $androidJson.SUPABASE_ANON_KEY = $anonKey
+    $androidJson.FIREBASE_PROJECT_ID = "rafiq-alhajj"
+    $androidJson.FIREBASE_API_KEY = "AIzaSyB6yQydgip8E8MfCWjVn8fmL0a3Er9rj2k"
+    $androidJson.FIREBASE_MESSAGING_SENDER_ID = "459655824918"
+    [IO.File]::WriteAllText($androidPath, ($androidJson | ConvertTo-Json), $utf8NoBom)
+    Write-Host "Wrote $androidPath (update FIREBASE_APP_ID before APK build)" -ForegroundColor Yellow
+}
 
 # --- Step 3: Link + push DB ---
 Write-Host ""

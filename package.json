@@ -3,8 +3,14 @@
   "private": true,
   "scripts": {
     "dev": "powershell -ExecutionPolicy Bypass -File ./scripts/dev-chrome.ps1",
+    "dev:web": "powershell -ExecutionPolicy Bypass -File ./scripts/dev-chrome.ps1",
     "dev:chrome": "powershell -ExecutionPolicy Bypass -File ./scripts/dev-chrome.ps1",
     "dev:android": "powershell -ExecutionPolicy Bypass -File ./scripts/dev-android.ps1",
+    "dev:android:device": "powershell -ExecutionPolicy Bypass -File ./scripts/dev-android-device.ps1",
+    "dev:web:staging": "powershell -ExecutionPolicy Bypass -File ./scripts/dev-chrome-staging.ps1",
+    "dev:android:staging": "powershell -ExecutionPolicy Bypass -File ./scripts/dev-android-staging.ps1",
+    "config:bootstrap": "node ./scripts/bootstrap-dart-defines.mjs",
+    "config:resolve": "node ./scripts/resolve-dart-defines.mjs",
     "setup": "powershell -ExecutionPolicy Bypass -File ./scripts/dev-setup.ps1",
     "setup:users": "powershell -ExecutionPolicy Bypass -File ./scripts/seed-demo-users.ps1",
     "setup:registry": "node ./scripts/seed-fake-pilgrim-registry.mjs",
@@ -13,6 +19,9 @@
     "staging:build": "powershell -ExecutionPolicy Bypass -File ./scripts/build-staging-web.ps1",
     "staging:deploy": "powershell -ExecutionPolicy Bypass -File ./scripts/deploy-staging.ps1",
     "staging:seed-users": "node ./scripts/seed-demo-users.mjs",
-    "staging:wizard": "powershell -ExecutionPolicy Bypass -File ./scripts/staging-wizard.ps1"
+    "staging:wizard": "powershell -ExecutionPolicy Bypass -File ./scripts/staging-wizard.ps1",
+    "staging:setup-app-distribution": "powershell -ExecutionPolicy Bypass -File ./scripts/setup-firebase-app-distribution.ps1",
+    "staging:build-apk": "powershell -ExecutionPolicy Bypass -File ./scripts/build-staging-android.ps1",
+    "staging:distribute-android": "powershell -ExecutionPolicy Bypass -File ./scripts/distribute-staging-android.ps1"
   }
 }
