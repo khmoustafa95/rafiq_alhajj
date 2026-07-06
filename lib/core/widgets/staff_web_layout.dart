@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
+import 'package:rafiq_alhajj/core/routing/staff_back_fallback.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_button_styles.dart';
@@ -16,6 +18,7 @@ class StaffWebPage extends StatelessWidget {
     this.bottomBar,
     this.top,
     this.scrollable = true,
+    this.backFallbackRoute,
     super.key,
   });
 
@@ -27,6 +30,10 @@ class StaffWebPage extends StatelessWidget {
   final Widget? top;
   final bool scrollable;
 
+  /// When set (or auto-detected from the current route), shows a back button in
+  /// the web page header for staff sub-routes opened via [GoRouter.go].
+  final String? backFallbackRoute;
+
   static const maxContentWidth = 1120.0;
 
   @override
@@ -36,6 +43,8 @@ class StaffWebPage extends StatelessWidget {
     }
 
     final scheme = Theme.of(context).colorScheme;
+    final resolvedBackRoute = backFallbackRoute ??
+        staffBackFallbackRoute(GoRouterState.of(context).matchedLocation);
 
     return SizedBox.expand(
       child: ColoredBox(
@@ -47,6 +56,7 @@ class StaffWebPage extends StatelessWidget {
               title: title,
               subtitle: subtitle,
               actions: actions,
+              backFallbackRoute: resolvedBackRoute,
             ),
             Expanded(
               child: LayoutBuilder(

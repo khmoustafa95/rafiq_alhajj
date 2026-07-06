@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/field_operator/domain/models/field_pilgrim_status.dart';
@@ -50,6 +52,14 @@ class _FieldOperatorPilgrimScreenState
     _fieldStatus = pilgrim.fieldStatus ?? FieldPilgrimStatus.pending;
     _form.control('medical').updateValue(pilgrim.medicalTestStatus ?? '');
     _initialized = true;
+  }
+
+  void _cancel() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.go(AppRoutes.fieldOperatorPilgrims);
+    }
   }
 
   Future<void> _save() async {
@@ -106,7 +116,14 @@ class _FieldOperatorPilgrimScreenState
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: RafiqAppBar(title: Text(l10n.fieldOperatorPilgrimTitle)),
+      appBar: RafiqAppBar(
+        title: Text(l10n.fieldOperatorPilgrimTitle),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: isSaving ? null : _cancel,
+        ),
+        automaticallyImplyLeading: false,
+      ),
       body: detailAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, _) => Center(child: Text(l10n.fieldOperatorLoadError)),
@@ -172,6 +189,11 @@ class _FieldOperatorPilgrimScreenState
                                 child: CircularProgressIndicator(strokeWidth: 2),
                               )
                             : Text(l10n.fieldOperatorSave),
+                      ),
+                      SizedBox(height: 8.h),
+                      OutlinedButton(
+                        onPressed: isSaving ? null : _cancel,
+                        child: Text(l10n.dialogCancel),
                       ),
                       SizedBox(height: 8.h),
                       OutlinedButton.icon(

@@ -220,7 +220,7 @@ class _HajjRitualDetailScreenState extends ConsumerState<HajjRitualDetailScreen>
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx, false),
-                child: Text(l10n.hajjJourneyStayHere),
+                child: Text(l10n.dialogCancel),
               ),
               FilledButton(
                 onPressed: () => Navigator.pop(ctx, true),

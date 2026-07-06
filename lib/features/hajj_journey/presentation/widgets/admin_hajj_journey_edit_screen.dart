@@ -3,8 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/routing/staff_navigation.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
+import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/domain/models/hajj_journey_media.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/domain/models/hajj_journey_step.dart';
 import 'package:rafiq_alhajj/features/hajj_journey/presentation/providers/hajj_journey_providers.dart';
@@ -113,6 +116,10 @@ class _AdminHajjJourneyEditScreenState
     });
   }
 
+  void _cancel() {
+    staffNavigateBack(context, fallbackRoute: AppRoutes.adminHajjJourney);
+  }
+
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context);
     final sortOrder =
@@ -162,7 +169,137 @@ class _AdminHajjJourneyEditScreenState
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(l10n.adminHajjJourneySaveSuccess)),
     );
-    Navigator.pop(context);
+    _cancel();
+  }
+
+  Widget _buildForm(AppLocalizations l10n) {
+    return ReactiveForm(
+      formGroup: _form,
+      child: ListView(
+        padding: EdgeInsets.all(16.w),
+        children: [
+          ReactiveTextField<String>(
+            formControlName: 'titleAr',
+            decoration: InputDecoration(
+              labelText: l10n.adminHajjJourneyTitleAr,
+            ),
+          ),
+          SizedBox(height: 12.h),
+          ReactiveTextField<String>(
+            formControlName: 'titleEn',
+            decoration: InputDecoration(
+              labelText: l10n.adminHajjJourneyTitleEn,
+            ),
+          ),
+          SizedBox(height: 12.h),
+          ReactiveTextField<String>(
+            formControlName: 'descriptionAr',
+            decoration: InputDecoration(
+              labelText: l10n.adminHajjJourneyDescriptionAr,
+            ),
+            minLines: 4,
+            maxLines: 8,
+          ),
+          SizedBox(height: 12.h),
+          ReactiveTextField<String>(
+            formControlName: 'descriptionEn',
+            decoration: InputDecoration(
+              labelText: l10n.adminHajjJourneyDescriptionEn,
+            ),
+            minLines: 4,
+            maxLines: 8,
+          ),
+          SizedBox(height: 12.h),
+          ReactiveTextField<String>(
+            formControlName: 'sortOrder',
+            decoration: InputDecoration(
+              labelText: l10n.adminHajjJourneySortOrder,
+            ),
+            keyboardType: TextInputType.number,
+          ),
+          SizedBox(height: 8.h),
+          SwitchListTile(
+            value: _isActive,
+            onChanged: (v) => setState(() => _isActive = v),
+            title: Text(l10n.adminHajjJourneyActive),
+          ),
+          SizedBox(height: 16.h),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  l10n.adminHajjJourneyMediaSection,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              IconButton(
+                onPressed: _addMedia,
+                icon: const Icon(Icons.add_circle_outline),
+              ),
+            ],
+          ),
+          for (var i = 0; i < _media.length; i++) ...[
+            Card(
+              child: Padding(
+                padding: EdgeInsets.all(12.w),
+                child: Column(
+                  children: [
+                    DropdownButtonFormField<HajjMediaType>(
+                      initialValue: _media[i].mediaType,
+                      decoration: InputDecoration(
+                        labelText: l10n.adminHajjJourneyMediaType,
+                      ),
+                      items: HajjMediaType.values
+                          .map(
+                            (type) => DropdownMenuItem(
+                              value: type,
+                              child: Text(_mediaTypeLabel(l10n, type)),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (v) {
+                        if (v != null) {
+                          setState(() => _media[i].mediaType = v);
+                        }
+                      },
+                    ),
+                    SizedBox(height: 8.h),
+                    TextField(
+                      controller: _media[i].titleController,
+                      decoration: InputDecoration(
+                        labelText: l10n.adminHajjJourneyMediaTitle,
+                      ),
+                    ),
+                    SizedBox(height: 8.h),
+                    TextField(
+                      controller: _media[i].urlController,
+                      decoration: InputDecoration(
+                        labelText: l10n.adminHajjJourneyMediaUrl,
+                      ),
+                    ),
+                    Align(
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: TextButton.icon(
+                        onPressed: () => _removeMedia(i),
+                        icon: const Icon(
+                          Icons.delete_outline,
+                          color: AppColors.error,
+                        ),
+                        label: Text(
+                          l10n.adminHajjJourneyRemoveMedia,
+                          style: const TextStyle(color: AppColors.error),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 8.h),
+          ],
+        ],
+      ),
+    );
   }
 
   @override
@@ -171,158 +308,46 @@ class _AdminHajjJourneyEditScreenState
     final stepAsync = ref.watch(adminHajjJourneyStepProvider(widget.ritualKey));
     final isSaving = ref.watch(adminHajjJourneySaveProvider).isLoading;
 
-    return Scaffold(
-      appBar: RafiqAppBar(
-        title: Text(l10n.adminHajjJourneyEditTitle),
-        actions: [
-          TextButton(
-            onPressed: isSaving ? null : _save,
-            child: isSaving
-                ? SizedBox(
-                    width: 20.w,
-                    height: 20.w,
-                    child: const CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : Text(l10n.adminContentSave),
-          ),
-        ],
-      ),
-      body: stepAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) => Center(child: Text(l10n.adminHajjJourneyLoadError)),
-        data: (step) {
-          if (step != null) {
-            _populate(step);
-          }
+    final body = stepAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (_, _) => Center(child: Text(l10n.adminHajjJourneyLoadError)),
+      data: (step) {
+        if (step != null) {
+          _populate(step);
+        }
+        return _buildForm(l10n);
+      },
+    );
 
-          return ReactiveForm(
-            formGroup: _form,
-            child: ListView(
-            padding: EdgeInsets.all(16.w),
-            children: [
-              ReactiveTextField<String>(
-                formControlName: 'titleAr',
-                decoration: InputDecoration(
-                  labelText: l10n.adminHajjJourneyTitleAr,
-                ),
-              ),
-              SizedBox(height: 12.h),
-              ReactiveTextField<String>(
-                formControlName: 'titleEn',
-                decoration: InputDecoration(
-                  labelText: l10n.adminHajjJourneyTitleEn,
-                ),
-              ),
-              SizedBox(height: 12.h),
-              ReactiveTextField<String>(
-                formControlName: 'descriptionAr',
-                decoration: InputDecoration(
-                  labelText: l10n.adminHajjJourneyDescriptionAr,
-                ),
-                minLines: 4,
-                maxLines: 8,
-              ),
-              SizedBox(height: 12.h),
-              ReactiveTextField<String>(
-                formControlName: 'descriptionEn',
-                decoration: InputDecoration(
-                  labelText: l10n.adminHajjJourneyDescriptionEn,
-                ),
-                minLines: 4,
-                maxLines: 8,
-              ),
-              SizedBox(height: 12.h),
-              ReactiveTextField<String>(
-                formControlName: 'sortOrder',
-                decoration: InputDecoration(
-                  labelText: l10n.adminHajjJourneySortOrder,
-                ),
-                keyboardType: TextInputType.number,
-              ),
-              SizedBox(height: 8.h),
-              SwitchListTile(
-                value: _isActive,
-                onChanged: (v) => setState(() => _isActive = v),
-                title: Text(l10n.adminHajjJourneyActive),
-              ),
-              SizedBox(height: 16.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      l10n.adminHajjJourneyMediaSection,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: _addMedia,
-                    icon: const Icon(Icons.add_circle_outline),
-                  ),
-                ],
-              ),
-              for (var i = 0; i < _media.length; i++) ...[
-                Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(12.w),
-                    child: Column(
-                      children: [
-                        DropdownButtonFormField<HajjMediaType>(
-                          initialValue: _media[i].mediaType,
-                          decoration: InputDecoration(
-                            labelText: l10n.adminHajjJourneyMediaType,
-                          ),
-                          items: HajjMediaType.values
-                              .map(
-                                (type) => DropdownMenuItem(
-                                  value: type,
-                                  child: Text(_mediaTypeLabel(l10n, type)),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: (v) {
-                            if (v != null) {
-                              setState(() => _media[i].mediaType = v);
-                            }
-                          },
-                        ),
-                        SizedBox(height: 8.h),
-                        TextField(
-                          controller: _media[i].titleController,
-                          decoration: InputDecoration(
-                            labelText: l10n.adminHajjJourneyMediaTitle,
-                          ),
-                        ),
-                        SizedBox(height: 8.h),
-                        TextField(
-                          controller: _media[i].urlController,
-                          decoration: InputDecoration(
-                            labelText: l10n.adminHajjJourneyMediaUrl,
-                          ),
-                        ),
-                        Align(
-                          alignment: AlignmentDirectional.centerEnd,
-                          child: TextButton.icon(
-                            onPressed: () => _removeMedia(i),
-                            icon: const Icon(
-                              Icons.delete_outline,
-                              color: AppColors.error,
-                            ),
-                            label: Text(
-                              l10n.adminHajjJourneyRemoveMedia,
-                              style: const TextStyle(color: AppColors.error),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(height: 8.h),
-              ],
-            ],
-            ),
-          );
-        },
+    return StaffAdaptivePage(
+      web: StaffWebPage(
+        title: l10n.adminHajjJourneyEditTitle,
+        body: body,
+        bottomBar: StaffFormActionsBar(
+          primaryLabel: l10n.adminContentSave,
+          onPrimary: isSaving ? null : _save,
+          secondaryLabel: l10n.dialogCancel,
+          onSecondary: isSaving ? null : _cancel,
+          isLoading: isSaving,
+        ),
+      ),
+      mobile: Scaffold(
+        appBar: RafiqAppBar(
+          title: Text(l10n.adminHajjJourneyEditTitle),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: isSaving ? null : _cancel,
+          ),
+          automaticallyImplyLeading: false,
+        ),
+        body: body,
+        bottomNavigationBar: StaffFormMobileActionsBar(
+          primaryLabel: l10n.adminContentSave,
+          onPrimary: isSaving ? null : _save,
+          secondaryLabel: l10n.dialogCancel,
+          onSecondary: isSaving ? null : _cancel,
+          isLoading: isSaving,
+        ),
       ),
     );
   }

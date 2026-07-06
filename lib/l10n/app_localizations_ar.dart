@@ -1123,6 +1123,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dialogCancel => 'إلغاء';
 
   @override
+  String get appExitTitle => 'الخروج من التطبيق؟';
+
+  @override
+  String get appExitMessage => 'هل أنت متأكد أنك تريد الخروج من التطبيق؟';
+
+  @override
+  String get appExitConfirm => 'خروج';
+
+  @override
   String get operatorPilgrimListTitle => 'الحجاج المسجّلون';
 
   @override

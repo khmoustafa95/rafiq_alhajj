@@ -2131,6 +2131,24 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get dialogCancel;
 
+  /// No description provided for @appExitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit app?'**
+  String get appExitTitle;
+
+  /// No description provided for @appExitMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to exit the app?'**
+  String get appExitMessage;
+
+  /// No description provided for @appExitConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit'**
+  String get appExitConfirm;
+
   /// No description provided for @operatorPilgrimListTitle.
   ///
   /// In en, this message translates to:

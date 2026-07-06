@@ -33,16 +33,23 @@ class AdminTripOfficesScreen extends ConsumerWidget {
 
     final selected = await showDialog<TripGroupOption>(
       context: context,
-      builder: (ctx) => SimpleDialog(
-        title: Text(l10n.adminTripAddOffice),
-        children: [
-          for (final option in options)
+      builder: (ctx) {
+        final l10n = AppLocalizations.of(ctx);
+        return SimpleDialog(
+          title: Text(l10n.adminTripAddOffice),
+          children: [
+            for (final option in options)
+              SimpleDialogOption(
+                onPressed: () => Navigator.pop(ctx, option),
+                child: Text(option.name),
+              ),
             SimpleDialogOption(
-              onPressed: () => Navigator.pop(ctx, option),
-              child: Text(option.name),
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(l10n.dialogCancel),
             ),
-        ],
-      ),
+          ],
+        );
+      },
     );
 
     if (selected == null || !context.mounted) {

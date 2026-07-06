@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/routing/staff_navigation.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
@@ -131,6 +132,10 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       pilgrimRitualTrackingEnabled: _pilgrimRitualTrackingEnabled,
       maxPilgrimsPerGroup: _parseMaxPilgrims(),
     );
+  }
+
+  void _cancel() {
+    staffNavigateBack(context, fallbackRoute: AppRoutes.adminDashboard);
   }
 
   Future<void> _submit() async {
@@ -579,6 +584,8 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
             bottomBar: StaffFormActionsBar(
               primaryLabel: l10n.adminSettingsSave,
               onPrimary: _submit,
+              secondaryLabel: l10n.dialogCancel,
+              onSecondary: isSaving ? null : _cancel,
               isLoading: isSaving,
             ),
           ),
@@ -587,6 +594,13 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
             body: SingleChildScrollView(
               padding: EdgeInsets.all(16.w),
               child: form,
+            ),
+            bottomNavigationBar: StaffFormMobileActionsBar(
+              primaryLabel: l10n.adminSettingsSave,
+              onPrimary: _submit,
+              secondaryLabel: l10n.dialogCancel,
+              onSecondary: isSaving ? null : _cancel,
+              isLoading: isSaving,
             ),
           ),
         );

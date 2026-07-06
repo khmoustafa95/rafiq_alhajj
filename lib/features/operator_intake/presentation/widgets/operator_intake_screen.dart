@@ -158,6 +158,10 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
             ],
           ),
           actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(l10n.dialogCancel),
+            ),
             FilledButton(
               onPressed: () => Navigator.pop(context),
               child: Text(l10n.operatorCloseDialog),

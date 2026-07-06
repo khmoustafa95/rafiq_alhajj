@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/routing/staff_back_fallback.dart';
+import 'package:rafiq_alhajj/core/routing/staff_navigation.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/language_switcher.dart';
@@ -56,6 +58,7 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
     // drawer always shows full-width labels.
     final collapsed =
         !isCompact && ref.watch(staffSidebarCollapsedProvider);
+    final backFallbackRoute = staffBackFallbackRoute(location);
 
     final navItems = isAdmin
         ? _adminNavItems(l10n, location)
@@ -97,6 +100,10 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
           surfaceTintColor: Colors.transparent,
           elevation: 0,
           scrolledUnderElevation: 0,
+          leading: backFallbackRoute == null
+              ? null
+              : StaffBackButton(fallbackRoute: backFallbackRoute),
+          automaticallyImplyLeading: backFallbackRoute != null,
           title: Text(
             _pageTitle(l10n, location, isAdmin),
             style: Theme.of(context).textTheme.titleMedium,
@@ -560,12 +567,14 @@ class StaffWebHeader extends StatelessWidget {
     required this.title,
     this.subtitle,
     this.actions = const [],
+    this.backFallbackRoute,
     super.key,
   });
 
   final String title;
   final String? subtitle;
   final List<Widget> actions;
+  final String? backFallbackRoute;
 
   @override
   Widget build(BuildContext context) {
@@ -595,6 +604,10 @@ class StaffWebHeader extends StatelessWidget {
         ),
         child: Row(
           children: [
+            if (backFallbackRoute != null) ...[
+              StaffBackButton(fallbackRoute: backFallbackRoute!),
+              SizedBox(width: sw(8)),
+            ],
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

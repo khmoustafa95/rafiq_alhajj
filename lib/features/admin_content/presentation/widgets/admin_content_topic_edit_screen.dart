@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/core/domain/models/educational_media.dart';
+import 'package:rafiq_alhajj/core/routing/app_routes.dart';
+import 'package:rafiq_alhajj/core/routing/staff_navigation.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/utils/file_pick_upload.dart';
 import 'package:rafiq_alhajj/core/utils/upload_validation.dart';
@@ -276,6 +278,10 @@ class _AdminContentTopicEditScreenState
     });
   }
 
+  void _cancel() {
+    staffNavigateBack(context, fallbackRoute: AppRoutes.adminContentTopics);
+  }
+
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context);
     final title = (_form.control('title').value as String).trim();
@@ -390,12 +396,19 @@ class _AdminContentTopicEditScreenState
         bottomBar: StaffFormActionsBar(
           primaryLabel: l10n.adminContentSave,
           onPrimary: isBusy ? null : _save,
+          secondaryLabel: l10n.dialogCancel,
+          onSecondary: isBusy ? null : _cancel,
           isLoading: isSaving,
         ),
       ),
       mobile: Scaffold(
         appBar: RafiqAppBar(
           title: Text(title),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: isBusy ? null : _cancel,
+          ),
+          automaticallyImplyLeading: false,
           actions: [
             TextButton(
               onPressed: isBusy ? null : _save,
@@ -410,6 +423,13 @@ class _AdminContentTopicEditScreenState
           ],
         ),
         body: body,
+        bottomNavigationBar: StaffFormMobileActionsBar(
+          primaryLabel: l10n.adminContentSave,
+          onPrimary: isBusy ? null : _save,
+          secondaryLabel: l10n.dialogCancel,
+          onSecondary: isBusy ? null : _cancel,
+          isLoading: isSaving,
+        ),
       ),
     );
   }
