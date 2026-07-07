@@ -1,16 +1,14 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/routing/staff_navigation.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/features/notifications/domain/models/notification_audience.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/providers/notification_providers.dart';
+import 'package:rafiq_alhajj/features/notifications/presentation/widgets/admin_notification_broadcast_form.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -72,6 +70,17 @@ class _AdminNotificationBroadcastScreenState
     staffNavigateBack(context, fallbackRoute: AppRoutes.adminDashboard);
   }
 
+  void _onAudienceChanged(NotificationAudience audience) {
+    setState(() {
+      _audience = audience;
+      if (_audience != NotificationAudience.groupPilgrims) {
+        _form.control('groupId').updateValue(null);
+      } else {
+        _form.control('groupId').updateValueAndValidity();
+      }
+    });
+  }
+
   Future<void> _submit() async {
     if (!_form.valid) {
       _form.markAllAsTouched();
@@ -121,144 +130,6 @@ class _AdminNotificationBroadcastScreenState
     _form.control('bodyEn').reset(value: '');
   }
 
-  Widget _buildForm(AppLocalizations l10n, bool isSending) {
-    final groupsAsync = ref.watch(notificationGroupsProvider);
-
-    return ReactiveForm(
-      formGroup: _form,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          StaffFormSection(
-            icon: Icons.groups_outlined,
-            title: l10n.adminNotificationAudienceLabel,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SegmentedButton<NotificationAudience>(
-                  segments: [
-                    ButtonSegment(
-                      value: NotificationAudience.allPilgrims,
-                      label: Text(l10n.adminNotificationAudienceAllPilgrims),
-                      icon: const Icon(Icons.people_outline),
-                    ),
-                    ButtonSegment(
-                      value: NotificationAudience.groupPilgrims,
-                      label: Text(l10n.adminNotificationAudienceGroup),
-                      icon: const Icon(Icons.group_outlined),
-                    ),
-                    ButtonSegment(
-                      value: NotificationAudience.allOperators,
-                      label: Text(l10n.adminNotificationAudienceOperators),
-                      icon: const Icon(Icons.engineering_outlined),
-                    ),
-                  ],
-                  selected: {_audience},
-                  onSelectionChanged: (selection) {
-                    if (isSending) {
-                      return;
-                    }
-                    setState(() {
-                      _audience = selection.first;
-                      if (_audience != NotificationAudience.groupPilgrims) {
-                        _form.control('groupId').updateValue(null);
-                      } else {
-                        _form.control('groupId').updateValueAndValidity();
-                      }
-                    });
-                  },
-                ),
-                if (_audience == NotificationAudience.groupPilgrims) ...[
-                  SizedBox(height: 16.h),
-                  groupsAsync.when(
-                    loading: () => const LinearProgressIndicator(),
-                    error: (_, _) => Text(l10n.adminNotificationGroupsLoadError),
-                    data: (groups) {
-                      if (groups.isEmpty) {
-                        return Text(l10n.adminNotificationGroupsEmpty);
-                      }
-                      return ReactiveDropdownField<String>(
-                        formControlName: 'groupId',
-                        decoration: InputDecoration(
-                          labelText: l10n.adminNotificationGroupLabel,
-                        ),
-                        items: [
-                          for (final group in groups)
-                            DropdownMenuItem(
-                              value: group.id,
-                              child: Text(group.name),
-                            ),
-                        ],
-                        validationMessages: {
-                          'groupRequired': (_) =>
-                              l10n.adminNotificationGroupRequired,
-                        },
-                      );
-                    },
-                  ),
-                ],
-              ],
-            ),
-          ),
-          SizedBox(height: 16.h),
-          StaffFormSection(
-            icon: Icons.translate_outlined,
-            title: l10n.adminNotificationContentSection,
-            child: ResponsiveFormGrid(
-              children: [
-                ReactiveTextField<String>(
-                  formControlName: 'titleAr',
-                  decoration: InputDecoration(
-                    labelText: l10n.adminNotificationTitleAr,
-                  ),
-                  validationMessages: {
-                    ValidationMessage.required: (_) =>
-                        l10n.adminNotificationTitleRequired,
-                  },
-                ),
-                ReactiveTextField<String>(
-                  formControlName: 'titleEn',
-                  decoration: InputDecoration(
-                    labelText: l10n.adminNotificationTitleEn,
-                  ),
-                  validationMessages: {
-                    ValidationMessage.required: (_) =>
-                        l10n.adminNotificationTitleRequired,
-                  },
-                ),
-                ReactiveTextField<String>(
-                  formControlName: 'bodyAr',
-                  decoration: InputDecoration(
-                    labelText: l10n.adminNotificationBodyAr,
-                  ),
-                  maxLines: 4,
-                ),
-                ReactiveTextField<String>(
-                  formControlName: 'bodyEn',
-                  decoration: InputDecoration(
-                    labelText: l10n.adminNotificationBodyEn,
-                  ),
-                  maxLines: 4,
-                ),
-              ],
-            ),
-          ),
-          if (!AppPlatform.isWeb) ...[
-            SizedBox(height: 24.h),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: StaffFormActionButtons(
-                primaryLabel: l10n.adminNotificationSendButton,
-                onPrimary: _submit,
-                isLoading: isSending,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -275,7 +146,13 @@ class _AdminNotificationBroadcastScreenState
       },
     );
 
-    final form = _buildForm(l10n, isSending);
+    final form = AdminNotificationBroadcastForm(
+      form: _form,
+      audience: _audience,
+      isSending: isSending,
+      onAudienceChanged: _onAudienceChanged,
+      onSubmit: _submit,
+    );
 
     return StaffAdaptivePage(
       web: StaffWebPage(
@@ -289,12 +166,17 @@ class _AdminNotificationBroadcastScreenState
           ),
         ],
         body: form,
-        bottomBar: StaffFormActionsBar(
-          primaryLabel: l10n.adminNotificationSendButton,
-          onPrimary: _submit,
-          secondaryLabel: l10n.dialogCancel,
-          onSecondary: isSending ? null : _cancel,
-          isLoading: isSending,
+        bottomBar: Semantics(
+          button: true,
+          label: l10n.adminNotificationSendButton,
+          enabled: !isSending,
+          child: StaffFormActionsBar(
+            primaryLabel: l10n.adminNotificationSendButton,
+            onPrimary: _submit,
+            secondaryLabel: l10n.dialogCancel,
+            onSecondary: isSending ? null : _cancel,
+            isLoading: isSending,
+          ),
         ),
       ),
       mobile: Scaffold(
@@ -312,12 +194,17 @@ class _AdminNotificationBroadcastScreenState
           padding: EdgeInsets.all(16.w),
           child: form,
         ),
-        bottomNavigationBar: StaffFormMobileActionsBar(
-          primaryLabel: l10n.adminNotificationSendButton,
-          onPrimary: _submit,
-          secondaryLabel: l10n.dialogCancel,
-          onSecondary: isSending ? null : _cancel,
-          isLoading: isSending,
+        bottomNavigationBar: Semantics(
+          button: true,
+          label: l10n.adminNotificationSendButton,
+          enabled: !isSending,
+          child: StaffFormMobileActionsBar(
+            primaryLabel: l10n.adminNotificationSendButton,
+            onPrimary: _submit,
+            secondaryLabel: l10n.dialogCancel,
+            onSecondary: isSending ? null : _cancel,
+            isLoading: isSending,
+          ),
         ),
       ),
     );

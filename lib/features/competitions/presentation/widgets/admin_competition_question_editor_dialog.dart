@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition_question.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition_question_editor_input.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/providers/competitions_providers.dart';
+import 'package:rafiq_alhajj/features/competitions/presentation/widgets/admin_competition_question_editor_form.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/admin_competition_question_options_editor.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 import 'package:reactive_forms/reactive_forms.dart';
@@ -267,79 +268,17 @@ class _AdminCompetitionQuestionEditorDialogState
       ),
       content: SizedBox(
         width: 520.w,
-        child: ReactiveForm(
-          formGroup: _form,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                ReactiveDropdownField<CompetitionQuestionType>(
-                  formControlName: 'questionType',
-                  decoration: InputDecoration(
-                    labelText: l10n.adminCompetitionQuestionTypeLabel,
-                  ),
-                  items: [
-                    DropdownMenuItem(
-                      value: CompetitionQuestionType.multipleChoice,
-                      child: Text(l10n.adminCompetitionQuestionTypeMultipleChoice),
-                    ),
-                    DropdownMenuItem(
-                      value: CompetitionQuestionType.trueFalse,
-                      child: Text(l10n.adminCompetitionQuestionTypeTrueFalse),
-                    ),
-                    DropdownMenuItem(
-                      value: CompetitionQuestionType.ordering,
-                      child: Text(l10n.adminCompetitionQuestionTypeOrdering),
-                    ),
-                  ],
-                  onChanged: (control) => _onTypeChanged(control.value),
-                ),
-                SizedBox(height: 12.h),
-                ReactiveTextField<String>(
-                  formControlName: 'prompt',
-                  maxLines: 3,
-                  decoration: InputDecoration(
-                    labelText: l10n.adminCompetitionQuestionPromptLabel,
-                  ),
-                  validationMessages: {
-                    ValidationMessage.required: (_) =>
-                        l10n.adminCompetitionQuestionPromptRequired,
-                  },
-                ),
-                SizedBox(height: 12.h),
-                ReactiveTextField<String>(
-                  formControlName: 'explanation',
-                  maxLines: 3,
-                  decoration: InputDecoration(
-                    labelText: l10n.adminCompetitionQuestionExplanationLabel,
-                  ),
-                ),
-                SizedBox(height: 12.h),
-                ReactiveTextField<int>(
-                  formControlName: 'points',
-                  valueAccessor: IntValueAccessor(),
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: l10n.adminCompetitionQuestionPointsLabel,
-                  ),
-                  validationMessages: {
-                    'pointsInvalid': (_) =>
-                        l10n.adminCompetitionQuestionPointsInvalid,
-                  },
-                ),
-                SizedBox(height: 16.h),
-                AdminCompetitionQuestionOptionsEditor(
-                  questionType: _questionType,
-                  optionFields: _optionFields,
-                  isSaving: isSaving,
-                  onReorder: _reorderOption,
-                  onAddOrderingStep: _addOrderingStep,
-                  onRemoveOrderingStep: _removeOrderingStep,
-                  onSetCorrectIndex: _setCorrectIndex,
-                ),
-              ],
-            ),
+        child: SingleChildScrollView(
+          child: AdminCompetitionQuestionEditorForm(
+            form: _form,
+            questionType: _questionType,
+            optionFields: _optionFields,
+            isSaving: isSaving,
+            onTypeChanged: _onTypeChanged,
+            onReorder: _reorderOption,
+            onAddOrderingStep: _addOrderingStep,
+            onRemoveOrderingStep: _removeOrderingStep,
+            onSetCorrectIndex: _setCorrectIndex,
           ),
         ),
       ),
@@ -348,15 +287,20 @@ class _AdminCompetitionQuestionEditorDialogState
           onPressed: isSaving ? null : () => Navigator.pop(context),
           child: Text(l10n.dialogCancel),
         ),
-        FilledButton(
-          onPressed: isSaving ? null : _submit,
-          child: isSaving
-              ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : Text(l10n.adminContentSave),
+        Semantics(
+          button: true,
+          label: l10n.adminContentSave,
+          enabled: !isSaving,
+          child: FilledButton(
+            onPressed: isSaving ? null : _submit,
+            child: isSaving
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Text(l10n.adminContentSave),
+          ),
         ),
       ],
     );

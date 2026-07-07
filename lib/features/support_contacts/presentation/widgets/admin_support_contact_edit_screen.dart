@@ -3,13 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/routing/staff_navigation.dart';
-import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
-import 'package:rafiq_alhajj/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:rafiq_alhajj/features/support_contacts/domain/models/support_contact.dart';
 import 'package:rafiq_alhajj/features/support_contacts/domain/models/support_contact_input.dart';
 import 'package:rafiq_alhajj/features/support_contacts/presentation/providers/support_contacts_providers.dart';
+import 'package:rafiq_alhajj/features/support_contacts/presentation/widgets/admin_support_contact_edit_form.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -140,181 +139,21 @@ class _AdminSupportContactEditScreenState
     );
   }
 
-  Widget _buildForm(AppLocalizations l10n, bool isSaving) {
-    final groupsAsync = ref.watch(notificationGroupsProvider);
-
-    final form = ReactiveForm(
-      formGroup: _form,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          StaffFormSection(
-            icon: Icons.contact_phone_outlined,
-            title: l10n.adminSupportContactDetailsSection,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                ResponsiveFormGrid(
-                  children: [
-                    ReactiveTextField<String>(
-                      formControlName: 'labelAr',
-                      decoration: InputDecoration(
-                        labelText: l10n.adminSupportContactLabelAr,
-                      ),
-                      validationMessages: {
-                        ValidationMessage.required: (_) =>
-                            l10n.adminSupportContactLabelRequired,
-                      },
-                    ),
-                    ReactiveTextField<String>(
-                      formControlName: 'labelEn',
-                      decoration: InputDecoration(
-                        labelText: l10n.adminSupportContactLabelEn,
-                      ),
-                      validationMessages: {
-                        ValidationMessage.required: (_) =>
-                            l10n.adminSupportContactLabelRequired,
-                      },
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16.h),
-                ResponsiveFormGrid(
-                  children: [
-                    ReactiveTextField<String>(
-                      formControlName: 'descriptionAr',
-                      maxLines: 2,
-                      decoration: InputDecoration(
-                        labelText: l10n.adminSupportContactDescriptionAr,
-                      ),
-                    ),
-                    ReactiveTextField<String>(
-                      formControlName: 'descriptionEn',
-                      maxLines: 2,
-                      decoration: InputDecoration(
-                        labelText: l10n.adminSupportContactDescriptionEn,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16.h),
-                ResponsiveFormGrid(
-                  children: [
-                    ReactiveTextField<String>(
-                      formControlName: 'phoneNumber',
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        labelText: l10n.adminSupportContactPhone,
-                      ),
-                    ),
-                    ReactiveTextField<String>(
-                      formControlName: 'whatsappNumber',
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        labelText: l10n.adminSupportContactWhatsapp,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 16.h),
-          StaffFormSection(
-            icon: Icons.tune_rounded,
-            title: l10n.adminSupportContactScopeSection,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                DropdownButtonFormField<SupportContactScope>(
-                  initialValue: _scope,
-                  decoration: InputDecoration(
-                    labelText: l10n.adminSupportContactScope,
-                  ),
-                  items: [
-                    DropdownMenuItem(
-                      value: SupportContactScope.global,
-                      child: Text(l10n.adminSupportContactScopeGlobal),
-                    ),
-                    DropdownMenuItem(
-                      value: SupportContactScope.group,
-                      child: Text(l10n.adminSupportContactScopeGroup),
-                    ),
-                  ],
-                  onChanged: isSaving
-                      ? null
-                      : (value) => setState(
-                            () => _scope = value ?? SupportContactScope.global,
-                          ),
-                ),
-                if (_scope == SupportContactScope.group) ...[
-                  SizedBox(height: 16.h),
-                  groupsAsync.when(
-                    loading: () => const LinearProgressIndicator(),
-                    error: (_, _) => Text(
-                      l10n.adminNotificationGroupsEmpty,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    data: (groups) {
-                      if (groups.isEmpty) {
-                        return Text(l10n.adminNotificationGroupsEmpty);
-                      }
-                      final hasValue =
-                          groups.any((group) => group.id == _groupId);
-                      return DropdownButtonFormField<String>(
-                        initialValue: hasValue ? _groupId : null,
-                        decoration: InputDecoration(
-                          labelText: l10n.adminSupportContactGroup,
-                        ),
-                        items: [
-                          for (final group in groups)
-                            DropdownMenuItem(
-                              value: group.id,
-                              child: Text(group.name),
-                            ),
-                        ],
-                        onChanged: isSaving
-                            ? null
-                            : (value) => setState(() => _groupId = value),
-                      );
-                    },
-                  ),
-                ],
-                SizedBox(height: 8.h),
-                ResponsiveFormGrid(
-                  children: [
-                    ReactiveTextField<String>(
-                      formControlName: 'sortOrder',
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: l10n.adminSupportContactSortOrder,
-                      ),
-                    ),
-                  ],
-                ),
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  value: _isActive,
-                  onChanged:
-                      isSaving ? null : (value) => setState(() => _isActive = value),
-                  title: Text(l10n.adminSupportContactActive),
-                  subtitle: Text(
-                    l10n.adminSupportContactActiveHint,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-
+  Widget _buildScaffold(AppLocalizations l10n, bool isSaving) {
     final title = _isEditing
         ? l10n.adminSupportContactEditTitle
         : l10n.adminSupportContactNewTitle;
+
+    final form = AdminSupportContactEditForm(
+      form: _form,
+      scope: _scope,
+      groupId: _groupId,
+      isActive: _isActive,
+      isSaving: isSaving,
+      onScopeChanged: (value) => setState(() => _scope = value),
+      onGroupChanged: (value) => setState(() => _groupId = value),
+      onActiveChanged: (value) => setState(() => _isActive = value),
+    );
 
     return StaffAdaptivePage(
       web: StaffWebPage(
@@ -369,12 +208,12 @@ class _AdminSupportContactEditScreenState
           if (match.isNotEmpty) {
             _bind(match.first);
           }
-          return _buildForm(l10n, isSaving);
+          return _buildScaffold(l10n, isSaving);
         },
       );
     }
 
-    return _buildForm(l10n, isSaving);
+    return _buildScaffold(l10n, isSaving);
   }
 
   Widget _scaffoldLoading(AppLocalizations l10n) {

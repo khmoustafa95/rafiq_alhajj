@@ -3,6 +3,10 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
+**Optimization execution (2026-07-07):** **Batch 17 (continued):** Split `admin_competition_question_editor_dialog` (364→308) → `admin_competition_question_editor_form` (options editor already extracted); `admin_notification_broadcast_screen` (325→212) → `admin_notification_broadcast_form`; `admin_content_list_screen` (315→64) → `admin_content_feed_tab`. Semantics on save/send + mobile FAB add. `flutter analyze` (changed files) → **No issues found**.
+
+**Optimization execution (2026-07-07):** Split `pilgrim_field_catalog.dart` (686→3 modules): `pilgrim_field_definitions.dart` (enums/types/sections/`pilgrimFields` + l10n resolvers), `pilgrim_form_catalog.dart` (`PilgrimFormCatalog`), barrel `pilgrim_field_catalog.dart`. `flutter analyze` (changed files) → 1 pre-existing unused-import warning in `operator_intake_screen.dart`.
+
 **Optimization execution (2026-07-06):** Batches 1–16 shipped on `cursor/optimization-execute-0985` (PR #11). **Batch 16:** `field_operator_pilgrims_screen` split (204→~115 lines) — search bar, status filters, list body, filter chip; `field_operator_pilgrim_screen` split (306→~155 lines) — `FieldOperatorPilgrimHeaderCard`, `FieldOperatorPilgrimStatusForm`. Semantics on search, filters, refresh, save/cancel/share. **Remaining:** Phase 1 device smoke; apply dashboard RPC on staging.
 
 **Optimization roadmap (2026-07-06):** One self-contained JSON per platform × environment under `config/dart-defines/{platform}.{env}.json` (secrets, gitignored) + `*.example.json` (templates). Platforms: `web`, `android`, `android-device`, `ios`. Environments: `local`, `staging`, `production`. Central resolver `scripts/resolve-dart-defines.mjs`; bootstrap `npm run config:bootstrap` migrates legacy root files. VS Code launch.json updated (8 configs). Dev npm: `dev:web`, `dev:android`, `dev:android:device`, `dev:web:staging`, `dev:android:staging`. `AppConfig.appEnv` / `isStagingEnv` added. Docs: `config/dart-defines/README.md`, runbook + staging-setup updated. ⚠ Fill `android.staging.json` → `FIREBASE_APP_ID` from `google-services.json` before APK build.

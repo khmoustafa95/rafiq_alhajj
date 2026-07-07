@@ -2,16 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:rafiq_alhajj/core/theme/app_colors.dart';
-import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/presentation/providers/location_providers.dart';
-import 'package:rafiq_alhajj/features/sos/application/services/sos_location_tracker.dart';
 import 'package:rafiq_alhajj/features/sos/domain/models/sos_alert.dart';
 import 'package:rafiq_alhajj/features/sos/presentation/controllers/sos_controller.dart';
+import 'package:rafiq_alhajj/features/sos/presentation/controllers/sos_location_ping_controller.dart';
 import 'package:rafiq_alhajj/features/sos/presentation/providers/sos_providers.dart';
+import 'package:rafiq_alhajj/features/sos/presentation/widgets/sos_active_view.dart';
+import 'package:rafiq_alhajj/features/sos/presentation/widgets/sos_idle_view.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 class SosScreen extends ConsumerStatefulWidget {
@@ -23,22 +21,19 @@ class SosScreen extends ConsumerStatefulWidget {
 
 class _SosScreenState extends ConsumerState<SosScreen>
     with WidgetsBindingObserver {
-  StreamSubscription<Position>? _positionSub;
-  String? _trackingAlertId;
-  DateTime? _lastPingAt;
-  Position? _lastPingPosition;
-  int _activeDistanceFilter = SosLocationTracker.movingDistanceFilter;
+  late final SosLocationPingController _pingController;
 
   @override
   void initState() {
     super.initState();
+    _pingController = SosLocationPingController(ref);
     WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _stopTracking();
+    _pingController.dispose();
     super.dispose();
   }
 
@@ -47,81 +42,18 @@ class _SosScreenState extends ConsumerState<SosScreen>
     if (state == AppLifecycleState.resumed) {
       final alert = ref.read(mySosAlertProvider).value;
       if (alert != null && alert.status == SosStatus.active) {
-        _startTracking(alert.id);
+        _pingController.start(alert.id);
       }
     } else if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive) {
-      _stopTracking();
+      _pingController.stop();
     }
-  }
-
-  Future<Position?> _readPositionOrNull() {
-    return ref.read(locationRepositoryProvider).readCurrentPositionOrNull();
-  }
-
-  void _startTracking(String alertId) {
-    if (_trackingAlertId == alertId && _positionSub != null) {
-      return;
-    }
-    _stopTracking();
-    _trackingAlertId = alertId;
-    _lastPingAt = null;
-    _lastPingPosition = null;
-    _activeDistanceFilter = SosLocationTracker.movingDistanceFilter;
-    _subscribePosition(alertId);
-  }
-
-  void _subscribePosition(String alertId) {
-    _positionSub = ref
-        .read(locationRepositoryProvider)
-        .watchPosition(distanceFilter: _activeDistanceFilter)
-        .listen(
-      (position) {
-        final nextFilter = SosLocationTracker.distanceFilterFor(position);
-        if (nextFilter != _activeDistanceFilter) {
-          _activeDistanceFilter = nextFilter;
-          unawaited(_positionSub?.cancel());
-          _subscribePosition(alertId);
-          return;
-        }
-
-        if (!SosLocationTracker.shouldPushPing(
-          position: position,
-          lastPingAt: _lastPingAt,
-          lastPingPosition: _lastPingPosition,
-        )) {
-          return;
-        }
-
-        _lastPingAt = DateTime.now();
-        _lastPingPosition = position;
-        unawaited(
-          ref
-              .read(sosServiceProvider)
-              .pushLocation(
-                alertId: alertId,
-                latitude: position.latitude,
-                longitude: position.longitude,
-                accuracy: position.accuracy,
-              )
-              .catchError((_) {}),
-        );
-      },
-      onError: (_) {},
-    );
-  }
-
-  void _stopTracking() {
-    unawaited(_positionSub?.cancel());
-    _positionSub = null;
-    _trackingAlertId = null;
-    _lastPingAt = null;
-    _lastPingPosition = null;
   }
 
   Future<void> _raise() async {
     final l10n = AppLocalizations.of(context);
-    final position = await _readPositionOrNull();
+    final position =
+        await ref.read(locationRepositoryProvider).readCurrentPositionOrNull();
     final id = await ref.read(sosRaiseProvider.notifier).raise(
           latitude: position?.latitude,
           longitude: position?.longitude,
@@ -139,7 +71,7 @@ class _SosScreenState extends ConsumerState<SosScreen>
       return;
     }
 
-    _startTracking(id);
+    _pingController.start(id);
 
     if (position == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -172,7 +104,7 @@ class _SosScreenState extends ConsumerState<SosScreen>
       return;
     }
 
-    _stopTracking();
+    _pingController.stop();
     final ok = await ref.read(sosRaiseProvider.notifier).cancel(alertId);
     if (mounted && !ok) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -192,175 +124,23 @@ class _SosScreenState extends ConsumerState<SosScreen>
       appBar: RafiqAppBar(title: Text(l10n.sosTitle)),
       body: alertAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) => _buildIdle(l10n, isBusy),
+        error: (_, _) => SosIdleView(isBusy: isBusy, onRaise: _raise),
         data: (alert) {
           if (alert != null && alert.status == SosStatus.active) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted) {
-                _startTracking(alert.id);
+                _pingController.start(alert.id);
               }
             });
-            return _buildActive(l10n, alert, isBusy);
+            return SosActiveView(
+              alert: alert,
+              isBusy: isBusy,
+              onCancel: () => _cancel(alert.id),
+            );
           }
-          _stopTracking();
-          return _buildIdle(l10n, isBusy);
+          _pingController.stop();
+          return SosIdleView(isBusy: isBusy, onRaise: _raise);
         },
-      ),
-    );
-  }
-
-  Widget _buildIdle(AppLocalizations l10n, bool isBusy) {
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(24.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(height: 24.h),
-          Center(
-            child: Container(
-              width: 120.w,
-              height: 120.w,
-              decoration: BoxDecoration(
-                color: AppColors.error.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.sos_rounded, size: 64.sp, color: AppColors.error),
-            ),
-          ),
-          SizedBox(height: 24.h),
-          Text(
-            l10n.sosIntro,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.textSecondary,
-                  height: 1.5,
-                ),
-          ),
-          SizedBox(height: 32.h),
-          Semantics(
-            button: true,
-            label: l10n.sosRaiseButton,
-            child: FilledButton.icon(
-              onPressed: isBusy ? null : _raise,
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.error,
-                foregroundColor: AppColors.onPrimary,
-                padding: EdgeInsets.symmetric(vertical: 18.h),
-              ),
-              icon: isBusy
-                  ? SizedBox(
-                      width: 20.w,
-                      height: 20.w,
-                      child: const CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: AppColors.onPrimary,
-                      ),
-                    )
-                  : const Icon(Icons.campaign_rounded),
-              label: Text(l10n.sosRaiseButton),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActive(AppLocalizations l10n, SosAlert alert, bool isBusy) {
-    final lastUpdate = alert.lastLocationAt;
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(24.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(height: 16.h),
-          Center(
-            child: Container(
-              width: 110.w,
-              height: 110.w,
-              decoration: BoxDecoration(
-                color: AppColors.success.withValues(alpha: 0.14),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.verified_user_rounded,
-                size: 56.sp,
-                color: AppColors.success,
-              ),
-            ),
-          ),
-          SizedBox(height: 20.h),
-          Text(
-            l10n.sosActiveTitle,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
-          ),
-          SizedBox(height: 12.h),
-          Text(
-            l10n.sosActiveBody,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                  height: 1.5,
-                ),
-          ),
-          SizedBox(height: 24.h),
-          Container(
-            decoration: AppDecorations.card(radius: AppDecorations.radiusLg),
-            padding: EdgeInsets.all(16.w),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 18.w,
-                  height: 18.w,
-                  child: const CircularProgressIndicator(strokeWidth: 2),
-                ),
-                SizedBox(width: 14.w),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.sosSharingLocation,
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      if (lastUpdate != null) ...[
-                        SizedBox(height: 4.h),
-                        Text(
-                          l10n.sosLastUpdate(
-                            TimeOfDay.fromDateTime(lastUpdate).format(context),
-                          ),
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: AppColors.textSecondary,
-                              ),
-                        ),
-                      ] else ...[
-                        SizedBox(height: 4.h),
-                        Text(
-                          l10n.sosLocationPending,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: AppColors.textSecondary,
-                              ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 32.h),
-          OutlinedButton.icon(
-            onPressed: isBusy ? null : () => _cancel(alert.id),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.success,
-              padding: EdgeInsets.symmetric(vertical: 16.h),
-            ),
-            icon: const Icon(Icons.check_circle_outline),
-            label: Text(l10n.sosCancelButton),
-          ),
-        ],
       ),
     );
   }
