@@ -43,9 +43,9 @@ supabase db reset
 
 | الخدمة | العنوان |
 | --- | --- |
-| API (يستخدمه التطبيق) | `http://127.0.0.1:54321` |
-| Supabase Studio | `http://127.0.0.1:54323` |
-| قاعدة البيانات | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
+| API (يستخدمه التطبيق) | `http://127.0.0.1:55321` |
+| Supabase Studio | `http://127.0.0.1:55323` |
+| قاعدة البيانات | `postgresql://postgres:postgres@127.0.0.1:55322/postgres` |
 
 اعرض المفاتيح الحالية:
 
@@ -90,7 +90,7 @@ npm run config:bootstrap
 {
   "APP_ENV": "local",
   "APP_PLATFORM": "web",
-  "SUPABASE_URL": "http://127.0.0.1:54321",
+  "SUPABASE_URL": "http://127.0.0.1:55321",
   "SUPABASE_ANON_KEY": "<من supabase status>"
 }
 ```
@@ -103,7 +103,7 @@ npm run config:bootstrap
 {
   "APP_ENV": "local",
   "APP_PLATFORM": "android",
-  "SUPABASE_URL": "http://10.0.2.2:54321",
+  "SUPABASE_URL": "http://10.0.2.2:55321",
   "SUPABASE_ANON_KEY": "<نفس anon key>"
 }
 ```
@@ -133,7 +133,7 @@ npm run setup:users
 يقرأ الحسابات من `scripts/seed-demo-users.json` (UTF-8) لتفادي مشاكل العربية في PowerShell.
 
 **الطريقة ب — Supabase Studio (يدوي):**  
-افتح `http://127.0.0.1:54323` → **Authentication** → **Users** → **Add user** → أدخل البريد وكلمة المرور `demo123456` وفعّل **Auto Confirm User**.  
+افتح `http://127.0.0.1:55323` → **Authentication** → **Users** → **Add user** → أدخل البريد وكلمة المرور `demo123456` وفعّل **Auto Confirm User**.  
 للمشغل والمسؤول أضف في **User Metadata** (JSON):
 
 ```json
@@ -291,7 +291,7 @@ flutter test
 - **مكتبة المحتوى:** فيديوهات وأخبار عامة + محتوى `pilgrim_only`
 - **تفاصيل الحاج:** جواز `P1234567`، إذن سفر `TP-2026-001`، فندق Makkah Towers، حالة ميدانية `pending`
 
-راجع/عدّل من Studio: `http://127.0.0.1:54323` → جداول `profiles`, `pilgrim_details`, `content_library`, `groups`.
+راجع/عدّل من Studio: `http://127.0.0.1:55323` → جداول `profiles`, `pilgrim_details`, `content_library`, `groups`.
 
 ---
 
@@ -301,7 +301,8 @@ flutter test
 | --- | --- |
 | `supabase status` يفشل / Docker pipe | شغّل **Docker Desktop** ثم `supabase start` |
 | `No such container: supabase_db_rafiq_alhajj` | لم يُشغَّل مشروع هذا المجلد — نفّذ `supabase start` من جذر `rafiq_alhajj` |
-| `port is already allocated` (مثلاً 54322) | مشروع Supabase آخر يعمل (مثل `Khalid_Haj_Mustafa`) — أوقفه: `supabase stop --project-id Khalid_Haj_Mustafa` ثم `supabase start` هنا |
+| `port is already allocated` | مشروع Supabase آخر يعمل — أوقفه: `supabase stop --project-id <other>` ثم `supabase start` هنا |
+| `forbidden by its access permissions` على 54322 | Windows/Hyper-V حجز النطاق `54290-54389` — المشروع يستخدم منافذ `5532x` (انظر `supabase/config.toml`) |
 | التطبيق بدون محتوى/دخول | أنشئ `dart_defines.local.json` ومرّر `--dart-define-from-file=...` |
 | Android لا يتصل بـ Supabase | استخدم `10.0.2.2` في `dart_defines.android.local.json` |
 | بريد أو كلمة مرور غير صحيحة | أعد إنشاء المستخدمين (الخطوة 4) بعد `db reset` |

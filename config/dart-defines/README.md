@@ -14,8 +14,8 @@ config/dart-defines/
 | Platform | File suffix | Typical `SUPABASE_URL` |
 | --- | --- | --- |
 | `web` | `.local` / `.staging` / `.production` | `127.0.0.1` (local) or `https://*.supabase.co` |
-| `android` | emulator + cloud envs | `http://10.0.2.2:54321` (Android emulator → host Docker) |
-| `android-device` | physical phone + local only | `http://<PC-LAN-IP>:54321` (from `ipconfig`) |
+| `android` | emulator + cloud envs | `http://10.0.2.2:55321` (Android emulator → host Docker) |
+| `android-device` | physical phone + local only | `http://<PC-LAN-IP>:55321` (from `ipconfig`) |
 | `ios` | future native runs | `127.0.0.1` or cloud |
 
 ## Matrix (this project)
