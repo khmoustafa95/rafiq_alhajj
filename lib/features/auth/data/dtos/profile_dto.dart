@@ -10,6 +10,7 @@ class ProfileDto {
     required this.id,
     required this.fullName,
     required this.role,
+    this.canManageAdmins = false,
   });
 
   factory ProfileDto.fromJson(Map<String, dynamic> json) =>
@@ -18,12 +19,14 @@ class ProfileDto {
   final String id;
   final String? fullName;
   final String role;
+  final bool canManageAdmins;
 
   UserProfile toDomain() {
     return UserProfile(
       id: id,
       fullName: fullName,
       role: AppUserRole.fromDatabase(role),
+      canManageAdmins: canManageAdmins,
     );
   }
 }

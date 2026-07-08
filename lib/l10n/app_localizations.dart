@@ -3265,6 +3265,12 @@ abstract class AppLocalizations {
   /// **'Operators'**
   String get staffNavOperators;
 
+  /// No description provided for @staffNavAdmins.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins'**
+  String get staffNavAdmins;
+
   /// No description provided for @staffNavGroups.
   ///
   /// In en, this message translates to:
@@ -3462,6 +3468,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add operators and control their roles and permissions.'**
   String get adminOperatorsSubtitle;
+
+  /// No description provided for @adminAccountsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin accounts'**
+  String get adminAccountsTitle;
+
+  /// No description provided for @adminAccountsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View administrators. Only super admins can promote staff.'**
+  String get adminAccountsSubtitle;
+
+  /// No description provided for @adminAccountsSubtitleSuper.
+  ///
+  /// In en, this message translates to:
+  /// **'View administrators and promote operators to admin.'**
+  String get adminAccountsSubtitleSuper;
+
+  /// No description provided for @adminAccountsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No admin accounts yet.'**
+  String get adminAccountsEmpty;
+
+  /// No description provided for @adminAccountsRoleColumn.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin level'**
+  String get adminAccountsRoleColumn;
+
+  /// No description provided for @adminAccountsSuperAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Super admin'**
+  String get adminAccountsSuperAdmin;
+
+  /// No description provided for @adminAccountsAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get adminAccountsAdmin;
+
+  /// No description provided for @adminAccountPromoteAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Promote to admin'**
+  String get adminAccountPromoteAction;
+
+  /// No description provided for @adminAccountPromoteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Promote to admin?'**
+  String get adminAccountPromoteTitle;
+
+  /// No description provided for @adminAccountPromoteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Promote {name} ({email}) to administrator?'**
+  String adminAccountPromoteMessage(String name, String email);
+
+  /// No description provided for @adminAccountPromoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Promoted admins can manage the system but cannot promote other admins.'**
+  String get adminAccountPromoteHint;
+
+  /// No description provided for @adminAccountPromoteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Promote'**
+  String get adminAccountPromoteConfirm;
+
+  /// No description provided for @adminAccountPromoteSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Operator promoted to admin.'**
+  String get adminAccountPromoteSuccess;
+
+  /// No description provided for @adminAccountPromoteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not promote this account. Try again.'**
+  String get adminAccountPromoteError;
 
   /// No description provided for @adminOperatorAdd.
   ///
@@ -3774,6 +3864,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search by name or email'**
   String get staffTableSearchOperators;
+
+  /// No description provided for @staffTableSearchAdmins.
+  ///
+  /// In en, this message translates to:
+  /// **'Search admins by name or email'**
+  String get staffTableSearchAdmins;
 
   /// No description provided for @staffTableSearchContent.
   ///

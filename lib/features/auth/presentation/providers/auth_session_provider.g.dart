@@ -140,6 +140,53 @@ final class AuthProfileIdProvider
 
 String _$authProfileIdHash() => r'628b4a5606d19bc8365ca3e515d07c0103695937';
 
+/// Whether the signed-in admin may promote staff to admin.
+
+@ProviderFor(authCanManageAdmins)
+final authCanManageAdminsProvider = AuthCanManageAdminsProvider._();
+
+/// Whether the signed-in admin may promote staff to admin.
+
+final class AuthCanManageAdminsProvider
+    extends $FunctionalProvider<bool, bool, bool>
+    with $Provider<bool> {
+  /// Whether the signed-in admin may promote staff to admin.
+  AuthCanManageAdminsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'authCanManageAdminsProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$authCanManageAdminsHash();
+
+  @$internal
+  @override
+  $ProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  bool create(Ref ref) {
+    return authCanManageAdmins(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$authCanManageAdminsHash() =>
+    r'928c182da99205f5daa92b9919f787737f8b4c58';
+
 /// Pilgrim display name; isolated from unrelated auth token refreshes when unchanged.
 
 @ProviderFor(authProfileFullName)

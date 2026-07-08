@@ -1762,6 +1762,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get staffNavOperators => 'Operators';
 
   @override
+  String get staffNavAdmins => 'Admins';
+
+  @override
   String get staffNavGroups => 'Groups';
 
   @override
@@ -1869,6 +1872,54 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get adminOperatorsSubtitle =>
       'Add operators and control their roles and permissions.';
+
+  @override
+  String get adminAccountsTitle => 'Admin accounts';
+
+  @override
+  String get adminAccountsSubtitle =>
+      'View administrators. Only super admins can promote staff.';
+
+  @override
+  String get adminAccountsSubtitleSuper =>
+      'View administrators and promote operators to admin.';
+
+  @override
+  String get adminAccountsEmpty => 'No admin accounts yet.';
+
+  @override
+  String get adminAccountsRoleColumn => 'Admin level';
+
+  @override
+  String get adminAccountsSuperAdmin => 'Super admin';
+
+  @override
+  String get adminAccountsAdmin => 'Admin';
+
+  @override
+  String get adminAccountPromoteAction => 'Promote to admin';
+
+  @override
+  String get adminAccountPromoteTitle => 'Promote to admin?';
+
+  @override
+  String adminAccountPromoteMessage(String name, String email) {
+    return 'Promote $name ($email) to administrator?';
+  }
+
+  @override
+  String get adminAccountPromoteHint =>
+      'Promoted admins can manage the system but cannot promote other admins.';
+
+  @override
+  String get adminAccountPromoteConfirm => 'Promote';
+
+  @override
+  String get adminAccountPromoteSuccess => 'Operator promoted to admin.';
+
+  @override
+  String get adminAccountPromoteError =>
+      'Could not promote this account. Try again.';
 
   @override
   String get adminOperatorAdd => 'Add operator';
@@ -2037,6 +2088,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get staffTableSearchOperators => 'Search by name or email';
+
+  @override
+  String get staffTableSearchAdmins => 'Search admins by name or email';
 
   @override
   String get staffTableSearchContent => 'Search by title or description';

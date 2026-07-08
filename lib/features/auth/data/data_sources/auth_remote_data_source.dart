@@ -10,7 +10,7 @@ class AuthRemoteDataSource {
 
   final SupabaseClient _client;
 
-  static const profileColumns = 'id, full_name, role';
+  static const profileColumns = 'id, full_name, role, can_manage_admins';
 
   Stream<AuthState> authStateChanges() => _client.auth.onAuthStateChange;
 
