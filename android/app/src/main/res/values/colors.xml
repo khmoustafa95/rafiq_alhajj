@@ -2,4 +2,5 @@
 <resources>
     <!-- Brand accent used for the notification icon background tint. -->
     <color name="notification_color">#065F46</color>
+	<color name="ic_launcher_background">#065F46</color>
 </resources>

@@ -10,7 +10,7 @@ class AuthRemoteDataSource {
 
   final SupabaseClient _client;
 
-  static const profileColumns = 'id, full_name, role';
+  static const profileColumns = 'id, full_name, role, can_manage_admins';
 
   Stream<AuthState> authStateChanges() => _client.auth.onAuthStateChange;
 
@@ -29,6 +29,10 @@ class AuthRemoteDataSource {
 
   Future<void> signOut() async {
     await _client.auth.signOut();
+  }
+
+  Future<void> invokeDeleteMyAccount() async {
+    await _client.functions.invoke('delete-my-account');
   }
 
   Future<Map<String, dynamic>?> fetchProfile(String userId) async {

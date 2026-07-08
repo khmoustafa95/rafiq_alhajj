@@ -15,8 +15,10 @@ import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_table_definition_cache.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
+import 'package:rafiq_alhajj/features/admin_accounts/presentation/widgets/promote_operator_dialog.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_account.dart';
 import 'package:rafiq_alhajj/features/admin_operators/presentation/providers/admin_operators_providers.dart';
+import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 class AdminOperatorsListScreen extends ConsumerStatefulWidget {
@@ -71,9 +73,21 @@ class _AdminOperatorsListScreenState
     setState(() => _query = query);
   }
 
+  Future<void> _promoteOperator(OperatorAccount operator) async {
+    final promoted = await showPromoteOperatorDialog(context, operator);
+    if (promoted == true && mounted) {
+      ref.invalidate(adminOperatorListPageProvider(_query));
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.adminAccountPromoteSuccess)),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final canManageAdmins = ref.watch(authCanManageAdminsProvider);
     final pageAsync = ref.watch(adminOperatorListPageProvider(_query));
     final toolbarActions = _toolbarActions(l10n);
     final columns = _tableDefs.columns(context);
@@ -94,6 +108,12 @@ class _AdminOperatorsListScreenState
             onRowTap: (operator) => _openEdit(context, operator.id),
             trailingBuilder: (context, operator) => StaffTableRowActions(
               children: [
+                if (canManageAdmins)
+                  StaffTableRowActions.iconButton(
+                    icon: Icons.admin_panel_settings_outlined,
+                    tooltip: l10n.adminAccountPromoteAction,
+                    onPressed: () => _promoteOperator(operator),
+                  ),
                 StaffTableRowActions.iconButton(
                   icon: Icons.edit_outlined,
                   onPressed: () => _openEdit(context, operator.id),

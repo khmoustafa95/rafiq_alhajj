@@ -143,8 +143,10 @@ npm run setup:users
 ```
 
 ```json
-{"role":"admin","full_name":"خالد المسؤول"}
+{"role":"admin","full_name":"خالد المسؤول","can_manage_admins":true}
 ```
+
+**ملاحظة:** `can_manage_admins: true` يجعل الحساب **مسؤولاً رئيسياً** قادراً على ترقية المشغّلين إلى مسؤول. المسؤولون المُرقّون من داخل التطبيق يحصلون على `can_manage_admins: false` ولا يمكنهم ترقية آخرين.
 
 **الطريقة ج — CLI (إن وُجدت في إصدارك):**
 
@@ -157,10 +159,28 @@ supabase auth users create pilgrim@demo.local --password demo123456 --email-conf
 | --- | --- | --- | --- |
 | `pilgrim@demo.local` | `demo123456` | `pilgrim` | موبايل (Android/iOS) |
 | `operator@demo.local` | `demo123456` | `operator` | ويب (مكتب) أو موبايل (ميدان) |
-| `admin@demo.local` | `demo123456` | `admin` | ويب (لوحة تحليلات) |
+| `admin@demo.local` | `demo123456` | `admin` (مسؤول رئيسي) | ويب (لوحة تحليلات) |
 
 - إنشاء المستخدم يفعّل تلقائياً صفاً في `public.profiles` (مشغّل `handle_new_user`).
 - `seed.sql` يضيف بيانات لوجستية تجريبية لكل حاج موجود (جواز، فندق، حالة ميدانية `pending`، إلخ).
+
+### المسؤول الرئيسي في الإنتاج (مرة واحدة)
+
+لا يوجد تسجيل ذاتي في التطبيق. أنشئ أول مسؤول رئيسي **خارج التطبيق** بعد نشر Supabase:
+
+```bash
+SUPABASE_URL=https://<project-ref>.supabase.co \
+SUPABASE_SERVICE_ROLE_KEY=<service-role-secret> \
+ADMIN_EMAIL=admin@your-org.com \
+ADMIN_PASSWORD='<strong-random-password>' \
+ADMIN_FULL_NAME='اسم المسؤول' \
+npm run bootstrap:admin
+```
+
+- يُنشئ حساباً بـ `role=admin` و `can_manage_admins=true`.
+- **لا تشغّل** `npm run setup:users` في الإنتاج (حسابات تجريبية فقط).
+- من داخل التطبيق: المسؤول الرئيسي يُرقّي المشغّلين من **إدارة المشغّلين** أو يعرض القائمة من **المسؤولون** (`/admin/admins`).
+- المسؤول المُرقّى يدير النظام لكن **لا يستطيع** ترقية مسؤولين آخرين.
 
 ### إنشاء حاج جديد من واجهة المشغل
 

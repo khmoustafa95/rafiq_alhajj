@@ -71,7 +71,7 @@ fi
 
 echo ""
 echo "==> Deploying Edge Functions (optional but recommended)"
-for fn in create-pilgrim manage-operator import-pilgrims reset-pilgrim-password send-push-notification; do
+for fn in create-pilgrim manage-operator import-pilgrims reset-pilgrim-password send-push-notification delete-my-account promote-to-admin; do
   if [[ -d "supabase/functions/$fn" ]]; then
     echo "Deploying $fn..."
     supabase functions deploy "$fn" --project-ref "$PROJECT_REF" || true

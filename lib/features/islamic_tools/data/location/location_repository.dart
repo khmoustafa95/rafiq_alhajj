@@ -1,4 +1,5 @@
 import 'package:geolocator/geolocator.dart';
+import 'package:rafiq_alhajj/features/islamic_tools/application/services/location_permission_prompt.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/data/location/location_cache.dart';
 import 'package:rafiq_alhajj/features/islamic_tools/domain/models/geo_location.dart';
 
@@ -42,13 +43,22 @@ class LocationRepository {
   }
 
   /// Returns whether location permission is granted for foreground tracking.
-  Future<bool> ensureTrackingPermission({bool requestIfDenied = true}) async {
+  Future<bool> ensureTrackingPermission({
+    bool requestIfDenied = true,
+    LocationPermissionPurpose purpose = LocationPermissionPurpose.tools,
+  }) async {
     if (!await Geolocator.isLocationServiceEnabled()) {
       return false;
     }
     var permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied && requestIfDenied) {
-      permission = await Geolocator.requestPermission();
+      final granted = await LocationPermissionPrompt.ensureGranted(
+        purpose: purpose,
+      );
+      if (!granted) {
+        return false;
+      }
+      permission = await Geolocator.checkPermission();
     }
     return permission == LocationPermission.always ||
         permission == LocationPermission.whileInUse;
@@ -57,7 +67,9 @@ class LocationRepository {
   /// One-shot GPS read for SOS raise; returns null when unavailable.
   Future<Position?> readCurrentPositionOrNull() async {
     try {
-      if (!await ensureTrackingPermission()) {
+      if (!await ensureTrackingPermission(
+        purpose: LocationPermissionPurpose.sos,
+      )) {
         return null;
       }
       return await Geolocator.getCurrentPosition(
@@ -91,7 +103,13 @@ class LocationRepository {
 
     var permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
+      final granted = await LocationPermissionPrompt.ensureGranted(
+        purpose: LocationPermissionPurpose.tools,
+      );
+      if (!granted) {
+        throw const LocationException(LocationFailure.permissionDenied);
+      }
+      permission = await Geolocator.checkPermission();
     }
 
     if (permission == LocationPermission.denied) {

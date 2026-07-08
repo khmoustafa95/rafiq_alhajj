@@ -6,6 +6,7 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { resolveDartDefinesPath } from "./resolve-dart-defines.mjs";
+import { STAGING_LEGAL_URLS } from "./legal-urls.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, "..");
@@ -109,6 +110,28 @@ function healAndroidStagingFromWeb() {
   }
 }
 
+function healStagingLegalUrls() {
+  for (const platform of ["web", "android", "ios"]) {
+    const secretPath = join(configDir, `${platform}.staging.json`);
+    if (!existsSync(secretPath)) continue;
+
+    const json = loadJson(secretPath);
+    let changed = false;
+
+    for (const [key, value] of Object.entries(STAGING_LEGAL_URLS)) {
+      if (!json[key]) {
+        json[key] = value;
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      writeFileSync(secretPath, `${JSON.stringify(json, null, 2)}\n`, "utf8");
+      console.log(`Added staging legal URLs → ${platform}.staging.json`);
+    }
+  }
+}
+
 mkdirSync(configDir, { recursive: true });
 
 let created = 0;
@@ -138,6 +161,7 @@ for (const [platform, environment] of MATRIX) {
 }
 
 healAndroidStagingFromWeb();
+healStagingLegalUrls();
 
 const stagingEnvExample = join(rootDir, "config", ".env.staging.example");
 const stagingEnvSecret = join(rootDir, "config", ".env.staging.local");

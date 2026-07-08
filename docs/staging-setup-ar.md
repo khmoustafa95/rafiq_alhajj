@@ -250,7 +250,7 @@ npm run staging:distribute-android      # بناء + رفع APK للمختبري
 
 | الملف / الأداة | الغرض |
 | --- | --- |
-| `android/app/google-services.json` | من Firebase Console → تطبيق Android (`com.example.rafiq_alhajj`) — **غير مرفوع على Git** |
+| `android/app/google-services.json` | من Firebase Console → تطبيق Android (`com.rafiqalhajj.app`) — **غير مرفوع على Git** |
 | `dart_defines.android.staging.local.json` | مفاتيح Staging + Firebase Android — انسخ من `config/dart-defines/android.staging.example.json` إلى `config/dart-defines/android.staging.json` |
 | Firebase CLI | `npm install -g firebase-tools` ثم `firebase login` |
 | حساب Firebase App Distribution | Console → Release & Monitor → App Distribution |
@@ -315,6 +315,53 @@ npm run staging:distribute-android
 | فشل الرفع | `firebase login` + تأكد أن الحساب له صلاحية App Distribution |
 | التحديث الإجباري لا يظهر | ارفع `min_version` من لوحة المسؤول بعد التأكد من `store_url` |
 | فشل مزامنة الإصدار | عيّن `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` (نفس `staging:setup-db`) |
+
+---
+
+## 12. التحقق من جاهزية المتاجر على Staging
+
+بعد دمج فرع `cursor/store-readiness-1430` (أو ما يعادله):
+
+### 12.1 نشر Edge Function لحذف الحساب
+
+```powershell
+$env:SUPABASE_PROJECT_REF = 'your-project-ref'
+npm run staging:setup-db
+```
+
+يتضمن النشر الآن: `delete-my-account` و `promote-to-admin` مع بقية الدوال.
+
+### 12.2 روابط السياسات في التطبيق
+
+قوالب Staging تحتوي روابط ثابتة:
+
+| الصفحة | الرابط |
+| --- | --- |
+| الخصوصية | `https://rafiq-alhajj-staging.web.app/legal/privacy.html` |
+| الشروط | `https://rafiq-alhajj-staging.web.app/legal/terms.html` |
+| حذف الحساب | `https://rafiq-alhajj-staging.web.app/legal/account-deletion.html` |
+
+```powershell
+npm run config:bootstrap   # يضيف الروابط لملفات staging.json إن وُجدت
+```
+
+### 12.3 التحقق الآلي
+
+```bash
+npm run staging:verify-store
+```
+
+بعد `npm run staging:build` يتحقق أيضاً من وجود `build/web/legal/*.html`.
+
+### 12.4 اختبار يدوي سريع
+
+1. افتح الرابط الثابت → تأكد أن صفحات `/legal/*` تُعرض (وليس تطبيق Flutter فقط).
+2. شاشة تسجيل الدخول → روابط **سياسة الخصوصية** و **شروط الاستخدام**.
+3. سجّل كحاج `pilgrim@demo.local` → **الملف الشخصي → حذف الحساب** (اختبار على حساب تجريبي فقط).
+
+> **تحذير:** حذف الحساب نهائي — لا تختبره على حسابات حقيقية.
+
+راجع أيضاً: [store-submission-checklist.md](store-submission-checklist.md).
 
 ---
 

@@ -1740,6 +1740,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get staffNavOperators => 'المشغّلون';
 
   @override
+  String get staffNavAdmins => 'المسؤولون';
+
+  @override
   String get staffNavGroups => 'المجموعات';
 
   @override
@@ -1843,6 +1846,53 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get adminOperatorsSubtitle =>
       'أضف المشغّلين وتحكّم بأدوارهم وصلاحياتهم.';
+
+  @override
+  String get adminAccountsTitle => 'حسابات المسؤولين';
+
+  @override
+  String get adminAccountsSubtitle =>
+      'عرض المسؤولين. فقط المسؤول الرئيسي يمكنه ترقية الحسابات.';
+
+  @override
+  String get adminAccountsSubtitleSuper =>
+      'عرض المسؤولين وترقية المشغّلين إلى مسؤول.';
+
+  @override
+  String get adminAccountsEmpty => 'لا توجد حسابات مسؤول بعد.';
+
+  @override
+  String get adminAccountsRoleColumn => 'مستوى المسؤول';
+
+  @override
+  String get adminAccountsSuperAdmin => 'مسؤول رئيسي';
+
+  @override
+  String get adminAccountsAdmin => 'مسؤول';
+
+  @override
+  String get adminAccountPromoteAction => 'ترقية إلى مسؤول';
+
+  @override
+  String get adminAccountPromoteTitle => 'ترقية إلى مسؤول؟';
+
+  @override
+  String adminAccountPromoteMessage(String name, String email) {
+    return 'ترقية $name ($email) إلى مسؤول؟';
+  }
+
+  @override
+  String get adminAccountPromoteHint =>
+      'المسؤولون المُرقّون يمكنهم إدارة النظام لكن لا يمكنهم ترقية مسؤولين آخرين.';
+
+  @override
+  String get adminAccountPromoteConfirm => 'ترقية';
+
+  @override
+  String get adminAccountPromoteSuccess => 'تمت ترقية المشغّل إلى مسؤول.';
+
+  @override
+  String get adminAccountPromoteError => 'تعذّرت الترقية. حاول مرة أخرى.';
 
   @override
   String get adminOperatorAdd => 'إضافة مشغّل';
@@ -2008,6 +2058,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get staffTableSearchOperators => 'ابحث بالاسم أو البريد';
+
+  @override
+  String get staffTableSearchAdmins => 'ابحث عن المسؤولين بالاسم أو البريد';
 
   @override
   String get staffTableSearchContent => 'ابحث بالعنوان أو الوصف';
@@ -3594,4 +3647,66 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get bulkEditError => 'تعذّر تطبيق التعديلات. حاول مرة أخرى.';
+
+  @override
+  String get legalPrivacyPolicy => 'سياسة الخصوصية';
+
+  @override
+  String get legalTermsOfService => 'شروط الاستخدام';
+
+  @override
+  String get legalDataCollectionNotice =>
+      'بتسجيل الدخول فإنك توافق على سياساتنا. نجمع بيانات الحساب واللوجستيات والموقع (عند الحاجة) لتقديم خدمات الحج.';
+
+  @override
+  String get legalLinkUnavailable =>
+      'هذا الرابط غير متاح حالياً. تواصل مع منظم رحلتك.';
+
+  @override
+  String get deleteAccountTitle => 'حذف الحساب';
+
+  @override
+  String get deleteAccountBody =>
+      'سيؤدي هذا إلى حذف حسابك وبياناتك الشخصية في التطبيق نهائياً. قد تُحفظ بيانات الرحلة بشكل مجهول لدى المنظم لأغراض تشغيلية.';
+
+  @override
+  String get deleteAccountLearnMore => 'المزيد عن حذف البيانات';
+
+  @override
+  String get deleteAccountCancel => 'الإبقاء على الحساب';
+
+  @override
+  String get deleteAccountConfirm => 'حذف حسابي';
+
+  @override
+  String get deleteAccountSuccess => 'تم حذف حسابك.';
+
+  @override
+  String get deleteAccountError =>
+      'تعذّر حذف الحساب. حاول مرة أخرى أو تواصل مع الدعم.';
+
+  @override
+  String get locationPermissionToolsTitle => 'الموقع لأدوات الصلاة';
+
+  @override
+  String get locationPermissionToolsBody =>
+      'يستخدم التطبيق موقع جهازك لحساب أوقات الصلاة واتجاه القبلة بدقة. لا يُشارك موقعك مع مستخدمين آخرين لهذه الأدوات.';
+
+  @override
+  String get locationPermissionSosTitle => 'الموقع لنظام SOS';
+
+  @override
+  String get locationPermissionSosBody =>
+      'عند تفعيل SOS يُشارك موقعك المباشر مع مشغّلي مجموعتك وفريق الدعم طالما هذه الشاشة مفتوحة. يتوقف التتبع عند مغادرة التطبيق أو إلغاء SOS.';
+
+  @override
+  String get locationPermissionDeniedTitle => 'الوصول إلى الموقع معطّل';
+
+  @override
+  String get locationPermissionDeniedBody =>
+      'فعّل الموقع من إعدادات النظام لاستخدام أدوات الصلاة أو SOS.';
+
+  @override
+  String get sosEmergencyDisclaimer =>
+      'تنبيه SOS في التطبيق يُبلّغ فريق دعم مجموعة الحج. لا يُغني عن الطوارئ الوطنية — اتصل برقم الطوارئ المحلي عند الخطر على الحياة.';
 }

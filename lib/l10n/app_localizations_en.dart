@@ -1762,6 +1762,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get staffNavOperators => 'Operators';
 
   @override
+  String get staffNavAdmins => 'Admins';
+
+  @override
   String get staffNavGroups => 'Groups';
 
   @override
@@ -1869,6 +1872,54 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get adminOperatorsSubtitle =>
       'Add operators and control their roles and permissions.';
+
+  @override
+  String get adminAccountsTitle => 'Admin accounts';
+
+  @override
+  String get adminAccountsSubtitle =>
+      'View administrators. Only super admins can promote staff.';
+
+  @override
+  String get adminAccountsSubtitleSuper =>
+      'View administrators and promote operators to admin.';
+
+  @override
+  String get adminAccountsEmpty => 'No admin accounts yet.';
+
+  @override
+  String get adminAccountsRoleColumn => 'Admin level';
+
+  @override
+  String get adminAccountsSuperAdmin => 'Super admin';
+
+  @override
+  String get adminAccountsAdmin => 'Admin';
+
+  @override
+  String get adminAccountPromoteAction => 'Promote to admin';
+
+  @override
+  String get adminAccountPromoteTitle => 'Promote to admin?';
+
+  @override
+  String adminAccountPromoteMessage(String name, String email) {
+    return 'Promote $name ($email) to administrator?';
+  }
+
+  @override
+  String get adminAccountPromoteHint =>
+      'Promoted admins can manage the system but cannot promote other admins.';
+
+  @override
+  String get adminAccountPromoteConfirm => 'Promote';
+
+  @override
+  String get adminAccountPromoteSuccess => 'Operator promoted to admin.';
+
+  @override
+  String get adminAccountPromoteError =>
+      'Could not promote this account. Try again.';
 
   @override
   String get adminOperatorAdd => 'Add operator';
@@ -2037,6 +2088,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get staffTableSearchOperators => 'Search by name or email';
+
+  @override
+  String get staffTableSearchAdmins => 'Search admins by name or email';
 
   @override
   String get staffTableSearchContent => 'Search by title or description';
@@ -3640,4 +3694,66 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bulkEditError => 'Could not apply the changes. Please try again.';
+
+  @override
+  String get legalPrivacyPolicy => 'Privacy Policy';
+
+  @override
+  String get legalTermsOfService => 'Terms of Service';
+
+  @override
+  String get legalDataCollectionNotice =>
+      'By signing in you agree to our policies. We collect account, logistics, and optional location data to provide Hajj services.';
+
+  @override
+  String get legalLinkUnavailable =>
+      'This link is not available yet. Please contact your organizer.';
+
+  @override
+  String get deleteAccountTitle => 'Delete account';
+
+  @override
+  String get deleteAccountBody =>
+      'This permanently deletes your login and personal data in the app. Trip logistics managed by your organizer may be retained in anonymized form as required for operations.';
+
+  @override
+  String get deleteAccountLearnMore => 'Learn more about data deletion';
+
+  @override
+  String get deleteAccountCancel => 'Keep account';
+
+  @override
+  String get deleteAccountConfirm => 'Delete my account';
+
+  @override
+  String get deleteAccountSuccess => 'Your account has been deleted.';
+
+  @override
+  String get deleteAccountError =>
+      'Could not delete your account. Please try again or contact support.';
+
+  @override
+  String get locationPermissionToolsTitle => 'Location for prayer tools';
+
+  @override
+  String get locationPermissionToolsBody =>
+      'Rafiq Al-Hajj uses your device location to calculate accurate prayer times and Qibla direction. Location is not shared with other users for these tools.';
+
+  @override
+  String get locationPermissionSosTitle => 'Location for SOS';
+
+  @override
+  String get locationPermissionSosBody =>
+      'When you activate SOS, your live location is shared with your group operators and support staff while this screen stays open. Tracking stops when you leave the app or cancel SOS.';
+
+  @override
+  String get locationPermissionDeniedTitle => 'Location access is off';
+
+  @override
+  String get locationPermissionDeniedBody =>
+      'Enable location in system settings to use prayer tools or SOS.';
+
+  @override
+  String get sosEmergencyDisclaimer =>
+      'SOS in this app alerts your Hajj group support team. It does not replace national emergency services — call local emergency numbers when life is in danger.';
 }

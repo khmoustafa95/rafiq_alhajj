@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserProfile {
 
- String get id; String? get fullName; AppUserRole get role;
+ String get id; String? get fullName; AppUserRole get role; bool get canManageAdmins;
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $UserProfileCopyWith<UserProfile> get copyWith => _$UserProfileCopyWithImpl<User
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserProfile&&(identical(other.id, id) || other.id == id)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.role, role) || other.role == role));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserProfile&&(identical(other.id, id) || other.id == id)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.role, role) || other.role == role)&&(identical(other.canManageAdmins, canManageAdmins) || other.canManageAdmins == canManageAdmins));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,fullName,role);
+int get hashCode => Object.hash(runtimeType,id,fullName,role,canManageAdmins);
 
 @override
 String toString() {
-  return 'UserProfile(id: $id, fullName: $fullName, role: $role)';
+  return 'UserProfile(id: $id, fullName: $fullName, role: $role, canManageAdmins: $canManageAdmins)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $UserProfileCopyWith<$Res>  {
   factory $UserProfileCopyWith(UserProfile value, $Res Function(UserProfile) _then) = _$UserProfileCopyWithImpl;
 @useResult
 $Res call({
- String id, String? fullName, AppUserRole role
+ String id, String? fullName, AppUserRole role, bool canManageAdmins
 });
 
 
@@ -62,12 +62,13 @@ class _$UserProfileCopyWithImpl<$Res>
 
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? fullName = freezed,Object? role = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? fullName = freezed,Object? role = null,Object? canManageAdmins = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,fullName: freezed == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
 as String?,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
-as AppUserRole,
+as AppUserRole,canManageAdmins: null == canManageAdmins ? _self.canManageAdmins : canManageAdmins // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -152,10 +153,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? fullName,  AppUserRole role)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? fullName,  AppUserRole role,  bool canManageAdmins)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserProfile() when $default != null:
-return $default(_that.id,_that.fullName,_that.role);case _:
+return $default(_that.id,_that.fullName,_that.role,_that.canManageAdmins);case _:
   return orElse();
 
 }
@@ -173,10 +174,10 @@ return $default(_that.id,_that.fullName,_that.role);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? fullName,  AppUserRole role)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? fullName,  AppUserRole role,  bool canManageAdmins)  $default,) {final _that = this;
 switch (_that) {
 case _UserProfile():
-return $default(_that.id,_that.fullName,_that.role);case _:
+return $default(_that.id,_that.fullName,_that.role,_that.canManageAdmins);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -193,10 +194,10 @@ return $default(_that.id,_that.fullName,_that.role);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? fullName,  AppUserRole role)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? fullName,  AppUserRole role,  bool canManageAdmins)?  $default,) {final _that = this;
 switch (_that) {
 case _UserProfile() when $default != null:
-return $default(_that.id,_that.fullName,_that.role);case _:
+return $default(_that.id,_that.fullName,_that.role,_that.canManageAdmins);case _:
   return null;
 
 }
@@ -208,12 +209,13 @@ return $default(_that.id,_that.fullName,_that.role);case _:
 
 
 class _UserProfile implements UserProfile {
-  const _UserProfile({required this.id, required this.fullName, required this.role});
+  const _UserProfile({required this.id, required this.fullName, required this.role, this.canManageAdmins = false});
   
 
 @override final  String id;
 @override final  String? fullName;
 @override final  AppUserRole role;
+@override@JsonKey() final  bool canManageAdmins;
 
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
@@ -225,16 +227,16 @@ _$UserProfileCopyWith<_UserProfile> get copyWith => __$UserProfileCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserProfile&&(identical(other.id, id) || other.id == id)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.role, role) || other.role == role));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserProfile&&(identical(other.id, id) || other.id == id)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.role, role) || other.role == role)&&(identical(other.canManageAdmins, canManageAdmins) || other.canManageAdmins == canManageAdmins));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,fullName,role);
+int get hashCode => Object.hash(runtimeType,id,fullName,role,canManageAdmins);
 
 @override
 String toString() {
-  return 'UserProfile(id: $id, fullName: $fullName, role: $role)';
+  return 'UserProfile(id: $id, fullName: $fullName, role: $role, canManageAdmins: $canManageAdmins)';
 }
 
 
@@ -245,7 +247,7 @@ abstract mixin class _$UserProfileCopyWith<$Res> implements $UserProfileCopyWith
   factory _$UserProfileCopyWith(_UserProfile value, $Res Function(_UserProfile) _then) = __$UserProfileCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String? fullName, AppUserRole role
+ String id, String? fullName, AppUserRole role, bool canManageAdmins
 });
 
 
@@ -262,12 +264,13 @@ class __$UserProfileCopyWithImpl<$Res>
 
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? fullName = freezed,Object? role = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? fullName = freezed,Object? role = null,Object? canManageAdmins = null,}) {
   return _then(_UserProfile(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,fullName: freezed == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
 as String?,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
-as AppUserRole,
+as AppUserRole,canManageAdmins: null == canManageAdmins ? _self.canManageAdmins : canManageAdmins // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

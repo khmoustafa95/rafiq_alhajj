@@ -38,6 +38,9 @@ try {
         Write-Host "==> Syncing Firebase service worker from dart-defines (if configured)"
         node ./scripts/patch-firebase-sw.mjs $DefinesFile ./build/web/firebase-messaging-sw.js
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        Write-Host "==> Verifying legal pages in build output"
+        node ./scripts/verify-legal-build.mjs ./build/web
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     }
 
     Write-Host ""

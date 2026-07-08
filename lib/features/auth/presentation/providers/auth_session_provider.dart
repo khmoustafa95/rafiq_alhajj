@@ -25,6 +25,14 @@ String? authProfileId(Ref ref) {
   return session.value?.profileOrNull?.id;
 }
 
+/// Whether the signed-in admin may promote staff to admin.
+@Riverpod(keepAlive: true)
+bool authCanManageAdmins(Ref ref) {
+  final session = ref.watch(authSessionProvider);
+  final profile = session.value?.profileOrNull;
+  return profile?.role == AppUserRole.admin && profile!.canManageAdmins;
+}
+
 /// Pilgrim display name; isolated from unrelated auth token refreshes when unchanged.
 @Riverpod(keepAlive: true)
 String? authProfileFullName(Ref ref) {

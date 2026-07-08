@@ -557,6 +557,7 @@
   "staffNavHome": "الرئيسية",
   "staffNavPilgrims": "الحجاج",
   "staffNavOperators": "المشغّلون",
+  "staffNavAdmins": "المسؤولون",
   "staffNavGroups": "المجموعات",
   "staffNavContent": "إدارة المحتوى",
   "staffNavCompetitions": "المسابقات",
@@ -590,6 +591,26 @@
   "adminNotificationContentSection": "محتوى الرسالة",
   "adminOperatorsTitle": "إدارة المشغّلين",
   "adminOperatorsSubtitle": "أضف المشغّلين وتحكّم بأدوارهم وصلاحياتهم.",
+  "adminAccountsTitle": "حسابات المسؤولين",
+  "adminAccountsSubtitle": "عرض المسؤولين. فقط المسؤول الرئيسي يمكنه ترقية الحسابات.",
+  "adminAccountsSubtitleSuper": "عرض المسؤولين وترقية المشغّلين إلى مسؤول.",
+  "adminAccountsEmpty": "لا توجد حسابات مسؤول بعد.",
+  "adminAccountsRoleColumn": "مستوى المسؤول",
+  "adminAccountsSuperAdmin": "مسؤول رئيسي",
+  "adminAccountsAdmin": "مسؤول",
+  "adminAccountPromoteAction": "ترقية إلى مسؤول",
+  "adminAccountPromoteTitle": "ترقية إلى مسؤول؟",
+  "adminAccountPromoteMessage": "ترقية {name} ({email}) إلى مسؤول؟",
+  "@adminAccountPromoteMessage": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "email": {"type": "String"}
+    }
+  },
+  "adminAccountPromoteHint": "المسؤولون المُرقّون يمكنهم إدارة النظام لكن لا يمكنهم ترقية مسؤولين آخرين.",
+  "adminAccountPromoteConfirm": "ترقية",
+  "adminAccountPromoteSuccess": "تمت ترقية المشغّل إلى مسؤول.",
+  "adminAccountPromoteError": "تعذّرت الترقية. حاول مرة أخرى.",
   "adminOperatorAdd": "إضافة مشغّل",
   "adminOperatorNewTitle": "مشغّل جديد",
   "adminOperatorEditTitle": "تعديل المشغّل",
@@ -655,6 +676,7 @@
   "staffTableFilterStatus": "الحالة",
   "staffTableColumnCreated": "تاريخ الإنشاء",
   "staffTableSearchOperators": "ابحث بالاسم أو البريد",
+  "staffTableSearchAdmins": "ابحث عن المسؤولين بالاسم أو البريد",
   "staffTableSearchContent": "ابحث بالعنوان أو الوصف",
   "staffTableSearchCompetitions": "ابحث بالعنوان أو الوصف",
   "staffTableSearchGroups": "ابحث باسم المجموعة أو الرئيس",
@@ -1283,5 +1305,23 @@
   "@bulkEditSuccess": {
     "placeholders": {"count": {"type": "int"}}
   },
-  "bulkEditError": "تعذّر تطبيق التعديلات. حاول مرة أخرى."
+  "bulkEditError": "تعذّر تطبيق التعديلات. حاول مرة أخرى.",
+  "legalPrivacyPolicy": "سياسة الخصوصية",
+  "legalTermsOfService": "شروط الاستخدام",
+  "legalDataCollectionNotice": "بتسجيل الدخول فإنك توافق على سياساتنا. نجمع بيانات الحساب واللوجستيات والموقع (عند الحاجة) لتقديم خدمات الحج.",
+  "legalLinkUnavailable": "هذا الرابط غير متاح حالياً. تواصل مع منظم رحلتك.",
+  "deleteAccountTitle": "حذف الحساب",
+  "deleteAccountBody": "سيؤدي هذا إلى حذف حسابك وبياناتك الشخصية في التطبيق نهائياً. قد تُحفظ بيانات الرحلة بشكل مجهول لدى المنظم لأغراض تشغيلية.",
+  "deleteAccountLearnMore": "المزيد عن حذف البيانات",
+  "deleteAccountCancel": "الإبقاء على الحساب",
+  "deleteAccountConfirm": "حذف حسابي",
+  "deleteAccountSuccess": "تم حذف حسابك.",
+  "deleteAccountError": "تعذّر حذف الحساب. حاول مرة أخرى أو تواصل مع الدعم.",
+  "locationPermissionToolsTitle": "الموقع لأدوات الصلاة",
+  "locationPermissionToolsBody": "يستخدم التطبيق موقع جهازك لحساب أوقات الصلاة واتجاه القبلة بدقة. لا يُشارك موقعك مع مستخدمين آخرين لهذه الأدوات.",
+  "locationPermissionSosTitle": "الموقع لنظام SOS",
+  "locationPermissionSosBody": "عند تفعيل SOS يُشارك موقعك المباشر مع مشغّلي مجموعتك وفريق الدعم طالما هذه الشاشة مفتوحة. يتوقف التتبع عند مغادرة التطبيق أو إلغاء SOS.",
+  "locationPermissionDeniedTitle": "الوصول إلى الموقع معطّل",
+  "locationPermissionDeniedBody": "فعّل الموقع من إعدادات النظام لاستخدام أدوات الصلاة أو SOS.",
+  "sosEmergencyDisclaimer": "تنبيه SOS في التطبيق يُبلّغ فريق دعم مجموعة الحج. لا يُغني عن الطوارئ الوطنية — اتصل برقم الطوارئ المحلي عند الخطر على الحياة."
 }

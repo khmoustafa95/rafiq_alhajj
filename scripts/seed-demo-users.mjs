@@ -86,7 +86,12 @@ async function createUser(user, headers) {
       email: user.email,
       password: user.password,
       email_confirm: true,
-      user_metadata: user.metadata,
+      user_metadata: {
+        ...user.metadata,
+        ...(user.metadata?.role === "admin"
+          ? { can_manage_admins: true }
+          : {}),
+      },
     }),
   });
 
@@ -103,7 +108,12 @@ async function updateUser(userId, user, headers) {
     body: JSON.stringify({
       password: user.password,
       email_confirm: true,
-      user_metadata: user.metadata,
+      user_metadata: {
+        ...user.metadata,
+        ...(user.metadata?.role === "admin"
+          ? { can_manage_admins: true }
+          : {}),
+      },
     }),
   });
 
@@ -121,6 +131,7 @@ async function upsertProfile(userId, user, headers) {
     full_name: fullName,
     role,
     email: user.email,
+    can_manage_admins: role === "admin",
   };
 
   if (role === "operator") {

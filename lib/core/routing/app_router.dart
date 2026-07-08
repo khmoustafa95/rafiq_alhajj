@@ -7,6 +7,7 @@ import 'package:rafiq_alhajj/core/routing/router_refresh_notifier.dart';
 import 'package:rafiq_alhajj/core/routing/widgets/route_not_found_screen.dart';
 import 'package:rafiq_alhajj/core/widgets/pilgrim_shell_screen.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_shell.dart';
+import 'package:rafiq_alhajj/features/admin_accounts/presentation/widgets/admin_accounts_list_screen.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/presentation/widgets/admin_dashboard_screen.dart';
 import 'package:rafiq_alhajj/features/admin_analytics/presentation/widgets/admin_login_screen.dart';
 import 'package:rafiq_alhajj/features/admin_content/presentation/widgets/admin_content_edit_screen.dart';
@@ -417,6 +418,11 @@ List<RouteBase> _mobilePilgrimRoutes() => [
         builder: (context, state) => const AdminOperatorsListScreen(),
       ),
       GoRoute(
+        path: AppRoutes.adminAccounts,
+        name: 'adminAccounts',
+        builder: (context, state) => const AdminAccountsListScreen(),
+      ),
+      GoRoute(
         path: AppRoutes.adminOperatorNew,
         name: 'adminOperatorNew',
         builder: (context, state) => const AdminOperatorEditScreen(),
@@ -628,6 +634,11 @@ ShellRoute _staffWebShellRoute() {
         path: AppRoutes.adminOperators,
         name: 'adminOperators',
         builder: (context, state) => const AdminOperatorsListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.adminAccounts,
+        name: 'adminAccounts',
+        builder: (context, state) => const AdminAccountsListScreen(),
       ),
       GoRoute(
         path: AppRoutes.adminOperatorNew,

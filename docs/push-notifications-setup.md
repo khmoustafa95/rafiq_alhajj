@@ -42,7 +42,7 @@ Arabic summary is in [runbook-ar.md](./runbook-ar.md#push-fcm) (add anchor secti
 ## 1. Firebase project
 
 1. Create a project in [Firebase Console](https://console.firebase.google.com/).
-2. Add an **Android** app (`com.example.rafiq_alhajj` or your applicationId).
+2. Add an **Android** app (`com.rafiqalhajj.app` or your applicationId).
 3. Add an **iOS** app (bundle id must match `FIREBASE_IOS_BUNDLE_ID`).
 4. Download `google-services.json` → `android/app/google-services.json` (gitignored).
 5. Enable the Gradle plugin (required for Android FCM build):
@@ -70,7 +70,7 @@ Add to `dart_defines.local.json` / `dart_defines.android.local.json`:
   "FIREBASE_API_KEY": "AIza...",
   "FIREBASE_APP_ID": "1:123456789:android:abcdef",
   "FIREBASE_MESSAGING_SENDER_ID": "123456789",
-  "FIREBASE_IOS_BUNDLE_ID": "com.example.rafiqAlhajj"
+  "FIREBASE_IOS_BUNDLE_ID": "com.rafiqalhajj.app"
 }
 ```
 
