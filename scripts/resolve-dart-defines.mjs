@@ -111,6 +111,18 @@ function validateDefines(platform, environment, filePath) {
     }
   }
 
+  if (environment === "staging" || environment === "production") {
+    for (const key of [
+      "PRIVACY_POLICY_URL",
+      "TERMS_OF_SERVICE_URL",
+      "ACCOUNT_DELETION_INFO_URL",
+    ]) {
+      if (!json[key]) {
+        console.warn(`Warning: ${filePath} has no ${key} (store legal links disabled in app).`);
+      }
+    }
+  }
+
   return json;
 }
 

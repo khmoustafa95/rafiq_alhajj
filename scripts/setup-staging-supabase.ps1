@@ -47,7 +47,9 @@ $functions = @(
     "manage-operator",
     "import-pilgrims",
     "reset-pilgrim-password",
-    "send-push-notification"
+    "send-push-notification",
+    "delete-my-account",
+    "promote-to-admin"
 )
 foreach ($fn in $functions) {
     if (Test-Path "supabase/functions/$fn") {

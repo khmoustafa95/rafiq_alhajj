@@ -17,7 +17,15 @@
 
 ## Manual steps before upload
 
-### Both stores
+### Staging verification (recommended first)
+
+1. `npm run staging:setup-db` — deploys `delete-my-account` edge function.
+2. `npm run config:bootstrap` — adds legal URLs to `*.staging.json` if missing.
+3. `npm run staging:build` (or push to `main` for CI deploy).
+4. `npm run staging:verify-store` — checks legal sources + dart-define templates + `build/web/legal/*`.
+5. Manual: legal links on login; **Profile → Delete account** on a disposable test pilgrim only.
+
+### Both stores (production)
 
 1. Copy `config/dart-defines/*.production.example.json` → `*.production.json` and fill secrets.
 2. Set legal URLs to your hosted domain (e.g. `https://your-domain.web.app/legal/privacy.html`).
