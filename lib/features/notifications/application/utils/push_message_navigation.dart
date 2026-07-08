@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
-import 'package:go_router/go_router.dart';
-import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/routing/root_navigator_key.dart';
 import 'package:rafiq_alhajj/features/notifications/application/services/push_open_handler.dart';
-import 'package:rafiq_alhajj/features/notifications/application/utils/notification_navigation.dart';
 import 'package:rafiq_alhajj/features/notifications/application/utils/pending_push_navigation.dart';
+import 'package:rafiq_alhajj/features/notifications/application/utils/push_navigation_resolver.dart';
+
+export 'package:rafiq_alhajj/features/notifications/application/utils/push_navigation_resolver.dart';
 
 /// Navigates from FCM [data] payload (`route`, `id`).
 ///
@@ -47,34 +47,5 @@ void flushPendingPushNavigation({int maxAttempts = 1}) {
 
 void _navigateWithContext(BuildContext context, Map<String, dynamic> data) {
   unawaited(PushOpenHandler.handleOpen(data));
-
-  final route = data['route'] as String?;
-  final id = data['id'] as String?;
-
-  switch (route) {
-    case 'content':
-      if (id != null && id.isNotEmpty) {
-        unawaited(context.push(AppRoutes.contentDetailPath(id)));
-      }
-    case 'contentTopic':
-      if (id != null && id.isNotEmpty) {
-        unawaited(context.push(AppRoutes.contentTopicDetailPath(id)));
-      }
-    case 'competition':
-      if (id != null && id.isNotEmpty) {
-        unawaited(context.push(AppRoutes.competitionDetailPath(id)));
-      }
-    case 'pilgrim':
-      unawaited(context.push(AppRoutes.pilgrimDashboard));
-    case 'competitions':
-      unawaited(context.push(AppRoutes.competitions));
-    case 'sos':
-      context.go(resolveSosRoute(context));
-    case 'home':
-      context.go(AppRoutes.home);
-    case 'notifications':
-      context.go(AppRoutes.notifications);
-    default:
-      context.go(AppRoutes.notifications);
-  }
+  executePushNavigationTarget(context, resolvePushNavigationTarget(data));
 }

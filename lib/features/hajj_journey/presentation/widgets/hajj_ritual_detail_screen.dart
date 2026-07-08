@@ -36,7 +36,7 @@ class _HajjRitualDetailScreenState extends ConsumerState<HajjRitualDetailScreen>
     final journeyAsync = ref.watch(hajjJourneyStateProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: stepAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, _) => Center(child: Text(l10n.hajjJourneyLoadError)),

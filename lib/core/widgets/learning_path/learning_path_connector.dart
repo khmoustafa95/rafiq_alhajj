@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 
-/// Curved connector between lesson nodes on the learning path.
-class CompetitionPathConnector extends StatelessWidget {
-  const CompetitionPathConnector({
+/// Curved connector between lesson nodes on a zigzag learning path.
+class LearningPathConnector extends StatelessWidget {
+  const LearningPathConnector({
     required this.fromRight,
     this.isCompleted = false,
     super.key,

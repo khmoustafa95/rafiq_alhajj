@@ -32,7 +32,7 @@ class CompetitionQuizOptionCard extends StatelessWidget {
         AppColors.success,
       CompetitionQuizOptionState.incorrect => scheme.error,
       CompetitionQuizOptionState.selected => AppColors.primary,
-      CompetitionQuizOptionState.idle => AppColors.border,
+      CompetitionQuizOptionState.idle => scheme.outline,
     };
   }
 
@@ -45,7 +45,7 @@ class CompetitionQuizOptionCard extends StatelessWidget {
         scheme.error.withValues(alpha: 0.1),
       CompetitionQuizOptionState.selected =>
         AppColors.primary.withValues(alpha: 0.08),
-      CompetitionQuizOptionState.idle => AppColors.surface,
+      CompetitionQuizOptionState.idle => scheme.surface,
     };
   }
 
@@ -56,7 +56,7 @@ class CompetitionQuizOptionCard extends StatelessWidget {
         AppColors.success,
       CompetitionQuizOptionState.incorrect => scheme.error,
       CompetitionQuizOptionState.selected => AppColors.primary,
-      CompetitionQuizOptionState.idle => AppColors.surfaceMuted,
+      CompetitionQuizOptionState.idle => scheme.surfaceContainerHigh,
     };
   }
 
@@ -107,7 +107,7 @@ class CompetitionQuizOptionCard extends StatelessWidget {
                     letter,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           color: state == CompetitionQuizOptionState.idle
-                              ? AppColors.textPrimary
+                              ? scheme.onSurface
                               : AppColors.onPrimary,
                           fontWeight: FontWeight.w700,
                         ),

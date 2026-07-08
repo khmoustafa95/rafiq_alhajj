@@ -39,15 +39,16 @@ class _FeaturedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Material(
-      color: AppColors.surface,
+      color: colorScheme.surface,
       borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
         child: DecoratedBox(
-          decoration: AppDecorations.card(),
+          decoration: AppDecorations.themedCard(context),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -161,14 +162,16 @@ class _HorizontalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Material(
-      color: AppColors.surface,
+      color: colorScheme.surface,
       borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
         child: Container(
-          decoration: AppDecorations.card(),
+          decoration: AppDecorations.themedCard(context),
           padding: EdgeInsets.all(12.w),
           child: Row(
             children: [
@@ -225,14 +228,16 @@ class _CompactCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Material(
-      color: AppColors.surface,
+      color: colorScheme.surface,
       borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppDecorations.radiusMd),
         child: Container(
-          decoration: AppDecorations.card(),
+          decoration: AppDecorations.themedCard(context),
           padding: EdgeInsets.all(14.w),
           child: Row(
             children: [
@@ -277,7 +282,7 @@ class _CompactCard extends StatelessWidget {
               ),
               Icon(
                 Icons.chevron_right_rounded,
-                color: AppColors.textSecondary,
+                color: colorScheme.onSurfaceVariant,
                 size: 20.sp,
               ),
             ],

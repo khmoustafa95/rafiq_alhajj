@@ -25,7 +25,7 @@ class ContentTopicDetailScreen extends ConsumerWidget {
     final topicAsync = ref.watch(contentTopicDetailProvider(topicId));
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Column(
         children: [
           const ContentOfflineBanner(),

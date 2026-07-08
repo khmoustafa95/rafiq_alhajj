@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/utils/staff_error_message.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
@@ -17,8 +16,8 @@ import 'package:rafiq_alhajj/features/operator_intake/presentation/forms/pilgrim
 import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/operator_intake_providers.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/operator_registry_providers.dart';
 import 'package:rafiq_alhajj/features/operator_intake/presentation/providers/pilgrim_shared_defaults_provider.dart';
-import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/pilgrim_fields_form.dart';
-import 'package:rafiq_alhajj/features/trips/presentation/widgets/trip_selector.dart';
+import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_intake_credential_row.dart';
+import 'package:rafiq_alhajj/features/operator_intake/presentation/widgets/operator_intake_form.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -92,7 +91,6 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
       enrollment: enrollment,
     );
 
-    // Persist shared logistics so the next pilgrim is pre-filled.
     await ref
         .read(pilgrimSharedDefaultsProvider.notifier)
         .setAll(PilgrimFormCatalog.sharedValues(_form));
@@ -123,8 +121,6 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
   }
 
   void _clearForm() {
-    // Reset everything, then re-apply persisted shared defaults so logistics
-    // common to a batch (hotel, flights, mashaer…) are not retyped.
     final defaults = ref.read(pilgrimSharedDefaultsProvider);
     _form.reset();
     PilgrimFormCatalog.applyShared(_form, defaults);
@@ -152,9 +148,15 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _CredentialRow(label: l10n.loginEmailLabel, value: email),
+              OperatorIntakeCredentialRow(
+                label: l10n.loginEmailLabel,
+                value: email,
+              ),
               SizedBox(height: 12.h),
-              _CredentialRow(label: l10n.loginPasswordLabel, value: password),
+              OperatorIntakeCredentialRow(
+                label: l10n.loginPasswordLabel,
+                value: password,
+              ),
             ],
           ),
           actions: [
@@ -183,7 +185,6 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
     final groupsAsync = ref.watch(pilgrimGroupFilterOptionsProvider);
     final groups = groupsAsync.value ?? const <PilgrimGroupOption>[];
 
-    // Apply persisted shared defaults once they have loaded.
     ref.listen(pilgrimSharedDefaultsProvider, (previous, next) {
       if (!_defaultsApplied && next.isNotEmpty) {
         PilgrimFormCatalog.applyShared(_form, next);
@@ -191,135 +192,17 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
       }
     });
 
-    final formContent = ReactiveForm(
-      formGroup: _form,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          StaffFormSection(
-            icon: Icons.bookmarks_outlined,
-            title: l10n.operatorSharedDefaultsTitle,
-            subtitle: l10n.operatorSharedDefaultsHint,
-            trailing: OutlinedButton.icon(
-              onPressed: isSubmitting ? null : _clearSharedDefaults,
-              icon: const Icon(Icons.layers_clear_outlined, size: 18),
-              label: Text(l10n.operatorClearSharedDefaults),
-            ),
-            child: const Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: TripSelector(),
-            ),
-          ),
-          SizedBox(height: 16.h),
-          StaffFormSection(
-            icon: Icons.smartphone_outlined,
-            title: l10n.operatorSectionAccount,
-            subtitle: l10n.operatorSectionAccountHint,
-            trailing: OutlinedButton.icon(
-              onPressed: isSubmitting ? null : _generateCredentials,
-              icon: const Icon(Icons.vpn_key_outlined, size: 18),
-              label: Text(l10n.operatorGenerateCredentials),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                ResponsiveFormGrid(
-                  children: [
-                    ReactiveTextField<String>(
-                      formControlName: 'email',
-                      keyboardType: TextInputType.emailAddress,
-                      textInputAction: TextInputAction.next,
-                      autofillHints: const [AutofillHints.username],
-                      decoration: InputDecoration(
-                        labelText: l10n.loginEmailLabel,
-                        prefixIcon: const Icon(Icons.email_outlined),
-                      ),
-                      validationMessages: {
-                        'emailInvalid': (_) => l10n.loginEmailInvalid,
-                      },
-                    ),
-                    ReactiveDropdownField<String?>(
-                      formControlName: 'groupId',
-                      decoration: InputDecoration(
-                        labelText: l10n.staffTableFilterGroup,
-                        prefixIcon: const Icon(Icons.groups_outlined),
-                      ),
-                      items: [
-                        DropdownMenuItem(
-                          child: Text(l10n.staffTableFilterAll),
-                        ),
-                        ...groups.map(
-                          (group) => DropdownMenuItem(
-                            value: group.id,
-                            child: Text(group.name),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                if (_generatedPassword != null) ...[
-                  SizedBox(height: 12.h),
-                  Container(
-                    padding: EdgeInsets.all(12.w),
-                    decoration: BoxDecoration(
-                      color: AppColors.success.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: AppColors.success.withValues(alpha: 0.25),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.info_outline,
-                            color: AppColors.success, size: 18),
-                        SizedBox(width: 8.w),
-                        Expanded(
-                          child: Text(
-                            l10n.operatorGeneratedPasswordPreview(
-                                _generatedPassword!),
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-          SizedBox(height: 16.h),
-          StaffFormSection(
-            icon: Icons.folder_open_outlined,
-            title: l10n.operatorDocumentsSection,
-            subtitle: l10n.operatorSectionDocumentsHint,
-            child: OutlinedButton.icon(
-              onPressed: isSubmitting ? null : _pickFiles,
-              style: OutlinedButton.styleFrom(
-                minimumSize: Size.fromHeight(48.h),
-                alignment: Alignment.center,
-              ),
-              icon: const Icon(Icons.upload_file_outlined),
-              label: Text(l10n.operatorPickDocuments(pickedCount)),
-            ),
-          ),
-          SizedBox(height: 16.h),
-          PilgrimFieldsForm(enabled: !isSubmitting),
-          if (!AppPlatform.isWeb) ...[
-            SizedBox(height: 24.h),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: StaffFormActionButtons(
-                primaryLabel: l10n.operatorSubmitPilgrim,
-                onPrimary: _submit,
-                secondaryLabel: l10n.operatorClearForm,
-                onSecondary: isSubmitting ? null : _clearForm,
-                isLoading: isSubmitting,
-              ),
-            ),
-          ],
-        ],
-      ),
+    final formContent = OperatorIntakeForm(
+      form: _form,
+      isSubmitting: isSubmitting,
+      generatedPassword: _generatedPassword,
+      pickedCount: pickedCount,
+      groups: groups,
+      onClearSharedDefaults: _clearSharedDefaults,
+      onGenerateCredentials: _generateCredentials,
+      onPickFiles: _pickFiles,
+      onSubmit: _submit,
+      onClearForm: _clearForm,
     );
 
     return StaffAdaptivePage(
@@ -353,30 +236,6 @@ class _OperatorIntakeScreenState extends ConsumerState<OperatorIntakeScreen> {
           child: formContent,
         ),
       ),
-    );
-  }
-}
-
-class _CredentialRow extends StatelessWidget {
-  const _CredentialRow({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: Theme.of(context).textTheme.labelMedium),
-        SizedBox(height: 4.h),
-        SelectableText(
-          value,
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-        ),
-      ],
     );
   }
 }

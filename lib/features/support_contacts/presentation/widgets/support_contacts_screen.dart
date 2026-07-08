@@ -18,7 +18,7 @@ class SupportContactsScreen extends ConsumerWidget {
     final contactsAsync = ref.watch(supportContactsProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: RafiqAppBar(title: Text(l10n.supportContactsTitle)),
       body: contactsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/features/field_operator/domain/models/pilgrim_search_item.dart';
 import 'package:rafiq_alhajj/features/field_operator/presentation/utils/field_status_colors.dart';
 import 'package:rafiq_alhajj/features/field_operator/presentation/utils/field_status_l10n.dart';
@@ -19,6 +18,7 @@ class PilgrimListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     final statusLabel = fieldStatusLabel(l10n, item.fieldStatus);
     final statusBg = FieldStatusColors.background(item.fieldStatus);
     final statusFg = FieldStatusColors.foreground(item.fieldStatus);
@@ -36,7 +36,7 @@ class PilgrimListTile extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14.r),
-        side: const BorderSide(color: AppColors.border),
+        side: BorderSide(color: colorScheme.outlineVariant),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(14.r),
@@ -47,11 +47,11 @@ class PilgrimListTile extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 24.r,
-                backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                backgroundColor: colorScheme.primaryContainer,
                 child: Text(
                   initial,
                   style: TextStyle(
-                    color: AppColors.primary,
+                    color: colorScheme.onPrimaryContainer,
                     fontWeight: FontWeight.bold,
                     fontSize: 18.sp,
                   ),
@@ -75,7 +75,7 @@ class PilgrimListTile extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.textSecondary,
+                              color: colorScheme.onSurfaceVariant,
                             ),
                       ),
                     ],

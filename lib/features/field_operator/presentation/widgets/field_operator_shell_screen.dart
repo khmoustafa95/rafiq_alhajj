@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
 /// Mobile bottom navigation for field operators (dashboard + pilgrim list).
@@ -22,18 +21,19 @@ class FieldOperatorShellScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: DecoratedBox(
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          border: Border(top: BorderSide(color: AppColors.border)),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          border: Border(top: BorderSide(color: colorScheme.outlineVariant)),
           boxShadow: [
             BoxShadow(
-              color: AppColors.shadow,
+              color: colorScheme.shadow.withValues(alpha: 0.08),
               blurRadius: 12,
-              offset: Offset(0, -2),
+              offset: const Offset(0, -2),
             ),
           ],
         ),
@@ -96,6 +96,8 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(14),
@@ -104,7 +106,7 @@ class _NavItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
           color: selected
-              ? AppColors.primary.withValues(alpha: 0.1)
+              ? colorScheme.primaryContainer.withValues(alpha: 0.5)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(14),
         ),
@@ -114,7 +116,7 @@ class _NavItem extends StatelessWidget {
             Icon(
               selected ? selectedIcon : icon,
               size: 24,
-              color: selected ? AppColors.primary : AppColors.textSecondary,
+              color: selected ? colorScheme.primary : colorScheme.onSurfaceVariant,
             ),
             const SizedBox(height: 4),
             Text(
@@ -122,7 +124,7 @@ class _NavItem extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-                color: selected ? AppColors.primary : AppColors.textSecondary,
+                color: selected ? colorScheme.primary : colorScheme.onSurfaceVariant,
               ),
             ),
           ],

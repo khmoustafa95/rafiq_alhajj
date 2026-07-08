@@ -1,4 +1,5 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
 import 'package:rafiq_alhajj/core/supabase/realtime_invalidation_registry.dart';
 import 'package:rafiq_alhajj/core/supabase/realtime_sync_attach.dart';
 import 'package:rafiq_alhajj/core/supabase/realtime_sync_providers.dart';
@@ -21,6 +22,7 @@ part 'competitions_providers.g.dart';
 @Riverpod(keepAlive: true)
 CompetitionsService competitionsService(Ref ref) {
   return CompetitionsService(
+    ref.watch(competitionsRepositoryProvider),
     ref.watch(competitionQuestionsRepositoryProvider),
   );
 }
@@ -65,7 +67,11 @@ Future<List<Competition>> activeCompetitions(Ref ref) {
     onInvalidate: (ref) => ref.invalidate(activeCompetitionsProvider),
   );
 
-  return ref.read(competitionsRepositoryProvider).fetchActive();
+  return ref.read(contentCatalogCacheProvider.future).then(
+        (cache) => ref.read(competitionsServiceProvider).loadActiveCompetitions(
+              cache: cache,
+            ),
+      );
 }
 
 @riverpod
@@ -233,6 +239,22 @@ class AdminCompetitionQuestionDelete extends _$AdminCompetitionQuestionDelete {
 }
 
 @riverpod
+Future<PaginatedResult<Competition>> adminCompetitionListPage(
+  Ref ref,
+  StaffTableQuery query,
+) {
+  attachRealtimeSync(
+    ref,
+    syncKey: RealtimeSyncKeys.competitions,
+    ensureSyncActive: (ref) => ref.watch(realtimeSyncCompetitionsProvider),
+    handlerId: 'admin_competition_list_page',
+    onInvalidate: (ref) => ref.invalidate(adminCompetitionListPageProvider),
+  );
+
+  return ref.read(adminCompetitionsRepositoryProvider).fetchPage(query);
+}
+
+@riverpod
 class AdminCompetitionList extends _$AdminCompetitionList {
   @override
   Future<List<Competition>> build() async {
@@ -256,6 +278,7 @@ class AdminCompetitionList extends _$AdminCompetitionList {
     try {
       await ref.read(adminCompetitionsRepositoryProvider).delete(id);
       ref.invalidateSelf();
+      ref.invalidate(adminCompetitionListPageProvider);
       await future;
       return true;
     } on CompetitionsException {
@@ -274,6 +297,7 @@ class AdminCompetitionSave extends _$AdminCompetitionSave {
     state = await AsyncValue.guard(() async {
       await ref.read(adminCompetitionsRepositoryProvider).upsert(input);
       ref.invalidate(adminCompetitionListProvider);
+      ref.invalidate(adminCompetitionListPageProvider);
     });
     return !state.hasError;
   }

@@ -706,6 +706,89 @@ abstract class _$AdminCompetitionQuestionDelete extends $AsyncNotifier<void> {
   }
 }
 
+@ProviderFor(adminCompetitionListPage)
+final adminCompetitionListPageProvider = AdminCompetitionListPageFamily._();
+
+final class AdminCompetitionListPageProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<PaginatedResult<Competition>>,
+          PaginatedResult<Competition>,
+          FutureOr<PaginatedResult<Competition>>
+        >
+    with
+        $FutureModifier<PaginatedResult<Competition>>,
+        $FutureProvider<PaginatedResult<Competition>> {
+  AdminCompetitionListPageProvider._({
+    required AdminCompetitionListPageFamily super.from,
+    required StaffTableQuery super.argument,
+  }) : super(
+         retry: null,
+         name: r'adminCompetitionListPageProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$adminCompetitionListPageHash();
+
+  @override
+  String toString() {
+    return r'adminCompetitionListPageProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<PaginatedResult<Competition>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<PaginatedResult<Competition>> create(Ref ref) {
+    final argument = this.argument as StaffTableQuery;
+    return adminCompetitionListPage(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is AdminCompetitionListPageProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$adminCompetitionListPageHash() =>
+    r'bb85d30780754da51f8445a43be80cd00015e7f9';
+
+final class AdminCompetitionListPageFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<PaginatedResult<Competition>>,
+          StaffTableQuery
+        > {
+  AdminCompetitionListPageFamily._()
+    : super(
+        retry: null,
+        name: r'adminCompetitionListPageProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  AdminCompetitionListPageProvider call(StaffTableQuery query) =>
+      AdminCompetitionListPageProvider._(argument: query, from: this);
+
+  @override
+  String toString() => r'adminCompetitionListPageProvider';
+}
+
 @ProviderFor(AdminCompetitionList)
 final adminCompetitionListProvider = AdminCompetitionListProvider._();
 
@@ -731,7 +814,7 @@ final class AdminCompetitionListProvider
 }
 
 String _$adminCompetitionListHash() =>
-    r'3e47255891ba03f0c445f450fbf986c40e20211a';
+    r'50c5587f575bd7d4a7d532d2633f10919be4ee9f';
 
 abstract class _$AdminCompetitionList
     extends $AsyncNotifier<List<Competition>> {
@@ -778,7 +861,7 @@ final class AdminCompetitionSaveProvider
 }
 
 String _$adminCompetitionSaveHash() =>
-    r'58e1d00b46fe9207a71f6ba749bf836b08c87c67';
+    r'1945af0d3529bbf578ddd1c8e0ac183571301000';
 
 abstract class _$AdminCompetitionSave extends $AsyncNotifier<void> {
   FutureOr<void> build();

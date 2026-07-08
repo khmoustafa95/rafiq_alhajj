@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition_question.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition_question_editor_input.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/providers/competitions_providers.dart';
+import 'package:rafiq_alhajj/features/competitions/presentation/widgets/admin_competition_question_editor_form.dart';
+import 'package:rafiq_alhajj/features/competitions/presentation/widgets/admin_competition_question_options_editor.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -28,7 +30,7 @@ class _AdminCompetitionQuestionEditorDialogState
     extends ConsumerState<AdminCompetitionQuestionEditorDialog> {
   late final FormGroup _form;
   late CompetitionQuestionType _questionType;
-  late List<_OptionField> _optionFields;
+  late List<CompetitionQuestionOptionField> _optionFields;
 
   bool get _isEditing => widget.question != null;
 
@@ -65,8 +67,11 @@ class _AdminCompetitionQuestionEditorDialogState
         : null;
   }
 
-  _OptionField _optionField(String text, {required bool isCorrect}) {
-    return _OptionField(
+  CompetitionQuestionOptionField _optionField(
+    String text, {
+    required bool isCorrect,
+  }) {
+    return CompetitionQuestionOptionField(
       control: FormControl<String>(
         value: text,
         validators: [Validators.delegate(_validateOption)],
@@ -131,7 +136,9 @@ class _AdminCompetitionQuestionEditorDialogState
     });
   }
 
-  List<_OptionField> _buildOptionFields(CompetitionQuestion? question) {
+  List<CompetitionQuestionOptionField> _buildOptionFields(
+    CompetitionQuestion? question,
+  ) {
     if (question != null) {
       final sorted = [...question.options]
         ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
@@ -261,200 +268,17 @@ class _AdminCompetitionQuestionEditorDialogState
       ),
       content: SizedBox(
         width: 520.w,
-        child: ReactiveForm(
-          formGroup: _form,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                ReactiveDropdownField<CompetitionQuestionType>(
-                  formControlName: 'questionType',
-                  decoration: InputDecoration(
-                    labelText: l10n.adminCompetitionQuestionTypeLabel,
-                  ),
-                  items: [
-                    DropdownMenuItem(
-                      value: CompetitionQuestionType.multipleChoice,
-                      child: Text(l10n.adminCompetitionQuestionTypeMultipleChoice),
-                    ),
-                    DropdownMenuItem(
-                      value: CompetitionQuestionType.trueFalse,
-                      child: Text(l10n.adminCompetitionQuestionTypeTrueFalse),
-                    ),
-                    DropdownMenuItem(
-                      value: CompetitionQuestionType.ordering,
-                      child: Text(l10n.adminCompetitionQuestionTypeOrdering),
-                    ),
-                  ],
-                  onChanged: (control) => _onTypeChanged(control.value),
-                ),
-                SizedBox(height: 12.h),
-                ReactiveTextField<String>(
-                  formControlName: 'prompt',
-                  maxLines: 3,
-                  decoration: InputDecoration(
-                    labelText: l10n.adminCompetitionQuestionPromptLabel,
-                  ),
-                  validationMessages: {
-                    ValidationMessage.required: (_) =>
-                        l10n.adminCompetitionQuestionPromptRequired,
-                  },
-                ),
-                SizedBox(height: 12.h),
-                ReactiveTextField<String>(
-                  formControlName: 'explanation',
-                  maxLines: 3,
-                  decoration: InputDecoration(
-                    labelText: l10n.adminCompetitionQuestionExplanationLabel,
-                  ),
-                ),
-                SizedBox(height: 12.h),
-                ReactiveTextField<int>(
-                  formControlName: 'points',
-                  valueAccessor: IntValueAccessor(),
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: l10n.adminCompetitionQuestionPointsLabel,
-                  ),
-                  validationMessages: {
-                    'pointsInvalid': (_) =>
-                        l10n.adminCompetitionQuestionPointsInvalid,
-                  },
-                ),
-                SizedBox(height: 16.h),
-                Text(
-                  _questionType == CompetitionQuestionType.ordering
-                      ? l10n.adminCompetitionQuestionOrderingStepsLabel
-                      : l10n.adminCompetitionQuestionOptionsLabel,
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                if (_questionType == CompetitionQuestionType.ordering) ...[
-                  SizedBox(height: 4.h),
-                  Text(
-                    l10n.adminCompetitionQuestionOrderingStepsHint,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
-                SizedBox(height: 8.h),
-                if (_questionType == CompetitionQuestionType.ordering)
-                  ReorderableListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    onReorderItem: isSaving ? (_, _) {} : _reorderOption,
-                    buildDefaultDragHandles: !isSaving,
-                    itemCount: _optionFields.length,
-                    itemBuilder: (context, index) {
-                      final field = _optionFields[index];
-                      return Padding(
-                        key: ValueKey('ordering-step-$index'),
-                        padding: EdgeInsets.only(bottom: 8.h),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: ReactiveTextField<String>(
-                                formControl: field.control,
-                                decoration: InputDecoration(
-                                  labelText: l10n.adminCompetitionQuestionStepLabel(
-                                    index + 1,
-                                  ),
-                                ),
-                                validationMessages: {
-                                  'optionRequired': (_) => l10n
-                                      .adminCompetitionQuestionOptionRequired,
-                                },
-                              ),
-                            ),
-                            if (_optionFields.length > 3)
-                              IconButton(
-                                onPressed: isSaving
-                                    ? null
-                                    : () => _removeOrderingStep(index),
-                                icon: const Icon(Icons.remove_circle_outline),
-                              ),
-                          ],
-                        ),
-                      );
-                    },
-                  )
-                else if (_questionType == CompetitionQuestionType.trueFalse)
-                  RadioGroup<int>(
-                    groupValue: _optionFields.indexWhere((o) => o.isCorrect),
-                    onChanged: (value) {
-                      if (isSaving || value == null) {
-                        return;
-                      }
-                      _setCorrectIndex(value);
-                    },
-                    child: Column(
-                      children: [
-                        RadioListTile<int>(
-                          value: 0,
-                          enabled: !isSaving,
-                          title: Text(l10n.competitionAnswerTrue),
-                        ),
-                        RadioListTile<int>(
-                          value: 1,
-                          enabled: !isSaving,
-                          title: Text(l10n.competitionAnswerFalse),
-                        ),
-                      ],
-                    ),
-                  )
-                else
-                  RadioGroup<int>(
-                    groupValue: _optionFields.indexWhere((o) => o.isCorrect),
-                    onChanged: (value) {
-                      if (isSaving || value == null) {
-                        return;
-                      }
-                      _setCorrectIndex(value);
-                    },
-                    child: Column(
-                      children: [
-                        for (var index = 0; index < _optionFields.length; index++)
-                          Padding(
-                            padding: EdgeInsets.only(bottom: 8.h),
-                            child: Row(
-                              children: [
-                                Radio<int>(
-                                  value: index,
-                                  enabled: !isSaving,
-                                ),
-                                Expanded(
-                                  child: ReactiveTextField<String>(
-                                    formControl: _optionFields[index].control,
-                                    decoration: InputDecoration(
-                                      labelText:
-                                          l10n.adminCompetitionQuestionOptionLabel(
-                                        index + 1,
-                                      ),
-                                    ),
-                                    validationMessages: {
-                                      'optionRequired': (_) => l10n
-                                          .adminCompetitionQuestionOptionRequired,
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                if (_questionType == CompetitionQuestionType.ordering &&
-                    _optionFields.length < 8)
-                  Align(
-                    alignment: AlignmentDirectional.centerEnd,
-                    child: TextButton.icon(
-                      onPressed: isSaving ? null : _addOrderingStep,
-                      icon: const Icon(Icons.add_rounded),
-                      label: Text(l10n.adminCompetitionQuestionAddStep),
-                    ),
-                  ),
-              ],
-            ),
+        child: SingleChildScrollView(
+          child: AdminCompetitionQuestionEditorForm(
+            form: _form,
+            questionType: _questionType,
+            optionFields: _optionFields,
+            isSaving: isSaving,
+            onTypeChanged: _onTypeChanged,
+            onReorder: _reorderOption,
+            onAddOrderingStep: _addOrderingStep,
+            onRemoveOrderingStep: _removeOrderingStep,
+            onSetCorrectIndex: _setCorrectIndex,
           ),
         ),
       ),
@@ -463,27 +287,22 @@ class _AdminCompetitionQuestionEditorDialogState
           onPressed: isSaving ? null : () => Navigator.pop(context),
           child: Text(l10n.dialogCancel),
         ),
-        FilledButton(
-          onPressed: isSaving ? null : _submit,
-          child: isSaving
-              ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : Text(l10n.adminContentSave),
+        Semantics(
+          button: true,
+          label: l10n.adminContentSave,
+          enabled: !isSaving,
+          child: FilledButton(
+            onPressed: isSaving ? null : _submit,
+            child: isSaving
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Text(l10n.adminContentSave),
+          ),
         ),
       ],
     );
   }
-}
-
-class _OptionField {
-  _OptionField({
-    required this.control,
-    required this.isCorrect,
-  });
-
-  final FormControl<String> control;
-  bool isCorrect;
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/firebase/app_firebase.dart';
 import 'package:rafiq_alhajj/core/l10n/app_locale_settings.dart';
@@ -78,10 +79,7 @@ class PushNotificationService {
 
     _foregroundSub = FirebaseMessaging.onMessage.listen(_handleForeground);
     FirebaseMessaging.onMessageOpenedApp.listen(_handleRemoteMessage);
-    final initial = await _messaging!.getInitialMessage();
-    if (initial != null) {
-      _handleRemoteMessage(initial);
-    }
+    unawaited(_handleInitialMessageWhenReady());
 
     _tokenRefreshSub = _messaging!.onTokenRefresh.listen((token) {
       unawaited(_onTokenRefreshed(token));
@@ -122,6 +120,7 @@ class PushNotificationService {
     // relaunch with an already-signed-in user); calling getToken too early
     // returns null. `initialize()` is idempotent so this is cheap when done.
     await initialize();
+    await _waitForUiReady();
     await _requestPermissionIfNeeded();
 
     String? token;
@@ -185,6 +184,18 @@ class PushNotificationService {
     _lastRegisteredToken = null;
   }
 
+  Future<void> _handleInitialMessageWhenReady() async {
+    await _waitForUiReady();
+    final messaging = _messaging;
+    if (messaging == null) {
+      return;
+    }
+    final initial = await messaging.getInitialMessage();
+    if (initial != null) {
+      _handleRemoteMessage(initial);
+    }
+  }
+
   Future<void> _requestPermissionIfNeeded() async {
     if (_permissionRequested) {
       return;
@@ -195,6 +206,23 @@ class PushNotificationService {
     if (kDebugMode) {
       debugPrint('FCM permission granted=$granted');
     }
+  }
+
+  /// Defers the OS permission dialog until after the first frame so login/home
+  /// can paint before the rationale dialog appears.
+  Future<void> _waitForUiReady() async {
+    final binding = WidgetsBinding.instance;
+    if (binding.schedulerPhase == SchedulerPhase.idle) {
+      await Future<void>.delayed(Duration.zero);
+      return;
+    }
+    final completer = Completer<void>();
+    binding.addPostFrameCallback((_) {
+      if (!completer.isCompleted) {
+        completer.complete();
+      }
+    });
+    await completer.future;
   }
 
   Future<void> _onTokenRefreshed(String newToken) async {
@@ -254,9 +282,10 @@ class PushNotificationService {
   }
 
   void _handleRemoteMessage(RemoteMessage message) {
-    final dedupeKey = message.messageId ??
-        message.data['notification_id'] as String? ??
-        message.data['id'] as String?;
+    final dedupeKey = pushOpenDedupeKey(
+      messageId: message.messageId,
+      data: message.data,
+    );
     if (dedupeKey != null) {
       if (_handledOpenedMessageIds.contains(dedupeKey)) {
         return;

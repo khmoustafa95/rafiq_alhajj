@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/core/domain/models/educational_media.dart';
-import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/widgets/native_audio_player.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_media_providers.dart';
 import 'package:shimmer/shimmer.dart';
@@ -32,17 +31,17 @@ class ResolvedTopicImage extends ConsumerWidget {
         height: height,
         child: const Center(child: CircularProgressIndicator()),
       ),
-      error: (_, _) => _errorPlaceholder(height),
-      data: (url) => _buildImage(url, height),
+      error: (_, _) => _errorPlaceholder(context, height),
+      data: (url) => _buildImage(context, url, height),
     );
   }
 
-  Widget _buildImage(String url, double? height) {
+  Widget _buildImage(BuildContext context, String url, double? height) {
     final child = (!url.startsWith('http'))
         ? Image.file(
             File(url),
             fit: fit,
-            errorBuilder: (_, _, _) => _errorPlaceholder(height),
+            errorBuilder: (_, _, _) => _errorPlaceholder(context, height),
           )
         : Image.network(
             url,
@@ -53,7 +52,7 @@ class ResolvedTopicImage extends ConsumerWidget {
               }
               return const Center(child: CircularProgressIndicator());
             },
-            errorBuilder: (_, _, _) => _errorPlaceholder(height),
+            errorBuilder: (_, _, _) => _errorPlaceholder(context, height),
           );
 
     if (height != null) {
@@ -62,12 +61,13 @@ class ResolvedTopicImage extends ConsumerWidget {
     return child;
   }
 
-  Widget _errorPlaceholder(double? height) {
+  Widget _errorPlaceholder(BuildContext context, double? height) {
+    final colorScheme = Theme.of(context).colorScheme;
     return SizedBox(
       height: height,
       width: double.infinity,
       child: ColoredBox(
-        color: AppColors.surfaceMuted,
+        color: colorScheme.surfaceContainerHighest,
         child: Icon(Icons.broken_image_outlined, size: 48.sp),
       ),
     );
@@ -79,9 +79,10 @@ class ContentTopicsSectionSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Shimmer.fromColors(
-      baseColor: AppColors.surfaceMuted,
-      highlightColor: AppColors.secondary.withValues(alpha: 0.35),
+      baseColor: colorScheme.surfaceContainerHigh,
+      highlightColor: colorScheme.surfaceContainerHighest,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -91,7 +92,7 @@ class ContentTopicsSectionSkeleton extends StatelessWidget {
               height: 22.h,
               width: 160.w,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: colorScheme.surface,
                 borderRadius: BorderRadius.circular(8.r),
               ),
             ),
@@ -107,7 +108,7 @@ class ContentTopicsSectionSkeleton extends StatelessWidget {
               itemBuilder: (_, _) => Container(
                 width: 260.w,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: colorScheme.surface,
                   borderRadius: BorderRadius.circular(16.r),
                 ),
               ),

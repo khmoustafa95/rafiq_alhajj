@@ -126,4 +126,20 @@ class ContentCatalogService {
       return cached;
     }
   }
+
+  /// Background refresh of catalog metadata (home feed + topics list).
+  ///
+  /// Intended for Wi-Fi prefetch after sign-in; failures are swallowed so the
+  /// caller never blocks UI.
+  Future<void> refreshCatalog({
+    required bool isPilgrim,
+    String? profileId,
+  }) async {
+    try {
+      await loadHomeFeed(isPilgrim: isPilgrim, profileId: profileId);
+      await loadTopics(isPilgrim: isPilgrim, profileId: profileId);
+    } catch (_) {
+      // Prefetch is best-effort; cached snapshots remain available.
+    }
+  }
 }

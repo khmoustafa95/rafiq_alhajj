@@ -52,32 +52,48 @@ class AdminAnalyticsRemoteDataSource {
   }
 
   Future<int> fetchActiveSosCount() async {
-    final rows =
-        await _client.from('sos_alerts').select('id').eq('status', 'active');
-    return (rows as List<dynamic>).length;
+    final response = await _client
+        .from('sos_alerts')
+        .select('id')
+        .eq('status', 'active')
+        .count(CountOption.exact);
+    return response.count;
   }
 
   Future<int> fetchPushFailureCount() async {
-    final rows = await _client.from('push_dispatch_failures').select('id');
-    return (rows as List<dynamic>).length;
+    final response =
+        await _client.from('push_dispatch_failures').select('id').count(
+              CountOption.exact,
+            );
+    return response.count;
   }
 
   Future<int> fetchActiveCompetitionCount() async {
-    final rows =
-        await _client.from('competitions').select('id').eq('is_active', true);
-    return (rows as List<dynamic>).length;
+    final response = await _client
+        .from('competitions')
+        .select('id')
+        .eq('is_active', true)
+        .count(CountOption.exact);
+    return response.count;
   }
 
   Future<int> fetchCompetitionEntryCount() async {
-    final rows = await _client.from('competition_entries').select('id');
-    return (rows as List<dynamic>).length;
+    final response =
+        await _client.from('competition_entries').select('id').count(
+              CountOption.exact,
+            );
+    return response.count;
   }
 
   Future<int> fetchPublishedContentCount() async {
-    final libraryRows = await _client.from('content_library').select('id');
-    final topicRows = await _client.from('content_topics').select('id');
-    return (libraryRows as List<dynamic>).length +
-        (topicRows as List<dynamic>).length;
+    final library = await _client
+        .from('content_library')
+        .select('id')
+        .count(CountOption.exact);
+    final topics = await _client.from('content_topics').select('id').count(
+          CountOption.exact,
+        );
+    return library.count + topics.count;
   }
 
   Future<List<Map<String, dynamic>>> fetchPilgrimDeviceTokens() async {
@@ -91,5 +107,14 @@ class AdminAnalyticsRemoteDataSource {
     return (rows as List<dynamic>)
         .map((row) => Map<String, dynamic>.from(row as Map))
         .toList(growable: false);
+  }
+
+  /// Single round-trip dashboard payload from [fetch_admin_dashboard_stats].
+  Future<Map<String, dynamic>> fetchDashboardStatsRpc({String? tripId}) async {
+    final result = await _client.rpc<Map<String, dynamic>>(
+      'fetch_admin_dashboard_stats',
+      params: {'p_trip_id': tripId},
+    );
+    return Map<String, dynamic>.from(result);
   }
 }

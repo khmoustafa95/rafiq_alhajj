@@ -11,9 +11,10 @@ import 'package:rafiq_alhajj/features/competitions/data/repositories/competition
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition_question.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/providers/competitions_providers.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competition_page_constraint.dart';
+import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competition_quiz_complete_view.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competition_quiz_feedback_banner.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competition_quiz_option_card.dart';
-import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competition_quiz_ordering_list.dart';
+import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competition_quiz_question_panel.dart';
 import 'package:rafiq_alhajj/features/competitions/presentation/widgets/competition_quiz_top_bar.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 
@@ -34,8 +35,6 @@ class _CompetitionQuizScreenState extends ConsumerState<CompetitionQuizScreen> {
   List<String> _orderingOptionIds = [];
   String? _preparedOrderingQuestionId;
   bool _isSubmitting = false;
-
-  static const _optionLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
 
   String _optionLabel(AppLocalizations l10n, String raw) {
     return switch (raw) {
@@ -208,7 +207,7 @@ class _CompetitionQuizScreenState extends ConsumerState<CompetitionQuizScreen> {
         ref.watch(competitionQuizProgressProvider(widget.competitionId));
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         child: progressAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
@@ -223,8 +222,7 @@ class _CompetitionQuizScreenState extends ConsumerState<CompetitionQuizScreen> {
             if (progress.isComplete &&
                 _activeQuestion == null &&
                 _lastResult == null) {
-              return _QuizCompleteView(
-                l10n: l10n,
+              return CompetitionQuizCompleteView(
                 answeredCount: progress.answeredCount,
                 onDone: () => context.pop(),
               );
@@ -232,8 +230,7 @@ class _CompetitionQuizScreenState extends ConsumerState<CompetitionQuizScreen> {
 
             final question = _activeQuestion;
             if (question == null && _lastResult == null) {
-              return _QuizCompleteView(
-                l10n: l10n,
+              return CompetitionQuizCompleteView(
                 answeredCount: progress.answeredCount,
                 onDone: () => context.pop(),
               );
@@ -255,119 +252,20 @@ class _CompetitionQuizScreenState extends ConsumerState<CompetitionQuizScreen> {
                   Expanded(
                     child: question == null
                         ? const SizedBox.shrink()
-                        : Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.w),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 10.w,
-                                    vertical: 4.h,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.secondary
-                                        .withValues(alpha: 0.15),
-                                    borderRadius: BorderRadius.circular(20.r),
-                                  ),
-                                  child: Text(
-                                    question.questionType.isOrdering
-                                        ? l10n.competitionQuizOrderingBadge(
-                                            questionIndex + 1,
-                                            progress.totalQuestions,
-                                          )
-                                        : l10n.competitionQuizQuestionBadge(
-                                            questionIndex + 1,
-                                            progress.totalQuestions,
-                                          ),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .labelMedium
-                                        ?.copyWith(
-                                          color: AppColors.onSecondary,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                  ),
-                                ),
-                                SizedBox(height: 16.h),
-                                DecoratedBox(
-                                  decoration: AppDecorations.card(
-                                    radius: AppDecorations.radiusLg,
-                                  ),
-                                  child: Padding(
-                                    padding: EdgeInsets.all(20.w),
-                                    child: Text(
-                                      question.prompt,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineSmall
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w700,
-                                            height: 1.35,
-                                          ),
-                                    ),
-                                  ),
-                                ),
-                                if (question.questionType.isOrdering) ...[
-                                  SizedBox(height: 8.h),
-                                  Text(
-                                    l10n.competitionOrderingHint,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          color: AppColors.textSecondary,
-                                        ),
-                                  ),
-                                ],
-                                SizedBox(height: 12.h),
-                                Expanded(
-                                  child: question.questionType.isOrdering
-                                      ? CompetitionQuizOrderingList(
-                                          optionsById: {
-                                            for (final option
-                                                in question.options)
-                                              option.id: option,
-                                          },
-                                          orderedOptionIds: _orderingOptionIds,
-                                          onReorder: _reorderOrdering,
-                                          isFeedback: _lastResult != null,
-                                          feedbackCorrectIds:
-                                              _lastResult?.correctOptionIds,
-                                        )
-                                      : ListView.separated(
-                                          itemCount: question.options.length,
-                                          separatorBuilder: (_, _) =>
-                                              SizedBox(height: 10.h),
-                                          itemBuilder: (context, index) {
-                                            final option =
-                                                question.options[index];
-                                            final isFeedback =
-                                                _lastResult != null;
-
-                                            return CompetitionQuizOptionCard(
-                                              letter: _optionLetters[index %
-                                                  _optionLetters.length],
-                                              label: _optionLabel(
-                                                l10n,
-                                                option.label,
-                                              ),
-                                              state: _optionState(
-                                                optionId: option.id,
-                                                isFeedback: isFeedback,
-                                              ),
-                                              onTap: isFeedback || _isSubmitting
-                                                  ? null
-                                                  : () => setState(
-                                                        () => _selectedOptionId =
-                                                            option.id,
-                                                      ),
-                                            );
-                                          },
-                                        ),
-                                ),
-                              ],
+                        : CompetitionQuizQuestionPanel(
+                            question: question,
+                            questionIndex: questionIndex,
+                            totalQuestions: progress.totalQuestions,
+                            selectedOptionId: _selectedOptionId,
+                            orderingOptionIds: _orderingOptionIds,
+                            lastResult: _lastResult,
+                            isSubmitting: _isSubmitting,
+                            optionLabel: (raw) => _optionLabel(l10n, raw),
+                            optionState: _optionState,
+                            onSelectOption: (optionId) => setState(
+                              () => _selectedOptionId = optionId,
                             ),
+                            onReorderOrdering: _reorderOrdering,
                           ),
                   ),
                   if (_lastResult != null)
@@ -385,113 +283,42 @@ class _CompetitionQuizScreenState extends ConsumerState<CompetitionQuizScreen> {
                   else
                     Padding(
                       padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.h),
-                      child: FilledButton(
-                        onPressed: _canSubmit(question) ? _submitAnswer : null,
-                        style: FilledButton.styleFrom(
-                          minimumSize: Size(double.infinity, 52.h),
-                          backgroundColor: AppColors.primary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              AppDecorations.radiusMd,
+                      child: Semantics(
+                        button: true,
+                        label: l10n.competitionQuizSubmit,
+                        child: FilledButton(
+                          onPressed: _canSubmit(question) ? _submitAnswer : null,
+                          style: FilledButton.styleFrom(
+                            minimumSize: Size(double.infinity, 52.h),
+                            backgroundColor: AppColors.primary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                AppDecorations.radiusMd,
+                              ),
                             ),
                           ),
+                          child: _isSubmitting
+                              ? SizedBox(
+                                  width: 22.w,
+                                  height: 22.w,
+                                  child: const CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: AppColors.onPrimary,
+                                  ),
+                                )
+                              : Text(
+                                  l10n.competitionQuizSubmit,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
                         ),
-                        child: _isSubmitting
-                            ? SizedBox(
-                                width: 22.w,
-                                height: 22.w,
-                                child: const CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: AppColors.onPrimary,
-                                ),
-                              )
-                            : Text(
-                                l10n.competitionQuizSubmit,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
                       ),
                     ),
                 ],
               ),
             );
           },
-        ),
-      ),
-    );
-  }
-}
-
-class _QuizCompleteView extends StatelessWidget {
-  const _QuizCompleteView({
-    required this.l10n,
-    required this.answeredCount,
-    required this.onDone,
-  });
-
-  final AppLocalizations l10n;
-  final int answeredCount;
-  final VoidCallback onDone;
-
-  @override
-  Widget build(BuildContext context) {
-    return CompetitionPageConstraint(
-      child: Padding(
-        padding: EdgeInsets.all(24.w),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 120.w,
-              height: 120.w,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.secondary.withValues(alpha: 0.3),
-                    AppColors.secondary,
-                  ],
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.secondary.withValues(alpha: 0.35),
-                    blurRadius: 24,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Icon(
-                Icons.emoji_events_rounded,
-                size: 56.sp,
-                color: AppColors.onSecondary,
-              ),
-            ),
-            SizedBox(height: 24.h),
-            Text(
-              l10n.competitionQuizComplete,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 10.h),
-            Text(
-              l10n.competitionQuizCompleteSummary(answeredCount),
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 28.h),
-            FilledButton(
-              onPressed: onDone,
-              style: FilledButton.styleFrom(
-                minimumSize: Size(double.infinity, 52.h),
-              ),
-              child: Text(l10n.competitionQuizDone),
-            ),
-          ],
         ),
       ),
     );

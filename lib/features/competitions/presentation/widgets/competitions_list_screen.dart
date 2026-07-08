@@ -22,7 +22,7 @@ class CompetitionsListScreen extends ConsumerWidget {
     final competitionsAsync = ref.watch(activeCompetitionsProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: RafiqAppBar(title: Text(l10n.competitionsTitle)),
       body: competitionsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),

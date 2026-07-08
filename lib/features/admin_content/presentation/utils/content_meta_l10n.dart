@@ -1,3 +1,4 @@
+import 'package:rafiq_alhajj/core/domain/models/educational_media.dart';
 import 'package:rafiq_alhajj/core/utils/upload_validation.dart';
 import 'package:rafiq_alhajj/features/content/data/storage/content_media_storage_service.dart';
 import 'package:rafiq_alhajj/features/content/domain/models/content_type.dart';
@@ -19,6 +20,18 @@ String contentVisibilityLabel(
   return switch (visibility) {
     ContentVisibility.public => l10n.adminContentVisibilityPublic,
     ContentVisibility.pilgrimOnly => l10n.adminContentVisibilityPilgrimOnly,
+  };
+}
+
+String educationalMediaTypeLabel(
+  AppLocalizations l10n,
+  EducationalMediaType type,
+) {
+  return switch (type) {
+    EducationalMediaType.video => l10n.hajjJourneyMediaVideo,
+    EducationalMediaType.audio => l10n.hajjJourneyMediaAudio,
+    EducationalMediaType.image => l10n.hajjJourneyMediaImage,
+    EducationalMediaType.pdf => l10n.contentMediaPdf,
   };
 }
 

@@ -1,4 +1,5 @@
 import 'package:rafiq_alhajj/core/config/app_config.dart';
+import 'package:rafiq_alhajj/core/models/staff_table_query.dart';
 import 'package:rafiq_alhajj/features/competitions/data/data_sources/admin_competitions_remote_data_source.dart';
 import 'package:rafiq_alhajj/features/competitions/data/repositories/competitions_repository.dart';
 import 'package:rafiq_alhajj/features/competitions/domain/models/competition.dart';
@@ -25,6 +26,24 @@ class AdminCompetitionsRepository {
       final rows = await remote.fetchAll();
 
       return rows.map(_mapCompetition).toList();
+    } on PostgrestException catch (e) {
+      throw CompetitionsException(e.message);
+    }
+  }
+
+  Future<PaginatedResult<Competition>> fetchPage(StaffTableQuery query) async {
+    final remote = _remote;
+    if (remote == null) {
+      throw const CompetitionsException('Supabase is not configured');
+    }
+
+    try {
+      final page = await remote.fetchPage(query);
+      return PaginatedResult(
+        items: page.rows.map(_mapCompetition).toList(growable: false),
+        totalCount: page.count,
+        pageSize: query.pageSize,
+      );
     } on PostgrestException catch (e) {
       throw CompetitionsException(e.message);
     }
