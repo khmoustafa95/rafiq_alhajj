@@ -197,6 +197,33 @@ class _SosScreenState extends ConsumerState<SosScreen>
             ),
           ),
           SizedBox(height: 24.h),
+          Card(
+            color: AppColors.surface,
+            child: Padding(
+              padding: EdgeInsets.all(16.w),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    color: AppColors.textSecondary,
+                    size: 20.sp,
+                  ),
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: Text(
+                      l10n.sosEmergencyDisclaimer,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                            height: 1.4,
+                          ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(height: 16.h),
           Text(
             l10n.sosIntro,
             textAlign: TextAlign.center,

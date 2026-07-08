@@ -37,4 +37,6 @@ class AuthService {
   }
 
   Future<void> signOut() => _repository.signOut();
+
+  Future<void> deleteMyAccount() => _repository.deleteMyAccount();
 }

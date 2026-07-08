@@ -99,7 +99,7 @@ class _HaramMapPanelState extends State<HaramMapPanel> {
                   TileLayer(
                     urlTemplate:
                         'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    userAgentPackageName: 'com.example.rafiq_alhajj',
+                    userAgentPackageName: 'com.rafiqalhajj.app',
                   ),
                   MarkerLayer(
                     markers: haramLandmarks

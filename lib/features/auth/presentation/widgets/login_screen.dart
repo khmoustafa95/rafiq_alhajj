@@ -7,6 +7,7 @@ import 'package:rafiq_alhajj/core/routing/app_routes.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/controllers/login_controller.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/utils/auth_error_l10n.dart';
+import 'package:rafiq_alhajj/features/legal/presentation/widgets/legal_footer.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -186,6 +187,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         )
                       : Text(l10n.loginSubmit),
                 ),
+                SizedBox(height: 24.h),
+                const LegalFooter(showDataNotice: true),
               ],
             ),
           ),

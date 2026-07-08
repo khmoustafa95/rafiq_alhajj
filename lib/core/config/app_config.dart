@@ -51,8 +51,27 @@ abstract final class AppConfig {
 
   static const String firebaseIosBundleId = String.fromEnvironment(
     'FIREBASE_IOS_BUNDLE_ID',
-    defaultValue: 'com.example.rafiqAlhajj',
+    defaultValue: 'com.rafiqalhajj.app',
   );
+
+  /// Public privacy policy URL (required for store submission).
+  static const String privacyPolicyUrl = String.fromEnvironment(
+    'PRIVACY_POLICY_URL',
+  );
+
+  /// Terms of service URL.
+  static const String termsOfServiceUrl = String.fromEnvironment(
+    'TERMS_OF_SERVICE_URL',
+  );
+
+  /// Web page describing how to request account deletion (Play Console requirement).
+  static const String accountDeletionInfoUrl = String.fromEnvironment(
+    'ACCOUNT_DELETION_INFO_URL',
+  );
+
+  static bool get hasPrivacyPolicy => privacyPolicyUrl.isNotEmpty;
+
+  static bool get hasTermsOfService => termsOfServiceUrl.isNotEmpty;
 
   /// Web-specific Firebase App ID (`1:...:web:...`). Distinct from the
   /// Android/iOS [firebaseAppId] and required for FCM Web Push.

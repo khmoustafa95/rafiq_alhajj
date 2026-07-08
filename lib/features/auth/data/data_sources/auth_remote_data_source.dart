@@ -31,6 +31,10 @@ class AuthRemoteDataSource {
     await _client.auth.signOut();
   }
 
+  Future<void> invokeDeleteMyAccount() async {
+    await _client.functions.invoke('delete-my-account');
+  }
+
   Future<Map<String, dynamic>?> fetchProfile(String userId) async {
     final data = await _client
         .from('profiles')

@@ -29,6 +29,8 @@ flutter build web \
 if command -v node >/dev/null 2>&1; then
   echo "==> Syncing Firebase service worker from dart-defines (if configured)"
   node ./scripts/patch-firebase-sw.mjs "$DEFINES_FILE" ./build/web/firebase-messaging-sw.js
+  echo "==> Verifying legal pages in build output"
+  node ./scripts/verify-legal-build.mjs ./build/web
 fi
 
 echo ""

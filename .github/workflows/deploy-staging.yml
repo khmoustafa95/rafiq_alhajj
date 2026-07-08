@@ -74,9 +74,14 @@ jobs:
           node <<'NODE'
           const fs = require('node:fs');
           const defines = {
+            APP_ENV: 'staging',
+            APP_PLATFORM: 'web',
             SUPABASE_URL: process.env.STAGING_SUPABASE_URL,
             SUPABASE_ANON_KEY: process.env.STAGING_SUPABASE_ANON_KEY,
             CRASH_REPORTING_ENABLED: 'false',
+            PRIVACY_POLICY_URL: 'https://rafiq-alhajj-staging.web.app/legal/privacy.html',
+            TERMS_OF_SERVICE_URL: 'https://rafiq-alhajj-staging.web.app/legal/terms.html',
+            ACCOUNT_DELETION_INFO_URL: 'https://rafiq-alhajj-staging.web.app/legal/account-deletion.html',
           };
 
           const firebasePairs = [

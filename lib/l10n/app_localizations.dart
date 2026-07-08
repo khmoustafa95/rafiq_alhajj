@@ -6738,6 +6738,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not apply the changes. Please try again.'**
   String get bulkEditError;
+
+  /// Link to the privacy policy
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get legalPrivacyPolicy;
+
+  /// Link to the terms of service
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get legalTermsOfService;
+
+  /// Short notice shown near legal links on login
+  ///
+  /// In en, this message translates to:
+  /// **'By signing in you agree to our policies. We collect account, logistics, and optional location data to provide Hajj services.'**
+  String get legalDataCollectionNotice;
+
+  /// Shown when a legal URL is not configured
+  ///
+  /// In en, this message translates to:
+  /// **'This link is not available yet. Please contact your organizer.'**
+  String get legalLinkUnavailable;
+
+  /// Profile action to permanently delete the pilgrim account
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get deleteAccountTitle;
+
+  /// Account deletion confirmation body
+  ///
+  /// In en, this message translates to:
+  /// **'This permanently deletes your login and personal data in the app. Trip logistics managed by your organizer may be retained in anonymized form as required for operations.'**
+  String get deleteAccountBody;
+
+  /// Opens the account deletion information page
+  ///
+  /// In en, this message translates to:
+  /// **'Learn more about data deletion'**
+  String get deleteAccountLearnMore;
+
+  /// Dismiss account deletion dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Keep account'**
+  String get deleteAccountCancel;
+
+  /// Confirm permanent account deletion
+  ///
+  /// In en, this message translates to:
+  /// **'Delete my account'**
+  String get deleteAccountConfirm;
+
+  /// Snackbar after successful account deletion
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been deleted.'**
+  String get deleteAccountSuccess;
+
+  /// Snackbar when account deletion fails
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete your account. Please try again or contact support.'**
+  String get deleteAccountError;
+
+  /// Rationale dialog title for prayer times and Qibla
+  ///
+  /// In en, this message translates to:
+  /// **'Location for prayer tools'**
+  String get locationPermissionToolsTitle;
+
+  /// Rationale dialog body for prayer tools location
+  ///
+  /// In en, this message translates to:
+  /// **'Rafiq Al-Hajj uses your device location to calculate accurate prayer times and Qibla direction. Location is not shared with other users for these tools.'**
+  String get locationPermissionToolsBody;
+
+  /// Rationale dialog title for SOS location sharing
+  ///
+  /// In en, this message translates to:
+  /// **'Location for SOS'**
+  String get locationPermissionSosTitle;
+
+  /// Rationale dialog body for SOS location
+  ///
+  /// In en, this message translates to:
+  /// **'When you activate SOS, your live location is shared with your group operators and support staff while this screen stays open. Tracking stops when you leave the app or cancel SOS.'**
+  String get locationPermissionSosBody;
+
+  /// Title when location permission is permanently denied
+  ///
+  /// In en, this message translates to:
+  /// **'Location access is off'**
+  String get locationPermissionDeniedTitle;
+
+  /// Body when location permission is permanently denied
+  ///
+  /// In en, this message translates to:
+  /// **'Enable location in system settings to use prayer tools or SOS.'**
+  String get locationPermissionDeniedBody;
+
+  /// Disclaimer that in-app SOS is not a substitute for 911/997
+  ///
+  /// In en, this message translates to:
+  /// **'SOS in this app alerts your Hajj group support team. It does not replace national emergency services — call local emergency numbers when life is in danger.'**
+  String get sosEmergencyDisclaimer;
 }
 
 class _AppLocalizationsDelegate

@@ -11,5 +11,8 @@
   "FIREBASE_AUTH_DOMAIN": "rafiq-alhajj.firebaseapp.com",
   "FIREBASE_STORAGE_BUCKET": "rafiq-alhajj.firebasestorage.app",
   "FIREBASE_VAPID_KEY": "your-web-push-vapid-public-key",
-  "FIREBASE_MEASUREMENT_ID": ""
+  "FIREBASE_MEASUREMENT_ID": "",
+  "PRIVACY_POLICY_URL": "https://rafiq-alhajj-staging.web.app/legal/privacy.html",
+  "TERMS_OF_SERVICE_URL": "https://rafiq-alhajj-staging.web.app/legal/terms.html",
+  "ACCOUNT_DELETION_INFO_URL": "https://rafiq-alhajj-staging.web.app/legal/account-deletion.html"
 }

@@ -23,4 +23,7 @@ abstract class AuthRepository {
   });
 
   Future<void> signOut();
+
+  /// Permanently deletes the signed-in pilgrim account and associated data.
+  Future<void> deleteMyAccount();
 }

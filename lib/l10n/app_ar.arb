@@ -1305,5 +1305,23 @@
   "@bulkEditSuccess": {
     "placeholders": {"count": {"type": "int"}}
   },
-  "bulkEditError": "تعذّر تطبيق التعديلات. حاول مرة أخرى."
+  "bulkEditError": "تعذّر تطبيق التعديلات. حاول مرة أخرى.",
+  "legalPrivacyPolicy": "سياسة الخصوصية",
+  "legalTermsOfService": "شروط الاستخدام",
+  "legalDataCollectionNotice": "بتسجيل الدخول فإنك توافق على سياساتنا. نجمع بيانات الحساب واللوجستيات والموقع (عند الحاجة) لتقديم خدمات الحج.",
+  "legalLinkUnavailable": "هذا الرابط غير متاح حالياً. تواصل مع منظم رحلتك.",
+  "deleteAccountTitle": "حذف الحساب",
+  "deleteAccountBody": "سيؤدي هذا إلى حذف حسابك وبياناتك الشخصية في التطبيق نهائياً. قد تُحفظ بيانات الرحلة بشكل مجهول لدى المنظم لأغراض تشغيلية.",
+  "deleteAccountLearnMore": "المزيد عن حذف البيانات",
+  "deleteAccountCancel": "الإبقاء على الحساب",
+  "deleteAccountConfirm": "حذف حسابي",
+  "deleteAccountSuccess": "تم حذف حسابك.",
+  "deleteAccountError": "تعذّر حذف الحساب. حاول مرة أخرى أو تواصل مع الدعم.",
+  "locationPermissionToolsTitle": "الموقع لأدوات الصلاة",
+  "locationPermissionToolsBody": "يستخدم التطبيق موقع جهازك لحساب أوقات الصلاة واتجاه القبلة بدقة. لا يُشارك موقعك مع مستخدمين آخرين لهذه الأدوات.",
+  "locationPermissionSosTitle": "الموقع لنظام SOS",
+  "locationPermissionSosBody": "عند تفعيل SOS يُشارك موقعك المباشر مع مشغّلي مجموعتك وفريق الدعم طالما هذه الشاشة مفتوحة. يتوقف التتبع عند مغادرة التطبيق أو إلغاء SOS.",
+  "locationPermissionDeniedTitle": "الوصول إلى الموقع معطّل",
+  "locationPermissionDeniedBody": "فعّل الموقع من إعدادات النظام لاستخدام أدوات الصلاة أو SOS.",
+  "sosEmergencyDisclaimer": "تنبيه SOS في التطبيق يُبلّغ فريق دعم مجموعة الحج. لا يُغني عن الطوارئ الوطنية — اتصل برقم الطوارئ المحلي عند الخطر على الحياة."
 }

@@ -8,5 +8,5 @@
   "FIREBASE_API_KEY": "your-firebase-api-key",
   "FIREBASE_APP_ID": "1:000000000000:ios:xxxxxxxxxxxxxxxx",
   "FIREBASE_MESSAGING_SENDER_ID": "your-sender-id",
-  "FIREBASE_IOS_BUNDLE_ID": "com.example.rafiqAlhajj"
+  "FIREBASE_IOS_BUNDLE_ID": "com.rafiqalhajj.app"
 }
