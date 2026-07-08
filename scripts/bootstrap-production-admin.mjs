@@ -2,13 +2,39 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
+import { randomBytes } from "node:crypto";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, "..");
-const usersFile = join(__dirname, "seed-demo-users.json");
+
+const email = process.env.ADMIN_EMAIL?.trim();
+const password = process.env.ADMIN_PASSWORD?.trim();
+const fullName = process.env.ADMIN_FULL_NAME?.trim() || "System Administrator";
 const baseUrl = (
   process.env.SUPABASE_URL ?? "http://127.0.0.1:54321"
 ).replace(/\/$/, "");
+
+function usage() {
+  console.error(`
+Bootstrap the first production super-admin account (run once after deploy).
+
+Required environment variables:
+  ADMIN_EMAIL              Admin login email
+  SUPABASE_URL             Project URL (defaults to local)
+  SUPABASE_SERVICE_ROLE_KEY  Service role key (never ship to clients)
+
+Optional:
+  ADMIN_PASSWORD           Strong password (auto-generated when omitted)
+  ADMIN_FULL_NAME          Display name (default: System Administrator)
+
+Example:
+  SUPABASE_URL=https://<ref>.supabase.co \\
+  SUPABASE_SERVICE_ROLE_KEY=<secret> \\
+  ADMIN_EMAIL=admin@your-org.com \\
+  ADMIN_PASSWORD='<strong-random>' \\
+  node scripts/bootstrap-production-admin.mjs
+`);
+}
 
 function getServiceRoleKey() {
   if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -61,6 +87,13 @@ function getServiceRoleKey() {
   return null;
 }
 
+function generatePassword(length = 20) {
+  const chars =
+    "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%";
+  const bytes = randomBytes(length);
+  return Array.from(bytes, (b) => chars[b % chars.length]).join("");
+}
+
 async function listUsers(headers) {
   const response = await fetch(`${baseUrl}/auth/v1/admin/users`, { headers });
   if (!response.ok) {
@@ -78,12 +111,7 @@ async function createUser(user, headers) {
       email: user.email,
       password: user.password,
       email_confirm: true,
-      user_metadata: {
-        ...user.metadata,
-        ...(user.metadata?.role === "admin"
-          ? { can_manage_admins: true }
-          : {}),
-      },
+      user_metadata: user.metadata,
     }),
   });
 
@@ -100,12 +128,7 @@ async function updateUser(userId, user, headers) {
     body: JSON.stringify({
       password: user.password,
       email_confirm: true,
-      user_metadata: {
-        ...user.metadata,
-        ...(user.metadata?.role === "admin"
-          ? { can_manage_admins: true }
-          : {}),
-      },
+      user_metadata: user.metadata,
     }),
   });
 
@@ -116,47 +139,52 @@ async function updateUser(userId, user, headers) {
 }
 
 async function upsertProfile(userId, user, headers) {
-  const fullName = user.metadata?.full_name ?? user.email;
-  const role = user.metadata?.role ?? "pilgrim";
-  const body = {
-    id: userId,
-    full_name: fullName,
-    role,
-    email: user.email,
-    can_manage_admins: role === "admin",
-  };
-
-  if (role === "operator") {
-    body.operator_permissions = user.metadata?.operator_permissions ?? {
-      can_register_pilgrims: true,
-      can_manage_pilgrim_registry: true,
-      can_use_field_tools: true,
-      can_upload_documents: true,
-    };
-  }
-
   const response = await fetch(`${baseUrl}/rest/v1/profiles`, {
     method: "POST",
     headers: {
       ...headers,
       Prefer: "resolution=merge-duplicates,return=minimal",
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify({
+      id: userId,
+      full_name: user.metadata.full_name,
+      role: "admin",
+      email: user.email,
+      can_manage_admins: true,
+      operator_permissions: null,
+      is_active: true,
+    }),
   });
 
   if (!response.ok) {
     const text = await response.text();
-    throw new Error(`Profile upsert failed for ${user.email}: ${text}`);
+    throw new Error(`Profile upsert failed: ${text}`);
   }
+}
+
+if (!email) {
+  usage();
+  process.exit(1);
 }
 
 const key = getServiceRoleKey();
 if (!key) {
   console.error(
-    "Could not read SERVICE_ROLE_KEY. Run: supabase status -o env",
+    "Could not read SERVICE_ROLE_KEY. Set SUPABASE_SERVICE_ROLE_KEY or run supabase status -o env",
   );
   process.exit(1);
 }
+
+const resolvedPassword = password || generatePassword();
+const user = {
+  email,
+  password: resolvedPassword,
+  metadata: {
+    role: "admin",
+    full_name: fullName,
+    can_manage_admins: true,
+  },
+};
 
 const headers = {
   apikey: key,
@@ -164,57 +192,36 @@ const headers = {
   "Content-Type": "application/json; charset=utf-8",
 };
 
-const users = JSON.parse(readFileSync(usersFile, "utf8"));
-const existingByEmail = new Map(
-  (await listUsers(headers)).map((user) => [user.email, user]),
+const existing = (await listUsers(headers)).find(
+  (entry) => entry.email?.toLowerCase() === email.toLowerCase(),
 );
 
-for (const user of users) {
-  const fullName = user.metadata?.full_name ?? "";
-  const existing = existingByEmail.get(user.email);
-
-  try {
-    if (existing) {
-      await updateUser(existing.id, user, headers);
-      await upsertProfile(existing.id, user, headers);
-      console.log(`Updated ${user.email} (${fullName})`);
-      continue;
-    }
-
+try {
+  if (existing?.id) {
+    await updateUser(existing.id, user, headers);
+    await upsertProfile(existing.id, user, headers);
+    console.log(`Updated super-admin ${email}`);
+  } else {
     await createUser(user, headers);
     const created = (await listUsers(headers)).find(
-      (entry) => entry.email === user.email,
+      (entry) => entry.email?.toLowerCase() === email.toLowerCase(),
     );
     if (!created?.id) {
-      throw new Error(`Created user not found: ${user.email}`);
+      throw new Error(`Created user not found: ${email}`);
     }
     await upsertProfile(created.id, user, headers);
-    console.log(`Created ${user.email} (${fullName})`);
-  } catch (error) {
-    const message = String(error?.message ?? error);
-    if (/already|duplicate|exists/i.test(message)) {
-      console.log(`Exists: ${user.email}`);
-      const fallback = existing ?? (await listUsers(headers)).find(
-        (entry) => entry.email === user.email,
-      );
-      if (fallback?.id) {
-        try {
-          await upsertProfile(fallback.id, user, headers);
-        } catch (profileError) {
-          console.warn(`Failed profile fix for ${user.email}: ${profileError}`);
-        }
-      }
-    } else {
-      console.warn(`Failed ${user.email}: ${message}`);
-    }
+    console.log(`Created super-admin ${email}`);
   }
+} catch (error) {
+  console.error(`Bootstrap failed: ${String(error?.message ?? error)}`);
+  process.exit(1);
 }
 
 console.log("");
-console.log("Demo password for all accounts: demo123456");
-console.log("Pilgrim logins: pilgrim@demo.local … pilgrim12@demo.local");
-console.log("Operator login: operator@demo.local");
-console.log("Admin login: admin@demo.local");
+console.log("Super-admin credentials (store securely, share out-of-band):");
+console.log(`  Email:    ${email}`);
+console.log(`  Password: ${resolvedPassword}`);
+console.log("");
 console.log(
-  "Note: pilgrim/trip demo data is seeded by supabase/seed.sql (Arabic).",
+  "This account can promote operators to admin. Promoted admins cannot promote others.",
 );

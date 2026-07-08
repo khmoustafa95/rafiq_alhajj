@@ -9,5 +9,6 @@ abstract class UserProfile with _$UserProfile {
     required String id,
     required String? fullName,
     required AppUserRole role,
+    @Default(false) bool canManageAdmins,
   }) = _UserProfile;
 }

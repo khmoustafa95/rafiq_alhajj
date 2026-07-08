@@ -1740,6 +1740,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get staffNavOperators => 'المشغّلون';
 
   @override
+  String get staffNavAdmins => 'المسؤولون';
+
+  @override
   String get staffNavGroups => 'المجموعات';
 
   @override
@@ -1843,6 +1846,53 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get adminOperatorsSubtitle =>
       'أضف المشغّلين وتحكّم بأدوارهم وصلاحياتهم.';
+
+  @override
+  String get adminAccountsTitle => 'حسابات المسؤولين';
+
+  @override
+  String get adminAccountsSubtitle =>
+      'عرض المسؤولين. فقط المسؤول الرئيسي يمكنه ترقية الحسابات.';
+
+  @override
+  String get adminAccountsSubtitleSuper =>
+      'عرض المسؤولين وترقية المشغّلين إلى مسؤول.';
+
+  @override
+  String get adminAccountsEmpty => 'لا توجد حسابات مسؤول بعد.';
+
+  @override
+  String get adminAccountsRoleColumn => 'مستوى المسؤول';
+
+  @override
+  String get adminAccountsSuperAdmin => 'مسؤول رئيسي';
+
+  @override
+  String get adminAccountsAdmin => 'مسؤول';
+
+  @override
+  String get adminAccountPromoteAction => 'ترقية إلى مسؤول';
+
+  @override
+  String get adminAccountPromoteTitle => 'ترقية إلى مسؤول؟';
+
+  @override
+  String adminAccountPromoteMessage(String name, String email) {
+    return 'ترقية $name ($email) إلى مسؤول؟';
+  }
+
+  @override
+  String get adminAccountPromoteHint =>
+      'المسؤولون المُرقّون يمكنهم إدارة النظام لكن لا يمكنهم ترقية مسؤولين آخرين.';
+
+  @override
+  String get adminAccountPromoteConfirm => 'ترقية';
+
+  @override
+  String get adminAccountPromoteSuccess => 'تمت ترقية المشغّل إلى مسؤول.';
+
+  @override
+  String get adminAccountPromoteError => 'تعذّرت الترقية. حاول مرة أخرى.';
 
   @override
   String get adminOperatorAdd => 'إضافة مشغّل';
@@ -2008,6 +2058,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get staffTableSearchOperators => 'ابحث بالاسم أو البريد';
+
+  @override
+  String get staffTableSearchAdmins => 'ابحث عن المسؤولين بالاسم أو البريد';
 
   @override
   String get staffTableSearchContent => 'ابحث بالعنوان أو الوصف';

@@ -63,6 +63,7 @@ abstract final class AppRoutes {
   static const String adminOperators = '/admin/operators';
   static const String adminOperatorNew = '/admin/operators/new';
   static const String adminOperatorEdit = '/admin/operators/:id/edit';
+  static const String adminAccounts = '/admin/admins';
   static const String adminGroups = '/admin/groups';
   static const String adminGroupNew = '/admin/groups/new';
   static const String adminGroupEdit = '/admin/groups/:id/edit';

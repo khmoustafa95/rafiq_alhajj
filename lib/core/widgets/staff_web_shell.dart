@@ -182,6 +182,12 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
         isActive: location.startsWith(AppRoutes.adminOperators),
       ),
       _StaffNavItem(
+        icon: Icons.admin_panel_settings_outlined,
+        label: l10n.staffNavAdmins,
+        route: AppRoutes.adminAccounts,
+        isActive: location.startsWith(AppRoutes.adminAccounts),
+      ),
+      _StaffNavItem(
         icon: Icons.groups_outlined,
         label: l10n.staffNavGroups,
         route: AppRoutes.adminGroups,
@@ -259,6 +265,9 @@ class _StaffWebShellState extends ConsumerState<StaffWebShell> {
     }
     if (location.startsWith(AppRoutes.adminOperators)) {
       return l10n.adminOperatorsTitle;
+    }
+    if (location.startsWith(AppRoutes.adminAccounts)) {
+      return l10n.adminAccountsTitle;
     }
     if (location.startsWith(AppRoutes.adminGroups)) {
       return l10n.adminGroupsTitle;
