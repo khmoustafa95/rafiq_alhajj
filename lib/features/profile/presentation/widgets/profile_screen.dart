@@ -11,7 +11,9 @@ import 'package:rafiq_alhajj/core/widgets/home_app_header.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/controllers/sign_out_controller.dart';
 import 'package:rafiq_alhajj/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:rafiq_alhajj/features/auth/presentation/widgets/delete_account_dialog.dart';
 import 'package:rafiq_alhajj/features/content/presentation/widgets/content_offline_settings_card.dart';
+import 'package:rafiq_alhajj/features/legal/presentation/widgets/legal_footer.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/widgets/notification_settings_card.dart';
 import 'package:rafiq_alhajj/features/pilgrim/presentation/providers/pilgrim_providers.dart';
 import 'package:rafiq_alhajj/features/pilgrim/presentation/widgets/pilgrim_profile_sections.dart';
@@ -142,6 +144,14 @@ class ProfileScreen extends ConsumerWidget {
                           ref.read(signOutControllerProvider.notifier).signOut,
                       isDestructive: true,
                     ),
+                    _ProfileTile(
+                      icon: Icons.delete_forever_outlined,
+                      label: l10n.deleteAccountTitle,
+                      onTap: () => showDeleteAccountDialog(context, ref),
+                      isDestructive: true,
+                    ),
+                    SizedBox(height: 16.h),
+                    const LegalFooter(),
                   ] else ...[
                     FilledButton(
                       onPressed: () => unawaited(context.push(AppRoutes.login)),
@@ -154,6 +164,8 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                       child: Text(l10n.homeFieldOperatorSignIn),
                     ),
+                    SizedBox(height: 24.h),
+                    const LegalFooter(showDataNotice: true),
                   ],
                 ],
               ),

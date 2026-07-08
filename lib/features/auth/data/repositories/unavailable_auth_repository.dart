@@ -41,4 +41,9 @@ class UnavailableAuthRepository implements AuthRepository {
 
   @override
   Future<void> signOut() async {}
+
+  @override
+  Future<void> deleteMyAccount() async {
+    throw const PilgrimAuthException(PilgrimAuthErrorCode.configMissing);
+  }
 }

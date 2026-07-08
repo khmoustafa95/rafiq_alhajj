@@ -60,7 +60,9 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Rafiq Al-Hajj uses your location to calculate prayer times and Qibla direction.</string>
+	<string>Rafiq Al-Hajj uses your location for prayer times, Qibla direction, and to share your position with your group when you activate SOS while the app is open.</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

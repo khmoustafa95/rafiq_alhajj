@@ -1600,5 +1600,77 @@
   "@bulkEditSuccess": {
     "placeholders": {"count": {"type": "int"}}
   },
-  "bulkEditError": "Could not apply the changes. Please try again."
+  "bulkEditError": "Could not apply the changes. Please try again.",
+  "legalPrivacyPolicy": "Privacy Policy",
+  "@legalPrivacyPolicy": {
+    "description": "Link to the privacy policy"
+  },
+  "legalTermsOfService": "Terms of Service",
+  "@legalTermsOfService": {
+    "description": "Link to the terms of service"
+  },
+  "legalDataCollectionNotice": "By signing in you agree to our policies. We collect account, logistics, and optional location data to provide Hajj services.",
+  "@legalDataCollectionNotice": {
+    "description": "Short notice shown near legal links on login"
+  },
+  "legalLinkUnavailable": "This link is not available yet. Please contact your organizer.",
+  "@legalLinkUnavailable": {
+    "description": "Shown when a legal URL is not configured"
+  },
+  "deleteAccountTitle": "Delete account",
+  "@deleteAccountTitle": {
+    "description": "Profile action to permanently delete the pilgrim account"
+  },
+  "deleteAccountBody": "This permanently deletes your login and personal data in the app. Trip logistics managed by your organizer may be retained in anonymized form as required for operations.",
+  "@deleteAccountBody": {
+    "description": "Account deletion confirmation body"
+  },
+  "deleteAccountLearnMore": "Learn more about data deletion",
+  "@deleteAccountLearnMore": {
+    "description": "Opens the account deletion information page"
+  },
+  "deleteAccountCancel": "Keep account",
+  "@deleteAccountCancel": {
+    "description": "Dismiss account deletion dialog"
+  },
+  "deleteAccountConfirm": "Delete my account",
+  "@deleteAccountConfirm": {
+    "description": "Confirm permanent account deletion"
+  },
+  "deleteAccountSuccess": "Your account has been deleted.",
+  "@deleteAccountSuccess": {
+    "description": "Snackbar after successful account deletion"
+  },
+  "deleteAccountError": "Could not delete your account. Please try again or contact support.",
+  "@deleteAccountError": {
+    "description": "Snackbar when account deletion fails"
+  },
+  "locationPermissionToolsTitle": "Location for prayer tools",
+  "@locationPermissionToolsTitle": {
+    "description": "Rationale dialog title for prayer times and Qibla"
+  },
+  "locationPermissionToolsBody": "Rafiq Al-Hajj uses your device location to calculate accurate prayer times and Qibla direction. Location is not shared with other users for these tools.",
+  "@locationPermissionToolsBody": {
+    "description": "Rationale dialog body for prayer tools location"
+  },
+  "locationPermissionSosTitle": "Location for SOS",
+  "@locationPermissionSosTitle": {
+    "description": "Rationale dialog title for SOS location sharing"
+  },
+  "locationPermissionSosBody": "When you activate SOS, your live location is shared with your group operators and support staff while this screen stays open. Tracking stops when you leave the app or cancel SOS.",
+  "@locationPermissionSosBody": {
+    "description": "Rationale dialog body for SOS location"
+  },
+  "locationPermissionDeniedTitle": "Location access is off",
+  "@locationPermissionDeniedTitle": {
+    "description": "Title when location permission is permanently denied"
+  },
+  "locationPermissionDeniedBody": "Enable location in system settings to use prayer tools or SOS.",
+  "@locationPermissionDeniedBody": {
+    "description": "Body when location permission is permanently denied"
+  },
+  "sosEmergencyDisclaimer": "SOS in this app alerts your Hajj group support team. It does not replace national emergency services — call local emergency numbers when life is in danger.",
+  "@sosEmergencyDisclaimer": {
+    "description": "Disclaimer that in-app SOS is not a substitute for 911/997"
+  }
 }

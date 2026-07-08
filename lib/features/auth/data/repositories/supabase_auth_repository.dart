@@ -188,6 +188,25 @@ class SupabaseAuthRepository implements AuthRepository {
     await _remote.signOut();
   }
 
+  @override
+  Future<void> deleteMyAccount() async {
+    try {
+      await _remote.invokeDeleteMyAccount().timeout(_requestTimeout);
+      await _remote.signOut();
+    } on FunctionException catch (e) {
+      if (e.status == 403) {
+        throw const PilgrimAuthException(PilgrimAuthErrorCode.notPilgrimRole);
+      }
+      throw const PilgrimAuthException(PilgrimAuthErrorCode.unknown);
+    } on PostgrestException {
+      throw const PilgrimAuthException(PilgrimAuthErrorCode.network);
+    } on SocketException {
+      throw const PilgrimAuthException(PilgrimAuthErrorCode.network);
+    } on TimeoutException {
+      throw const PilgrimAuthException(PilgrimAuthErrorCode.network);
+    }
+  }
+
   Future<UserProfile?> _fetchProfile(String userId) async {
     final data = await _remote.fetchProfile(userId).timeout(_requestTimeout);
 

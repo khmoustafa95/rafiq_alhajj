@@ -280,7 +280,7 @@ class _SosMap extends StatelessWidget {
           children: [
             TileLayer(
               urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              userAgentPackageName: 'com.example.rafiq_alhajj',
+              userAgentPackageName: 'com.rafiqalhajj.app',
             ),
             if (trail.length >= 2)
               PolylineLayer(
