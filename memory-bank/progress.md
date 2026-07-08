@@ -3,6 +3,11 @@
 > **Update this file after every completed task.**
 
 ## Changelog
+- **2026-07-08 — Flutter deprecation fix (`competition_quiz_ordering_list`):** Replaced deprecated `ReorderableListView.builder.onReorder` with `onReorderItem` in `competition_quiz_ordering_list.dart` (quiz ordering widget). Existing reorder callback behavior preserved; lint check reports **No issues found**.
+- **2026-07-08 — Cross-device markdownlint parity:** Added `.markdownlintignore` (`memory-bank/**`) and workspace `.vscode/settings.json` to pin markdownlint rules (`MD013=false`, `MD058=false`, run on save) so warnings do not differ between laptops due to global editor settings.
+- **2026-07-08 — Markdownlint permanent terminal cleanup:** Updated workspace `.markdownlint.json` to disable both `MD058` and `MD013`, removing recurring table-spacing and line-length warnings from Markdown files (especially `memory-bank/*`).
+- **2026-07-08 — Markdownlint `MD058` permanent fix:** Added blank line before the `Status summary` table in `memory-bank/progress.md` and added workspace `.markdownlint.json` with `MD058: false` to silence recurring Markdown table-spacing warnings.
+- **2026-07-08 — Flutter deprecation fix (`onReorder`):** In `admin_competition_question_editor_dialog.dart`, replaced deprecated `ReorderableListView.builder.onReorder` with `onReorderItem` for ordering-step drag reordering. Existing reorder callback kept unchanged (compatible with adjusted `newIndex`). Verified: `flutter analyze lib/features/competitions/presentation/widgets/admin_competition_question_editor_dialog.dart` → **No issues found**.
 - **2026-07-08 — Merge conflict recovery:** Resolved merge markers in `memory-bank/activeContext.md` and `memory-bank/progress.md`, preserved both branches' updates, and staged both files so Git marks the conflicts resolved.
 - **2026-07-07 — Persistent staging CLI env:** `config/.env.staging.example` + gitignored `config/.env.staging.local`; `scripts/load-staging-env.ps1` / `load-staging-env.mjs` auto-load for `staging:setup-db`, `staging:seed-users`, APK version sync. Falls back to `SUPABASE_URL` in `web.staging.json` for project ref. `config:bootstrap` creates template; `staging-wizard` writes file. Docs updated.
 - **2026-07-08 — Staging store setup:** Legal URLs in staging dart-define templates; `delete-my-account` in `staging:setup-db`; CI deploy includes legal keys; `firebase.json` `/legal/**`; verify scripts + `npm run staging:verify-store`; `staging-setup-ar.md` §12. Web build verified: `build/web/legal/*.html` present.
@@ -55,6 +60,7 @@
 - **2026-06-21 — Admin pilgrim workflow overhaul:** compact login language control + smaller icons; removed `US-0x` codes from ARBs; full pilgrim field set exposed via a single `pilgrim_field_catalog` (intake + edit forms + table) with raw-backed models and server-side column allowlists in `create-pilgrim`; resilient creation (best-effort doc upload, partial-success warning); expanded table columns (cluster/sticker/makkah_hotel/phone/whatsapp); persisted "shared defaults" + `TripSelector` for fast entry; uploads moved to `pilgrim_intake_remote_data_source` with size/MIME guards; WhatsApp "send login info" row action backed by new operator/admin-gated `reset-pilgrim-password` edge fn; notifications audit (no fixes needed). `flutter analyze` clean. ⚠ Restart local edge runtime to serve `reset-pilgrim-password`.
 
 ## Status summary
+
 | Area | Status |
 | --- | --- |
 | App shell (main, bootstrap, errors) | ✅ Done |

@@ -341,7 +341,7 @@ class _AdminCompetitionQuestionEditorDialogState
                   ReorderableListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    onReorder: isSaving ? (_, _) {} : _reorderOption,
+                    onReorderItem: isSaving ? (_, _) {} : _reorderOption,
                     buildDefaultDragHandles: !isSaving,
                     itemCount: _optionFields.length,
                     itemBuilder: (context, index) {

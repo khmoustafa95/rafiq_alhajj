@@ -3,6 +3,7 @@
 > **Read this file at the start of every session.**
 
 ## Current focus
+
 **Layout fix — ListTile + nested ListView (2026-07-07):** Fixed web staging crashes on admin settings/app-versions. Root causes: (1) `ListView` inside `StaffWebPage`'s `SingleChildScrollView` in `admin_app_version_screen` → changed to `Column`; (2) `SwitchListTile`/`ListTile` inside `DecoratedBox`/`Container` decoration without `Material` ancestor → new `ThemedSurfaceCard` widget; applied to `StaffFormSection`, `NotificationSettingsCard`, `ContentOfflineSettingsCard`, `admin_operator_edit_screen` active toggle.
 
 **Persistent staging CLI env (2026-07-07):** `config/.env.staging.local` (from `.env.staging.example`) holds `SUPABASE_PROJECT_REF`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` for scripts — no more `$env:...` each run. Loaders: `load-staging-env.ps1` / `.mjs`. Project ref can derive from `web.staging.json` if only service_role is in env file. `staging-wizard` + `config:bootstrap` create the file.
@@ -10,6 +11,16 @@
 **Environments workflow doc (2026-07-07):** Added `docs/environments-workflow-ar.md` — simplified Arabic guide for local ↔ staging: what moves via Git vs `db push`, per-scenario commands (code-only, migrations, dev against staging DB, manual deploy, APK, demo users), decision tree, troubleshooting (e.g. missing tables on staging). Linked from `README.md`, `runbook-ar.md`, `staging-setup-ar.md`, `config/dart-defines/README.md`.
 
 **Store submission readiness (2026-07-08):** Implemented P0 store-compliance on `cursor/store-readiness-1430`. **Staging follow-up:** legal URLs in all `*.staging.example.json`; `delete-my-account` + `promote-to-admin` in `staging:setup-db`; CI deploy includes legal dart-defines; `firebase.json` serves `/legal/**`; scripts `verify-legal-build.mjs`, `verify-staging-store-setup.mjs`, `staging-store-smoke.sh`, npm `staging:verify-store`; docs §12 in `staging-setup-ar.md`. Verified: `flutter build web` + legal pages in `build/web`. ⚠ Deploy branch + `npm run staging:setup-db` on cloud Supabase; `config:bootstrap` for secret staging json files.
+
+**Flutter deprecation fix (2026-07-08):** `admin_competition_question_editor_dialog.dart` replaced deprecated `ReorderableListView.builder.onReorder` with `onReorderItem` (line in ordering steps list). Existing `_reorderOption(oldIndex, newIndex)` logic remains valid because `onReorderItem` already adjusts `newIndex`. Verified: `flutter analyze lib/features/competitions/presentation/widgets/admin_competition_question_editor_dialog.dart` → **No issues found**.
+
+**Flutter deprecation fix (2026-07-08):** `competition_quiz_ordering_list.dart` replaced deprecated `ReorderableListView.builder.onReorder` with `onReorderItem` in the quiz ordering UI. Existing callback contract stays unchanged (`void Function(int oldIndex, int newIndex)`), and feedback mode still disables reordering via a no-op callback. Verified: lint check on file → **No issues found**.
+
+**Markdownlint noise reduction (2026-07-08):** Fixed `memory-bank/progress.md` table spacing (blank line before status table) and added workspace `.markdownlint.json` with `MD058: false` to permanently silence repeated `blanks-around-tables` warnings in Markdown files.
+
+**Markdownlint permanent cleanup (2026-07-08):** Updated `.markdownlint.json` to disable `MD013` globally (line-length warnings) in addition to `MD058`. Attempted path-scoped override first, but current markdownlint config parser in workspace rejects `overrides` in this file format; using direct rule toggles is compatible and eliminates repeated memory-bank warnings.
+
+**Cross-device markdownlint parity (2026-07-08):** Added `.markdownlintignore` to exclude `memory-bank/**` and workspace `.vscode/settings.json` to pin markdownlint behavior (`MD013: false`, `MD058: false`, run on save). This aligns diagnostics across machines where global extension settings differ.
 
 **Merge conflict recovery (2026-07-08):** Resolved active merge conflicts in `memory-bank/activeContext.md` and `memory-bank/progress.md` by preserving entries from both branches, removed all conflict markers, and staged both files to mark conflicts as resolved in Git.
 
@@ -42,6 +53,7 @@
 **Code consistency audit** (2026-07-02): implemented full catalog cache + stale-while-revalidate, unified cover images, learning progress, download UX, journey offline, background refresh, profile-scoped media cache, competitions offline-lite. `flutter analyze lib` → **No issues found**. ⚠ Device smoke test pending (offline feed/articles, continue learning card, download-all, journey media offline, quiz cache fallback).
 
 **Push notifications hardening** (2026-07-02): full audit follow-up across client, Edge Function, web SW, iOS, and global-app UX patterns (rounds 1–4).
+
 - **Token lifecycle:** unregister on session end; token rotation cleanup; post-login permission.
 - **Navigation:** pending push queue for cold start; web deep links; **mark inbox as read on push tap**.
 - **Locale:** bilingual FCM `data` fields; device-locale foreground display.
@@ -53,7 +65,9 @@
 - **Verified:** `flutter analyze` (notifications/profile) → **No issues found**. ⚠ `supabase db reset` + device smoke test pending.
 
 ## Earlier focus — Content management redesign (2026-06-26)
+
 Split content into three clear surfaces and removed the broken standalone `video` content type (root cause of "uploaded video doesn't show on mobile"). Announcements + News are `content_library` (rich text + an **inline cover image**, no external-launch button); the Educational Library is `content_topics`/`content_topic_media` with rich media (video/audio/image-stories/**PDF**).
+
 - **Deps:** `pdfx ^2.9.2` (cross-platform PDF render; web needs pdf.js — added the CDN `<script>` to `web/index.html`).
 - **DB (3 new migrations):** `20260626170000_content_media_add_pdf_type.sql` adds `'pdf'` to the `content_media_type` enum (**standalone** migration — Postgres can't add + use an enum value in one tx); `20260626170100_content_media_allow_pdf.sql` adds `application/pdf` to `allowed_mime_types` on both `content-media` + `content-media-private`; `20260626170200_content_notify_opt_in.sql` **drops** the auto `on_content_library_notify_pilgrims` trigger + its fn and adds admin-guarded RPC `publish_content_notification(p_title_ar,p_title_en,p_route,p_id,p_visibility)` (inserts `content_published` rows; existing statement-level dispatch fans out FCM), and converts existing `type='video'` `content_library` rows → `news`. Seed updated likewise. The unused `video` enum value stays (removing an in-use Postgres enum value is unsafe) — the app just stops offering it.
 - **Domain/data:** `EducationalMediaType` gained `pdf` (+ `typeKey`/`typeFromKey`/`ContentTopicMediaInput.mediaTypeKey`). `UploadConstraints.pdf` (`{pdf}`, 25 MiB); topic editor `_constraintsFor`/`_kindFor` map `pdf`→`UploadMediaKind.other` (non-compressible). `PublicContentFeed` split into `{announcements, news, topics}` (+ `newsAndAnnouncements` back-compat getter); data source/repo/`ContentService.loadHomeFeed`/`UnavailableContentRepository`/`widget_test` updated.
@@ -65,6 +79,7 @@ Split content into three clear surfaces and removed the broken standalone `video
 - **Verified:** `dart run build_runner build` + `flutter gen-l10n` + `flutter analyze lib` → **No issues found**; `supabase db reset` applied all 3 new migrations + seed cleanly. ⚠ **Device smoke test still pending**: announcement/news inline cover; library video/audio/**stories**/PDF playback; "notify pilgrims" on create + edit lands in the inbox and routes correctly (content vs contentTopic). ⚠ `pdfx` web rendering relies on the pdf.js CDN script — verify admin preview + pilgrim web PDF.
 
 **Coursera-grade offline secure media for pilgrims** (2026-06-26): turned the basic offline cache into a production-hardened, secure offline feature. Two confirmed decisions: full security hardening + add `video_player`/`chewie`.
+
 - **Deps:** `video_player ^2.11.1`, `chewie ^1.13.1`, `flutter_secure_storage ^10.3.1`, `cryptography ^2.9.0` (AES-CTR). `connectivity_plus`/`path_provider`/`dio` already present.
 - **Two buckets:** kept public `content-media` for `public` topics; new **private** `content-media-private` (migration `20260626160000_content_media_private_bucket.sql`, `public=false`, same 50MiB + MIME allowlist) for `pilgrim_only`. Storage RLS: SELECT = admins or `profiles.role='pilgrim'` (required for `createSignedUrl`); write = admins. The DB stores a `private://<path>` sentinel in `content_topic_media.url` / cover for private objects (no content-table schema change; backward compatible).
 - **Storage service (`content_media_storage_service.dart`):** `uploadBytes(isPrivate:)` routes to the right bucket and returns a public URL or `private://path`; `createSignedUrl(ref, ttl=2h)`; `removeStorageRefs` (both buckets + `private://`); `ensureBucketForRef(wantPrivate)` re-homes objects across buckets on a visibility change (download→upload→delete, best-effort; external links untouched). Admin topic editors pass the form visibility to `uploadBytes`; `AdminContentTopicSave.save` re-homes cover + media before persisting. (The older `ContentItem` editor stays public — its read path doesn't resolve signed URLs; topic media is the offline subject.)
@@ -76,6 +91,7 @@ Split content into three clear surfaces and removed the broken standalone `video
 - **Verified:** `build_runner` + `gen-l10n` + `flutter analyze lib` → **No issues found**; `supabase db reset` applied the private-bucket migration cleanly. ⚠ Device smoke test still pending (offline download → airplane mode → decrypted local playback; private signed-URL online; logout wipe; Wi-Fi-only gating). ⚠ **iOS backup exclusion** relies on the device-bound encryption key (backed-up ciphertext is unusable) rather than a native `isExcludedFromBackup` channel — Android adds explicit `res/xml/backup_rules.xml` + `data_extraction_rules.xml` excluding `content_media_enc/`. Adding the iOS native snippet later would also save iCloud space.
 
 **On-device media compression for admin uploads** (2026-06-26): the admin uploads media from the adaptive content editors (web + mobile). Added recommended native compression so big files shrink before upload — **mobile only** (the native compressors have no web support; web stays a no-op + relies on the size cap + external links).
+
 - **Deps:** `v_video_compressor ^2.0.0` (video) + `flutter_image_compress ^2.4.0` (images).
 - **Conditional impl (no `dart:io` on web):** new `lib/core/utils/media_upload_types.dart` (`CompressedUpload{bytes,fileName}` + `swapExtension`), `media_upload_io.dart` (real: video→`VVideoCompressionConfig.medium()` reading the picked **path**, image→`FlutterImageCompress.compressWithFile(quality:80, minHeight:1920)`; both return `null` if not smaller → caller uploads original; also `readUploadBytes` via `dart:io`), `media_upload_web.dart` (no-op compress + `readUploadBytes`→`file.bytes`). Selected via `import io if (dart.library.js_interop) web as platform;` (mirrors `file_export`).
 - **Pick flow rewrite (`file_pick_upload.dart`):** now `pickFiles(withData: kIsWeb)` (mobile=path/no-RAM, web=bytes), takes `kind: UploadMediaKind` + `onCompressProgress`; on mobile image/video it compresses from the path **before** size validation (so an oversized source can be shrunk under the cap), then validates the result; otherwise validates by reported size then reads. `PickedUpload` is now `{bytes, fileName}` (compressed images→`.jpg`, video→`.mp4`, so Content-Type/MIME stays correct). Added `enum UploadMediaKind {image,video,audio,other}` to `upload_validation.dart`.
@@ -83,6 +99,7 @@ Split content into three clear surfaces and removed the broken standalone `video
 - **Safety:** desktop/unsupported platforms fall back gracefully (packages return null on unsupported → original uploaded). `flutter analyze` (changed files) → **No issues found**. ⚠ Compression only runs on a real mobile build (Android/iOS) — not testable on web; verify on a device that a large video/image shrinks + the "Compressing… %" phase shows.
 
 **Content CMS hardening — media upload + security/resilience** (2026-06-26): reviewed the admin content pages (web + mobile) and fixed the upload flow that hid real errors and could OOM on large videos.
+
 - **Shared upload validation (DRY):** new `lib/core/utils/upload_validation.dart` — `UploadConstraints` presets (`image` 10MB, `audio` 30MB, `video` 45MB, `pilgrimDocuments` 10MB; all under the 50MiB storage cap), `validateUpload()` (throws structured `UploadValidationException{emptyData|unsupportedType|tooLarge}`), `sanitizeUploadFileName`, `mimeFromExtension`, `fileExtension`. `PilgrimIntakeService` now reuses `UploadConstraints.pilgrimDocuments` + the shared helpers (dropped its local `_maxFileBytes`/`_allowedExtensions`/`_mimeFromExtension`).
 - **No-OOM picking:** new `lib/core/utils/file_pick_upload.dart` `pickValidatedUpload()` — picks with `withReadStream: true`, validates by reported `size` BEFORE reading, then streams bytes in bounded by the cap (guards a file that grows mid-stream). Replaces the old `withData: true` (which loaded the whole file into RAM at pick → large-video crash).
 - **Real progress + correct Content-Type:** `ContentMediaStorageService.uploadBytes` now validates, sets `contentType` (so browsers stream video/audio), and when `onProgress` is given uploads via **Dio** to `/storage/v1/object/<bucket>/<path>` with `onSendProgress` (chunked stream on mobile, bytes on web). Shared `UploadProgressBanner` (`lib/core/widgets/upload_progress_banner.dart`) shows `uploadInProgress(percent)`.
@@ -95,10 +112,12 @@ Split content into three clear surfaces and removed the broken standalone `video
 **Auth-entry flow audit + fixes (mobile)** (2026-06-26): two reported issues with guest/staff login entry points. (1) **Operator sign-out trap** — a field operator who signed out on the dashboard (`/operator/field`) became a guest still on a `/operator/field/*` route, so the router guard `isFieldOperatorRoute && location != fieldOperatorLogin` bounced them to the **field-operator login** (a dead-end screen with no link back to home/pilgrim login) → couldn't return to the Hajj login. **Fix (`app_router.dart`):** that guard now returns `AppRoutes.home` instead of `fieldOperatorLogin` (home exposes both entry points and is the public landing; tapping "operator sign in" still pushes `/operator/field/login` directly, which is `== fieldOperatorLogin` so it isn't re-redirected). (2) **Inconsistent login buttons** — home showed an operator ("تقني") `TextButton` while profile showed only the pilgrim ("حاج") button. **Decision (chosen by user):** consolidate **all** guest login entries on the profile, keep home for the pilgrim entry only. Removed the field-operator `TextButton` from `home_screen.dart` (dropped the now-unused `app_platform.dart` import); added an `OutlinedButton` (`homeFieldOperatorSignIn` → `/operator/field/login`) under the pilgrim `FilledButton` in `profile_screen.dart` (guest branch now a `...[ ]` spread). Home still offers the pilgrim entry via `JourneyCtaCard`. `ReadLints` clean on all 3 files. ⚠ Router is a keepAlive provider → **hot restart** to pick up the redirect change.
 
 **Staff table horizontal scroll + row density** (2026-06-26): follow-up to the cramped-table fix. Two more shared changes in `core/widgets/staff_data_table.dart` (now a `ConsumerStatefulWidget`):
+
 - **Per-column min width + horizontal scroll.** `StaffTableColumn` gained `minWidth` (default 140). New `_buildTable(compact)` uses a `LayoutBuilder`: it sums selection+actions+row-padding+Σ`minWidth`; if that exceeds the viewport it lays each column out at its `minWidth` inside a horizontal `Scrollbar`+`SingleChildScrollView` (shared `_horizontalController`); otherwise it keeps the previous **flex** distribution (narrow tables unchanged — zero regression). `_HeaderRow`/`_DataRow` now take `fixedWidths` (SizedBox vs Expanded) + `compact`. Tuned pilgrim columns (`full_name` 240, `gender` 110, `hotel`/`makkah_hotel` 190; rest default) — that 13-column table now scrolls instead of squeezing.
 - **Row-density toggle (comfortable/compact), persisted.** New `core/widgets/staff_table_density_provider.dart` (`@Riverpod(keepAlive:true)` `StaffTableCompactDensity` + SharedPreferences key `staff_table_compact_density`). A toggle `IconButton` (density_small/medium) lives in the pagination bar; compact trims row vertical padding (`sh(7)` vs `sh(12)`, header `sh(8)` vs `sh(12)`). New l10n: `staffTableDensityCompact`/`staffTableDensityComfortable` (en+ar). Applies to every `StaffDataTable`. `build_runner` + `gen-l10n` + `flutter analyze` (3 files) → **No issues found**. ⚠ density/sidebar providers are keepAlive → **hot restart**.
 
 **Staff web density overhaul — collapsible sidebar + icon toolbars + smart cells** (2026-06-26): the staff tables felt cramped (little horizontal room). Three shared changes propagate to every staff table:
+
 - **Collapsible sidebar** (`staff_web_shell.dart` + new `staff_web_metrics`-style provider `core/widgets/staff_sidebar_provider.dart`, `@Riverpod(keepAlive:true)` + SharedPreferences key `staff_sidebar_collapsed`). Wide layout wraps the sidebar in an `AnimatedContainer` toggling between `sidebarWidth 260` and `collapsedSidebarWidth 76`. Collapsed = icon-only nav tiles (each wrapped in a `Tooltip(label)`), logo + avatar/logout icons only, and a `menu_open` toggle; expanded shows a collapse chevron in the header. Compact (<960) drawer is unaffected (always full labels). New l10n: `staffSidebarCollapse`/`staffSidebarExpand` (en+ar).
 - **Icon-only toolbar actions** — new shared `StaffToolbarButton` (in `staff_data_table.dart`): secondary actions render as `IconButton.outlined` with a hover `tooltip` (Airtable/Linear style); the **primary** action keeps its label via `FilledButton.icon` so the main task stays discoverable (decision: not every button icon-only — primary stays labeled). Converted toolbars on all 5 staff list screens: pilgrims, operators, groups, content, competitions.
 - **Smart cells** — new shared `StaffCellText` (in `staff_data_table.dart`): single line + ellipsis + hover `Tooltip` with the full value + muted `—` placeholder for empties. Replaced the ad-hoc `Text` cell builders across the same 5 screens (kept the 2-line title cells in content/competitions, and chip/badge/permission cells as-is).
@@ -106,6 +125,7 @@ Split content into three clear surfaces and removed the broken standalone `video
 - **Scope note:** the field-operator mobile pilgrims screen uses a custom (non-`StaffDataTable`) layout and was left as-is. `dart run build_runner build` + `flutter gen-l10n` + `flutter analyze` → **No issues found**. ⚠ Sidebar provider is keepAlive → **hot restart** to pick up the collapse toggle.
 
 **Pilgrim Excel Import/Export + Bulk Edit + Edit Notifications — SHIPPED** (2026-06-26): made pilgrim data entry fast/flexible. All built on the existing `pilgrimFields` catalog so import/export/bulk-edit stay in sync with the intake/edit forms. **Decisions:** import = upsert by `passport_number` (preview shows create/update/error before any write); pilgrim notifications fire only when **curated logistics fields actually change**, with a default-on "notify" toggle on bulk edit.
+
 - **Dependencies:** dropped the `excel` package (it pins `archive ^3.x`, conflicting with `flutter_gen_runner`'s `archive ^4.x`). Instead added `archive ^4.0.7` + `xml ^6.5.0` and wrote a **custom minimal XLSX/CSV codec** `lib/core/utils/tabular_codec.dart` (decode shared/inline strings + Excel serial dates via style indices; RFC4180 CSV w/ BOM; encode minimal XLSX w/ inline strings + UTF-8-BOM CSV). Cross-platform save: `lib/core/utils/file_export.dart` (+ `_io` path_provider / `_web` Blob+anchor via `package:web`, conditional import uses **package: URIs**).
 - **Import:** domain models `pilgrim_import_models.dart`; client parser `application/services/pilgrim_import_parser.dart` (auto-matches headers to catalog by key + localized AR/EN labels, coerces bool/date/gender, flags missing `full_name_ar`, dup passports, invalid values). Edge fn `supabase/functions/import-pilgrims/index.ts` (service-role, role guard, `PERSON_/ENROLLMENT_COLUMNS` allowlists, upsert by passport within target trip, optional auth user when email present, per-row partial-success `{created,updated,failed,errors}`). UI: `pilgrim_import_screen.dart` (pick → column-map/preview → confirm → result) + `pilgrim_import_providers.dart` + state; route `/operator/pilgrims/import` registered **before** `:pilgrimId` for precedence.
 - **Export:** `application/services/pilgrim_export_service.dart` (catalog headers + normalized values re-importable) + `pilgrim_export_providers.dart`; "Template", "Export", "Import" toolbar actions on the registry list.
@@ -128,18 +148,22 @@ Split content into three clear surfaces and removed the broken standalone `video
 **Real-device run profile** (2026-06-25): added `dart_defines.device.local.json` for testing on a **physical Android phone** (emulator's `10.0.2.2` doesn't work on real hardware). Same keys as `dart_defines.android.local.json` but `SUPABASE_URL=http://192.168.2.101:54321` (host Wi-Fi LAN IP — re-check via `ipconfig` if DHCP reassigns). `.gitignore` line for the two explicit `dart_defines.*.local.json` files was collapsed to the wildcard `dart_defines*.local.json` (verified via `git check-ignore` — all three local files ignored). Run with `flutter run -d <device-id> --dart-define-from-file=dart_defines.device.local.json`. Prereqs: phone + PC on same Wi-Fi; Windows Firewall inbound TCP 54321 (Supabase already binds `0.0.0.0`); debug manifest already has `usesCleartextTraffic="true"`; **disable VPN** (or enable LAN/split-tunnel) since full-tunnel/kill-switch blocks LAN. For FCM the pg_net trigger calls the function server-side (inside Docker), unaffected by the phone IP.
 
 ## Earlier focus — Startup main-thread relief
+
 **Startup main-thread relief** (2026-06-25): on an Android emulator the debug cold start logged `Skipped 1026 frames` + a `Davey! duration=9417ms` frame, then `Lost connection to device` — **no crash** (empty `adb logcat -b crash`, no FATAL/ANR/LMK; device stayed `device`). Root cause: the ~9.4s first debug frame on a resource-starved host (Supabase Docker + emulator) starved the Dart VM Service heartbeat → tooling dropped the debug connection (app itself was fine). **Fix applied:** `PushNotificationStarter` (mounted inside `MaterialApp.builder`) was a `ConsumerWidget` doing `ref.watch(pushNotificationBindingProvider)` during the **first build** — so Firebase init + local-notifications init + OS permission dialog + `getInitialMessage` (all platform-channel calls) contended with the heaviest frame. Now it's a `ConsumerStatefulWidget` that defers `ref.read(pushNotificationBindingProvider)` to a **post-frame callback** (`addPostFrameCallback`, `mounted`-guarded). `flutter analyze` (the file) → No issues found. **Still observed (not main-thread blocking, separate config issue):** Realtime times out for `content_library`/`content_topics`/`content_topic_media` at `10.0.2.2:54321` — verify Realtime is enabled for those tables locally. Bootstrap (`main` → `AppBootstrap`) and `LocaleController` (`unawaited` restore) are already non-blocking. **Optional next:** request notification permission after login/UI-interactive instead of at cold start.
 
 ## Earlier focus — FCM Web Push enabled
+
 **FCM Web Push enabled** (2026-06-24): push notifications now work on the web build (previously web was hard-disabled). `flutter analyze` clean; `flutter build web --dart-define-from-file=dart_defines.local.example.json` compiles. **Action needed before web push actually delivers:** fill the new web `FIREBASE_*` dart-defines from a registered Firebase **Web app** and replace the placeholders in `web/firebase-messaging-sw.js`.
 
 ## Build fix (2026-06-24) — Android Gradle mirror removed
+
 - **Symptom:** `flutter run` (android) failed: `Could not resolve com.google.gms:google-services:4.4.2` → `502 Bad Gateway` from `maven.aliyun.com`. Not a local-internet problem.
 - **Root cause:** `android/settings.gradle.kts` + `android/build.gradle.kts` declared **Aliyun mirrors** (`maven.aliyun.com/repository/{google,central,gradle-plugin}`). Aliyun returned `502`; Gradle then "disables" that repo and fails the whole resolution. Connectivity test: official `dl.google.com` 200 in 0.69s, `plugins.gradle.org` OK — official repos are fast/reliable from this network.
 - **Fix:** removed all `maven.aliyun.com` entries from both Gradle files; now relying on `google()` + `mavenCentral()` (+ `gradlePluginPortal()` in settings). Validated: build now passes the dependency-resolution step that previously failed.
 - **Note:** Gradle distribution still pulls from `mirrors.cloud.tencent.com` in `gradle-wrapper.properties` (works, left as-is). First clean build is slow (fresh downloads + `org.gradle.parallel=false`, `workers.max=2`, `kotlin.incremental=false`, and machine memory pressure) — not a failure.
 
 ## Recent changes (2026-06-24) — FCM Web Push
+
 - **Why:** `PushNotificationService.isSupported` previously did `!AppPlatform.isWeb && …`, so web got no FCM at all (only the Realtime in-app toast). No service worker / web Firebase config existed.
 - **Config (`AppConfig`):** added web-only `--dart-define`s `FIREBASE_WEB_APP_ID`, `FIREBASE_AUTH_DOMAIN`, `FIREBASE_STORAGE_BUCKET`, `FIREBASE_VAPID_KEY`, `FIREBASE_MEASUREMENT_ID` + `hasFirebaseWeb` getter (requires projectId/apiKey/senderId/webAppId/authDomain/vapidKey).
 - **`AppFirebase`:** now platform-aware — `_webOptions` (web appId + authDomain + storageBucket + measurementId) vs `_mobileOptions`; `initialize()` picks config via `kIsWeb` and checks `hasFirebaseWeb` on web. `options` getter returns the right set.
@@ -150,9 +174,11 @@ Split content into three clear surfaces and removed the broken standalone `video
 - **Verified:** `flutter analyze` (config/firebase/push service) → No issues found; `flutter build web` succeeded.
 
 ## Earlier focus (2026-06-24) — Support contacts + Lost-pilgrim SOS
+
 **Pilgrim-safety features shipped**: (1) admin-managed **support/emergency contacts** (call + WhatsApp), and (2) **lost-pilgrim SOS** with foreground live-location tracking on a staff map. `flutter analyze` clean, `supabase db reset` applied both migrations + seed.
 
 ## Recent changes (2026-06-24) — Support contacts + Lost-pilgrim SOS
+
 - **DB (2 new migrations):**
   - `20260624120000_support_contacts.sql`: `support_contacts` (label/description ar+en, phone, whatsapp, `scope global|group`, `group_id`, `is_active`, `sort_order`). RLS: admins manage (`is_admin()`); authenticated read active rows scoped to their group (`operator_can_read_group()` for staff, `profiles.group_id` / `trip_enrollments` for pilgrims); `anon` read active global. Realtime + 3 Arabic global seed rows.
   - `20260624130000_sos_alerts.sql`: `sos_alerts` (pilgrim_profile_id, group_id, status active/resolved/cancelled, lat/lng/accuracy, started/last_location/resolved) with a **partial unique index** (one active alert per pilgrim) + `sos_location_pings` (breadcrumb trail). RLS: pilgrim manages own; staff read/resolve scoped by `operator_can_read_group(group_id)`. **SECURITY DEFINER RPC `raise_sos_alert(p_lat,p_lng,p_accuracy)`** resolves the pilgrim's group (profile→active enrollment), upserts the active alert, inserts the initial ping, and (only when newly created) inserts `notifications` (type `system`, payload `{route:'sos',id,kind:'sos'}`) for all admins + the group's operators → existing statement-level dispatch trigger fans out FCM automatically. Realtime on both tables.
@@ -163,9 +189,11 @@ Split content into three clear surfaces and removed the broken standalone `video
 - **Verified:** `dart run build_runner build` clean; `flutter gen-l10n` (note: pipe to `tail` fails on PowerShell — run bare); `flutter analyze` → **No issues found**; `supabase db reset` applied both migrations + seed cleanly.
 
 ## Earlier focus (2026-06-23) — notifications hardening
+
 **Notifications hardening — ALL audit weaknesses closed** (2026-06-23). Foreground heads-up notifications + the deferred architectural/product items are now done (batched dispatch, field-status `ritual_update`, config hardening, push idempotency).
 
 ## Recent changes (2026-06-23) — deferred weaknesses closed (#8–#11)
+
 - **#10 Batched push dispatch (new migration `20260623120000_notifications_hardening.sql`):** replaced the per-row pg_net trigger with a **statement-level** trigger using a transition table (`referencing new table as new_notifications ... for each statement`) → `trg_dispatch_push_notifications()` aggregates all rows from one INSERT into a single `records[]` payload and makes **one** `net.http_post`. A broadcast to N pilgrims now = 1 Edge invocation (was N). Dropped old `trg_dispatch_push_notification()` + per-row trigger. Verified: `pg_trigger` shows `on_notification_insert_dispatch_push` is statement-level (`is_row=0`).
 - **#8 Config hardening:** dispatch fn reads `app.supabase_functions_url`/`app.push_webhook_secret`; if unset it `raise log`s a warning before using the local-dev default (was a silent fallback that prod would reject). Wrapped in exception → `raise log` (no longer fully silent).
 - **#9 `ritual_update` now produced:** new row-level trigger `on_enrollment_field_status_notify` → `trg_notify_field_status_update()` inserts a `ritual_update` notification to the pilgrim's `profile_id` when `trip_enrollments.field_status` changes (route `pilgrim`). The list "Urgent" filter (system + ritualUpdate) now matches real data. **Functional probe passed** (BEGIN…ROLLBACK: field_status update → exactly 1 `ritual_update`, DB left clean).
@@ -175,9 +203,11 @@ Split content into three clear surfaces and removed the broken standalone `video
 - **Note:** Deno not on PATH locally (Supabase uses its bundled deno for `functions serve`); the TS edits are standard supabase-js v2 (`.in`, `.delete({count})`) — re-verify with `functions serve` on next device test.
 
 ## Earlier focus (2026-06-23) — first-pass weakness fixes
+
 After adding foreground heads-up notifications, addressed stale tokens (#3), guest unread (#6), toast races (#5), error visibility (#4), doc drift (#7).
 
 ## Recent changes (2026-06-23) — notifications weakness fixes
+
 - **#3 Stale device tokens (Edge fn):** `send-push-notification` now collects tokens FCM reports as `404`/`UNREGISTERED` and **deletes** them from `device_tokens` (`.delete({count:'exact'}).eq(profile_id).in('token', stale)`); response gained a `cleaned` field. Prevents dead-token accumulation.
 - **#6 Guest unread count:** new `application/services/guest_notifications_seen_store.dart` (SharedPreferences key `guest_notifications_last_seen`). `unreadNotificationCount` guest branch now counts items with `createdAt > lastSeen` (was: total items, capped 20). New keepAlive provider `guestNotificationsSeenStore`. `NotificationListScreen.initState` post-frame → `markSeen()` + `ref.invalidate(unreadNotificationCountProvider)` for guests → badge clears on open.
 - **#5 Toast race:** `notificationToastEvents` rewritten to **id-based dedup** (track `lastEmittedId` + `startedAt`; emit newest unread only if `id != lastEmittedId` and `createdAt.isAfter(startedAt)`). Removes count-comparison races and the "single toast for a burst" issue; wraps fetch in try/catch.
@@ -187,9 +217,11 @@ After adding foreground heads-up notifications, addressed stale tokens (#3), gue
 - **Verified:** `flutter analyze` (notifications + core + main) → No issues found; `build_runner` clean.
 
 ## Earlier focus (2026-06-23) — foreground system notifications
+
 **Foreground system notifications added.** Notifications now behave like most apps: a real system-tray heads-up notification is shown in **all** app states (foreground via `flutter_local_notifications`; background/terminated via FCM's `notification` block).
 
 ## Recent changes (2026-06-23) — heads-up notifications (foreground parity)
+
 - **Problem fixed:** Android **foreground** pushes previously raised no system notification (only an in-app `SnackBar`), unlike typical apps. Added `flutter_local_notifications 22.0.1`.
 - **New:** `lib/features/notifications/application/services/local_notifications_service.dart` — creates the Android channel `high_importance_channel` (Importance.high), shows a heads-up notification from a foreground `RemoteMessage`, and routes taps via `navigateFromPushData` (payload = JSON of `message.data`).
 - **Wired:** `PushNotificationService.initialize()` now inits local notifications and listens to `FirebaseMessaging.onMessage` → on **Android only** renders a local notification (iOS shows foreground alerts itself via `setForegroundNotificationPresentationOptions`). Subscription disposed in `dispose()`.
@@ -200,15 +232,18 @@ After adding foreground heads-up notifications, addressed stale tokens (#3), gue
 - **Known gaps not addressed this session (audit):** stale `device_tokens` not cleaned on FCM `UNREGISTERED`; `pg_net` trigger swallows all errors; guest unread count shows total not unread; `ritual_update` type defined but never produced; `docs/push-notifications-setup.md` still says firebase-admin (drift).
 
 ## Earlier focus (2026-06-23)
+
 **FCM push — end-to-end device test PASSED**. Both layers verified on a real Android emulator: in-app realtime inbox (Layer 1) + FCM background push (Layer 2). Required a server-side fix to the edge function (see below).
 
 ## Recent changes (2026-06-23) — FCM device test PASSED + edge function rewrite
+
 - **Root-cause fix (affects production, not just local):** `supabase/functions/send-push-notification/index.ts` was rewritten to use **FCM HTTP v1 REST via `fetch`** (mints an OAuth2 access token from the service account with **Web Crypto** RS256-signed JWT) instead of **`firebase-admin`**. Reason: firebase-admin's messaging transport uses **`node:http2`**, which the Supabase Edge (Deno) runtime does **not** implement — the first send crashed with `Error [ERR_NOT_IMPLEMENTED]: Not implemented: callTimeout at node:http2`. The REST path uses only `fetch` + Web Crypto, so it runs in Deno. Loops one `messages:send` POST per device token; returns `{ok,sent,failed,errors}`.
 - **Device test flow that passed:** signed in as `pilgrim@demo.local` on the emulator → FCM token auto-registered (`device_tokens` = 1 row, platform `android`). Inserted test notifications via `psql` (committed, real test rows) → pg_net trigger → `functions serve` invoked the function with **no http2 crash** → device received the message. **Foreground** sends arrived at the SDK but show **no system tray UI** (see design note); **backgrounded** send (`adb shell input keyevent KEYCODE_HOME`) logged `FLTFireMsgService: FlutterFirebaseMessagingBackgroundService started!` and the in-app inbox displayed all 3 notifications via Supabase Realtime.
 - **Design note (intended behavior):** `PushNotificationService` listens to `onMessageOpenedApp` + `getInitialMessage` only — **no `FirebaseMessaging.onMessage`** handler and no `flutter_local_notifications`. So on Android, **foreground** pushes do not raise a system notification; the in-app **Realtime inbox + `NotificationToastHost`** covers the foreground case, while **FCM tray notifications cover background/terminated**. `setForegroundNotificationPresentationOptions(...)` in the service is iOS-only (no effect on Android).
 - **Run requirement confirmed:** `supabase start` does **not** load `supabase/.env` into the edge runtime — must run `supabase functions serve --env-file ./supabase/.env` (kept running) for pushes to dispatch locally. `verify_jwt=false` on the function is required (pg_net sends `x-push-secret`, no JWT).
 
 ## Recent changes (2026-06-22) — notifications local run + backend test
+
 - **Created local dart-define files** (both gitignored): `dart_defines.local.json` (web, `SUPABASE_URL=http://127.0.0.1:54321`) and `dart_defines.android.local.json` (`http://10.0.2.2:54321`). Firebase keys left **empty** → `AppConfig.hasFirebase=false`, so FCM push is intentionally disabled; the in-app inbox (Supabase) is what's exercised.
 - **Key-format note:** local Supabase CLI **v2.90.0** emits the new `sb_publishable_…` / `sb_secret_…` keys (not legacy JWT `anon`). The **publishable** key is used as `SUPABASE_ANON_KEY` and is accepted by `supabase_flutter 2.12.4` / `gotrue 2.20.0` (init succeeds).
 - **Backend logic verified** via a single `psql` transaction (BEGIN…ROLLBACK, no persisted rows) inside `supabase_db_rafiq_alhajj`: broadcast INSERT path = **13** notifs (1/pilgrim, mirrors `send_notification_broadcast`), `content_library` insert trigger = **13** `content_published` notifs, `unread_total` = **26**. DB stayed clean (notifications=0).
@@ -227,6 +262,7 @@ After adding foreground heads-up notifications, addressed stale tokens (#3), gue
 - **Note:** `gradle-wrapper.properties` + `gradle.properties` are tracked files; the mirror/incremental changes are dev-environment fixes (revert if they cause issues for other contributors on fast/same-drive setups).
 
 ## Recent changes (2026-06-21) — admin pilgrim UX overhaul
+
 - **Login language control shrunk:** `staff_web_login_scaffold` + shared `RafiqAppBar` now use `LanguageSwitcherAppBarAction(compact: true)` (icon-only); login lock icon `56.sp → 44.sp`.
 - **Dev leakage removed:** `US-05/06/07` codes stripped from `operatorLoginSubtitle` / `fieldOperatorLoginSubtitle` / `adminLoginSubtitle` (both ARBs).
 - **Full pilgrim field set (single source of truth):** new `pilgrim_field_catalog.dart` (`presentation/forms/`) defines every `pilgrims`/`trip_enrollments` column as a grouped `PilgrimField` (table + kind + l10n label) and builds the `FormGroup`, payloads, bind, and shared-values helpers. Reused by the intake form **and** edit form via the new `PilgrimFieldsForm` widget. Models `OperatorPilgrimRecord`/`Summary` are now **raw-row-backed** (getters), `PilgrimIntakeForm`/`OperatorPilgrimUpdate` carry `person`/`enrollment` maps. View select switched to `*`; new sortable ids. Edge `create-pilgrim` now accepts `person`/`enrollment` objects with **server-side column allowlists**.
@@ -240,11 +276,13 @@ After adding foreground heads-up notifications, addressed stale tokens (#3), gue
 - **Action needed:** local Supabase **edge runtime must reload** to serve the new `reset-pilgrim-password` function (restart `supabase` / edge runtime). No migration/schema changes were made (schema already had all columns), so no `db reset` required.
 
 ## Recent changes (2026-06-21) — demo-user seeder fix (admin login)
+
 - **Root cause of failed `admin@demo.local` login:** `scripts/seed-demo-users.mjs` imported `seedFakePilgrimRegistry`, which upserts into the **dropped `pilgrim_details` table** → the seeder threw *after* creating users; and its `updateUser` path only patched `user_metadata` (never re-set the password or `email_confirm`), so re-runs reported "Updated" without ever fixing credentials.
 - **Fix:** removed the obsolete fake-registry import/call from the seeder (Arabic pilgrim data now comes from `seed.sql`); `updateUser` now also sends `password` + `email_confirm: true`, making the seeder idempotent/self-healing.
 - **Verified:** `npm run setup:users` exits 0 for all 14 demo accounts; password-grant auth test → `LOGIN OK, role: admin, confirmed_at set`.
 
 ## Recent changes (2026-06-20) — `.cursorrules` conformance audit + rollout
+
 - **`.cursorrules` updated:** blessed `AppColors` design tokens (wired into `ColorScheme`) as the color source of truth + banned raw `Color(0x…)` in widgets; fixed the outdated `AppLocalizations.of(context)!` example (generated lookup is non-nullable).
 - **Dependencies:** added `reactive_forms` + `flutter_gen_runner` (dev); **removed unused `google_fonts`** (app uses the bundled system text theme).
 - **Assets via `flutter_gen`:** config in `pubspec.yaml` (`flutter_gen: output: lib/core/gen/`), declared the missing `assets/virtual_tour/images/` + `pannellum/` dirs, generated `lib/core/gen/assets.gen.dart`, replaced both hardcoded asset strings with `Assets.virtualTour.images.*`.
@@ -254,6 +292,7 @@ After adding foreground heads-up notifications, addressed stale tokens (#3), gue
 - **Known residual `TextEditingController` (intentional, not validation forms):** search fields in `staff_data_table.dart` + `field_operator_pilgrims_screen.dart`; dynamic media-draft rows (`_MediaDraft`) with file pickers in `admin_content_topic_edit_screen.dart` + `admin_hajj_journey_edit_screen.dart` (would need `FormArray` refactor — left to preserve upload/preview behavior).
 
 ## Recent changes (2026-06-20) — phase 2 + final-form migrations
+
 - **Migrations simplified to final form (no `pilgrim_details`, no backfill):** the legacy `pilgrim_details` table + the restructure/backfill migration were removed. `20260521140000_pilgrim_rituals.sql` is now the single pilgrim-domain foundation: it creates `groups`, `operator_group_access`, `trips`, `trip_groups`, `pilgrims`, `trip_enrollments`, and per-enrollment `ritual_logs`, plus RLS, the `pilgrim_enrollment_view`, and triggers (auto-create pilgrim + auto-enroll into the active trip; default operator group grants).
 - **New helpers migration** `20260521121000_rls_helpers.sql` (`is_admin`, `is_operator_or_admin`) so all later policies reuse them; deleted `20260606100000_fix_profiles_rls_recursion.sql` and `20260608120000_pilgrim_registry_extended.sql` (folded in). `operator_intake`/`field_operator`/`admin_analytics`/`admin_pilgrim_management`/`enable_realtime` rewritten to target the new tables.
 - **Operator → group permissions:** `operator_group_access(operator_id, group_id, can_write)` + `operator_can_read_group()` / `operator_can_write_group()`. `trip_enrollments` read/write RLS is group-scoped for operators (admins = all). Admin operator editor has a **Group access** section (read / read+write per group); `AdminOperatorsRepository` loads + replaces grants (`_setGroupAccess`). New operators default to all groups (DB trigger), admin can narrow.
@@ -262,11 +301,13 @@ After adding foreground heads-up notifications, addressed stale tokens (#3), gue
 - **Verified:** `supabase db reset` runs clean; counts = 2 trips / 3 groups / 8 pilgrims / 10 enrollments; `flutter analyze` clean; `build_runner` + `gen-l10n` regenerated.
 
 ## Next steps
+
 1. **Manual RLS test:** demo auth users now seed cleanly via `npm run setup:users` (incl. `admin@demo.local` / `demo123456`). Verify an operator scoped to one group sees only that group's enrollments; admin sees all.
 2. **Optional:** add `TripSelector` to the operator pilgrim list (field-operator already has it); operator reads are already trip-scoped via `activeTrip`.
 3. **Obsolete:** `scripts/seed-fake-pilgrim-registry.mjs` (+ `npm run setup:registry`) still target the dropped `pilgrim_details` table and are no longer wired into `setup:users`; retire them.
 
 ## Key paths
+
 | Concern | Location |
 | --- | --- |
 | Pilgrim-domain foundation | `supabase/migrations/20260521140000_pilgrim_rituals.sql` |

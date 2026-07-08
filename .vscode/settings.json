@@ -1,0 +1,10 @@
+{
+  "markdownlint.config": {
+    "MD013": false,
+    "MD058": false
+  },
+  "markdownlint.ignore": [
+    "memory-bank/**"
+  ],
+  "markdownlint.run": "onSave"
+}
