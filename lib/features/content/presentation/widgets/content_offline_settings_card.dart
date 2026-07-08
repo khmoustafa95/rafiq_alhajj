@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
-import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
+import 'package:rafiq_alhajj/core/widgets/themed_surface_card.dart';
 import 'package:rafiq_alhajj/features/auth/domain/models/app_user_role.dart';
 import 'package:rafiq_alhajj/features/content/application/services/content_media_cache_service.dart';
 import 'package:rafiq_alhajj/features/content/presentation/providers/content_media_providers.dart';
@@ -32,11 +32,9 @@ class ContentOfflineSettingsCard extends ConsumerWidget {
         .length;
     final busy = downloadAsync.isLoading;
 
-    return DecoratedBox(
-      decoration: AppDecorations.card(radius: AppDecorations.radiusLg),
-      child: Padding(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
+    return ThemedSurfaceCard(
+      padding: EdgeInsets.all(16.w),
+      child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
@@ -95,7 +93,6 @@ class ContentOfflineSettingsCard extends ConsumerWidget {
             ],
           ],
         ),
-      ),
     );
   }
 }

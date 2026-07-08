@@ -12,6 +12,7 @@ import 'package:rafiq_alhajj/core/theme/app_colors.dart';
 import 'package:rafiq_alhajj/core/widgets/rafiq_app_bar.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_error_view.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_layout.dart';
+import 'package:rafiq_alhajj/core/widgets/themed_surface_card.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_account.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_editor_input.dart';
 import 'package:rafiq_alhajj/features/admin_operators/domain/models/operator_group_grant.dart';
@@ -338,12 +339,9 @@ class _AdminOperatorEditScreenState extends ConsumerState<AdminOperatorEditScree
                   ],
                 ),
                 SizedBox(height: 12.h),
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceMuted,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.border),
-                  ),
+                ThemedSurfaceCard(
+                  radius: 8,
+                  color: Theme.of(context).colorScheme.surfaceContainerLow,
                   child: SwitchListTile(
                     title: Text(l10n.adminOperatorActive),
                     value: _isActive,

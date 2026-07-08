@@ -141,8 +141,8 @@ class _AdminAppVersionScreenState extends ConsumerState<AdminAppVersionScreen> {
     final currentPlatform = AppRuntimePlatform.current.storageKey;
     final currentVersion = currentVersionAsync.asData?.value ?? '—';
 
-    return ListView(
-      padding: EdgeInsets.zero,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         DecoratedBox(
           decoration: BoxDecoration(

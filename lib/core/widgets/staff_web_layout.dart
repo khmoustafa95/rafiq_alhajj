@@ -7,6 +7,7 @@ import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_button_styles.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_metrics.dart';
 import 'package:rafiq_alhajj/core/widgets/staff_web_shell.dart';
+import 'package:rafiq_alhajj/core/widgets/themed_surface_card.dart';
 
 /// Standard staff web page: header + scrollable content with max width.
 class StaffWebPage extends StatelessWidget {
@@ -131,8 +132,7 @@ class StaffFormSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: AppDecorations.themedCard(context, radius: AppDecorations.radiusLg),
+    return ThemedSurfaceCard(
       padding: EdgeInsets.all(sw(20)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -74,4 +74,4 @@ All build scripts call `resolve-dart-defines.mjs` — no merging of partial file
 4. **Add `APP_ENV`** in every file for logging and feature flags.
 5. **Legacy root files** (`dart_defines*.local.json`) are deprecated; resolver falls back until you run bootstrap.
 
-See also: [docs/runbook-ar.md](../../docs/runbook-ar.md), [docs/staging-setup-ar.md](../../docs/staging-setup-ar.md).
+See also: [docs/environments-workflow-ar.md](../../docs/environments-workflow-ar.md), [docs/runbook-ar.md](../../docs/runbook-ar.md), [docs/staging-setup-ar.md](../../docs/staging-setup-ar.md).

@@ -327,4 +327,4 @@ npm run staging:distribute-android
 3. `dart_defines.production.example.json` + workflow منفصل.
 4. تعطيل حسابات `demo@` أو تغيير كلمات المرور.
 
-راجع أيضاً: [دليل التشغيل المحلي](runbook-ar.md).
+راجع أيضاً: [دليل التشغيل المحلي](runbook-ar.md) · [التنقل بين البيئات ونقل التعديلات](environments-workflow-ar.md).

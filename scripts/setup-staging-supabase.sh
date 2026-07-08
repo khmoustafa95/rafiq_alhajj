@@ -18,10 +18,34 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+STAGING_ENV_FILE="$ROOT_DIR/config/.env.staging.local"
+if [[ -f "$STAGING_ENV_FILE" ]]; then
+  set -a
+  # shellcheck disable=SC1090
+  source "$STAGING_ENV_FILE"
+  set +a
+fi
+
+if [[ -z "${SUPABASE_PROJECT_REF:-}" && -f "$ROOT_DIR/config/dart-defines/web.staging.json" ]]; then
+  SUPABASE_URL_FROM_JSON="$(
+    node -e "const j=require('./config/dart-defines/web.staging.json'); process.stdout.write(j.SUPABASE_URL||'')"
+  )"
+  if [[ "$SUPABASE_URL_FROM_JSON" =~ https://([^.]+)\.supabase\.co ]]; then
+    SUPABASE_PROJECT_REF="${BASH_REMATCH[1]}"
+    export SUPABASE_PROJECT_REF
+  fi
+fi
+
+if [[ -z "${SUPABASE_URL:-}" && -n "${SUPABASE_PROJECT_REF:-}" ]]; then
+  SUPABASE_URL="https://${SUPABASE_PROJECT_REF}.supabase.co"
+  export SUPABASE_URL
+fi
+
 PROJECT_REF="${SUPABASE_PROJECT_REF:-}"
 if [[ -z "$PROJECT_REF" ]]; then
-  echo "Set SUPABASE_PROJECT_REF to your Supabase cloud project ref."
-  echo "Find it in Dashboard → Project Settings → General → Reference ID."
+  echo "Missing SUPABASE_PROJECT_REF."
+  echo "Copy config/.env.staging.example → config/.env.staging.local and fill values,"
+  echo "or set SUPABASE_URL in config/dart-defines/web.staging.json."
   exit 1
 fi
 

@@ -2,6 +2,8 @@
 
 دليل عملي لتشغيل المشروع محلياً وتجربة كل أدوار التطبيق (حاج، تقني مكتب، تقني ميداني، مسؤول).
 
+> **نقل التعديلات إلى Staging؟** راجع **[دليل التنقل بين البيئات](environments-workflow-ar.md)** — سيناريوهات مبسطة (كود فقط، migrations، نشر يدوي/تلقائي).
+
 > **تنبيه:** كلمات المرور أدناه للتطوير المحلي فقط. لا تستخدمها في الإنتاج.
 
 ---
@@ -345,16 +347,19 @@ flutter run -d chrome --dart-define-from-file=dart_defines.local.json
 
 ## 12. ملفات مرتبطة في المستودع
 
-| الملف | الغرض |
+| الملف / الأداة | الغرض |
 | --- | --- |
-| `dart_defines.local.example.json` | قالب تكوين Supabase |
+| `config/.env.staging.example` | قالب أسرار Staging لسكربتات CLI |
+| `config/.env.staging.local` | أسرارك الفعلية (gitignored) |
+| `config/dart-defines/*.example.json` | قوالب تكوين التطبيق |
 | `docs/push-notifications-setup.md` | إعداد FCM و Edge Function |
 | `.vscode/launch.json` | إعدادات التشغيل في المحرر |
 | `supabase/seed.sql` | بيانات تجريبية + تعليقات حسابات Auth |
 | `lib/core/routing/app_routes.dart` | ثوابت المسارات |
 | `memory-bank/activeContext.md` | سياق التطوير الحالي |
 | `docs/staging-setup-ar.md` | نشر Staging مجاني + رابط ثابت للعميل |
+| `docs/environments-workflow-ar.md` | التنقل بين البيئات ونقل التعديلات (محلي → Staging) |
 
 ---
 
-*آخر تحديث: 2026-07-02 — يشمل Staging على Firebase Hosting.*
+*آخر تحديث: 2026-07-07 — يشمل دليل التنقل بين البيئات.*

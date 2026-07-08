@@ -8,7 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq_alhajj/core/config/app_config.dart';
 import 'package:rafiq_alhajj/core/platform/app_platform.dart';
 import 'package:rafiq_alhajj/core/theme/app_colors.dart';
-import 'package:rafiq_alhajj/core/theme/app_decorations.dart';
+import 'package:rafiq_alhajj/core/widgets/themed_surface_card.dart';
 import 'package:rafiq_alhajj/features/notifications/domain/models/notification_preferences.dart';
 import 'package:rafiq_alhajj/features/notifications/presentation/providers/notification_preferences_providers.dart';
 import 'package:rafiq_alhajj/l10n/app_localizations.dart';
@@ -23,11 +23,9 @@ class NotificationSettingsCard extends ConsumerWidget {
     final prefsAsync = ref.watch(notificationPreferencesProvider);
     final saving = ref.watch(notificationPreferencesSaveProvider).isLoading;
 
-    return DecoratedBox(
-      decoration: AppDecorations.card(radius: AppDecorations.radiusLg),
-      child: Padding(
-        padding: EdgeInsets.all(16.w),
-        child: prefsAsync.when(
+    return ThemedSurfaceCard(
+      padding: EdgeInsets.all(16.w),
+      child: prefsAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, stackTrace) => Text(l10n.notificationSettingsLoadError),
           data: (prefs) => _PreferencesBody(
@@ -53,7 +51,6 @@ class NotificationSettingsCard extends ConsumerWidget {
             },
           ),
         ),
-      ),
     );
   }
 }

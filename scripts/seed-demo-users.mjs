@@ -2,10 +2,17 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
+import {
+  applyStagingEnvToProcess,
+  stagingEnvPath,
+} from "./load-staging-env.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, "..");
 const usersFile = join(__dirname, "seed-demo-users.json");
+
+applyStagingEnvToProcess();
+
 const baseUrl = (
   process.env.SUPABASE_URL ?? "http://127.0.0.1:54321"
 ).replace(/\/$/, "");
@@ -16,6 +23,7 @@ function getServiceRoleKey() {
   }
 
   const envCandidates = [
+    stagingEnvPath,
     join(rootDir, ".env.local"),
     join(rootDir, "supabase", ".env"),
   ];

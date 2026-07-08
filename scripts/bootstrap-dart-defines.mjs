@@ -139,6 +139,14 @@ for (const [platform, environment] of MATRIX) {
 
 healAndroidStagingFromWeb();
 
+const stagingEnvExample = join(rootDir, "config", ".env.staging.example");
+const stagingEnvSecret = join(rootDir, "config", ".env.staging.local");
+if (!existsSync(stagingEnvSecret) && existsSync(stagingEnvExample)) {
+  copyFileSync(stagingEnvExample, stagingEnvSecret);
+  console.log("Created config/.env.staging.local from template.");
+}
+
 console.log("");
 console.log(`Bootstrap complete. migrated=${migrated}, created=${created}`);
 console.log("Edit secrets in config/dart-defines/*.json (never commit them).");
+console.log("For staging CLI scripts, edit config/.env.staging.local (never commit).");

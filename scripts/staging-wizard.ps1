@@ -45,6 +45,17 @@ if (-not $supabaseUrl.StartsWith("https://")) {
     $supabaseUrl = "https://$projectRef.supabase.co"
 }
 
+# Persist CLI secrets so staging:* scripts work without re-entering env vars.
+$stagingEnvPath = Join-Path $PSScriptRoot "..\config\.env.staging.local"
+$stagingEnvContent = @"
+# Auto-written by staging-wizard.ps1 — gitignored
+SUPABASE_PROJECT_REF=$projectRef
+SUPABASE_URL=$supabaseUrl
+SUPABASE_SERVICE_ROLE_KEY=$serviceRolePlain
+"@
+[IO.File]::WriteAllText($stagingEnvPath, $stagingEnvContent.Trim(), (New-Object System.Text.UTF8Encoding $false))
+Write-Host "Wrote $stagingEnvPath (persistent staging CLI secrets)" -ForegroundColor Green
+
 # --- Step 2: Write dart defines ---
 Write-Host ""
 Write-Host "STEP 2/5 - Writing config/dart-defines/web.staging.json" -ForegroundColor Yellow

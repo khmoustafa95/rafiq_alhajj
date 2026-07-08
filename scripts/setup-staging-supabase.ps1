@@ -2,23 +2,50 @@
 $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot\..
 
+. "$PSScriptRoot\load-staging-env.ps1"
+
 $projectRef = $env:SUPABASE_PROJECT_REF
 if (-not $projectRef) {
     Write-Error @"
-Set SUPABASE_PROJECT_REF to your Supabase cloud project ref.
-Find it in Dashboard -> Project Settings -> General -> Reference ID.
+Missing SUPABASE_PROJECT_REF.
 
-Example:
+One-time setup (recommended):
+  1. copy config\.env.staging.example config\.env.staging.local
+  2. Fill SUPABASE_PROJECT_REF and SUPABASE_SERVICE_ROLE_KEY
+  3. npm run staging:setup-db
+
+Or set SUPABASE_URL in config/dart-defines/web.staging.json (project ref is derived).
+
+Temporary override:
   `$env:SUPABASE_PROJECT_REF = 'your-project-ref'
-  npm run staging:setup-db
 "@
 }
 
 Write-Host "==> Linking local repo to Supabase project: $projectRef"
-supabase link --project-ref $projectRef
+$linkArgs = @("link", "--project-ref", $projectRef)
+if ($env:SUPABASE_SKIP_POOLER -eq "true") {
+    $poolerUrl = Join-Path $PSScriptRoot "..\supabase\.temp\pooler-url"
+    if (Test-Path $poolerUrl) {
+        Remove-Item $poolerUrl -Force
+    }
+    $linkArgs += "--skip-pooler"
+    Write-Host "Using direct DB connection (--skip-pooler)."
+}
+supabase @linkArgs
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 Write-Host "==> Pushing database migrations"
+if (-not $env:SUPABASE_DB_PASSWORD) {
+    Write-Warning @"
+SUPABASE_DB_PASSWORD is not set — db push may hang at 'Initialising login role...'.
+
+Add to config/.env.staging.local:
+  SUPABASE_DB_PASSWORD=your-database-password
+
+Dashboard -> Project Settings -> Database -> Database password
+(This is the password you chose when creating the project, NOT service_role.)
+"@
+}
 supabase db push
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 

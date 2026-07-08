@@ -8,9 +8,14 @@ import { readFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
+import {
+  applyStagingEnvToProcess,
+} from "./load-staging-env.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, "..");
+
+applyStagingEnvToProcess();
 
 function readPubspecVersion() {
   return execSync("node ./scripts/read-pubspec-version.mjs", {
@@ -24,7 +29,11 @@ function resolveServiceRoleKey() {
     return process.env.SUPABASE_SERVICE_ROLE_KEY.trim();
   }
 
-  for (const relative of [".env.local", "supabase/.env"]) {
+  for (const relative of [
+    "config/.env.staging.local",
+    ".env.local",
+    "supabase/.env",
+  ]) {
     const path = join(rootDir, relative);
     if (!existsSync(path)) continue;
     const text = readFileSync(path, "utf8");
